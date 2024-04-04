@@ -1,1 +1,3 @@
 # PandemicExerciseTool
+
+The Pandemic Exercise tool is an interactive simulation-driven application for conducting public health preparedness exercises for DSHS central, regional, and local public health preparedness programs. It allows users to examine the magnitude and timing of influenza pandemics in Texas, and the effects of user-specified antiviral, vaccine and non-pharmaceutical interventions. The tool is designed to support the development of pandemic response plans, pandemic training exercises, and real-time pandemic decision-making. It runs on laptop/desktop computers and in the state-of-the-art Texas Advanced Computing Center Visualization Laboratory, which can be used as a decision theater for large-scale preparedness exercises.
