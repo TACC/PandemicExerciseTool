@@ -9604,6 +9604,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"nth-check@npm:2.0.1":
+  version: 2.0.1
+  resolution: "nth-check@npm:2.0.1"
+  dependencies:
+    boolbase: "npm:^1.0.0"
+  checksum: 10c0/ff003b22f1119b2f3a67820b4f11c7e512a612ae4a1cf2591461904e6c443c391477b14910b4778db844ab19b95567b6d01d3337f691156c0f40649c43ca2229
+  languageName: node
+  linkType: hard
+
 "nth-check@npm:^1.0.2":
   version: 1.0.2
   resolution: "nth-check@npm:1.0.2"
@@ -9902,11 +9911,14 @@ __metadata:
   resolution: "pandemic-exercise-tool@workspace:."
   dependencies:
     "@craco/craco": "npm:^7.1.0"
+    braces: "npm:^3.0.3"
     chart.js: "npm:^4.4.3"
     d3-fetch: "npm:^3.0.1"
     file-saver: "npm:^2.0.5"
     leaflet: "npm:^1.9.4"
+    nth-check: "npm:2.0.1"
     papaparse: "npm:^5.4.1"
+    postcss: "npm:^8.4.31"
     rc-slider: "npm:^11.1.5"
     react: "npm:^18.3.1"
     react-chartjs-2: "npm:^5.2.0"
@@ -9918,6 +9930,7 @@ __metadata:
     react-scripts: "npm:^5.0.1"
     react-select: "npm:^5.8.0"
     web-vitals: "npm:^4.2.3"
+    ws: "npm:^8.17.1"
   languageName: unknown
   linkType: soft
 
@@ -10939,7 +10952,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.3.5, postcss@npm:^8.4.23, postcss@npm:^8.4.33, postcss@npm:^8.4.4":
+"postcss@npm:^8.3.5, postcss@npm:^8.4.23, postcss@npm:^8.4.31, postcss@npm:^8.4.33, postcss@npm:^8.4.4":
   version: 8.4.41
   resolution: "postcss@npm:8.4.41"
   dependencies:
@@ -14090,7 +14103,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^8.13.0":
+"ws@npm:^8.13.0, ws@npm:^8.17.1":
   version: 8.18.0
   resolution: "ws@npm:8.18.0"
   peerDependencies:
