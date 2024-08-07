@@ -1,0 +1,175 @@
+.user-guide-view {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.text {
+  margin-bottom: 30px;
+}
+
+.text h2 {
+  font-size: 3em;
+  margin: 0;
+  color: black;
+  text-align: left;
+}
+
+.text p {
+  font-size: 1.5em;
+  line-height: 1.6;
+  margin-top: 10px;
+  text-align: left;
+}
+
+.bold-text {
+  font-weight: bold; /* Bold text styling */
+}
+
+.github-link {
+  display: inline-block;
+  margin-top: 15px;
+  font-size: 1.2em;
+  color: #007bff;
+  text-decoration: none;
+  text-align: left;
+}
+
+.github-link:hover {
+  text-decoration: underline;
+}
+
+.table-section {
+  margin-top: 30px;
+}
+
+.table-section h3 {
+  font-size: 2em;
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+.guide-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.guide-table th, .guide-table td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: left;
+  font-size: 1.2em;
+}
+
+.guide-table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+  }
+  
+  .guide-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9; /* Light gray background for even rows */
+  }
+  
+  .guide-table tbody tr:nth-child(odd) {
+    background-color: #ffffff; /* White background for odd rows */
+  }
+
+.needed-section {
+    font-size: 1.5em; /* Match the font size of the paragraph text */
+    margin-top: 20px;
+    margin-bottom: 5px; /* Reduced margin-bottom to decrease space */
+  }
+  
+  .bullet-points {
+    font-size: 1.5em; /* Match the font size of the paragraph text */
+    line-height: 1.6;
+    list-style-type: disc; /* Standard bullet points */
+    padding-left: 20px; /* Indent the list */
+    margin-top: 0; /* Remove top margin if needed */
+  }
+
+
+.code-section {
+    margin-top: 30px;
+  }
+  
+  .code-section h3 {
+    font-size: 2em;
+    margin-bottom: 15px;
+    text-align: left;
+  }
+  
+  .code-chunk {
+    background-color: #f4f4f4; /* Light gray background for code */
+    padding: 15px;
+    border-radius: 5px;
+    overflow-x: auto;
+    font-size: 1em; /* Font size for code */
+    white-space: pre; /* Preserve white spaces */
+    line-height: 1.5;
+    border: 1px solid #ddd; /* Border around the code block */
+    border-top: 3px solid black; /* Top border color */
+    border-bottom: 3px solid black; /* Bottom border color */
+  }
+  
+  .code-chunk code {
+    display: block;
+    color: #333; /* Dark text color for code */
+  }
+
+  .line-list {
+    list-style-type: disc; /* Main bullet points */
+    padding-left: 20px; /* Indentation for main list */
+  }
+  
+  .sub-list {
+    list-style-type: circle; /* Sub bullet points */
+    padding-left: 20px; /* Indentation for sub list */
+  }
+  
+  .line-list li, .sub-list li {
+    font-size: 1em; /* Adjust font size if needed */
+    line-height: 1.5;
+  }
+  
+  .line-list strong {
+    color: #007bff; /* Color for line numbers */
+  }
+ 
+  
+  .appendix-section {
+    margin-top: 20px;
+  }
+  
+  .appendix-section h3 {
+    font-size: 1.8em;
+    color: #333;
+  }
+  
+  .appendix-entry {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fafafa;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .appendix-entry:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+  
+  .appendix-entry p {
+    margin: 5px 0;
+  }
+  
+  .contents-list {
+    list-style-type: none;
+    padding-left: 0;
+  }
+  
+  .contents-list li {
+    font-family: monospace;
+    white-space: pre-wrap;
+    margin-bottom: 5px;
+  }

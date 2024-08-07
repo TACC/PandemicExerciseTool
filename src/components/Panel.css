@@ -1,0 +1,14 @@
+/* Panel.css */
+.Panel {
+    position: absolute;
+    cursor: grab;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    padding: 10px;
+    z-index: 9999; /* Adjust as needed */
+  }
+  
+  .Panel.dragging {
+    cursor: grabbing;
+  }
+  

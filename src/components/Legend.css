@@ -1,0 +1,30 @@
+/* Legend.css */
+.info {
+  background: white;
+  padding: 6px 8px;
+  border-radius: 5px;
+  font: 14px Arial, Helvetica, sans-serif;
+}
+
+.legend {
+  line-height: 1.2; /* Adjust line height for better spacing */
+}
+
+.legend i {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 8px;
+}
+
+.legend strong {
+  font-size: 16px;
+  display: block;
+  margin-bottom: 4px; /* Reduced margin to minimize gap */
+}
+
+/* Additional styling to control spacing */
+.info {
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
