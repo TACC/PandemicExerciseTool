@@ -35,15 +35,19 @@
 }
 
 .main-panel {
-  margin-left: 300px; /* Offset to accommodate the left panel */
+  margin-left: -300px; /* Offset to accommodate the left panel */
   margin-right: 400px; /* Offset to accommodate the left panel */
-  width: calc(100% - 700px); /* Adjust based on the width of the left and right panels */
+  width: calc(100% - 690px); /* Adjust based on the width of the left and right panels */
   flex: 1; /* Take up remaining space */
   display: flex;
   flex-direction: column;
-  padding: 10px;
+  padding: 10px 10px 10px 0;
   height: 100vh; /* Full viewport height */
-  overflow-y: hidden; /* Prevent scrollbars in the main panel */
+  overflow: hidden; /* Prevent scrollbars in the main panel */
+}
+
+.main-panel > * {
+  width: 100%;
 }
 
 .right-panel {
