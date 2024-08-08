@@ -34,30 +34,15 @@
   margin-bottom: 1rem; /* Space between top panel and the map */
 }
 
-.main-panel {
-  margin-left: 300px; /* Offset to accommodate the left panel */
+.grid-layout {
+  margin-left: 310px; /* Offset to accommodate the left panel */
   flex: 1; /* Take up remaining space */
   display: flex;
   flex-direction: column;
-  padding: 10px;
+  padding: 10px 20px; /* Increased horizontal padding */
+  width: calc(100vw - 320px); /* Adjust to accommodate the left panel */
   height: 100vh; /* Full viewport height */
-  overflow-y: hidden; /* Prevent scrollbars in the main panel */
-}
-
-.map-section {
-  height: 35%; /* Adjust height to fit the viewport */
-}
-
-.timeline-section {
-  height: 10%; /* Smaller height for timeline slider */
-}
-
-.chart-section {
-  margin-top: 1rem; /* Space between timeline and chart */
-}
-
-.table-section {
-  height: 5%; /* Remaining space for the table */
+  overflow: hidden; /* Prevent scrollbars in the main panel */
 }
 
 /* Adjust the height for smaller screens */
@@ -74,13 +59,10 @@
     height: auto; /* Auto height for mobile view */
   }
 
-  .main-panel {
+  .grid-layout {
     margin-left: 0;
+    width: 100%;
     flex: 1;
-    overflow-y: auto; /* Allow scrolling if necessary */
-  }
-
-  .map-section, .timeline-section, .chart-section, .table-section {
-    height: auto; /* Auto height for mobile view */
+    overflow: auto; /* Allow scrolling if necessary */
   }
 }

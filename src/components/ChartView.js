@@ -96,10 +96,9 @@ const ChartView = () => {
   }, [currentIndex]);
 
   return (
-    <div className="user-guide-view">
+    <div className="chart-view">
       <div className="left-panel">
         <SetParametersDropdown counties={texasCounties} />
-        <br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br>
         <div className="interventions-container">
         <Interventions />
       </div>
@@ -107,10 +106,8 @@ const ChartView = () => {
         <StateCountyDropdowns />
       </div>
       </div>
-      <div className="middle-panel">
+      <div className="grid-layout">
         <InitialMapPercent outputData={outputFiles[currentIndex]} />
-      </div>
-      <div className="timeline-panel">
         <TimelineSlider
           totalDays={outputFiles.length}
           selectedDay={currentIndex}
@@ -118,11 +115,7 @@ const ChartView = () => {
           onScenarioRun={handleRunScenario}
           onScenarioPause={handlePauseScenario}
         />
-      </div>
-      <div className="chart-panel">
         <DeceasedLineChart eventData={eventData} />
-      </div>
-      <div className="bottom-panel">
         <CountyPercentageTable className="percentage-table" outputData={outputFiles[currentIndex]} />
       </div>
     </div>
