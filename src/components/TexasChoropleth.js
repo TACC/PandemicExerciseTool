@@ -45,8 +45,8 @@ class TexasChoropleth extends React.Component {
 
   render() {
     return (
-      <MapContainer center={[31.0, -100.0]} zoom={6} style={{ height: '500px', width: '800px' }}>
-        <TileLayer
+      <
+        <TileLayerMapContainer center={[31.0, -100.0]} zoom={6} style={{ height: '100%', width: '100%' }}>
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />

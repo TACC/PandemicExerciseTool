@@ -27,6 +27,7 @@
     "react-resizeable": "^0.2.6",
     "react-scripts": "^5.0.1",
     "react-select": "^5.8.0",
+    "react-window": "^1.8.10",
     "web-vitals": "^4.2.3",
     "ws": "^8.17.1"
   },

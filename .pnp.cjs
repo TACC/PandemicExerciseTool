@@ -46,6 +46,7 @@ const RAW_RUNTIME_STATE =
           ["react-resizeable", "virtual:d5972f36093dede95f1277ffb47b58587812330e96e8c4d846a8d98d6211988a986a7fe6b4080fc0589581055f7c5856d2b9719b4a62106b62642bd0785a9de7#npm:0.2.6"],\
           ["react-scripts", "virtual:d5972f36093dede95f1277ffb47b58587812330e96e8c4d846a8d98d6211988a986a7fe6b4080fc0589581055f7c5856d2b9719b4a62106b62642bd0785a9de7#npm:5.0.1"],\
           ["react-select", "virtual:d5972f36093dede95f1277ffb47b58587812330e96e8c4d846a8d98d6211988a986a7fe6b4080fc0589581055f7c5856d2b9719b4a62106b62642bd0785a9de7#npm:5.8.0"],\
+          ["react-window", "virtual:d5972f36093dede95f1277ffb47b58587812330e96e8c4d846a8d98d6211988a986a7fe6b4080fc0589581055f7c5856d2b9719b4a62106b62642bd0785a9de7#npm:1.8.10"],\
           ["web-vitals", "npm:4.2.3"],\
           ["ws", "virtual:d5972f36093dede95f1277ffb47b58587812330e96e8c4d846a8d98d6211988a986a7fe6b4080fc0589581055f7c5856d2b9719b4a62106b62642bd0785a9de7#npm:8.18.0"]\
         ],\
@@ -12474,6 +12475,13 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["memoize-one", [\
+      ["npm:5.2.1", {\
+        "packageLocation": "../../.yarn/berry/cache/memoize-one-npm-5.2.1-ee0f8be979-10c0.zip/node_modules/memoize-one/",\
+        "packageDependencies": [\
+          ["memoize-one", "npm:5.2.1"]\
+        ],\
+        "linkType": "HARD"\
+      }],\
       ["npm:6.0.0", {\
         "packageLocation": "../../.yarn/berry/cache/memoize-one-npm-6.0.0-8b2a2cd020-10c0.zip/node_modules/memoize-one/",\
         "packageDependencies": [\
@@ -13296,6 +13304,7 @@ const RAW_RUNTIME_STATE =
           ["react-resizeable", "virtual:d5972f36093dede95f1277ffb47b58587812330e96e8c4d846a8d98d6211988a986a7fe6b4080fc0589581055f7c5856d2b9719b4a62106b62642bd0785a9de7#npm:0.2.6"],\
           ["react-scripts", "virtual:d5972f36093dede95f1277ffb47b58587812330e96e8c4d846a8d98d6211988a986a7fe6b4080fc0589581055f7c5856d2b9719b4a62106b62642bd0785a9de7#npm:5.0.1"],\
           ["react-select", "virtual:d5972f36093dede95f1277ffb47b58587812330e96e8c4d846a8d98d6211988a986a7fe6b4080fc0589581055f7c5856d2b9719b4a62106b62642bd0785a9de7#npm:5.8.0"],\
+          ["react-window", "virtual:d5972f36093dede95f1277ffb47b58587812330e96e8c4d846a8d98d6211988a986a7fe6b4080fc0589581055f7c5856d2b9719b4a62106b62642bd0785a9de7#npm:1.8.10"],\
           ["web-vitals", "npm:4.2.3"],\
           ["ws", "virtual:d5972f36093dede95f1277ffb47b58587812330e96e8c4d846a8d98d6211988a986a7fe6b4080fc0589581055f7c5856d2b9719b4a62106b62642bd0785a9de7#npm:8.18.0"]\
         ],\
@@ -15947,6 +15956,34 @@ const RAW_RUNTIME_STATE =
           ["dom-helpers", "npm:5.2.1"],\
           ["loose-envify", "npm:1.4.0"],\
           ["prop-types", "npm:15.8.1"],\
+          ["react", "npm:18.3.1"],\
+          ["react-dom", "virtual:d5972f36093dede95f1277ffb47b58587812330e96e8c4d846a8d98d6211988a986a7fe6b4080fc0589581055f7c5856d2b9719b4a62106b62642bd0785a9de7#npm:18.3.1"]\
+        ],\
+        "packagePeers": [\
+          "@types/react-dom",\
+          "@types/react",\
+          "react-dom",\
+          "react"\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["react-window", [\
+      ["npm:1.8.10", {\
+        "packageLocation": "../../.yarn/berry/cache/react-window-npm-1.8.10-8350e20b50-10c0.zip/node_modules/react-window/",\
+        "packageDependencies": [\
+          ["react-window", "npm:1.8.10"]\
+        ],\
+        "linkType": "SOFT"\
+      }],\
+      ["virtual:d5972f36093dede95f1277ffb47b58587812330e96e8c4d846a8d98d6211988a986a7fe6b4080fc0589581055f7c5856d2b9719b4a62106b62642bd0785a9de7#npm:1.8.10", {\
+        "packageLocation": "./.yarn/__virtual__/react-window-virtual-7267c7e1ee/3/.yarn/berry/cache/react-window-npm-1.8.10-8350e20b50-10c0.zip/node_modules/react-window/",\
+        "packageDependencies": [\
+          ["react-window", "virtual:d5972f36093dede95f1277ffb47b58587812330e96e8c4d846a8d98d6211988a986a7fe6b4080fc0589581055f7c5856d2b9719b4a62106b62642bd0785a9de7#npm:1.8.10"],\
+          ["@babel/runtime", "npm:7.25.0"],\
+          ["@types/react", null],\
+          ["@types/react-dom", null],\
+          ["memoize-one", "npm:5.2.1"],\
           ["react", "npm:18.3.1"],\
           ["react-dom", "virtual:d5972f36093dede95f1277ffb47b58587812330e96e8c4d846a8d98d6211988a986a7fe6b4080fc0589581055f7c5856d2b9719b4a62106b62642bd0785a9de7#npm:18.3.1"]\
         ],\

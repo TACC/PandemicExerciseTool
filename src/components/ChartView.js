@@ -8,6 +8,10 @@ import InitialMapPercent from './InitialMapPercent';
 import SetParametersDropdown from './SetParametersDropdown';
 import Interventions from './Interventions';
 import './ChartView.css';
+import { Responsive, WidthProvider } from 'react-grid-layout';
+import 'react-grid-layout/css/styles.css';
+import 'react-resizable/css/styles.css';
+
 
 import OUTPUT_0 from './OUTPUT_0.json';
 import OUTPUT_1 from './OUTPUT_1.json';
@@ -50,12 +54,35 @@ const ChartView = () => {
     }, 1000);
   };
 
+  const [isLoading, setIsLoading] = useState(false);
+
+  const LoadingSpinner = () => (
+    <div className="loading-spinner">Loading...</div>
+  );  
+
+  const preloadData = (currentDay) => {
+    const daysToPreload = [-1, 0, 1];
+    daysToPreload.forEach(offset => {
+      const dayToLoad = currentDay + offset;
+      // Fetch and cache data for dayToLoad
+    });
+  };
+ 
   const handlePauseScenario = () => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
     }
   };
 
+  const ResponsiveGridLayout = WidthProvider(Responsive);
+  const layout = [
+    { i: 'timeline', x: 0, y: 6, w: 10, h: 6 },
+    { i: 'chart', x: 6, y: 0, w: 10, h: 7 },
+    { i: 'map', x: 0, y: 0, w: 6, h: 12 },
+    { i: 'table', x: 6, y: 6, w: 3, h: 12 },
+  ];
+  
+  
   useEffect(() => {
     if (outputFiles[currentIndex]) {
       console.log('Output Data:', outputFiles[currentIndex]);
@@ -106,20 +133,34 @@ const ChartView = () => {
         <StateCountyDropdowns />
       </div>
       </div>
-      <div className="grid-layout">
-        <InitialMapPercent outputData={outputFiles[currentIndex]} />
-        <TimelineSlider
-          totalDays={outputFiles.length}
-          selectedDay={currentIndex}
-          onDayChange={handleDayChange}
-          onScenarioRun={handleRunScenario}
-          onScenarioPause={handlePauseScenario}
-        />
-        <DeceasedLineChart eventData={eventData} />
-        <CountyPercentageTable className="percentage-table" outputData={outputFiles[currentIndex]} />
-      </div>
+      
+      <ResponsiveGridLayout
+        className="grid-layout"
+        layouts={{ lg: layout }}
+        breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
+        cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
+        rowHeight={30}
+      >
+        <div key="timeline">
+        {isLoading ? <LoadingSpinner /> :<TimelineSlider
+            totalDays={outputFiles.length}
+            selectedDay={currentIndex}
+            onDayChange={handleDayChange}
+            onScenarioRun={handleRunScenario}
+            onScenarioPause={handlePauseScenario}
+          />}
+        </div>  
+        <div key="chart">
+        {isLoading ? <LoadingSpinner /> :<DeceasedLineChart eventData={eventData} />}
+        </div>
+        <div key="map">
+          {isLoading ? <LoadingSpinner /> :<InitialMapPercent outputData={outputFiles[currentIndex]} />}
+        </div>
+        <div key="table">
+          {isLoading ? <LoadingSpinner /> :<CountyPercentageTable className="percentage-table" outputData={outputFiles[currentIndex]} />}
+        </div>
+      </ResponsiveGridLayout>
     </div>
-    
   );
   
 };
