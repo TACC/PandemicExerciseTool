@@ -29,6 +29,7 @@ const parseData = (jsonData, texasCounties) => {
     return [];
   }
 
+  //Will be redunant when connected to DB
   return jsonData.data.map((county) => {
     const { fips_id, compartments } = county;
     const { I } = compartments;

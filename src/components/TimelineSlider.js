@@ -2,39 +2,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import './TimelineSlider.css';
-import play_button from './images/play_button.png';
-import pause from './images/pause.png';
 
 const TimelineSlider = ({ totalDays, selectedDay, onDayChange, onScenarioRun, onScenarioPause }) => {
-  const [isRunning, setIsRunning] = useState(false);
-
-  const handleRunScenario = () => {
-    setIsRunning(true);
-    onScenarioRun();
-  };
-
-  const handlePauseScenario = () => {
-    setIsRunning(false);
-    onScenarioPause();
-  };
-
-  const handleChange = (value) => {
+    const handleChange = (value) => {
     onDayChange(value);
   };
 
   return (
     <div className="timeline-slider-wrapper">
-      <div className="button-container">
-        <button className="scenario-button" onClick={handleRunScenario} disabled={isRunning}>
-          <img src={play_button} alt="Play" className="icon" />
-          Run Scenario
-        </button>
-        <button className="pause-button" onClick={handlePauseScenario} disabled={!isRunning}>
-          <img src={pause} alt="Pause" className="icon" />
-          Pause
-        </button>
-      </div>
-      <div className="timeline-container">
+        <div className="timeline-container">
         <Slider
           min={0}
           max={selectedDay}

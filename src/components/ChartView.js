@@ -11,6 +11,8 @@ import './ChartView.css';
 import { Responsive, WidthProvider } from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
+import PlayPauseButton from './PlayPauseButton';
+
 
 
 import OUTPUT_0 from './OUTPUT_0.json';
@@ -32,6 +34,18 @@ const ChartView = () => {
     OUTPUT_6, OUTPUT_7, OUTPUT_8, OUTPUT_9
   ]);
   const intervalRef = useRef(null);
+
+  const [isRunning, setIsRunning] = useState(false);
+  const handleToggleScenario = () => {
+    if (isRunning) {
+      setIsRunning(false);
+      handlePauseScenario();
+    } else {
+      setIsRunning(true);
+      handleRunScenario();
+    }
+  };
+  
 
   const handleDayChange = (index) => {
     console.log(`Day changed to: ${index}`);
@@ -131,6 +145,9 @@ const ChartView = () => {
       </div>
       <div className="state-county-dropdowns-container">
         <StateCountyDropdowns />
+      </div>
+      <div className="play-pause-container">
+        <PlayPauseButton isRunning={isRunning} onToggle={handleToggleScenario} />
       </div>
       </div>
       

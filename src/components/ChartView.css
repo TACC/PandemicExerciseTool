@@ -28,6 +28,11 @@
   padding-top: 5px; /* Adjust the value as needed */
 }
 
+.play-pause-container {
+  margin-top: auto;
+  padding: 20px 0;
+}
+
 .top-panel {
   position: relative; /* Ensure dropdowns are correctly positioned within this panel */
   z-index: 10; /* Higher z-index to ensure it appears above the map */

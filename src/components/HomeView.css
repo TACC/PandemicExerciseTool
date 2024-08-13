@@ -20,6 +20,11 @@
   justify-content: flex-start; /* Align items to the top */
 }
 
+.play-pause-container {
+  margin-top: auto;
+  padding: 20px 0;
+}
+
 .interventions-container {
   padding-bottom: 5px; /* Adjust the value as needed */
 }
