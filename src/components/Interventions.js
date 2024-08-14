@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Antivirals from './Antivirals';
 import Vaccine from './Vaccine';
 import NonPharmaceutical from './NonPharmaceutical';
-import './Interventions.css';
+import './Dropdown.css';
 
 const Interventions = () => {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -29,7 +29,7 @@ const Interventions = () => {
 
   return (
     <div className="dropdown-container" id="second-drop">
-      <button className="grey-button" onClick={toggleDropdown}>
+      <button className="interventions-button" onClick={toggleDropdown}>
         <span className="dropdown-text"> + Add Interventions</span>
         <span className={`dropdown-arrow ${showDropdown ? 'open' : ''}`}>&#x25BE;</span>
       </button>

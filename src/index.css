@@ -42,7 +42,9 @@ code {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 10000; /* Ensure the z-index is high enough */
+  isolation: isolate;
+  contain: layout;
+  z-index: 20000; /* Ensure the z-index is high enough */
 }
 
 .modal-content {
@@ -82,15 +84,32 @@ code {
   width: 100%;
 }
 
-.orange-button {
-  background-color: orange;
-  color: white;
+.interventions-button {
+  position: relative;
+  background-color: #f1f1;
   border: none;
+  color: black;
   padding: 10px 20px;
   cursor: pointer;
   font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   z-index: 10;
+} 
+
+.parameters-button {
   position: relative;
+  background-color: orange;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 10;
 }
 
 .form {
