@@ -60,7 +60,7 @@
   right: 0;
   height: calc(100% - 112px); /* Full height minus top margin */
   overflow-y: auto; /* Scroll if content overflows */
-  z-index: 1000; /* Ensure it is on top */
+  z-index: 900; /* Ensure it is on top */
   display: flex;
   flex-direction: column;
   justify-content: flex-start; /* Align items to the top */

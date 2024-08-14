@@ -6,36 +6,6 @@
   margin-bottom: 20px; /* Ensure spacing below the panel */
 }
 
-.orange-button {
-  background-color: orange;
-  color: black;
-  border: none;
-  padding: 10px 20px;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 10000; /* Ensure the z-index is high enough */
-}
-
-.modal-content {
-  background-color: black;
-  padding: 20px;
-  border-radius: 8px;
-  max-width: 500px;
-  width: 100%;
-}
-
 .form {
   display: flex;
   flex-direction: column;
@@ -51,14 +21,6 @@
   width: calc(100% - 16px);
 }
 
-.form button {
-  background-color: orange;
-  color: black;
-  border: none;
-  padding: 10px 20px;
-  cursor: pointer;
-  font-size: 16px;
-}
 
 /* #first-drop{
   position: relative;
