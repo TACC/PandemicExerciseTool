@@ -4,22 +4,6 @@
   height: 100vh; /* Full viewport height */
 }
 
-.left-panel {
-  width: 300px; /* Fixed width for the left panel */
-  background-color: #fff; /* Background color */
-  padding: 10px;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-  position: fixed; /* Fixes the panel to the left side */
-  top: 112px; /* Adjust this value slightly if needed */
-  left: 0;
-  height: calc(100% - 112px); /* Full height minus top margin */
-  overflow-y: auto; /* Scroll if content overflows */
-  z-index: 1000; /* Ensure it is on top */
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start; /* Align items to the top */
-}
-
 .interventions-container {
   padding-bottom: 5px; /* Adjust the value as needed */
 }
@@ -59,14 +43,6 @@
 @media (max-width: 768px) {
   .chart-view-container {
     flex-direction: column;
-  }
-
-  .left-panel {
-    width: 100%;
-    position: relative; /* Adjust for smaller screens */
-    margin-bottom: 20px;
-    top: 0; /* Reset for mobile view */
-    height: auto; /* Auto height for mobile view */
   }
 
   .grid-layout {

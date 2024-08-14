@@ -8,6 +8,9 @@ import InitialMapPercent from './InitialMapPercent';
 import SetParametersDropdown from './SetParametersDropdown';
 import Interventions from './Interventions';
 import './HomeView.css';
+import './leaflet-overrides.css';
+import './styles.css';
+import './left-panel.css';
 
 import OUTPUT_0 from './OUTPUT_0.json';
 import OUTPUT_1 from './OUTPUT_1.json';
@@ -96,7 +99,7 @@ const HomeView = () => {
   }, [currentIndex]);
 
   return (
-    <div className="user-guide-view">
+    <div className="home-view">
       <div className="left-panel">
         <SetParametersDropdown counties={texasCounties} />
         <div className="interventions-container">

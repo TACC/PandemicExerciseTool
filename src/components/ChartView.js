@@ -11,7 +11,9 @@ import './ChartView.css';
 import { Responsive, WidthProvider } from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
-
+import './leaflet-overrides.css';
+import './styles.css';
+import './left-panel.css';
 
 import OUTPUT_0 from './OUTPUT_0.json';
 import OUTPUT_1 from './OUTPUT_1.json';

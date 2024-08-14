@@ -32,19 +32,6 @@ code {
   padding: 20px;
 }
 
-.panel-container {
-  display: flex;
-  flex-direction: column;
-  width: 100%; /* Ensure the panel container spans the full width */
-  margin-bottom: 20px; /* Ensure spacing below the panel */
-}
-
-.collapsible-container {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -80,6 +67,19 @@ code {
 
 .modal-close:hover {
   color: #333;
+}
+
+.panel-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%; /* Ensure the panel container spans the full width */
+  margin-bottom: 20px; /* Ensure spacing below the panel */
+}
+
+.collapsible-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
 .orange-button {
