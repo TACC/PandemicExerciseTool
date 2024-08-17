@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import html2canvas from 'html2canvas';
 import texasCounties from './counties';
 import TimelineSlider from './TimelineSlider';
 import DeceasedLineChart from './DeceasedLineChart';
@@ -11,7 +12,6 @@ import './ChartView.css';
 import { Responsive, WidthProvider } from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
-
 
 import OUTPUT_0 from './OUTPUT_0.json';
 import OUTPUT_1 from './OUTPUT_1.json';
@@ -31,7 +31,11 @@ const ChartView = () => {
     OUTPUT_0, OUTPUT_1, OUTPUT_2, OUTPUT_3, OUTPUT_4, OUTPUT_5,
     OUTPUT_6, OUTPUT_7, OUTPUT_8, OUTPUT_9
   ]);
-  const intervalRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [fileName, setFileName] = useState('');
+  const [imgData, setImgData] = useState(''); // State to store image data URL
+  const chartViewRef = useRef();
 
   const handleDayChange = (index) => {
     console.log(`Day changed to: ${index}`);
@@ -54,23 +58,42 @@ const ChartView = () => {
     }, 1000);
   };
 
-  const [isLoading, setIsLoading] = useState(false);
-
-  const LoadingSpinner = () => (
-    <div className="loading-spinner">Loading...</div>
-  );  
-
-  const preloadData = (currentDay) => {
-    const daysToPreload = [-1, 0, 1];
-    daysToPreload.forEach(offset => {
-      const dayToLoad = currentDay + offset;
-      // Fetch and cache data for dayToLoad
-    });
-  };
- 
   const handlePauseScenario = () => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
+    }
+  };
+
+  const handleScreenshot = async () => {
+    if (chartViewRef.current) {
+      try {
+        const canvas = await html2canvas(chartViewRef.current);
+        const dataUrl = canvas.toDataURL('image/png');
+        setImgData(dataUrl); // Store the image data URL
+        setModalVisible(true); // Show the modal
+        setFileName('screenshot.png'); // Set default file name
+      } catch (error) {
+        console.error("Error capturing screenshot:", error);
+      }
+    }
+  };
+
+  const handleSaveScreenshot = () => {
+    if (fileName && imgData) {
+      const storedImages = JSON.parse(localStorage.getItem('savedImages')) || [];
+      storedImages.push({ url: imgData, name: fileName });
+      localStorage.setItem('savedImages', JSON.stringify(storedImages));
+
+      const link = document.createElement('a');
+      link.href = imgData;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      setModalVisible(false);
+      setFileName(''); // Reset file name
+      setImgData(''); // Clear image data
     }
   };
 
@@ -81,13 +104,11 @@ const ChartView = () => {
     { i: 'map', x: 0, y: 0, w: 6, h: 12 },
     { i: 'table', x: 6, y: 6, w: 3, h: 12 },
   ];
-  
-  
+
   useEffect(() => {
     if (outputFiles[currentIndex]) {
       console.log('Output Data:', outputFiles[currentIndex]);
 
-      // Calculate deceased count for the current day
       const deceasedCount = outputFiles[currentIndex].data.reduce((acc, county) => {
         const { D } = county.compartments;
         const totalDeceased = [
@@ -99,41 +120,27 @@ const ChartView = () => {
         return acc + totalDeceased;
       }, 0);
 
-      // Update eventData to include only data up to the current day
       setEventData((prevData) => {
         const newData = [...prevData];
-        // Ensure we're only adding data for the current day and not duplicating
         if (!newData[currentIndex]) {
           newData[currentIndex] = { day: currentIndex, deceased: Math.round(deceasedCount) };
         } else {
           newData[currentIndex].deceased = Math.round(deceasedCount);
         }
-        return newData.slice(0, currentIndex + 1); // Keep only up to currentIndex
+        return newData.slice(0, currentIndex + 1);
       });
     }
   }, [currentIndex, outputFiles]);
 
-  useEffect(() => {
-    const delay = 500; // Delay in milliseconds
-    const timer = setTimeout(() => {
-      console.log('Data processed for day:', currentIndex);
-    }, delay);
-
-    return () => clearTimeout(timer);
-  }, [currentIndex]);
-
   return (
-    <div className="chart-view">
+    <div className="chart-view" ref={chartViewRef}>
       <div className="left-panel">
-        <SetParametersDropdown counties={texasCounties} />
-        <div className="interventions-container">
-        <Interventions />
-      </div>
-      <div className="state-county-dropdowns-container">
         <StateCountyDropdowns />
+        <div className="interventions-container">
+          <Interventions />
+        </div>
+        <button onClick={handleScreenshot} className="screenshot-button">Take Screenshot</button>
       </div>
-      </div>
-      
       <ResponsiveGridLayout
         className="grid-layout"
         layouts={{ lg: layout }}
@@ -142,27 +149,43 @@ const ChartView = () => {
         rowHeight={30}
       >
         <div key="timeline">
-        {isLoading ? <LoadingSpinner /> :<TimelineSlider
+          {isLoading ? <LoadingSpinner /> : <TimelineSlider
             totalDays={outputFiles.length}
             selectedDay={currentIndex}
             onDayChange={handleDayChange}
             onScenarioRun={handleRunScenario}
             onScenarioPause={handlePauseScenario}
           />}
-        </div>  
+        </div>
         <div key="chart">
-        {isLoading ? <LoadingSpinner /> :<DeceasedLineChart eventData={eventData} />}
+          {isLoading ? <LoadingSpinner /> : <DeceasedLineChart eventData={eventData} />}
         </div>
         <div key="map">
-          {isLoading ? <LoadingSpinner /> :<InitialMapPercent outputData={outputFiles[currentIndex]} />}
+          {isLoading ? <LoadingSpinner /> : <InitialMapPercent outputData={outputFiles[currentIndex]} />}
         </div>
         <div key="table">
-          {isLoading ? <LoadingSpinner /> :<CountyPercentageTable className="percentage-table" outputData={outputFiles[currentIndex]} />}
+          {isLoading ? <LoadingSpinner /> : <CountyPercentageTable className="percentage-table" outputData={outputFiles[currentIndex]} />}
         </div>
       </ResponsiveGridLayout>
+
+      {/* Modal for file name input */}
+      {modalVisible && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h2>Save Screenshot</h2>
+            <input
+              type="text"
+              value={fileName}
+              onChange={(e) => setFileName(e.target.value)}
+              placeholder="Enter file name"
+            />
+            <button onClick={handleSaveScreenshot} className="save-button">Save</button>
+            <button onClick={() => setModalVisible(false)} className="cancel-button">Cancel</button>
+          </div>
+        </div>
+      )}
     </div>
   );
-  
 };
 
 export default ChartView;
