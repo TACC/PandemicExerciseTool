@@ -50,6 +50,8 @@ const parseData = async (jsonData, texasCounties, populationData) => {
     return [];
   }
 
+
+  //Will be redunant when connected to DB
   const rawData = jsonData.data.map((county) => {
     const { fips_id, compartments } = county;
     const { I } = compartments;
