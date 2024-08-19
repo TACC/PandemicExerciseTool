@@ -27,10 +27,12 @@
 
 .interventions-container {
   padding-bottom: 5px; /* Adjust the value as needed */
+  z-index: 2;
 }
 
 .state-county-dropdowns-container {
   padding-top: 5px; /* Adjust the value as needed */
+  z-index: 1;
 }
 
 .top-panel {
