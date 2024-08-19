@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import AddInitialCases from './AddInitialCases';
 import CaseFatalityRate from './CaseFatalityRate';
 import Disease from './Disease';
-import './SetParametersDropdown.css';
+import './Dropdown.css';
 
 const SetParametersDropdown = ({ counties }) => {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -29,9 +29,9 @@ const SetParametersDropdown = ({ counties }) => {
 
   return (
     <div className="dropdown-container" id="first-drop">
-      <button className="orange-button" onClick={toggleDropdown}>
+      <button className="parameters-button" onClick={toggleDropdown}>
         <span className="dropdown-text">Set Parameters</span>
-        <span className={`dropdown-arrow ${showDropdown ? 'open' : ''}`}>&#x25BE;</span>
+        <span className={`dropdown-arrow ${showDropdown ? 'open' : ''}`}>▾</span>
       </button>
       {showDropdown && (
         <div className="dropdown-menu">
@@ -41,18 +41,20 @@ const SetParametersDropdown = ({ counties }) => {
         </div>
       )}
       {isDiseaseOpen && (
+         <div style={{ position: 'relative', zIndex: 20000 }}>
         <div className="modal-overlay" onClick={closeDisease}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <span className="modal-close" onClick={closeDisease}>&times;</span>
+            <span className="modal-close" onClick={closeDisease}>×</span>
             <h2>Disease</h2>
             <Disease onSubmit={(data) => { console.log('Disease:', data); closeDisease(); }} />
           </div>
+        </div>
         </div>
       )}
       {isInitialCasesOpen && (
         <div className="modal-overlay" onClick={closeInitialCases}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <span className="modal-close" onClick={closeInitialCases}>&times;</span>
+            <span className="modal-close" onClick={closeInitialCases}>×</span>
             <h2>Initial Cases</h2>
             <AddInitialCases counties={counties} onSubmit={(data) => { console.log('Initial Cases:', data); closeInitialCases(); }} />
           </div>
@@ -61,7 +63,7 @@ const SetParametersDropdown = ({ counties }) => {
       {isCaseFatalityRateOpen && (
         <div className="modal-overlay" onClick={closeCaseFatalityRate}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <span className="modal-close" onClick={closeCaseFatalityRate}>&times;</span>
+            <span className="modal-close" onClick={closeCaseFatalityRate}>×</span>
             <h2>Case Fatality Rate</h2>
             <CaseFatalityRate onSubmit={(data) => { console.log('Case Fatality Rate:', data); closeCaseFatalityRate(); }} />
           </div>

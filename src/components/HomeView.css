@@ -65,7 +65,7 @@
   right: 0;
   height: calc(100% - 112px); /* Full height minus top margin */
   overflow-y: auto; /* Scroll if content overflows */
-  z-index: 1000; /* Ensure it is on top */
+  z-index: 900; /* Ensure it is on top */
   display: flex;
   flex-direction: column;
   justify-content: flex-start; /* Align items to the top */
@@ -93,15 +93,7 @@
     flex-direction: column;
   }
 
-  .left-panel {
-    width: 100%;
-    position: relative; /* Adjust for smaller screens */
-    margin-bottom: 20px;
-    top: 0; /* Reset for mobile view */
-    height: auto; /* Auto height for mobile view */
-  }
-
-  .main-panel {
+   .main-panel {
     margin-left: 0;
     flex: 1;
     overflow-y: auto; /* Allow scrolling if necessary */

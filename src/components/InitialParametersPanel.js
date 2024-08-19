@@ -50,11 +50,6 @@ const InitialParametersPanel = ({ counties, onSubmit }) => {
 
   return (
     <div>
-      <div className="panel-container">
-        <button className="orange-button" onClick={openInitialParams}>Set Initial Parameters</button>
-        <button className="orange-button" onClick={openInterventions}>Add Interventions</button>
-      </div>
-
       {isInitialParamsOpen && (
         <div className="modal-overlay" onClick={closeInitialParams}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -70,7 +65,10 @@ const InitialParametersPanel = ({ counties, onSubmit }) => {
                   required
                 />
               </div>
-
+      <div className="panel-container">
+        <button className="parameters-button" onClick={openInitialParams}>Set Initial Parameters</button>
+        <button className="interventions-button" onClick={openInterventions}>Add Interventions</button>
+      </div>
               <div className="form-group">
                 <label htmlFor="county">County:</label>
                 <Select
