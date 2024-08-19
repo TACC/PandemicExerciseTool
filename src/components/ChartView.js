@@ -27,6 +27,14 @@ import OUTPUT_7 from './OUTPUT_7.json';
 import OUTPUT_8 from './OUTPUT_8.json';
 import OUTPUT_9 from './OUTPUT_9.json';
 
+const ResponsiveGridLayout = WidthProvider(Responsive);
+const layout = [
+  { i: 'timeline', x: 0, y: 5, w: 8, h: 3 },
+  { i: 'chart', x: 0, y: 0, w: 8, h: 5 },
+  { i: 'map', x: 0, y: 8, w: 5, h: 13 },
+  { i: 'table', x: 8, y: 0, w: 3, h: 24 },
+];
+
 const ChartView = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [eventData, setEventData] = useState([]);
@@ -47,7 +55,12 @@ const ChartView = () => {
     }
   };
   
+  const [currentLayout, setCurrentLayout] = useState(layout);
 
+  const handleLayoutChange = (newLayout) => {
+    setCurrentLayout(newLayout);
+  };
+ 
   const handleDayChange = (index) => {
     console.log(`Day changed to: ${index}`);
     setCurrentIndex(index);
@@ -68,35 +81,12 @@ const ChartView = () => {
       });
     }, 1000);
   };
-
-  const [isLoading, setIsLoading] = useState(false);
-
-  const LoadingSpinner = () => (
-    <div className="loading-spinner">Loading...</div>
-  );  
-
-  const preloadData = (currentDay) => {
-    const daysToPreload = [-1, 0, 1];
-    daysToPreload.forEach(offset => {
-      const dayToLoad = currentDay + offset;
-      // Fetch and cache data for dayToLoad
-    });
-  };
  
   const handlePauseScenario = () => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
     }
-  };
-
-  const ResponsiveGridLayout = WidthProvider(Responsive);
-  const layout = [
-    { i: 'timeline', x: 0, y: 6, w: 10, h: 6 },
-    { i: 'chart', x: 6, y: 0, w: 10, h: 7 },
-    { i: 'map', x: 0, y: 0, w: 6, h: 12 },
-    { i: 'table', x: 6, y: 6, w: 3, h: 12 },
-  ];
-  
+  }; 
   
   useEffect(() => {
     if (outputFiles[currentIndex]) {
@@ -158,9 +148,11 @@ const ChartView = () => {
         breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
         cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
         rowHeight={30}
+        onLayoutChange={handleLayoutChange}
+        draggableCancel=".search-input,.sort-button"
       >
         <div key="timeline">
-        {isLoading ? <LoadingSpinner /> :<TimelineSlider
+        {<TimelineSlider
             totalDays={outputFiles.length}
             selectedDay={currentIndex}
             onDayChange={handleDayChange}
@@ -169,13 +161,13 @@ const ChartView = () => {
           />}
         </div>  
         <div key="chart">
-        {isLoading ? <LoadingSpinner /> :<DeceasedLineChart eventData={eventData} />}
+        {<DeceasedLineChart eventData={eventData} />}
         </div>
         <div key="map">
-          {isLoading ? <LoadingSpinner /> :<InitialMapPercent outputData={outputFiles[currentIndex]} />}
+          {<InitialMapPercent outputData={outputFiles[currentIndex]} />}
         </div>
-        <div key="table">
-          {isLoading ? <LoadingSpinner /> :<CountyPercentageTable className="percentage-table" outputData={outputFiles[currentIndex]} />}
+        <div key="table" className="table-container">
+          {<CountyPercentageTable className="percentage-table" outputData={outputFiles[currentIndex]} />}
         </div>
       </ResponsiveGridLayout>
     </div>

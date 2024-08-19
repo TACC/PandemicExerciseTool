@@ -104,12 +104,15 @@ header {
 /* App.css */
 
 .table-container {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 10;
+  height: 100%;
   width: 100%;
-  max-width: 400px; /* Adjust as needed for your design */
   margin: 0 auto; /* Center the container */
   padding: 20px; /* Add padding for better spacing */
   box-sizing: border-box; /* Ensure padding is included in the width */
-  height: 80vh; /* Make the container tall enough to show the full table */
   overflow: auto; /* Allow scrolling if content overflows */
   border: 2px solid #ccc; /* Add a border around the container */
   border-radius: 8px; /* Optional: Add rounded corners */
@@ -147,6 +150,8 @@ th {
   color: inherit; /* Inherit color to match text */
   position: absolute;
   right: 8px;
+  position: relative;
+  z-index: 10;
 }
 
 .sort-button:focus {
