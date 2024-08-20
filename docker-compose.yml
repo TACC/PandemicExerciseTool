@@ -1,0 +1,17 @@
+---
+version: "3"
+
+services:
+    mongo-db:
+        image: mongo:8.0-rc
+        volumes:
+            - ./data:/data/db
+    react-server:
+        build:
+            context: ./
+            dockerfile: ./Dockerfile-react
+        depends_on:
+            - mongo-db
+        ports:
+            - 3000:3000
+...

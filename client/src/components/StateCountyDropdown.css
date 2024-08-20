@@ -1,0 +1,29 @@
+/* StateCountyDropdown.css */
+
+/* Container for dropdowns */
+.dropdown-container {
+    display: flex;
+    gap: 1rem;
+    position: relative; /* Ensure it's positioned relative to itself */
+    z-index: 1000; /* Higher z-index to ensure it's above the map */
+  }
+  
+  /* Each dropdown */
+  .dropdown {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Styles for react-select control */
+  .react-select__control {
+    position: relative; /* Ensure it's positioned correctly */
+    z-index: 1000; /* Ensure it's on top */
+  }
+  
+  /* Styles for react-select menu */
+  .react-select__menu {
+    position: absolute; /* Ensure it overlays other elements */
+    z-index: 1000; /* Ensure it's on top */
+  }
+  

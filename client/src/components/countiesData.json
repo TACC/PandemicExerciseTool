@@ -1,0 +1,38 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "properties": {
+          "name": "Harris County",
+          "population": 4713325
+        },
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [-95.4079, 29.7752],
+              [-95.408, 29.7749]
+            ]
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "name": "Dallas County",
+          "population": 2637772
+        },
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [-96.8351, 32.7668],
+              [-96.8352, 32.7669]
+            ]
+          ]
+        }
+      }
+    ]
+  }
+  

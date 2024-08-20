@@ -1,0 +1,70 @@
+/* Header.css */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* Full viewport height */
+  overflow: hidden; /* Prevent scrollbars in the container */
+}
+
+.header {
+  background-color: #102c41; /* Dark blue color */
+  color: white;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%; /* Ensure the header spans the entire width */
+  position: fixed; /* Fix the header at the top */
+  top: 0;
+  left: 0;
+  z-index: 1000; /* Ensure it is above other content */
+}
+
+.logo-container {
+  display: flex;
+}
+
+.logo {
+  width: 90px; /* Adjust the size as needed */
+  height: 90px; /* Adjust the size as needed */
+  margin-right: 5px; /* Adjust spacing between logos */
+}
+
+.text-container {
+  flex-grow: 1;
+  text-align: center;
+  font-size: large;
+}
+
+.tabs {
+  display: flex;
+  justify-content: center;
+  margin: 0 20px; /* Add margin to space out tabs */
+}
+
+.tab-button {
+  padding: 10px 20px;
+  cursor: pointer;
+  border: none;
+  background: #102c41;
+  outline: none;
+  transition: background-color 0.3s;
+  color: white; /* Ensure the text color is visible on the dark background */
+  margin: 0 5px; /* Adjust margin as needed */
+  font-size: x-large;
+}
+
+.tab-button.active {
+  border-bottom: 2px solid #dfa53d; /* Only bottom border */
+  font-weight: bold;
+  background-color: #102c41;
+}
+
+.tab-content {
+  flex-grow: 1;
+  overflow: auto; /* Allow scrolling if content overflows */
+  padding: 20px;
+  margin-top: 110px; /* Adjust based on header height */
+  background-color: white; /* Ensure content area is visually distinct */
+}

@@ -1,0 +1,188 @@
+/* Homeview set to looklike the wireframes*/
+
+/* Styles for the RegularView component */
+
+.regular-view-content {
+    display: flex;
+    flex-direction: column; /* Ensure elements are stacked vertically */
+    padding: 20px;
+  }
+  
+  .regular-view-panel-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%; /* Ensure the panel container spans the full width */
+    margin-bottom: 20px; /* Ensure spacing below the panel */
+  }
+  
+  .regular-view-collapsible-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .orange-button {
+    background-color: orange;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000; /* Ensure the z-index is high enough */
+  }
+  
+  .modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 500px;
+    width: 100%;
+  }
+  
+  .form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .form label {
+    margin-bottom: 10px;
+  }
+  
+  .form input {
+    margin-bottom: 10px;
+    padding: 8px;
+    width: calc(100% - 16px);
+  }
+  
+  .form button {
+    background-color: orange;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .regular-view-content {
+    position: relative;
+  }
+  
+  .regular-view-collapsible-container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    margin-top: 20px;
+  }
+  
+  .map-and-charts-container {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+  }
+  
+  .map-and-table-container {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+  }
+  
+  
+  .infected-table {
+    flex: 0 0 400px; /* Adjust width as needed */
+    max-height:400px;
+    overflow-y: auto; /* Enable vertical scrolling if necessary */
+    margin-right: 20px; /* Adjust margin as needed */
+  }
+  
+  .charts-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  
+  .chart-wrapper {
+    flex: 1;
+    margin-bottom: 20px; /* Adjust margin as needed */
+  }
+  
+  .divider {
+    height: 2px; /* Adjust the height as needed */
+    background-color: black;
+    width: 100%;
+    margin: 20px 0; /* Add margin to separate from other components */
+    z-index: 1; /* Ensure it is above other components */
+  }
+  
+  .short-chart-wrapper {
+    max-height: 300px; /* Adjust the height as needed to show approximately 10 rows */
+    overflow-y: auto; /* Enable vertical scrolling */
+  }
+  
+  
+  .medium-chart-wrapper {
+    max-height: 1000px; /* Adjust the height as needed to show approximately 10 rows */
+    overflow-y: auto; /* Enable vertical scrolling */
+  }
+
+  /*UserGuide testing view from June - July that has total pop infected deceased map, graph, and table */
+  /* UserGuideView.css */
+
+/* Container for the entire view */
+.user-guide-view {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100vh; /* Full viewport height */
+    position: relative; /* Ensure positioning context for child elements */
+  }
+  
+  /* Top panel containing the dropdowns */
+  .top-panel {
+    position: relative; /* Ensure dropdowns are correctly positioned within this panel */
+    z-index: 10; /* Higher z-index to ensure it appears above the map */
+    margin-bottom: 1rem; /* Space between top panel and the map */
+  }
+  
+  .interventions-container {
+    padding-bottom: 5px; /* Adjust the value as needed */
+  }
+  
+  .state-county-dropdowns-container {
+    padding-top: 5px; /* Adjust the value as needed */
+  }
+
+  /* Map container */
+  .middle-panel {
+    position: relative; /* Positioning context for z-index */
+    z-index: 1; /* Lower z-index to be behind the dropdowns */
+    flex: 1; /* Take up the remaining space */
+  }
+  
+  /* Timeline panel */
+  .timeline-panel {
+    margin-top: 1rem; /* Space between map and timeline */
+  }
+  
+  /* Chart panel */
+  .chart-panel {
+    margin-top: 1rem; /* Space between timeline and chart */
+  }
+  
+  /* Bottom panel */
+  .bottom-panel {
+    margin-top: 1rem; /* Space between chart and table */
+  }
+ 
+  
