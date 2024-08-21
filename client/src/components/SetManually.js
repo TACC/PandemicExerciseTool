@@ -14,7 +14,7 @@ const SetManually = () => {
   const [gamma, setGamma] = useState(parseFloat(localStorage.getItem('gamma')) || 4.1);
   const [chi, setChi] = useState(parseFloat(localStorage.getItem('chi')) || 1.0);
   const [rho, setRho] = useState(parseFloat(localStorage.getItem('rho')) || 0.39);
-//  const [nu_high, setNuHigh] = useState(localStorage.getItem('nu_high') || 'no');
+  const [nu_high, setNuHigh] = useState(localStorage.getItem('nu_high') || 'no');
   const [vaccine_wastage_factor, setVaccineWastageFactor] = useState(parseFloat(localStorage.getItem('vaccine_wastage_factor'), 10) || 60);
   const [antiviral_effectiveness, setAntiviralEffectiveness] = useState(parseFloat(localStorage.getItem('antiviral_effectiveness')) || 0.8);
   const [antiviral_wastage_factor, setAntiviralWastageFactor] = useState(parseFloat(localStorage.getItem('antiviral_wastage_factor'), 10) || 60);
@@ -52,9 +52,9 @@ const SetManually = () => {
   useEffect(() => {
     localStorage.setItem('rho', rho);
   }, [rho]);
-//  useEffect(() => {
-//    localStorage.setItem('nu_high', nu_high);
-//  }, [nu_high]);
+  useEffect(() => {
+    localStorage.setItem('nu_high', nu_high);
+  }, [nu_high]);
   useEffect(() => {
     localStorage.setItem('vaccine_wastage_factor', vaccine_wastage_factor);
   }, [vaccine_wastage_factor]);
@@ -74,8 +74,9 @@ const SetManually = () => {
       tau: tau.toString(),
       kappa: kappa.toString(),
       gamma: gamma.toString(),
-      chi: chi,
-      //nu_high: nu_high,
+      chi: chi.toString(),
+      rho: rho.toString(),
+      nu_high: nu_high.toString(),
       vaccine_wastage_factor: vaccine_wastage_factor.toString(),
       antiviral_effectiveness: antiviral_effectiveness.toString(),
       antiviral_wastage_factor: antiviral_wastage_factor.toString()
@@ -121,7 +122,8 @@ const SetManually = () => {
           type="number"
           id="tau"
           value={tau}
-          onChange={e => setTau(parseFloat(e.target.value, 10))}
+          onChange={e => setTau(parseFloat(e.target.value))}
+          step="0.1"
           min="0"
           required
         />
@@ -138,6 +140,7 @@ const SetManually = () => {
           id="kappa"
           value={kappa}
           onChange={e => setKappa(parseFloat(e.target.value, 10))}
+          step="0.1"
           min="0"
           required
         />
@@ -153,6 +156,7 @@ const SetManually = () => {
           id="gamma"
           value={gamma}
           onChange={e => setGamma(parseFloat(e.target.value, 10))}
+          step="0.1"
           min="0"
           required
         />
@@ -168,6 +172,7 @@ const SetManually = () => {
           id="chi"
           value={chi}
           onChange={e => setChi(parseFloat(e.target.value, 10))}
+          step="0.1"
           min="0"
           required
         />
@@ -183,10 +188,46 @@ const SetManually = () => {
           id="rho"
           value={rho}
           onChange={e => setRho(parseFloat(e.target.value))}
+          step="0.01"
           min="0"
           required
         />
       </div>
+
+      <div className="form-group">
+        <label htmlFor="nu_high">High/Low death rate: 
+        <span className="tooltip">?
+            <span className="tooltip-text">Asymptomatic/Treatable/Infectious to deceased, which corresponds to nu in the model</span>
+          </span>
+        </label>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <div>
+            <input
+              type="radio"
+              id="nuHighYes"
+              name="nu_high"
+              value="yes"
+              checked={nu_high === 'yes'}
+              onChange={e => setNuHigh(e.target.value)}
+              required
+            />
+            <label htmlFor="nuHighYes">High</label>
+          </div>
+          <div>
+            <input
+              type="radio"
+              id="nuHighNo"
+              name="nu_high"
+              value="no"
+              checked={nu_high === 'no'}
+              onChange={e => setNuHigh(e.target.value)}
+              required
+            />
+            <label htmlFor="nuHighNo">Low</label>
+          </div>
+        </div>
+      </div>
+
       <div className="form-group">
         <label htmlFor="vaccine_wastage_factor">Vaccine Wastage Factor (days):
           <span className="tooltip">?
@@ -198,6 +239,7 @@ const SetManually = () => {
           id="vaccine_wastage_factor"
           value={vaccine_wastage_factor}
           onChange={e => setVaccineWastageFactor(parseFloat(e.target.value))}
+          step="0.1"
           min="0"
           required
         />
@@ -213,6 +255,7 @@ const SetManually = () => {
           id="antiviral_wastage_factor"
           value={antiviral_wastage_factor}
           onChange={e => setAntiviralWastageFactor(parseFloat(e.target.value))}
+          step="0.1"
           min="0"
           required
         />
@@ -228,6 +271,7 @@ const SetManually = () => {
           id="antiviral_effectiveness"
           value={antiviral_effectiveness}
           onChange={e => setAntiviralEffectiveness(parseFloat(e.target.value))}
+          step="0.1"
           min="0"
           required
         />
