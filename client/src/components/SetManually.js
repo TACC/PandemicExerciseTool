@@ -277,7 +277,7 @@ const SetManually = () => {
         />
       </div>
       {/* Add other input fields here */}
-      <button type="submit">+ Add Disease</button>
+      <button type="submit">+ Add Parameters</button>
     </form>
   );
 };

@@ -125,6 +125,7 @@ const HomeView = () => {
         <PlayPauseButton isRunning={isRunning} onToggle={handleToggleScenario} />
       </div>
       </div>
+
       <div className="middle-panel">
       <div className="timeline-panel">
         <TimelineSlider
@@ -137,10 +138,10 @@ const HomeView = () => {
       </div>
         <InitialMapPercent outputData={outputFiles[currentIndex]} />
       </div>
-      <div className="chart-panel">
-        <DeceasedLineChart eventData={eventData} />
-      </div>
       <div className="right-panel">
+        <div className="chart-panel">
+          <DeceasedLineChart eventData={eventData} />
+        </div>
         <CountyPercentageTable className="percentage-table" outputData={outputFiles[currentIndex]} />
       </div>
     </div>
