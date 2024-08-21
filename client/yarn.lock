@@ -5322,7 +5322,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:4, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.4":
+"debug@npm:4, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.4, debug@npm:^4.3.6":
   version: 4.3.6
   resolution: "debug@npm:4.3.6"
   dependencies:
@@ -9611,15 +9611,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nth-check@npm:2.0.1":
-  version: 2.0.1
-  resolution: "nth-check@npm:2.0.1"
-  dependencies:
-    boolbase: "npm:^1.0.0"
-  checksum: 10c0/ff003b22f1119b2f3a67820b4f11c7e512a612ae4a1cf2591461904e6c443c391477b14910b4778db844ab19b95567b6d01d3337f691156c0f40649c43ca2229
-  languageName: node
-  linkType: hard
-
 "nth-check@npm:^1.0.2":
   version: 1.0.2
   resolution: "nth-check@npm:1.0.2"
@@ -9629,7 +9620,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nth-check@npm:^2.0.1":
+"nth-check@npm:^2.0.1, nth-check@npm:^2.1.1":
   version: 2.1.1
   resolution: "nth-check@npm:2.1.1"
   dependencies:
@@ -9921,11 +9912,12 @@ __metadata:
     braces: "npm:^3.0.3"
     chart.js: "npm:^4.4.3"
     d3-fetch: "npm:^3.0.1"
+    debug: "npm:^4.3.6"
     file-saver: "npm:^2.0.5"
     leaflet: "npm:^1.9.4"
-    nth-check: "npm:2.0.1"
+    nth-check: "npm:^2.1.1"
     papaparse: "npm:^5.4.1"
-    postcss: "npm:^8.4.31"
+    postcss: "npm:^8.4.41"
     rc-slider: "npm:^11.1.5"
     react: "npm:^18.3.1"
     react-chartjs-2: "npm:^5.2.0"
@@ -10960,7 +10952,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.3.5, postcss@npm:^8.4.23, postcss@npm:^8.4.31, postcss@npm:^8.4.33, postcss@npm:^8.4.4":
+"postcss@npm:^8.3.5, postcss@npm:^8.4.23, postcss@npm:^8.4.33, postcss@npm:^8.4.4, postcss@npm:^8.4.41":
   version: 8.4.41
   resolution: "postcss@npm:8.4.41"
   dependencies:

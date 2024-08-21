@@ -1,26 +1,67 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { saveAs } from 'file-saver'; // Import FileSaver
 import './Parameters.css'; // Import the CSS file for styling
-
 const Disease = () => {
-  const [diseaseName, setDiseaseName] = useState('');
-  const [reproductionNumber, setReproductionNumber] = useState(1.8);
-  const [latencyPeriod, setLatencyPeriod] = useState(5); // Default in days
-  const [asymptomaticPeriod, setAsymptomaticPeriod] = useState(2); // Default in days
-  const [infectiousPeriod, setInfectiousPeriod] = useState(7); // Default in days
-  const [beta_scale, setBetaScale] = useState(65);
-  const [tau, setTau] = useState(0.83333333);
-  const [kappa, setKappa] = useState(0.52631579);
-  const [chi, setChi] = useState('1.0');
-  const [gamma, setGamma] = useState(0.24390244);
-  const [nu_high, setNuHigh] = useState('no');
-  const [vaccine_wastage_factor, setVaccineWastageFactor] = useState(60);
-  const [antiviral_effectiveness, setAntiviralEffectiveness] = useState(0.8);
-  const [antiviral_wastage_factor, setAntiviralWastageFactor] = useState(60);
-
+  // Load initial state from localStorage or set default values
+  const [diseaseName, setDiseaseName] = useState(localStorage.getItem('diseaseName') || '');
+  const [reproductionNumber, setReproductionNumber] = useState(parseFloat(localStorage.getItem('reproductionNumber')) || 1.8);
+  const [latencyPeriod, setLatencyPeriod] = useState(parseInt(localStorage.getItem('latencyPeriod'), 10) || 5);
+  const [asymptomaticPeriod, setAsymptomaticPeriod] = useState(parseInt(localStorage.getItem('asymptomaticPeriod'), 10) || 2);
+  const [infectiousPeriod, setInfectiousPeriod] = useState(parseInt(localStorage.getItem('infectiousPeriod'), 10) || 7);
+  const [beta_scale, setBetaScale] = useState(parseInt(localStorage.getItem('beta_scale'), 10) || 65);
+  const [tau, setTau] = useState(parseFloat(localStorage.getItem('tau')) || 0.83333333);
+  const [kappa, setKappa] = useState(parseFloat(localStorage.getItem('kappa')) || 0.52631579);
+  const [chi, setChi] = useState(localStorage.getItem('chi') || '1.0');
+  const [gamma, setGamma] = useState(parseFloat(localStorage.getItem('gamma')) || 0.24390244);
+  const [nu_high, setNuHigh] = useState(localStorage.getItem('nu_high') || 'no');
+  const [vaccine_wastage_factor, setVaccineWastageFactor] = useState(parseInt(localStorage.getItem('vaccine_wastage_factor'), 10) || 60);
+  const [antiviral_effectiveness, setAntiviralEffectiveness] = useState(parseFloat(localStorage.getItem('antiviral_effectiveness')) || 0.8);
+  const [antiviral_wastage_factor, setAntiviralWastageFactor] = useState(parseInt(localStorage.getItem('antiviral_wastage_factor'), 10) || 60);
+  // Save state to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem('diseaseName', diseaseName);
+  }, [diseaseName]);
+  useEffect(() => {
+    localStorage.setItem('reproductionNumber', reproductionNumber);
+  }, [reproductionNumber]);
+  useEffect(() => {
+    localStorage.setItem('latencyPeriod', latencyPeriod);
+  }, [latencyPeriod]);
+  useEffect(() => {
+    localStorage.setItem('asymptomaticPeriod', asymptomaticPeriod);
+  }, [asymptomaticPeriod]);
+  useEffect(() => {
+    localStorage.setItem('infectiousPeriod', infectiousPeriod);
+  }, [infectiousPeriod]);
+  useEffect(() => {
+    localStorage.setItem('beta_scale', beta_scale);
+  }, [beta_scale]);
+  useEffect(() => {
+    localStorage.setItem('tau', tau);
+  }, [tau]);
+  useEffect(() => {
+    localStorage.setItem('kappa', kappa);
+  }, [kappa]);
+  useEffect(() => {
+    localStorage.setItem('chi', chi);
+  }, [chi]);
+  useEffect(() => {
+    localStorage.setItem('gamma', gamma);
+  }, [gamma]);
+  useEffect(() => {
+    localStorage.setItem('nu_high', nu_high);
+  }, [nu_high]);
+  useEffect(() => {
+    localStorage.setItem('vaccine_wastage_factor', vaccine_wastage_factor);
+  }, [vaccine_wastage_factor]);
+  useEffect(() => {
+    localStorage.setItem('antiviral_effectiveness', antiviral_effectiveness);
+  }, [antiviral_effectiveness]);
+  useEffect(() => {
+    localStorage.setItem('antiviral_wastage_factor', antiviral_wastage_factor);
+  }, [antiviral_wastage_factor]);
   const handleSubmit = event => {
     event.preventDefault();
-
     // Create the JSON object
     const params = {
       disease_name: diseaseName,
@@ -35,15 +76,12 @@ const Disease = () => {
       antiviral_effectiveness: antiviral_effectiveness.toString(),
       antiviral_wastage_factor: antiviral_wastage_factor.toString()
     };
-
     // Convert JSON object to string
     const json = JSON.stringify({ params }, null, 2);
-
     // Create a blob and save it as a file
     const blob = new Blob([json], { type: 'application/json' });
     saveAs(blob, 'params.json');
   };
-
   return (
     <form className="parameters-form" onSubmit={handleSubmit}>
       <div className="form-group">
@@ -56,7 +94,6 @@ const Disease = () => {
           required
         />
       </div>
-
       <div className="form-group">
         <label htmlFor="reproductionNumber">Reproduction Number (R0):</label>
         <input
@@ -69,12 +106,11 @@ const Disease = () => {
           required
         />
       </div>
-
       <div className="form-group">
         <label htmlFor="latencyPeriod">
           Latency Period (days):
           <span className="tooltip">?
-            <span className="tooltip-text"> Average latency period, in days, which corresponds to Tau in the model.</span>
+            <span className="tooltip-text">Average latency period, in days, which corresponds to Tau in the model.</span>
           </span>
         </label>
         <input
@@ -86,7 +122,6 @@ const Disease = () => {
           required
         />
       </div>
-
       <div className="form-group">
         <label htmlFor="asymptomaticPeriod">
           Asymptomatic Period (days):
@@ -103,7 +138,6 @@ const Disease = () => {
           required
         />
       </div>
-
       <div className="form-group">
         <label htmlFor="infectiousPeriod">Infectious Period (days):</label>
         <input
@@ -115,12 +149,14 @@ const Disease = () => {
           required
         />
       </div>
-
       {/* Add other input fields here */}
-
       <button type="submit">+ Add Disease</button>
     </form>
   );
 };
-
 export default Disease;
+
+
+
+
+

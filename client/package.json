@@ -12,6 +12,7 @@
     "braces": "^3.0.3",
     "chart.js": "^4.4.3",
     "d3-fetch": "^3.0.1",
+    "debug": "^4.3.6",
     "file-saver": "^2.0.5",
     "leaflet": "^1.9.4",
     "nth-check": "^2.1.1",
