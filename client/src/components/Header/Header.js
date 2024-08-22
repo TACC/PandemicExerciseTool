@@ -6,7 +6,6 @@ import UserGuideView from '../UserGuideView';
 import HomeView from '../HomeView';
 import ChartView from '../ChartView';
 
-
 const Header = ({ currentIndex, setCurrentIndex }) => {
   const [activeTab, setActiveTab] = useState('home');
 
@@ -30,8 +29,6 @@ const Header = ({ currentIndex, setCurrentIndex }) => {
       <div className="header">
         <div className="logo-container">
           <img src={epiengage_logo_darkblue} alt="EpiEngage Logo" className="logo" />
-        </div>
-        <div className="text-container">
           <h1>epiENGAGE</h1>
         </div>
         <div className="tabs">

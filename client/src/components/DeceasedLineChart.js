@@ -1,13 +1,11 @@
 // DeceasedLineChart.js
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, LineElement, PointElement, CategoryScale, LinearScale, Title, Tooltip, Legend } from 'chart.js';
 
 ChartJS.register(LineElement, PointElement, CategoryScale, LinearScale, Title, Tooltip, Legend);
 
 const DeceasedLineChart = ({ eventData }) => {
-  const chartRef = useRef(null);
-
   // Prepare data for the chart
   const data = {
     labels: eventData.map(event => `Day ${event.day}`),
@@ -55,18 +53,9 @@ const DeceasedLineChart = ({ eventData }) => {
     },
   };
 
-  useEffect(() => {
-    // Cleanup code to ensure the chart is destroyed when the component unmounts
-    return () => {
-      if (chartRef.current) {
-        chartRef.current.destroy();
-      }
-    };
-  }, []);
-
   return (
-    <div className="chart-container">
-      <Line ref={chartRef} data={data} options={options} />
+    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+      <Line data={data} options={options} />
     </div>
   );
 };

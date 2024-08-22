@@ -105,3 +105,26 @@
       height: auto; /* Auto height for mobile view */
     }
   }
+ 
+  .footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #f8f9fa;
+    padding: 10px;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000; /* Ensure footer is on top */
+  }
+  
+  .timeline-panel {
+    flex-grow: 1;
+  }
+  .play-pause-container {
+    margin-left: 20px;
+    width: 100px; /* Fixed width for the button */
+  }
+  

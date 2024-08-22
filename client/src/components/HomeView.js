@@ -116,37 +116,43 @@ const HomeView = () => {
       <div className="left-panel">
         <SetParametersDropdown counties={texasCounties} />
         <div className="interventions-container">
-        <Interventions />
-      </div>
-      <div className="state-county-dropdowns-container">
-        <StateCountyDropdowns />
-      </div>
-      <div className="play-pause-container">
-        <PlayPauseButton isRunning={isRunning} onToggle={handleToggleScenario} />
-      </div>
-      </div>
-
-      <div className="middle-panel">
-      <div className="timeline-panel">
-        <TimelineSlider
-          totalDays={outputFiles.length}
-          selectedDay={currentIndex}
-          onDayChange={handleDayChange}
-          onScenarioRun={handleRunScenario}
-          onScenarioPause={handlePauseScenario}
-        />
-      </div>
-        <InitialMapPercent outputData={outputFiles[currentIndex]} />
-      </div>
-      <div className="right-panel">
-        <div className="chart-panel">
-          <DeceasedLineChart eventData={eventData} />
+          <Interventions />
         </div>
+        <div className="state-county-dropdowns-container">
+          <StateCountyDropdowns />
+        </div>
+      </div>
+  
+      <div className="middle-panel">
+        <div className="map-and-chart-container">
+          <InitialMapPercent outputData={outputFiles[currentIndex]} className="map-size" />
+          <DeceasedLineChart eventData={eventData} className="chart-size" />
+        </div>
+      </div>
+      
+      <div className="right-panel">
         <CountyPercentageTable className="percentage-table" outputData={outputFiles[currentIndex]} />
       </div>
+  
+      <div className="footer">
+      <div className="play-pause-container">
+          <PlayPauseButton isRunning={isRunning} onToggle={handleToggleScenario} />
+        </div>
+        <div className="timeline-panel">
+          <TimelineSlider
+            totalDays={outputFiles.length}
+            selectedDay={currentIndex}
+            onDayChange={handleDayChange}
+            onScenarioRun={handleRunScenario}
+            onScenarioPause={handlePauseScenario}
+          />
+        </div>
+        <div className="play-pause-container">
+        </div>
+      </div>
     </div>
-    
   );
+    
   
 };
 
