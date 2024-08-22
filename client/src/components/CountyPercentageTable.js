@@ -45,6 +45,7 @@ const parseInfectionData = (jsonData, countyNameLookup) => {
   });
 };
 
+
 // Function to load population data
 const loadPopulationData = async () => {
   const response = await fetch('/data/SVI_2020_US_County.csv');
@@ -71,8 +72,8 @@ function CountyPercentageTable({ outputData }) {
     county: 'asc',
     infectedPercentage: 'desc',
     deceasedPercentage: 'desc',
-    infected: 'desc',
-    population: 'asc',
+    // infected: 'desc',
+    // population: 'asc',
   });
 
   useEffect(() => {
@@ -88,7 +89,7 @@ function CountyPercentageTable({ outputData }) {
 
         return {
           ...data,
-          population: population,
+         // population: population,
           infectedPercentage: infectedPercentage.toFixed(2),
           deceasedPercentage: deceasedPercentage.toFixed(2),
         };
@@ -135,6 +136,7 @@ function CountyPercentageTable({ outputData }) {
 
   return (
     <div className="table-container">
+      <h2>Infected and Deceased (%)</h2>
       <div className="search-container">
         <img src={search} alt="Search" className="search-icon" />
         <input
@@ -156,27 +158,15 @@ function CountyPercentageTable({ outputData }) {
                 </button>
               </th>
               <th>
-                Infected (%)
+                Infected
                 <button className="sort-button" onClick={() => sortData('infectedPercentage')}>
                   {sortDirection.infectedPercentage === 'asc' ? '↓' : '↑'}
                 </button>
               </th>
               <th>
-                Deceased (%)
+                Deceased
                 <button className="sort-button" onClick={() => sortData('deceasedPercentage')}>
                   {sortDirection.deceasedPercentage === 'asc' ? '↓' : '↑'}
-                </button>
-              </th>
-              <th>
-                Infected
-                <button className="sort-button" onClick={() => sortData('infected')}>
-                  {sortDirection.infected === 'asc' ? '↓' : '↑'}
-                </button>
-              </th>
-              <th>
-                Population
-                <button className="sort-button" onClick={() => sortData('population')}>
-                  {sortDirection.population === 'asc' ? '↓' : '↑'}
                 </button>
               </th>
             </tr>
@@ -187,8 +177,7 @@ function CountyPercentageTable({ outputData }) {
                 <td>{county.county}</td>
                 <td>{county.infectedPercentage}</td>
                 <td>{county.deceasedPercentage}</td>
-                <td>{county.infected}</td>
-                <td>{county.population}</td>
+
               </tr>
             ))}
           </tbody>

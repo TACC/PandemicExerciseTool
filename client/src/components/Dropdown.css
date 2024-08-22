@@ -1,3 +1,15 @@
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  width: 200px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
 .dropdown-container {
   position: relative;
   z-index: 50001; /* Ensure dropdown is above other content */

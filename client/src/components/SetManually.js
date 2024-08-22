@@ -1,72 +1,73 @@
 import React, { useState, useEffect } from 'react';
-import { saveAs } from 'file-saver'; // Import FileSaver
 import './Parameters.css'; // Import the CSS file for styling
-const SetManually = () => {
+
+const SetManually = ({ onClose }) => {
   // Load initial state from localStorage or set default values
   const [diseaseName, setDiseaseName] = useState(localStorage.getItem('diseaseName') || '');
   const [reproductionNumber, setReproductionNumber] = useState(parseFloat(localStorage.getItem('reproductionNumber')) || 1.8);
-  //const [latencyPeriod, setLatencyPeriod] = useState(parseInt(localStorage.getItem('latencyPeriod'), 10) || 5);
-//  const [asymptomaticPeriod, setAsymptomaticPeriod] = useState(parseInt(localStorage.getItem('asymptomaticPeriod'), 10) || 2);
-//  const [infectiousPeriod, setInfectiousPeriod] = useState(parseInt(localStorage.getItem('infectiousPeriod'), 10) || 7);
   const [beta_scale, setBetaScale] = useState(parseInt(localStorage.getItem('beta_scale'), 10) || 1);
   const [tau, setTau] = useState(parseFloat(localStorage.getItem('tau')) || 1.2);
   const [kappa, setKappa] = useState(parseFloat(localStorage.getItem('kappa')) || 1.9);
   const [gamma, setGamma] = useState(parseFloat(localStorage.getItem('gamma')) || 4.1);
   const [chi, setChi] = useState(parseFloat(localStorage.getItem('chi')) || 1.0);
   const [rho, setRho] = useState(parseFloat(localStorage.getItem('rho')) || 0.39);
-//  const [nu_high, setNuHigh] = useState(localStorage.getItem('nu_high') || 'no');
-  const [vaccine_wastage_factor, setVaccineWastageFactor] = useState(parseFloat(localStorage.getItem('vaccine_wastage_factor'), 10) || 60);
+  const [nu_high, setNuHigh] = useState(localStorage.getItem('nu_high') || 'no');
+  const [vaccine_wastage_factor, setVaccineWastageFactor] = useState(parseFloat(localStorage.getItem('vaccine_wastage_factor')) || 60);
   const [antiviral_effectiveness, setAntiviralEffectiveness] = useState(parseFloat(localStorage.getItem('antiviral_effectiveness')) || 0.8);
-  const [antiviral_wastage_factor, setAntiviralWastageFactor] = useState(parseFloat(localStorage.getItem('antiviral_wastage_factor'), 10) || 60);
+  const [antiviral_wastage_factor, setAntiviralWastageFactor] = useState(parseFloat(localStorage.getItem('antiviral_wastage_factor')) || 60);
+
   // Save state to localStorage when it changes
   useEffect(() => {
     localStorage.setItem('diseaseName', diseaseName);
   }, [diseaseName]);
+
   useEffect(() => {
     localStorage.setItem('reproductionNumber', reproductionNumber);
   }, [reproductionNumber]);
-//  useEffect(() => {
-//    localStorage.setItem('latencyPeriod', latencyPeriod);
-//  }, [latencyPeriod]);
-//  useEffect(() => {
-//    localStorage.setItem('asymptomaticPeriod', asymptomaticPeriod);
-//  }, [asymptomaticPeriod]);
-//  useEffect(() => {
-//    localStorage.setItem('infectiousPeriod', infectiousPeriod);
-//  }, [infectiousPeriod]);
+
   useEffect(() => {
     localStorage.setItem('beta_scale', beta_scale);
   }, [beta_scale]);
+
   useEffect(() => {
     localStorage.setItem('tau', tau);
   }, [tau]);
+
   useEffect(() => {
     localStorage.setItem('kappa', kappa);
   }, [kappa]);
+
   useEffect(() => {
     localStorage.setItem('gamma', gamma);
   }, [gamma]);
+
   useEffect(() => {
     localStorage.setItem('chi', chi);
   }, [chi]);
+
   useEffect(() => {
     localStorage.setItem('rho', rho);
   }, [rho]);
-//  useEffect(() => {
-//    localStorage.setItem('nu_high', nu_high);
-//  }, [nu_high]);
+
+  useEffect(() => {
+    localStorage.setItem('nu_high', nu_high);
+  }, [nu_high]);
+
   useEffect(() => {
     localStorage.setItem('vaccine_wastage_factor', vaccine_wastage_factor);
   }, [vaccine_wastage_factor]);
+
   useEffect(() => {
     localStorage.setItem('antiviral_effectiveness', antiviral_effectiveness);
   }, [antiviral_effectiveness]);
+
   useEffect(() => {
     localStorage.setItem('antiviral_wastage_factor', antiviral_wastage_factor);
   }, [antiviral_wastage_factor]);
+
   const handleSubmit = event => {
     event.preventDefault();
-    // Create the JSON object
+    // Save the parameters to localStorage
     const params = {
       disease_name: diseaseName,
       R0: reproductionNumber.toString(),
@@ -74,18 +75,24 @@ const SetManually = () => {
       tau: tau.toString(),
       kappa: kappa.toString(),
       gamma: gamma.toString(),
-      chi: chi,
-      //nu_high: nu_high,
+      chi: chi.toString(),
+      rho: rho.toString(),
+      nu_high: nu_high.toString(),
       vaccine_wastage_factor: vaccine_wastage_factor.toString(),
       antiviral_effectiveness: antiviral_effectiveness.toString(),
-      antiviral_wastage_factor: antiviral_wastage_factor.toString()
+      antiviral_wastage_factor: antiviral_wastage_factor.toString(),
     };
-    // Convert JSON object to string
-    const json = JSON.stringify({ params }, null, 2);
-    // Create a blob and save it as a file
-    const blob = new Blob([json], { type: 'application/json' });
-    saveAs(blob, 'params.json');
+
+    Object.keys(params).forEach(key => {
+      localStorage.setItem(key, params[key]);
+    });
+
+    // Optionally close the form or notify parent component
+    if (onClose) {
+      onClose(); // Call the onClose function to close the form
+    }
   };
+
   return (
     <form className="parameters-form" onSubmit={handleSubmit}>
       <div className="form-group">
@@ -114,14 +121,15 @@ const SetManually = () => {
         <label htmlFor="tau">
           Latency Period (days):
           <span className="tooltip">?
-            <span className="tooltip-text">Average latency period, in days, which corresponds to Tau in the model.</span>
+            <span className="tooltip-text">Average latency period, in days, which corresponds to 1/tau in the model.</span>
           </span>
         </label>
         <input
           type="number"
           id="tau"
           value={tau}
-          onChange={e => setTau(parseFloat(e.target.value, 10))}
+          onChange={e => setTau(parseFloat(e.target.value))}
+          step="0.1"
           min="0"
           required
         />
@@ -130,7 +138,7 @@ const SetManually = () => {
         <label htmlFor="kappa">
           Asymptomatic Period (days):
           <span className="tooltip">?
-            <span className="tooltip-text">The time period during which an infected individual shows no symptoms but can still spread the infection, which corresponds to Kappa in the model.</span>
+            <span className="tooltip-text">The time period during which an infected individual shows no symptoms but can still spread the infection, which corresponds to 1/kappa in the model.</span>
           </span>
         </label>
         <input
@@ -138,6 +146,7 @@ const SetManually = () => {
           id="kappa"
           value={kappa}
           onChange={e => setKappa(parseFloat(e.target.value, 10))}
+          step="0.1"
           min="0"
           required
         />
@@ -145,7 +154,7 @@ const SetManually = () => {
       <div className="form-group">
         <label htmlFor="gamma">Infectious Period (days):
           <span className="tooltip">?
-            <span className="tooltip-text">Total infectious period in days (asymptomatic/treatable/infectious to recovered), which corresponds to gamma in the model.</span>
+            <span className="tooltip-text">Total infectious period in days (asymptomatic/treatable/infectious to recovered), which corresponds to 1/gamma in the model.</span>
           </span>
         </label>
         <input
@@ -153,6 +162,7 @@ const SetManually = () => {
           id="gamma"
           value={gamma}
           onChange={e => setGamma(parseFloat(e.target.value, 10))}
+          step="0.1"
           min="0"
           required
         />
@@ -160,7 +170,7 @@ const SetManually = () => {
       <div className="form-group">
         <label htmlFor="chi">Treatment Window (days):
           <span className="tooltip">?
-            <span className="tooltip-text">Treatable to infectious rate in days, which corresponds to chi in the model.</span>
+            <span className="tooltip-text">Treatable to infectious rate in days, which corresponds to 1/chi in the model.</span>
           </span>
         </label>
         <input
@@ -168,6 +178,7 @@ const SetManually = () => {
           id="chi"
           value={chi}
           onChange={e => setChi(parseFloat(e.target.value, 10))}
+          step="0.1"
           min="0"
           required
         />
@@ -183,10 +194,46 @@ const SetManually = () => {
           id="rho"
           value={rho}
           onChange={e => setRho(parseFloat(e.target.value))}
+          step="0.01"
           min="0"
           required
         />
       </div>
+
+      <div className="form-group" style ={{alignItems: 'center'}}>
+        <label htmlFor="nu_high">High/Low death rate: 
+        <span className="tooltip">?
+            <span className="tooltip-text"> Asymptomatic/Treatable/Infectious to Deceased, which corresponds to 1/nu in the model</span>
+          </span>
+        </label>
+        <div style={{ display: 'flex', gap: '10px'}}>
+          <div>
+            <input
+              type="radio"
+              id="nuHighYes"
+              name="nu_high"
+              value="yes"
+              checked={nu_high === 'yes'}
+              onChange={e => setNuHigh(e.target.value)}
+              required
+            />
+            <label htmlFor="nuHighYes">High <br></br>(1918 Influenza) </label>
+          </div>
+          <div>
+            <input
+              type="radio"
+              id="nuHighNo"
+              name="nu_high"
+              value="no"
+              checked={nu_high === 'no'}
+              onChange={e => setNuHigh(e.target.value)}
+              required
+            />
+            <label htmlFor="nuHighNo">Low <br></br> (2009 H1N1)</label>
+          </div>
+        </div>
+      </div>
+
       <div className="form-group">
         <label htmlFor="vaccine_wastage_factor">Vaccine Wastage Factor (days):
           <span className="tooltip">?
@@ -198,6 +245,7 @@ const SetManually = () => {
           id="vaccine_wastage_factor"
           value={vaccine_wastage_factor}
           onChange={e => setVaccineWastageFactor(parseFloat(e.target.value))}
+          step="0.1"
           min="0"
           required
         />
@@ -213,6 +261,7 @@ const SetManually = () => {
           id="antiviral_wastage_factor"
           value={antiviral_wastage_factor}
           onChange={e => setAntiviralWastageFactor(parseFloat(e.target.value))}
+          step="0.1"
           min="0"
           required
         />
@@ -228,12 +277,13 @@ const SetManually = () => {
           id="antiviral_effectiveness"
           value={antiviral_effectiveness}
           onChange={e => setAntiviralEffectiveness(parseFloat(e.target.value))}
+          step="0.1"
           min="0"
           required
         />
       </div>
       {/* Add other input fields here */}
-      <button type="submit">+ Add Disease</button>
+      <button type="submit">Save</button>
     </form>
   );
 };

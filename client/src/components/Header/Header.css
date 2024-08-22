@@ -1,46 +1,53 @@
-/* Header.css */
-
 .container {
   display: flex;
   flex-direction: column;
-  height: 100vh; /* Full viewport height */
-  overflow: hidden; /* Prevent scrollbars in the container */
+  height: 100vh;
+  overflow: hidden;
 }
 
 .header {
-  background-color: #102c41; /* Dark blue color */
+  background-color: #102c41;
   color: white;
   padding: 10px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  width: 100%; /* Ensure the header spans the entire width */
-  position: fixed; /* Fix the header at the top */
+  width: 100%;
+  position: fixed;
   top: 0;
   left: 0;
-  z-index: 1000; /* Ensure it is above other content */
 }
 
 .logo-container {
   display: flex;
+  align-items: center;
 }
 
 .logo {
-  width: 90px; /* Adjust the size as needed */
-  height: 90px; /* Adjust the size as needed */
-  margin-right: 5px; /* Adjust spacing between logos */
+  width: 90px;
+  height: 90px;
+  margin-right: 10px;
+}
+
+.center-container {
+  display: flex;
+  flex-grow: 1;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap; /* Prevent wrapping to the next line */
 }
 
 .text-container {
-  flex-grow: 1;
   text-align: center;
   font-size: large;
+  white-space: nowrap; /* Prevent the title from wrapping */
+  margin-right: 20px;
 }
 
 .tabs {
   display: flex;
   justify-content: center;
-  margin: 0 20px; /* Add margin to space out tabs */
+  flex-wrap: nowrap; /* Prevent tabs from wrapping to the next line */
+  margin: 0 450px;
 }
 
 .tab-button {
@@ -50,21 +57,21 @@
   background: #102c41;
   outline: none;
   transition: background-color 0.3s;
-  color: white; /* Ensure the text color is visible on the dark background */
-  margin: 0 5px; /* Adjust margin as needed */
+  color: white;
+  margin: 0 5px;
   font-size: x-large;
+  white-space: nowrap; /* Prevent tab text from wrapping */
 }
 
 .tab-button.active {
-  border-bottom: 2px solid #dfa53d; /* Only bottom border */
+  border-bottom: 2px solid #dfa53d;
   font-weight: bold;
   background-color: #102c41;
 }
 
 .tab-content {
-  flex-grow: 1;
-  overflow: auto; /* Allow scrolling if content overflows */
+  overflow: auto;
   padding: 20px;
-  margin-top: 110px; /* Adjust based on header height */
-  background-color: white; /* Ensure content area is visually distinct */
+  margin-top: 110px;
+  background-color: white;
 }

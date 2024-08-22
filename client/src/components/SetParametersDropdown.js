@@ -7,7 +7,6 @@ import './Dropdown.css';
 const SetParametersDropdown = ({ counties }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [isInitialCasesOpen, setIsInitialCasesOpen] = useState(false);
-  const [isCaseFatalityRateOpen, setIsCaseFatalityRateOpen] = useState(false);
   const [isSetManually, setIsSetManually] = useState(false);
 
   const toggleDropdown = () => setShowDropdown(!showDropdown);
@@ -37,7 +36,6 @@ const SetParametersDropdown = ({ counties }) => {
         <div className="dropdown-menu">
           <button className="dropdown-item" onClick={openSetManually}>Set Manually</button>
           <button className="dropdown-item" onClick={openInitialCases}>Initial Cases</button>
-          <button className="dropdown-item" onClick={openCaseFatalityRate}>Case Fatality Rate</button>
         </div>
       )}
       {isSetManually && (
@@ -55,17 +53,8 @@ const SetParametersDropdown = ({ counties }) => {
         <div className="modal-overlay" onClick={closeInitialCases}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <span className="modal-close" onClick={closeInitialCases}>×</span>
-            <h2>Initial Cases</h2>
+            <h2>Add Initial Cases</h2>
             <AddInitialCases counties={counties} onSubmit={(data) => { console.log('Initial Cases:', data); closeInitialCases(); }} />
-          </div>
-        </div>
-      )}
-      {isCaseFatalityRateOpen && (
-        <div className="modal-overlay" onClick={closeCaseFatalityRate}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <span className="modal-close" onClick={closeCaseFatalityRate}>×</span>
-            <h2>Case Fatality Rate</h2>
-            <CaseFatalityRate onSubmit={(data) => { console.log('Case Fatality Rate:', data); closeCaseFatalityRate(); }} />
           </div>
         </div>
       )}
