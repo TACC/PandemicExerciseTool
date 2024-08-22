@@ -26,6 +26,13 @@ const AddInitialCases = ({ counties }) => {
     { value: '65+ years', label: '65+ years' }
   ];
 
+  /* const riskGroups = [
+    { value: 'low risk', label: 'Low Risk' },
+    { value: 'high risk', label: 'High Risk' },
+    { value: 'first responder', label: 'First Responder' },
+    { value: 'pregnant women', label: 'Pregnant Women' }
+  ]; */
+
   const countyOptions = counties.map(county => ({
     value: county,
     label: county
@@ -124,18 +131,26 @@ const AddInitialCases = ({ counties }) => {
         <button type="submit">+ Add Cases</button>
       </form>
 
-      <button onClick={handleDownload}>Download JSON</button>
-
-      <div className="cases-list">
-        <h3>Cases List:</h3>
-        <ul>
-          {casesList.map((item, index) => (
-            <li key={index}>
-              County Name: {item.county_display}, Cases: {item.infected}, Age Group: {item.age_group_display}
-            </li>
-          ))}
-        </ul>
-      </div>
+      <h3>Added Cases</h3>
+        <table className="cases-table">
+          <thead>
+            <tr>
+              <th>County</th>
+              <th>Infected</th>
+              <th>Age Group</th>
+            </tr>
+          </thead>
+          <tbody>
+            {casesList.map((caseItem, index) => (
+              <tr key={index}>
+                <td>{caseItem.county_display}</td>
+                <td>{caseItem.infected}</td>
+                <td>{caseItem.age_group_display}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+       <div><button onClick={handleDownload}>Save Settings</button></div>
     </div>
   );
 };

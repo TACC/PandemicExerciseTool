@@ -56,8 +56,8 @@ const SetParametersDropdown = ({ counties }) => {
         <div className="modal-overlay" onClick={closeInitialCases}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <span className="modal-close" onClick={closeInitialCases}>×</span>
-            <h2>Initial Parameters</h2>
-            <ParametersInitialCases counties={counties} onSubmit={(data) => { console.log('Initial Cases:', data); closeInitialCases(); }} />
+            <h2>Initial Cases</h2>
+            <AddInitialCases counties={counties} onSubmit={(data) => { console.log('Initial Cases:', data); closeInitialCases(); }} />
           </div>
         </div>
       )}
