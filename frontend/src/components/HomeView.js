@@ -12,6 +12,7 @@ import PlayPauseButton from './PlayPauseButton';
 import './leaflet-overrides.css';
 import './styles.css';
 import './left-panel.css';
+import axios from 'axios';
 
 import OUTPUT_0 from './OUTPUT_0.json';
 import OUTPUT_1 from './OUTPUT_1.json';
@@ -23,8 +24,6 @@ import OUTPUT_6 from './OUTPUT_6.json';
 import OUTPUT_7 from './OUTPUT_7.json';
 import OUTPUT_8 from './OUTPUT_8.json';
 import OUTPUT_9 from './OUTPUT_9.json';
-
-
 
 const HomeView = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -53,7 +52,35 @@ const HomeView = () => {
   };
 
   const handleRunScenario = () => {
-    if (intervalRef.current) {
+    axios.post('http://localhost:8000/api/pet/', {
+      disease_name: localStorage.getItem('diseaseName'),
+      reproduction_number: localStorage.getItem('reproductionNumber'),
+      beta_scale: localStorage.getItem('beta_scale'),
+      tau: localStorage.getItem('tau'),
+      kappa: localStorage.getItem('kappa'),
+      gamma: localStorage.getItem('gamma'),
+      chi: localStorage.getItem('chi'),
+      rho: localStorage.getItem('rho'),
+      nu: localStorage.getItem('nu'),
+      vaccine_wastage_factor: localStorage.getItem('vaccine_wastage_factor'),
+      antiviral_effectiveness: localStorage.getItem('antiviral_effectiveness'),
+      antiviral_wastage_factor: localStorage.getItem('antiviral_wastage_factor'),
+      /* initial: [
+        {
+          "infected": localStorage.getItem('infected'),
+          "county": localStorage.getItem('county'),
+          "age_group": localStorage.getItem('age_group'),
+   ] */
+    })
+    .then(response => {
+      console.log('Disease parameters updated successfully:', response.data);
+    })
+    .catch(error => {
+      console.error('Error updating disease parameters:', error);
+    });
+
+
+/*    if (intervalRef.current) {
       clearInterval(intervalRef.current);
     }
     intervalRef.current = setInterval(() => {
@@ -65,7 +92,7 @@ const HomeView = () => {
           return prevIndex;
         }
       });
-    }, 1000);
+    }, 1000);*/
   };
 
   const handlePauseScenario = () => {
