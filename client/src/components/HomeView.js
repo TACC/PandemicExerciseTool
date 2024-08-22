@@ -24,6 +24,8 @@ import OUTPUT_7 from './OUTPUT_7.json';
 import OUTPUT_8 from './OUTPUT_8.json';
 import OUTPUT_9 from './OUTPUT_9.json';
 
+
+
 const HomeView = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [eventData, setEventData] = useState([]);
@@ -117,9 +119,6 @@ const HomeView = () => {
         <SetParametersDropdown counties={texasCounties} />
         <div className="interventions-container">
           <Interventions />
-        </div>
-        <div className="state-county-dropdowns-container">
-          <StateCountyDropdowns />
         </div>
       </div>
   

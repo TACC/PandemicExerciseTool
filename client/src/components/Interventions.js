@@ -37,7 +37,7 @@ const Interventions = () => {
         <div className="dropdown-menu">
           <button className="dropdown-item" onClick={openAntivirals}>Antivirals</button>
           <button className="dropdown-item" onClick={openVaccine}>Vaccine</button>
-          <button className="dropdown-item" onClick={openNonPharmaceutical}>Non-Pharmaceutical</button>
+          <button className="dropdown-item" onClick={openNonPharmaceutical}>Public Health Announcements</button>
         </div>
       )}
       {isAntiviralsOpen && (
