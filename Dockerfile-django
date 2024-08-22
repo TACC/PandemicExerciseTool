@@ -1,0 +1,13 @@
+FROM python:3.10
+
+WORKDIR /django-app
+COPY ./backend/requirements.txt /django-app
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY ./backend/backend /django-app/backend
+COPY ./backend/db.sqlite3 /django-app/
+COPY ./backend/manage.py /django-app/
+COPY ./backend/pet /django-app/pet
+
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
