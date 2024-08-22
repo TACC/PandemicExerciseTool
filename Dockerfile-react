@@ -4,12 +4,12 @@ RUN npm install -g corepack  && \
     corepack prepare yarn@stable --activate
 
 WORKDIR /react-app
-COPY ./client/package.json /react-app
+COPY ./frontend/package.json /react-app
 
 RUN yarn install
 
-COPY ./client/craco.config.js /react-app/
-COPY ./client/src /react-app/src
-COPY ./client/public /react-app/public
+COPY ./frontend/craco.config.js /react-app/
+COPY ./frontend/src /react-app/src
+COPY ./frontend/public /react-app/public
 
 CMD ["yarn", "start"]
