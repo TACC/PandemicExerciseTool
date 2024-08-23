@@ -37,7 +37,7 @@
 }
 
 .text-container {
-  text-align: center;
+  text-align: left;
   font-size: large;
   white-space: nowrap; /* Prevent the title from wrapping */
   margin-right: 20px;
@@ -59,7 +59,7 @@
   transition: background-color 0.3s;
   color: white;
   margin: 0 5px;
-  font-size: x-large;
+  font-size: xx-large;
   white-space: nowrap; /* Prevent tab text from wrapping */
 }
 

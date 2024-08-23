@@ -1,0 +1,140 @@
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.dropdown-container {
+  position: relative;
+  z-index: 50001; /* Ensure dropdown is above other content */
+}
+
+.dropdown-text {
+  color: black !important;
+  font-weight: bold;
+  font-size: medium;
+  text-align: center; /* Horizontally centers the text */
+  display: flex; /* Enables flexbox layout */
+  justify-content: center; /* Horizontally centers the content */
+  align-items: center; /* Vertically centers the content */
+  height: 100%; /* Ensures the element takes up the full height of its container */
+  width: 100%; /* Ensures the element takes up the full width of its container */
+}
+
+.dropdown-arrow {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  font-size: 12px;
+  transition: transform 0.3s ease;
+}
+
+.dropdown-arrow.open {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.dropdown-item {
+  display: block;
+  padding: 10px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid #ccc;
+  background: none;
+  color: black;
+  text-align: center; /* Align text to the left */
+  font-size: medium;
+  font-weight: bold;
+}
+
+.dropdown-menu:hover {
+  background-color: white; /* Change this to the color you want on hover */
+}
+
+.dropdown-item:last-child {
+  border-bottom: none; /* Remove bottom border from last item */
+}
+
+.dropdown-item:hover {
+  background-color: #f0f0f0;
+}
+
+.parameters-button {
+  width: 400px; /* Set a fixed width that matches the dropdown menu width */
+  padding: 15px 16px; /* Ensure padding matches the dropdown items */
+  background-color: #f7b13c; /* Example background color */
+  color: white;
+  font-size: medium;
+  font-weight: bold;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center; /* Center text and arrow horizontally */
+  align-items: center; /* Center text and arrow vertically */
+  position: relative;
+}
+
+.parameters-button:hover {
+  background-color: #f7b13c; /* Change this to the color you want on hover */
+}
+
+
+.interventions-button {
+  width: 400px; /* Set a fixed width that matches the dropdown menu width */
+  padding: 15px 16px; /* Ensure padding matches the dropdown items */
+  background-color: #f1f1f1; /* Example background color */
+  color: white;
+  font-size: medium;
+  font-weight: bold;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center; /* Center text and arrow horizontally */
+  align-items: center; /* Center text and arrow vertically */
+  position: relative;
+}
+
+/* Hover effect for the Add Interventions button */
+.interventions-button:hover {
+  background-color: #f1f1f1; /* Change this to the gray color you want on hover */
+}
+
+/* Hover effect for the Add Interventions button */
+.interventions-button:hover {
+  background-color: #6c757d; /* Change this to the gray color you want on hover */
+}
+
+/* Remove border from the last item */
+.dropdown-item:last-child {
+  border-bottom: none;
+}
+
+/* Highlight effect for dropdown items */
+.dropdown-item:hover {
+  background-color: #e0e0e0; /* Light gray background on hover */
+}
+
+/* Add focus effect for accessibility */
+.dropdown-item:focus {
+  background-color: #f1f1f1; /* Slightly darker gray for focus state */
+  outline: none; /* Remove default focus outline */
+}

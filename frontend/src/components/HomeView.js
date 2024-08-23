@@ -80,7 +80,7 @@ const HomeView = () => {
     });
 
 
-/*    if (intervalRef.current) {
+    if (intervalRef.current) {
       clearInterval(intervalRef.current);
     }
     intervalRef.current = setInterval(() => {
@@ -92,7 +92,7 @@ const HomeView = () => {
           return prevIndex;
         }
       });
-    }, 1000);*/
+    }, 1000);
   };
 
   const handlePauseScenario = () => {
@@ -173,13 +173,10 @@ const HomeView = () => {
             onScenarioPause={handlePauseScenario}
           />
         </div>
-        <div className="play-pause-container">
-        </div>
+        <div className="play-pause-container"></div>
       </div>
     </div>
   );
-    
-  
 };
 
 export default HomeView;

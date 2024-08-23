@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Antivirals from './Antivirals';
 import Vaccine from './Vaccine';
 import NonPharmaceutical from './NonPharmaceutical';
-import './Dropdown.css';
+import './SetParametersDropdown.css';
 
 const Interventions = () => {
   const [showDropdown, setShowDropdown] = useState(false);

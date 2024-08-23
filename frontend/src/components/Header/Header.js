@@ -58,7 +58,7 @@ const Header = ({ currentIndex, setCurrentIndex }) => {
           </button>
         </div>
         <div className="text-container">
-          <h1>Epidemic Simulator</h1>
+          <h1>Pandemic Simulator</h1>
         </div>
       </div>
       <div className="tab-content">

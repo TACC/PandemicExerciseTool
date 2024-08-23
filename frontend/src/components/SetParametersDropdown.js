@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import AddInitialCases from './AddInitialCases';
 import CaseFatalityRate from './CaseFatalityRate';
 import SetManually from './SetManually';
-import './Dropdown.css';
+import './SetParametersDropdown.css';
 
 const SetParametersDropdown = ({ counties }) => {
   const [showDropdown, setShowDropdown] = useState(false);
