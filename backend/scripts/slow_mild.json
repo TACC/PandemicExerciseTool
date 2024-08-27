@@ -1,0 +1,14 @@
+{
+    "disease_name": "Slow Transmission, Mild Severity (2009 H1N1)",
+    "R0": 1.2,
+    "beta_scale": 1.0,
+    "tau": 1.2,
+    "kappa": 1.9,
+    "gamma": 4.1,
+    "chi": 1.0,
+    "rho": 0.39,
+    "nu": "low",
+    "vaccine_wastage_factor": 60,
+    "antiviral_effectiveness": 0.15,
+    "antiviral_wastage_factor": 60
+}

@@ -1,11 +1,10 @@
 from django.db import models
 
-# Create your models here.
 
 class PET(models.Model):
 
     disease_name = models.CharField(max_length=100)
-    reproduction_number = models.FloatField()
+    R0 = models.FloatField()
     beta_scale = models.FloatField()
     tau = models.FloatField()
     kappa = models.FloatField()
