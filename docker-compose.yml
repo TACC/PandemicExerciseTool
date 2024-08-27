@@ -5,7 +5,13 @@ services:
     mongo-db:
         image: mongo:8.0-rc
         volumes:
-            - ./data:/data/db
+            - ./mongo-data:/data/db
+        ports:
+            - 27017:27017
+    rabbitmq:
+        image: rabbitmq:3.13
+        ports:
+            - 5672:5672
     react-frontend:
         build:
             context: ./
@@ -20,7 +26,16 @@ services:
             dockerfile: ./Dockerfile-django
         depends_on:
             - mongo-db
+            - rabbitmq
             - react-frontend
         ports:
             - 8000:8000
-...
+    worker:
+        build:
+            context: ./
+            dockerfile: ./Dockerfile-django
+        command: celery -A pet.pes_task worker --loglevel=INFO
+        depends_on:
+            - mongo-db
+            - rabbitmq
+            - django-backend
