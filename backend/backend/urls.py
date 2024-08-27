@@ -22,7 +22,10 @@ from pet import views
 router = routers.DefaultRouter()
 router.register(r'pet', views.PETView, 'pet')
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
+    path('api/pet/<pet_id>/run', views.run_job),
+    path('api/delete/<task_id>', views.delete_job),
 ]
