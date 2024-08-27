@@ -26,6 +26,12 @@ const SetParametersDropdown = ({ counties }) => {
   };
   const closeSetManually = () => setIsSetManually(false);
 
+  const [saved, setSaved] = useState(false);
+
+  const handleSave = () => {
+    setSaved(true); // Trigger a re-render or update
+  };
+  
   return (
     <div className="dropdown-container" id="first-drop">
       <button className="parameters-button" onClick={toggleDropdown}>

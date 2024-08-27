@@ -35,8 +35,8 @@ const Interventions = () => {
       </button>
       {showDropdown && (
         <div className="dropdown-menu">
-          <button className="dropdown-item" onClick={openAntivirals}>Antivirals</button>
-          <button className="dropdown-item" onClick={openVaccine}>Vaccine</button>
+          <button className="dropdown-item" onClick={openAntivirals}>Antivirals Stockpile</button>
+          <button className="dropdown-item" onClick={openVaccine}>Vaccine Stockpile</button>
           <button className="dropdown-item" onClick={openNonPharmaceutical}>Public Health Announcements</button>
         </div>
       )}
@@ -44,7 +44,7 @@ const Interventions = () => {
         <div className="modal-overlay" onClick={closeAntivirals}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <span className="modal-close" onClick={closeAntivirals}>&times;</span>
-            <h2>Antivirals</h2>
+            <h2>Antiviral Stockpile</h2>
             <Antivirals onSubmit={(data) => { console.log('Antivirals:', data); closeAntivirals(); }} />
           </div>
         </div>
@@ -53,7 +53,7 @@ const Interventions = () => {
         <div className="modal-overlay" onClick={closeVaccine}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <span className="modal-close" onClick={closeVaccine}>&times;</span>
-            <h2>Vaccine</h2>
+            <h2>Vaccine Stockpile</h2>
             <Vaccine onSubmit={(data) => { console.log('Vaccine:', data); closeVaccine(); }} />
           </div>
         </div>

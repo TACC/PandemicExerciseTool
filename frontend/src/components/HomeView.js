@@ -7,6 +7,8 @@ import CountyPercentageTable from './CountyPercentageTable';
 import InitialMapPercent from './InitialMapPercent';
 import SetParametersDropdown from './SetParametersDropdown';
 import Interventions from './Interventions';
+import SavedParameters from './SavedParameters';
+
 import './HomeView.css';
 import PlayPauseButton from './PlayPauseButton';
 import './leaflet-overrides.css';
@@ -140,22 +142,31 @@ const HomeView = () => {
     return () => clearTimeout(timer);
   }, [currentIndex]);
 
+  const [saved, setSaved] = useState(false);
+
+  const handleSave = () => {
+    setSaved(true); // Trigger a re-render or update
+  };
+
   return (
     <div className="home-view">
       <div className="left-panel">
-        <SetParametersDropdown counties={texasCounties} />
+        <SetParametersDropdown counties={texasCounties} onSave={handleSave} />
         <div className="interventions-container">
           <Interventions />
+        </div>
+        <div className="saved-parameters-panel">
+          <SavedParameters />
         </div>
       </div>
   
       <div className="middle-panel">
         <div className="map-and-chart-container">
           <InitialMapPercent outputData={outputFiles[currentIndex]} className="map-size" />
+          <div className="separator"></div> 
           <DeceasedLineChart eventData={eventData} className="chart-size" />
         </div>
-      </div>
-      
+      </div> 
       <div className="right-panel">
         <CountyPercentageTable className="percentage-table" outputData={outputFiles[currentIndex]} />
       </div>
@@ -173,7 +184,6 @@ const HomeView = () => {
             onScenarioPause={handlePauseScenario}
           />
         </div>
-        <div className="play-pause-container"></div>
       </div>
     </div>
   );

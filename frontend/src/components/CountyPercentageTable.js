@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import '../App.css'; // Adjust CSS as needed
-import search from './images/search.png'; // Assuming you have this image
+import search from './images/search.svg'; // Updated to use search.svg
 import { csv } from 'd3-fetch'; // Assuming you use d3-fetch for CSV parsing
 import Papa from 'papaparse';
+import './Table.css'
 
 // Function to load county names from CSV
 const loadCountyNames = async () => {
@@ -72,8 +72,6 @@ function CountyPercentageTable({ outputData }) {
     county: 'asc',
     infectedPercentage: 'desc',
     deceasedPercentage: 'desc',
-    // infected: 'desc',
-    // population: 'asc',
   });
 
   useEffect(() => {
@@ -89,7 +87,6 @@ function CountyPercentageTable({ outputData }) {
 
         return {
           ...data,
-         // population: population,
           infectedPercentage: infectedPercentage.toFixed(2),
           deceasedPercentage: deceasedPercentage.toFixed(2),
         };
@@ -136,13 +133,14 @@ function CountyPercentageTable({ outputData }) {
 
   return (
     <div className="table-container">
-      <h2>Infected and Deceased (%)</h2>
       <div className="search-container">
-        <img src={search} alt="Search" className="search-icon" />
+        <div className="search-icon-box">
+          <img src={search} alt="Search" className="search-icon" />
+        </div>
         <input
           type="text"
           className="search-input"
-          placeholder="Search County..."
+          placeholder="Search Counties..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
@@ -158,13 +156,13 @@ function CountyPercentageTable({ outputData }) {
                 </button>
               </th>
               <th>
-                Infected
+                Infected (%)
                 <button className="sort-button" onClick={() => sortData('infectedPercentage')}>
                   {sortDirection.infectedPercentage === 'asc' ? '↓' : '↑'}
                 </button>
               </th>
               <th>
-                Deceased
+                Deceased (%)
                 <button className="sort-button" onClick={() => sortData('deceasedPercentage')}>
                   {sortDirection.deceasedPercentage === 'asc' ? '↓' : '↑'}
                 </button>
@@ -177,7 +175,6 @@ function CountyPercentageTable({ outputData }) {
                 <td>{county.county}</td>
                 <td>{county.infectedPercentage}</td>
                 <td>{county.deceasedPercentage}</td>
-
               </tr>
             ))}
           </tbody>

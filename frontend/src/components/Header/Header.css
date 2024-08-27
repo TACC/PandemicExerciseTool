@@ -40,14 +40,14 @@
   text-align: left;
   font-size: large;
   white-space: nowrap; /* Prevent the title from wrapping */
-  margin-right: 20px;
+  margin-right: 40px;
 }
 
 .tabs {
   display: flex;
   justify-content: center;
   flex-wrap: nowrap; /* Prevent tabs from wrapping to the next line */
-  margin: 0 450px;
+  margin: 0 600px;
 }
 
 .tab-button {

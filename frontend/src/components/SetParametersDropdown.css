@@ -12,13 +12,13 @@
 
 .dropdown-container {
   position: relative;
-  z-index: 50001; /* Ensure dropdown is above other content */
+  z-index: 5; /* Ensure dropdown is above other content */
 }
 
 .dropdown-text {
   color: black !important;
   font-weight: bold;
-  font-size: medium;
+  font-size: 20px;
   text-align: center; /* Horizontally centers the text */
   display: flex; /* Enables flexbox layout */
   justify-content: center; /* Horizontally centers the content */
@@ -32,8 +32,9 @@
   top: 50%;
   right: 10px;
   transform: translateY(-50%);
-  font-size: 12px;
+  font-size: 20px;
   transition: transform 0.3s ease;
+  color:black;
 }
 
 .dropdown-arrow.open {
@@ -62,6 +63,7 @@
   text-align: center; /* Align text to the left */
   font-size: medium;
   font-weight: bold;
+  font-size: 18px;
 }
 
 .dropdown-menu:hover {
@@ -81,7 +83,7 @@
   padding: 15px 16px; /* Ensure padding matches the dropdown items */
   background-color: #f7b13c; /* Example background color */
   color: white;
-  font-size: medium;
+  font-size: large;
   font-weight: bold;
   border: none;
   border-radius: 4px;
@@ -101,10 +103,10 @@
   width: 400px; /* Set a fixed width that matches the dropdown menu width */
   padding: 15px 16px; /* Ensure padding matches the dropdown items */
   background-color: #f1f1f1; /* Example background color */
-  color: white;
-  font-size: medium;
+  color: black; /* Change text color to contrast with the background */
+  font-size: large;
   font-weight: bold;
-  border: none;
+  border: 2px solid black; /* Add a black border */
   border-radius: 4px;
   cursor: pointer;
   display: flex;
@@ -137,4 +139,56 @@
 .dropdown-item:focus {
   background-color: #f1f1f1; /* Slightly darker gray for focus state */
   outline: none; /* Remove default focus outline */
+}
+
+/* Modal overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  z-index: 4; /* Ensure it is above the footer but below modal content */
+  display: none; /* Hidden by default */
+}
+
+/* Show the overlay and modal when the modal is active */
+.modal-active .modal-overlay {
+  display: block;
+}
+
+.modal-active .footer {
+  filter: grayscale(100%); /* Grey out the footer */
+  opacity: 0.5; /* Make the footer semi-transparent */
+}
+
+/* Modal content */
+.modal-content {
+  background-color: white;
+  border-radius: 8px;
+  padding: 20px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh; /* Ensure it fits within the viewport height */
+  overflow-y: auto; /* Add scroll if content overflows */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 4; /* Ensure it is above the overlay */
+  font-size: large;
+}
+
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  font-size: 24px;
+  color: #333;
+}
+
+.modal-content h2 {
+  margin-top: 0;
 }

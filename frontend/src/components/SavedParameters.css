@@ -1,0 +1,27 @@
+.saved-parameters-panel {
+    width: 100%; /* Ensure panel takes full width of its container */
+    padding: 20px; /* Add some padding inside the panel */
+    box-sizing: border-box; /* Include padding in width calculation */
+    overflow-x: auto; /* Allow horizontal scrolling if the table is too wide */
+  }
+  
+  .parameters-table {
+    width: 100%; /* Make sure the table takes full width of the panel */
+    border-collapse: collapse; /* Collapse table borders */
+    table-layout: fixed; /* Ensure the table uses fixed layout */
+  }
+  
+  .parameters-table th,
+  .parameters-table td {
+    padding: 10px; /* Add padding inside table cells */
+    border: 1px solid #ddd; /* Light border for table cells */
+    text-align: left; /* Align text to the left */
+  }
+  
+  .parameters-table th {
+    background-color: #f4f4f4; /* Light background for header cells */
+    position: sticky; /* Make header sticky */
+    top: 0; /* Stick to the top of the table */
+    z-index: 1; /* Ensure header is above table content */
+  }
+  

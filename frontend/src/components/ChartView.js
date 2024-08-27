@@ -134,9 +134,6 @@ const ChartView = () => {
         <div className="interventions-container">
         <Interventions />
       </div>
-      <div className="state-county-dropdowns-container">
-        <StateCountyDropdowns />
-      </div>
       <div className="play-pause-container">
         <PlayPauseButton isRunning={isRunning} onToggle={handleToggleScenario} />
       </div>
