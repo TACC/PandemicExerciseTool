@@ -92,6 +92,7 @@
   justify-content: center; /* Center text and arrow horizontally */
   align-items: center; /* Center text and arrow vertically */
   position: relative;
+  box-sizing: border-box; /* Ensure padding and borders are included in the width */
 }
 
 .parameters-button:hover {
@@ -161,6 +162,12 @@
 .modal-active .footer {
   filter: grayscale(100%); /* Grey out the footer */
   opacity: 0.5; /* Make the footer semi-transparent */
+}
+
+.modal-active .parameters-button,
+.modal-active .interventions-button {
+  width: 400px;
+  padding: 15px 16px;
 }
 
 /* Modal content */

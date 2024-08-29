@@ -34,6 +34,7 @@ button {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  width: 400px;
 }
 
 button:hover {
@@ -69,3 +70,4 @@ button:hover {
   visibility: visible;
   opacity: 1;
 }
+

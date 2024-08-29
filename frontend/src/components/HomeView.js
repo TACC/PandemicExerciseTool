@@ -67,12 +67,6 @@ const HomeView = () => {
       vaccine_wastage_factor: localStorage.getItem('vaccine_wastage_factor'),
       antiviral_effectiveness: localStorage.getItem('antiviral_effectiveness'),
       antiviral_wastage_factor: localStorage.getItem('antiviral_wastage_factor'),
-      /* initial: [
-        {
-          "infected": localStorage.getItem('infected'),
-          "county": localStorage.getItem('county'),
-          "age_group": localStorage.getItem('age_group'),
-   ] */
     })
     .then(response => {
       console.log('Disease parameters updated successfully:', response.data);
@@ -80,7 +74,6 @@ const HomeView = () => {
     .catch(error => {
       console.error('Error updating disease parameters:', error);
     });
-
 
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
@@ -107,7 +100,6 @@ const HomeView = () => {
     if (outputFiles[currentIndex]) {
       console.log('Output Data:', outputFiles[currentIndex]);
 
-      // Calculate deceased count for the current day
       const deceasedCount = outputFiles[currentIndex].data.reduce((acc, county) => {
         const { D } = county.compartments;
         const totalDeceased = [
@@ -119,22 +111,20 @@ const HomeView = () => {
         return acc + totalDeceased;
       }, 0);
 
-      // Update eventData to include only data up to the current day
       setEventData((prevData) => {
         const newData = [...prevData];
-        // Ensure we're only adding data for the current day and not duplicating
         if (!newData[currentIndex]) {
           newData[currentIndex] = { day: currentIndex, deceased: Math.round(deceasedCount) };
         } else {
           newData[currentIndex].deceased = Math.round(deceasedCount);
         }
-        return newData.slice(0, currentIndex + 1); // Keep only up to currentIndex
+        return newData.slice(0, currentIndex + 1);
       });
     }
   }, [currentIndex, outputFiles]);
 
   useEffect(() => {
-    const delay = 500; // Delay in milliseconds
+    const delay = 500;
     const timer = setTimeout(() => {
       console.log('Data processed for day:', currentIndex);
     }, delay);
@@ -145,7 +135,8 @@ const HomeView = () => {
   const [saved, setSaved] = useState(false);
 
   const handleSave = () => {
-    setSaved(true); // Trigger a re-render or update
+    setSaved(true); 
+    window.location.reload(); // Refresh the page
   };
 
   return (
@@ -172,7 +163,7 @@ const HomeView = () => {
       </div>
   
       <div className="footer">
-      <div className="play-pause-container">
+        <div className="play-pause-container">
           <PlayPauseButton isRunning={isRunning} onToggle={handleToggleScenario} />
         </div>
         <div className="timeline-panel">

@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import AddInitialCases from './AddInitialCases';
-import CaseFatalityRate from './CaseFatalityRate';
 import SetManually from './SetManually';
 import './SetParametersDropdown.css';
 
-const SetParametersDropdown = ({ counties }) => {
+const SetParametersDropdown = ({ counties, onSave }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [isInitialCasesOpen, setIsInitialCasesOpen] = useState(false);
-  const [isSetManually, setIsSetManually] = useState(false);
+  const [isSetManuallyOpen, setIsSetManuallyOpen] = useState(false);
 
   const toggleDropdown = () => setShowDropdown(!showDropdown);
   const openInitialCases = () => {
@@ -15,25 +14,19 @@ const SetParametersDropdown = ({ counties }) => {
     setShowDropdown(false); // Close dropdown when opening modal
   };
   const closeInitialCases = () => setIsInitialCasesOpen(false);
-  const openCaseFatalityRate = () => {
-    setIsCaseFatalityRateOpen(true);
-    setShowDropdown(false); // Close dropdown when opening modal
-  };
-  const closeCaseFatalityRate = () => setIsCaseFatalityRateOpen(false);
   const openSetManually = () => {
-    setIsSetManually(true);
+    setIsSetManuallyOpen(true);
     setShowDropdown(false); // Close dropdown when opening modal
   };
-  const closeSetManually = () => setIsSetManually(false);
-
-  const [saved, setSaved] = useState(false);
+  const closeSetManually = () => setIsSetManuallyOpen(false);
 
   const handleSave = () => {
-    setSaved(true); // Trigger a re-render or update
+    onSave(); // Trigger the save action in the parent component
+    setShowDropdown(false); // Close the dropdown after saving
   };
-  
+
   return (
-    <div className="dropdown-container" id="first-drop">
+    <div className="dropdown-container">
       <button className="parameters-button" onClick={toggleDropdown}>
         <span className="dropdown-text">Set Parameters</span>
         <span className={`dropdown-arrow ${showDropdown ? 'open' : ''}`}>▾</span>
@@ -44,15 +37,13 @@ const SetParametersDropdown = ({ counties }) => {
           <button className="dropdown-item" onClick={openInitialCases}>Initial Cases</button>
         </div>
       )}
-      {isSetManually && (
-         <div style={{ position: 'relative', zIndex: 20000 }}>
+      {isSetManuallyOpen && (
         <div className="modal-overlay" onClick={closeSetManually}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <span className="modal-close" onClick={closeSetManually}>×</span>
             <h2>Set Manually</h2>
-            <SetManually onSubmit={(data) => { console.log('Set Manually:', data); closeSetManually(); }} />
+            <SetManually onClose={closeSetManually} onSubmit={(data) => { console.log('Set Manually:', data); handleSave(); }} />
           </div>
-        </div>
         </div>
       )}
       {isInitialCasesOpen && (
@@ -60,7 +51,7 @@ const SetParametersDropdown = ({ counties }) => {
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <span className="modal-close" onClick={closeInitialCases}>×</span>
             <h2>Add Initial Cases</h2>
-            <AddInitialCases counties={counties} onSubmit={(data) => { console.log('Initial Cases:', data); closeInitialCases(); }} />
+            <AddInitialCases counties={counties} onSubmit={(data) => { console.log('Initial Cases:', data); handleSave(); }} />
           </div>
         </div>
       )}
