@@ -33,7 +33,7 @@ services:
     worker:
         build:
             context: ./
-            dockerfile: ./Dockerfile-django
+            dockerfile: ./Dockerfile-worker
         command: celery -A pet.pes_task worker --loglevel=INFO
         depends_on:
             - mongo-db
