@@ -2,8 +2,18 @@
 import time
 import json
 from celery import Celery
+import subprocess
+import glob
+import os
+import pymongo
 
 app = Celery('pes', broker='pyamqp://rabbitmq')
+
+myclient = pymongo.MongoClient("mongodb://mongo-db:27017/")
+mydb = myclient["PES"]
+mycol = mydb["days"]
+mycol.drop() # I think this deletes all the data
+
 
 def return_valid_input(input):
     """
@@ -68,13 +78,32 @@ def return_valid_input(input):
 
 @app.task
 def run_pes(input):
-    #print(f'Starting with {input}')
-    time.sleep(30)
+    os.chdir('/PES')
     input_file = return_valid_input(input)
-    with open('INPUT.json', 'w') as o:
+    with open('/PES/INPUT.json', 'w') as o:
         json.dump(input_file, o, indent=2)
     print('Wrote INPUT.json to file, contents are:')
     print(json.dumps(input_file, indent=2))
     print('Now running PES code.....')
-    time.sleep(30)
+
+    subprocess.Popen(['python3',
+                      '/PES/src/simulator.py',
+                      '--input',
+                      '/PES/INPUT.json',
+                      '--days',
+                      '999',
+                      '--loglevel',
+                      'INFO'])
+    
+    while True:
+        files=glob.glob("/PES/OUTPUT*")
+        print(files)
+        # IF NEW FILE, ADD IT TO MONGO
+        if len(files) > 0:
+            with open(files[0], 'r') as f:
+                mydict = json.load(f)
+                mycol.insert_one(mydict)
+                os.remove(files[0])
+        time.sleep(1)
+
     return 'Done'
