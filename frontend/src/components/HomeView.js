@@ -8,6 +8,7 @@ import InitialMapPercent from './InitialMapPercent';
 import SetParametersDropdown from './SetParametersDropdown';
 import Interventions from './Interventions';
 import SavedParameters from './SavedParameters';
+import AddInitialCases from './AddInitialCases';
 
 import './HomeView.css';
 import PlayPauseButton from './PlayPauseButton';
@@ -56,7 +57,7 @@ const HomeView = () => {
   const handleRunScenario = () => {
     axios.post('http://localhost:8000/api/pet/', {
       disease_name: localStorage.getItem('diseaseName'),
-      reproduction_number: localStorage.getItem('reproductionNumber'),
+      R0: localStorage.getItem('reproductionNumber'),
       beta_scale: localStorage.getItem('beta_scale'),
       tau: localStorage.getItem('tau'),
       kappa: localStorage.getItem('kappa'),
@@ -64,9 +65,11 @@ const HomeView = () => {
       chi: localStorage.getItem('chi'),
       rho: localStorage.getItem('rho'),
       nu: localStorage.getItem('nu'),
-      vaccine_wastage_factor: localStorage.getItem('vaccine_wastage_factor'),
+      initial_infected: localStorage.getItem('initial_infected')
+     
+     /* vaccine_wastage_factor: localStorage.getItem('vaccine_wastage_factor'),
       antiviral_effectiveness: localStorage.getItem('antiviral_effectiveness'),
-      antiviral_wastage_factor: localStorage.getItem('antiviral_wastage_factor'),
+      antiviral_wastage_factor: localStorage.getItem('antiviral_wastage_factor'), */
     })
     .then(response => {
       console.log('Disease parameters updated successfully:', response.data);
