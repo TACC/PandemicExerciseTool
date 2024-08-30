@@ -8,21 +8,15 @@
     width: 300px; /* Fixed width for the left panel */
     background-color: #fff; /* Background color */
     padding: 10px;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
     position: fixed; /* Fixes the panel to the left side */
     top: 112px; /* Adjust this value slightly if needed */
     left: 0;
     height: calc(100% - 112px); /* Full height minus top margin */
     overflow-y: auto; /* Scroll if content overflows */
-    z-index: 1000; /* Ensure it is on top */
+    z-index: 1; /* Ensure it is on top */
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; /* Align items to the top */
-  }
-  
-  .play-pause-container {
-    margin-top: auto;
-    padding: 20px 0;
+    justify-content: flex-start; /* Ailign items to the top */
   }
   
   .interventions-container {
@@ -35,42 +29,20 @@
     z-index: 1;
   }
   
-  .top-panel {
-    position: relative; /* Ensure dropdowns are correctly positioned within this panel */
-    z-index: 10; /* Higher z-index to ensure it appears above the map */
-    margin-bottom: 1rem; /* Space between top panel and the map */
-  }
-  
-  .main-panel {
-    margin-left: -300px; /* Offset to accommodate the left panel */
-    margin-right: 400px; /* Offset to accommodate the left panel */
-    width: calc(100% - 690px); /* Adjust based on the width of the left and right panels */
-    flex: 1; /* Take up remaining space */
-    display: flex;
-    flex-direction: column;
-    padding: 10px 10px 10px 0;
-    height: 100vh; /* Full viewport height */
-    overflow: hidden; /* Prevent scrollbars in the main panel */
-  }
-  
-  .main-panel > * {
-    width: 100%;
-  }
-  
   .right-panel {
-    width: 400px; /* Fixed width for the right panel */
-    background-color: #fff; /* Background color */
-    padding: 10px;
-    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+    width: 550px; /* Fixed width for the right panel */
+    background-color: transparent; /* Background color */
+    padding: 0px;
     position: fixed; /* Fixes the panel to the right side */
     top: 112px; /* Adjust this value slightly if needed */
     right: 0;
     height: calc(100% - 112px); /* Full height minus top margin */
     overflow-y: auto; /* Scroll if content overflows */
-    z-index: 900; /* Ensure it is on top */
+    z-index: 1; /* Ensure it is on top */
     display: flex;
     flex-direction: column;
     justify-content: flex-start; /* Align items to the top */
+    border: none;
   }
   
   .map-section {
@@ -79,10 +51,6 @@
   
   .timeline-section {
     height: 10%; /* Smaller height for timeline slider */
-  }
-  
-  .chart-section {
-    margin-top: 1rem; /* Space between timeline and chart */
   }
   
   .table-section {
@@ -116,15 +84,79 @@
     position: fixed;
     bottom: 0;
     left: 0;
+    width: 99%;
+    height: 80px;
+    z-index: 1000;
+    transition: background-color 0.3s ease;
+  }
+  
+  .footer-overlay {
+    position: fixed;
+    bottom: 0;
+    left: 0;
     width: 100%;
-    z-index: 1000; /* Ensure footer is on top */
+    height: 80px; /* Height of the footer */
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+    z-index: 1; /* Ensure it's above the footer but below the modal */
   }
   
   .timeline-panel {
     flex-grow: 1;
-  }
-  .play-pause-container {
     margin-left: 20px;
-    width: 100px; /* Fixed width for the button */
+    margin-top: 20px;
+    z-index: 3;
+  }
+
+  .middle-panel {
+    flex: 1; /* Takes up the remaining space between left and right panels */
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    height: 78vh; /* Full viewport height */
+    overflow: hidden; /* Prevent scrollbars in the middle panel */
+    width: 2000px;
+    z-index: 1;
   }
   
+  .map-and-chart-container {
+    display: flex;
+    flex-direction: column; /* Stack the map and chart vertically, change to "row" for left & right orientation */ 
+    width: 85%;
+    height: 100%;
+    margin-left: 45px;
+    align-items: center; 
+  }
+  
+  /* Make map and chart have equal height */
+.map-size, .chart-size {
+  flex: 1; /* Allows both map and chart to grow equally */
+  width: 100%; /* Full width of the container */
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+/* Ensure map component fills its container */
+.map-size {
+  padding: 10px; /* Optional: add padding if needed */
+}
+
+/* Ensure chart component fills its container */
+.chart-size {
+  padding: 10px; /* Optional: add padding if needed */
+}
+
+.separator {
+  height: 2px; /* Thickness of the line */
+  background-color: #ccc; /* Color of the line */
+  width: 100%; /* Full width of the container */
+  margin: 40px 0; /* Margins to space out the map and chart */
+  flex-shrink: 0; /* Prevent shrinking */
+}
+
+.saved-parameters-panel {
+  margin-top: 60px; /* Space between the SavedParameters and the elements above */
+}
+
+.play-pause-container {
+  width: 300px; /* Fixed width for the button */
+  z-index: 3;
+}

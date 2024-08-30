@@ -26,13 +26,6 @@ const AddInitialCases = ({ counties }) => {
     { value: '65+ years', label: '65+ years' }
   ];
 
-  /* const riskGroups = [
-    { value: 'low risk', label: 'Low Risk' },
-    { value: 'high risk', label: 'High Risk' },
-    { value: 'first responder', label: 'First Responder' },
-    { value: 'pregnant women', label: 'Pregnant Women' }
-  ]; */
-
   const countyOptions = counties.map(county => ({
     value: county,
     label: county
@@ -88,6 +81,11 @@ const AddInitialCases = ({ counties }) => {
     URL.revokeObjectURL(url);
   };
 
+  const handleRemove = index => {
+    // Remove the case at the specified index
+    setCasesList(casesList.filter((_, i) => i !== index));
+  };
+
   return (
     <div>
       <form className="add-initial-cases-form" onSubmit={handleSubmit}>
@@ -132,25 +130,29 @@ const AddInitialCases = ({ counties }) => {
       </form>
 
       <h3>Added Cases</h3>
-        <table className="cases-table">
-          <thead>
-            <tr>
-              <th>County</th>
-              <th>Infected</th>
-              <th>Age Group</th>
+      <table className="cases-table">
+        <thead>
+          <tr>
+            <th>County</th>
+            <th>Infected</th>
+            <th>Age Group</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {casesList.map((caseItem, index) => (
+            <tr key={index}>
+              <td>{caseItem.county_display}</td>
+              <td>{caseItem.infected}</td>
+              <td>{caseItem.age_group_display}</td>
+              <td>
+                <button onClick={() => handleRemove(index)}>Remove</button>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {casesList.map((caseItem, index) => (
-              <tr key={index}>
-                <td>{caseItem.county_display}</td>
-                <td>{caseItem.infected}</td>
-                <td>{caseItem.age_group_display}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-       <div><button onClick={handleDownload}>Save Settings</button></div>
+          ))}
+        </tbody>
+      </table>
+      <div><button onClick={handleDownload}>Save Settings</button></div>
     </div>
   );
 };

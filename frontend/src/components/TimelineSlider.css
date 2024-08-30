@@ -37,7 +37,7 @@
   top: 10px; /* Adjust to position the number under the line */
   left: 50%;
   transform: translateX(-50%);
-  font-size: 12px;
+  font-size: large;
 }
 
 .timeline-item.active .timeline-date {

@@ -1,0 +1,82 @@
+.table-container {
+  /* Remove border if present */
+  border: none;
+  padding: 10px 20px; /* Adjust padding if necessary */
+  margin: 0; /* Adjust margin if necessary */
+}
+
+.table-scroll {
+  /* Remove border if present */
+  border: none;
+  overflow: auto; /* Ensure scrolling if necessary */
+}
+
+
+table th {
+  font-size: 18px; /* Adjust as needed */
+  padding: 10px 20px; /* Reduce right-side padding */
+  text-align: left; /* Ensure text aligns properly */
+  position: relative; /* Allow absolute positioning of button */
+}
+
+table td {
+  font-size: 18px;
+  padding: 8px; /* Decrease padding if needed */
+}
+
+.sort-button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 16px; /* Adjust font size as needed */
+    margin-left: 10px;
+    width: 2px;
+  }
+  
+  .sort-button:hover {
+    background: transparent;
+  }
+  
+  .sort-button:focus {
+    outline: none; /* Removes default focus outline */
+  }
+
+  /* Container for search input and search icon */
+.search-container {
+  display: flex; /* Align items in a row */
+  align-items: center; /* Vertically align items to the center */
+  margin-bottom: 10px;
+}
+
+/* Search icon box styling */
+.search-icon-box {
+  background: #e5e5e5; /* Light gray background */
+  padding: 8px; /* Padding around the icon */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top: 1px solid black; /* Black border on the top */
+  border-left: 1px solid black; /* Black border on the left */
+  border-bottom: 1px solid black; /* Black border on the bottom */
+  height: 40px;
+  width: 40px;
+}
+
+/* Search icon styling */
+.search-icon {
+  width: 24px; /* Adjust width as needed */
+  height: 24px; /* Adjust height to match the input field */
+  display: block;
+  margin: auto; /* Center the icon within the box */
+}
+
+/* Search input field styling */
+.search-input {
+  border: 1px solid black; /* Black border around the input field */
+  outline: none; /* Remove the default outline */
+  padding: 8px; /* Padding inside the input field */
+  flex: 1; /* Allow the input to grow and fill available space */
+  font-size: 18px; /* Adjust font size as needed */
+  height: 40px; /* Set the height of the input to match the icon */
+  border-radius: 0; /* Ensure square corners */
+}

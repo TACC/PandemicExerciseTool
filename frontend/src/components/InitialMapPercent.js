@@ -189,7 +189,7 @@ const InitialMapPercent = ({ outputData }) => {
         id="map"
         center={[31.0, -100.0]}
         zoom={6}
-        style={{ height: '500px', width: '800px' }}
+        style={{ height: '600px', width: '1700px' }}
         whenCreated={mapInstance => { mapRef.current = mapInstance; }}
       >
         <TileLayer

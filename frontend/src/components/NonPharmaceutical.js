@@ -1,65 +1,102 @@
 import React, { useState } from 'react';
+import './NonPharmaceutical.css';
 
 const NonPharmaceutical = ({ onSubmit }) => {
-  const [vaccineData, setVaccineData] = useState({
-    effectivenessLag: 0,
-    adherence: 0,
-    capacity: 0
+  const [formData, setFormData] = useState({
+    name: '',
+    duration: 0,
+    effectiveness: {
+      '0-4 years': 0,
+      '5-24 years': 0,
+      '25-49 years': 0,
+      '50-64 years': 0,
+      '65+ years': 0
+    },
+    location: ''
   });
 
   const handleSubmit = event => {
     event.preventDefault();
-    onSubmit(vaccineData);
+    onSubmit(formData);
   };
 
-  const handleVaccineChange = (field, value) => {
-    setVaccineData(prevState => ({
+  const handleChange = (field, value) => {
+    setFormData(prevState => ({
       ...prevState,
       [field]: value
+    }));
+  };
+
+  const handleEffectivenessChange = (ageGroup, value) => {
+    setFormData(prevState => ({
+      ...prevState,
+      effectiveness: {
+        ...prevState.effectiveness,
+        [ageGroup]: value
+      }
     }));
   };
 
   return (
     <form className="parameters-form" onSubmit={handleSubmit}>
       <div className="form-group">
-        <label htmlFor="vaccineEffectivenessLag">Vaccine Effectiveness Lag (days):</label>
+        <label htmlFor="name">Name:</label>
+        <input
+          type="text"
+          id="name"
+          value={formData.name}
+          onChange={e => handleChange('name', e.target.value)}
+          required
+        />
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="duration">Duration (days):</label>
         <input
           type="number"
-          id="vaccineEffectivenessLag"
-          value={vaccineData.effectivenessLag}
-          onChange={e => handleVaccineChange('effectivenessLag', parseInt(e.target.value, 10))}
+          id="duration"
+          value={formData.duration}
+          onChange={e => handleChange('duration', parseInt(e.target.value, 10))}
           min="0"
           required
         />
       </div>
 
       <div className="form-group">
-        <label htmlFor="vaccineAdherence">Vaccine Adherence:</label>
-        <input
-          type="number"
-          id="vaccineAdherence"
-          value={vaccineData.adherence}
-          onChange={e => handleVaccineChange('adherence', parseFloat(e.target.value))}
-          min="0"
-          max="100"
-          step="1"
-          required
-        />
+        <label>Age-Specific Effectiveness:</label>
+        {Object.keys(formData.effectiveness).map(ageGroup => (
+          <div key={ageGroup} className="form-group">
+            <label htmlFor={`effectiveness-${ageGroup}`}>{ageGroup}:</label>
+            <input
+              type="number"
+              id={`effectiveness-${ageGroup}`}
+              value={formData.effectiveness[ageGroup]}
+              onChange={e => handleEffectivenessChange(ageGroup, parseFloat(e.target.value))}
+              min="0"
+              max="100"
+              step="0.1"
+              required
+            />
+          </div>
+        ))}
       </div>
 
       <div className="form-group">
-        <label htmlFor="vaccineCapacity">Vaccine Capacity:</label>
-        <input
-          type="number"
-          id="vaccineCapacity"
-          value={vaccineData.capacity}
-          onChange={e => handleVaccineChange('capacity', parseInt(e.target.value, 10))}
-          min="0"
+        <label htmlFor="location">Location:</label>
+        <select
+          id="location"
+          value={formData.location}
+          onChange={e => handleChange('location', e.target.value)}
           required
-        />
+        >
+          <option value="" disabled>Select a location</option>
+          <option value="By County">By County</option>
+          <option value="Statewide">Statewide</option>
+          <option value="By Region">By Region</option>
+        </select>
       </div>
 
-      <button type="submit">Submit Vaccine Data</button>
+      <button type="submit">Submit Data</button>
     </form>
   );
 };

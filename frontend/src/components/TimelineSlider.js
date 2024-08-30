@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import './TimelineSlider.css';
+import PlayPauseButton from './PlayPauseButton';
 
 const TimelineSlider = ({ totalDays, selectedDay, onDayChange, onScenarioRun, onScenarioPause }) => {
     const handleChange = (value) => {

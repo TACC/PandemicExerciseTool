@@ -3,7 +3,7 @@
   background: white;
   padding: 6px 8px;
   border-radius: 5px;
-  font: 14px Arial, Helvetica, sans-serif;
+  font: 15px Arial, Helvetica, sans-serif;
 }
 
 .legend {
@@ -11,15 +11,15 @@
 }
 
 .legend i {
-  width: 18px;
-  height: 18px;
+  width: 25px;
+  height: 25px;
   border-radius: 50%;
   display: inline-block;
   margin-right: 8px;
 }
 
 .legend strong {
-  font-size: 16px;
+  font-size: 20px;
   display: block;
   margin-bottom: 4px; /* Reduced margin to minimize gap */
 }

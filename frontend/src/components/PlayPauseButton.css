@@ -2,12 +2,13 @@
 .scenario-button,
 .pause-button {
   padding: 10px 20px;
-  font-size: 16px;
+  font-size: 20px;
   cursor: pointer;
   border: none;
   font-weight: bold;
   color: black;
   transition: background-color 0.3s;
+  height: 50px;
 }
 
 .scenario-button {
@@ -16,6 +17,8 @@
 
 .pause-button {
   background-color: #f1f1f1;
+  border: 2px solid black; /* Add a black border */
+  border-radius: 4px;
 }
 
 .scenario-button:hover,
@@ -25,8 +28,8 @@
 
 .scenario-button .icon,
 .pause-button .icon {
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
   margin-right: 8px;
   vertical-align: middle;
 }

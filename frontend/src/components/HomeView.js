@@ -7,6 +7,8 @@ import CountyPercentageTable from './CountyPercentageTable';
 import InitialMapPercent from './InitialMapPercent';
 import SetParametersDropdown from './SetParametersDropdown';
 import Interventions from './Interventions';
+import SavedParameters from './SavedParameters';
+
 import './HomeView.css';
 import PlayPauseButton from './PlayPauseButton';
 import './leaflet-overrides.css';
@@ -65,12 +67,6 @@ const HomeView = () => {
       vaccine_wastage_factor: localStorage.getItem('vaccine_wastage_factor'),
       antiviral_effectiveness: localStorage.getItem('antiviral_effectiveness'),
       antiviral_wastage_factor: localStorage.getItem('antiviral_wastage_factor'),
-      /* initial: [
-        {
-          "infected": localStorage.getItem('infected'),
-          "county": localStorage.getItem('county'),
-          "age_group": localStorage.getItem('age_group'),
-   ] */
     })
     .then(response => {
       console.log('Disease parameters updated successfully:', response.data);
@@ -79,8 +75,7 @@ const HomeView = () => {
       console.error('Error updating disease parameters:', error);
     });
 
-
-/*    if (intervalRef.current) {
+    if (intervalRef.current) {
       clearInterval(intervalRef.current);
     }
     intervalRef.current = setInterval(() => {
@@ -92,7 +87,7 @@ const HomeView = () => {
           return prevIndex;
         }
       });
-    }, 1000);*/
+    }, 1000);
   };
 
   const handlePauseScenario = () => {
@@ -105,7 +100,6 @@ const HomeView = () => {
     if (outputFiles[currentIndex]) {
       console.log('Output Data:', outputFiles[currentIndex]);
 
-      // Calculate deceased count for the current day
       const deceasedCount = outputFiles[currentIndex].data.reduce((acc, county) => {
         const { D } = county.compartments;
         const totalDeceased = [
@@ -117,22 +111,20 @@ const HomeView = () => {
         return acc + totalDeceased;
       }, 0);
 
-      // Update eventData to include only data up to the current day
       setEventData((prevData) => {
         const newData = [...prevData];
-        // Ensure we're only adding data for the current day and not duplicating
         if (!newData[currentIndex]) {
           newData[currentIndex] = { day: currentIndex, deceased: Math.round(deceasedCount) };
         } else {
           newData[currentIndex].deceased = Math.round(deceasedCount);
         }
-        return newData.slice(0, currentIndex + 1); // Keep only up to currentIndex
+        return newData.slice(0, currentIndex + 1);
       });
     }
   }, [currentIndex, outputFiles]);
 
   useEffect(() => {
-    const delay = 500; // Delay in milliseconds
+    const delay = 500;
     const timer = setTimeout(() => {
       console.log('Data processed for day:', currentIndex);
     }, delay);
@@ -140,28 +132,38 @@ const HomeView = () => {
     return () => clearTimeout(timer);
   }, [currentIndex]);
 
+  const [saved, setSaved] = useState(false);
+
+  const handleSave = () => {
+    setSaved(true); 
+    window.location.reload(); // Refresh the page
+  };
+
   return (
     <div className="home-view">
       <div className="left-panel">
-        <SetParametersDropdown counties={texasCounties} />
+        <SetParametersDropdown counties={texasCounties} onSave={handleSave} />
         <div className="interventions-container">
           <Interventions />
+        </div>
+        <div className="saved-parameters-panel">
+          <SavedParameters />
         </div>
       </div>
   
       <div className="middle-panel">
         <div className="map-and-chart-container">
           <InitialMapPercent outputData={outputFiles[currentIndex]} className="map-size" />
+          <div className="separator"></div> 
           <DeceasedLineChart eventData={eventData} className="chart-size" />
         </div>
-      </div>
-      
+      </div> 
       <div className="right-panel">
         <CountyPercentageTable className="percentage-table" outputData={outputFiles[currentIndex]} />
       </div>
   
       <div className="footer">
-      <div className="play-pause-container">
+        <div className="play-pause-container">
           <PlayPauseButton isRunning={isRunning} onToggle={handleToggleScenario} />
         </div>
         <div className="timeline-panel">
@@ -173,13 +175,9 @@ const HomeView = () => {
             onScenarioPause={handlePauseScenario}
           />
         </div>
-        <div className="play-pause-container">
-        </div>
       </div>
     </div>
   );
-    
-  
 };
 
 export default HomeView;
