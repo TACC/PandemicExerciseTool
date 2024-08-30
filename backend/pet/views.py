@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 
 from rest_framework import viewsets
 from .serializers import PETSerializer
@@ -9,10 +9,10 @@ from .pes_task import run_pes
 
 import requests
 
+
 class PETView(viewsets.ModelViewSet):
     serializer_class = PETSerializer
     queryset = PET.objects.all()
-
 
 def run_job(request, pet_id):
     if request.method == 'GET':

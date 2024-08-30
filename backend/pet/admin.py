@@ -4,17 +4,14 @@ from .models import PET
 
 class PETAdmin(admin.ModelAdmin):
     list_displayed = ('disease_name', 
-                      'reproduction_number', 
+                      'R0', 
                       'beta_scale', 
                       'tau', 
                       'kappa', 
                       'gamma', 
                       'chi', 
                       'rho', 
-                      'nu',
-                      'vaccine_wastage_factor', 
-                      'antiviral_effectiveness', 
-                      'antiviral_wastage_factor'
+                      'nu'
                       )
 
 admin.site.register(PET, PETAdmin)
