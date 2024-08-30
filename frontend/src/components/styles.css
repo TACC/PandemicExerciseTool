@@ -1,0 +1,5 @@
+/* styles.css */
+
+.county-tooltip {
+  z-index: 1000; /* Ensure the tooltip has a high z-index */
+}

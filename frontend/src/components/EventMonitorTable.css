@@ -1,0 +1,22 @@
+.event-monitor-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .event-monitor-table th, .event-monitor-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  
+  .event-monitor-table tr.highlighted {
+    background-color: #d3d3d3; /* Grey background for highlighted row */
+  }
+  
+  .event-monitor-table tr:nth-child(even) {
+    background-color: #f2f2f2; /* Light grey background for even rows */
+  }
+  
+  .event-monitor-table tr:nth-child(odd) {
+    background-color: #fff; /* White background for odd rows */
+  }
+  

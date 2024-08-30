@@ -1,0 +1,31 @@
+/* ParametersInitialCases.css */
+
+.container {
+    display: flex;
+    gap: 20px; /* Space between sections */
+    padding: 20px; /* Optional: Add padding around the container */
+    overflow-x: auto; /* Allow horizontal scrolling if content overflows */
+  }
+  
+  .section {
+    flex: 1; /* Allow sections to grow equally */
+    min-width: 300px; /* Ensure sections have a minimum width */
+    border: 1px solid #ddd; /* Optional: Add a border to visualize sections */
+    padding: 20px; /* Add padding inside each section */
+    border-radius: 8px; /* Optional: Rounded corners for sections */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: Add shadow for better appearance */
+    box-sizing: border-box; /* Ensure padding and border are included in width */
+  }
+  
+  .bold-text {
+    font-weight: bold;
+  }
+  
+  .form-group {
+    margin-bottom: 15px; /* Space between form elements */
+  }
+  
+  input[type="number"] {
+    width: 100%; /* Ensure the input fields span the width of their container */
+  }
+  

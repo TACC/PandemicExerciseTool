@@ -1,0 +1,15 @@
+FROM node:22-slim
+
+RUN npm install -g corepack  && \
+    corepack prepare yarn@stable --activate
+
+WORKDIR /react-app
+COPY ./frontend/package.json /react-app
+
+RUN yarn install
+
+COPY ./frontend/craco.config.js /react-app/
+COPY ./frontend/src /react-app/src
+COPY ./frontend/public /react-app/public
+
+CMD ["yarn", "start"]
