@@ -1,0 +1,128 @@
+{
+  "output": "OUTPUT.json",
+  "number_of_realizations": "1",
+  "data": {
+    "population": "/PES/data/texas/county_age_matrix_small.csv",
+    "contact": "/PES/data/texas/contact_matrix.csv",
+    "flow": "/PES/data/texas/work_matrix_rel.csv",
+    "high_risk_ratios": "/PES/data/texas/high_risk_ratios.csv",
+    "flow_reduction": "/PES/data/texas/flow_reduction.csv",
+    "relative_susceptibility": "/PES/data/texas/relative_susceptibility.csv",
+    "nu_value_matrix": "/PES/data/texas/nu_value_matrix.csv"
+  },
+  "parameters": {
+    "R0": "1.2",
+    "beta_scale": "10",
+    "tau": "1.2",
+    "kappa": "1.9",
+    "gamma": "4.1",
+    "chi": "1.0",
+    "rho": "0.39",
+    "nu": "high"
+  },
+  "initial_infected": [
+    {
+      "county": "453",
+      "infected": "100",
+      "age_group": "1"
+    },
+    {
+      "county": "113",
+      "infected": "100",
+      "age_group": "1"
+    },
+    {
+      "county": "201",
+      "infected": "100",
+      "age_group": "1"
+    },
+    {
+      "county": "141",
+      "infected": "100",
+      "age_group": "1"
+    },
+    {
+      "county": "375",
+      "infected": "100",
+      "age_group": "1"
+    }
+  ],
+  "public_health_announcements": [
+    {
+      "day": "50",
+      "effectiveness": "0.4",
+      "halflife": "10.0"
+    },
+    {
+      "day": "200",
+      "effectiveness": "0.6",
+      "halflife": "50.0"
+    }
+  ],
+  "antivirals": {
+    "antiviral_effectiveness": "1.5",
+    "antiviral_wastage_factor": "60",
+    "antiviral_stockpile": [
+      {
+        "day": "103",
+        "amount": "17830"
+      },
+      {
+        "day": "110",
+        "amount": "65310"
+      },
+      {
+        "day": "117",
+        "amount": "33900"
+      },
+      {
+        "day": "124",
+        "amount": "92230"
+      },
+      {
+        "day": "131",
+        "amount": "48340"
+      }
+    ] 
+  },
+  "vaccines": {
+    "vaccine_wastage_factor": "60",
+    "vaccine_pro_rata": "children",
+    "vaccine_adherence": [
+      "0.4345",
+      "0.298",
+      "0.388",
+      "0.450",
+      "0.696"
+    ],
+    "vaccine_effectiveness": [
+      "0.8",
+      "0.8",
+      "0.8",
+      "0.8",
+      "0.8"
+    ],
+    "vaccine_stockpile": [
+      {
+        "day": "203",
+        "amount": "178300"
+      },
+      {
+        "day": "210",
+        "amount": "653100"
+      },
+      {
+        "day": "217",
+        "amount": "339000"
+      },
+      {
+        "day": "224",
+        "amount": "922300"
+      },
+      {
+        "day": "231",
+        "amount": "483400"
+      }
+    ]
+  }
+}

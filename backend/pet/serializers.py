@@ -15,7 +15,15 @@ class PETSerializer(serializers.ModelSerializer):
                   'chi', 
                   'rho', 
                   'nu',
-                  'vaccine_wastage_factor', 
+                  'initial_infected',
+                  'phas',
                   'antiviral_effectiveness', 
-                  'antiviral_wastage_factor'
+                  'antiviral_wastage_factor',
+                  'antiviral_stockpile',
+                  'vaccine_wastage_factor',
+                  'vaccine_pro_rata',
+                  'vaccine_adherence',
+                  'vaccine_effectiveness',
+                  'vaccine_stockpile'
                   )
+
