@@ -6,6 +6,8 @@ import subprocess
 import glob
 import os
 import pymongo
+import signal
+from ctypes import cdll
 
 app = Celery('pes', broker='pyamqp://rabbitmq')
 
@@ -76,6 +78,17 @@ def return_valid_input(input):
     return input_file
 
 
+def on_parent_exit(signame):
+    """
+    Make sure child is killed when parent is killed. Adapted from
+    https://gist.github.com/evansd/2346614
+    """
+    signum = getattr(signal, signame)
+    def set_parent_exit_signal():
+        result = cdll['libc.so.6'].prctl(1, signum)
+    return set_parent_exit_signal
+
+
 @app.task
 def run_pes(input):
     os.chdir('/PES')
@@ -93,17 +106,19 @@ def run_pes(input):
                       '--days',
                       '999',
                       '--loglevel',
-                      'INFO'])
+                      'INFO'],
+                      preexec_fn=on_parent_exit('SIGHUP'))
     
     while True:
         files=glob.glob("/PES/OUTPUT*")
-        print(files)
+        time.sleep(0.5)
         # IF NEW FILE, ADD IT TO MONGO
         if len(files) > 0:
+            print(files)
+            time.sleep(1)
             with open(files[0], 'r') as f:
                 mydict = json.load(f)
                 mycol.insert_one(mydict)
                 os.remove(files[0])
-        time.sleep(1)
 
     return 'Done'
