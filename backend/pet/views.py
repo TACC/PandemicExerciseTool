@@ -23,6 +23,6 @@ def run_job(request, pet_id):
 def delete_job(request, task_id):
     if request.method == 'GET':
         task = AsyncResult(task_id)
-        task.revoke(terminate=True)
+        task.revoke(terminate=True, signal='SIGKILL')
         return JsonResponse({'task_id': task.id,}, status=200)
 
