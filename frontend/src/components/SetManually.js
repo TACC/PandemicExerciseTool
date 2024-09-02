@@ -233,55 +233,6 @@ const SetManually = ({ onClose }) => {
           </div>
         </div>
       </div>
-
-      <div className="form-group">
-        <label htmlFor="vaccine_wastage_factor">Vaccine Wastage Factor (days):
-          <span className="tooltip">?
-            <span className="tooltip-text">Half the vaccine stockpile will be wasted every N days.</span>
-          </span>
-        </label>
-        <input
-          type="number"
-          id="vaccine_wastage_factor"
-          value={vaccine_wastage_factor}
-          onChange={e => setVaccineWastageFactor(parseFloat(e.target.value))}
-          step="0.1"
-          min="0"
-          required
-        />
-      </div>
-      <div className="form-group">
-        <label htmlFor="antiviral_wastage_factor">Antiviral Wastage Factor (days):
-          <span className="tooltip">?
-            <span className="tooltip-text">Half the antiviral stockpile will be wasted every N days.</span>
-          </span>
-        </label>
-        <input
-          type="number"
-          id="antiviral_wastage_factor"
-          value={antiviral_wastage_factor}
-          onChange={e => setAntiviralWastageFactor(parseFloat(e.target.value))}
-          step="0.1"
-          min="0"
-          required
-        />
-      </div>
-      <div className="form-group">
-        <label htmlFor="antiviral_effectiveness">Antiviral Effectiveness (percent):
-          <span className="tooltip">?
-            <span className="tooltip-text">Antiviral effectiveness is the probability that an individual treated within the treatment window will recover.</span>
-          </span>
-        </label>
-        <input
-          type="number"
-          id="antiviral_effectiveness"
-          value={antiviral_effectiveness}
-          onChange={e => setAntiviralEffectiveness(parseFloat(e.target.value))}
-          step="0.1"
-          min="0"
-          required
-        />
-      </div>
       {/* Add other input fields here */}
       <button type="submit">Save</button>
     </form>
