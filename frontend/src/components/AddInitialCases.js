@@ -57,29 +57,44 @@ const AddInitialCases = ({ counties }) => {
     setSelectedAgeGroup(null);
   };
 
-  const handleDownload = () => {
-    // Build the JSON object
-    const jsonData = {
-      initial: {
-        v: casesList.map(({ county, infected, age_group }) => ({
-          county,
-          infected,
-          age_group
-        }))
-      }
-    };
-
-    // Convert JSON object to a Blob
-    const blob = new Blob([JSON.stringify(jsonData, null, 2)], { type: 'application/json' });
-
-    // Create a link element and trigger the download
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'initial_cases.json';
-    a.click();
-    URL.revokeObjectURL(url);
+  const handleSaveToLocalStorage = () => {
+    // Build the array of objects directly from casesList
+    const jsonData = casesList.map(({ county, infected, age_group }) => ({
+      county,
+      infected,
+      age_group
+    }));
+  
+    // Convert the JSON object to a JSON string with proper formatting
+    const jsonString = JSON.stringify(jsonData);
+  
+    // Save the JSON string to localStorage
+    localStorage.setItem('initial_infected', jsonString);
   };
+  
+
+  /*
+  const handleDownload = () => {
+    // Build the array of objects directly from casesList
+    const jsonData = casesList.map(({ county, infected, age_group }) => ({
+      county,
+      infected,
+      age_group
+    }));
+  
+    // Convert the JSON object to a JSON string with proper formatting
+    const jsonString = JSON.stringify(jsonData, null, 2);
+  
+    // Trigger the download of the JSON file
+    const blob = new Blob([jsonString], { type: "application/json;charset=utf-8" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "initial_infected.json";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };*/
+  
 
   const handleRemove = index => {
     // Remove the case at the specified index
@@ -152,7 +167,7 @@ const AddInitialCases = ({ counties }) => {
           ))}
         </tbody>
       </table>
-      <div><button onClick={handleDownload}>Save Settings</button></div>
+      <div><button onClick={handleSaveToLocalStorage}>Save Settings</button></div>
     </div>
   );
 };

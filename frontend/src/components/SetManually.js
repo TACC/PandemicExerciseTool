@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './Parameters.css'; // Import the CSS file for styling
+import toggletip from  './images/toggletip.svg';
 
 const SetManually = ({ onClose }) => {
   // Load initial state from localStorage or set default values
@@ -106,7 +107,11 @@ const SetManually = ({ onClose }) => {
         />
       </div>
       <div className="form-group">
-        <label htmlFor="reproductionNumber">Reproduction Number (R0):</label>
+        <label htmlFor="reproductionNumber">Reproduction Number (R0):
+        <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
+            <span className="tooltip-text">R0 indicates the contagiousness of the virus at a given point time and roughly corresponds to the average number of people a typical case will infect.</span>
+          </span>
+        </label>
         <input
           type="number"
           id="reproductionNumber"
@@ -120,7 +125,7 @@ const SetManually = ({ onClose }) => {
       <div className="form-group">
         <label htmlFor="tau">
           Latency Period (days):
-          <span className="tooltip">?
+          <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
             <span className="tooltip-text">Average latency period, in days, which corresponds to 1/tau in the model.</span>
           </span>
         </label>
@@ -137,7 +142,7 @@ const SetManually = ({ onClose }) => {
       <div className="form-group">
         <label htmlFor="kappa">
           Asymptomatic Period (days):
-          <span className="tooltip">?
+          <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
             <span className="tooltip-text">The time period during which an infected individual shows no symptoms but can still spread the infection, which corresponds to 1/kappa in the model.</span>
           </span>
         </label>
@@ -153,7 +158,7 @@ const SetManually = ({ onClose }) => {
       </div>
       <div className="form-group">
         <label htmlFor="gamma">Infectious Period (days):
-          <span className="tooltip">?
+          <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
             <span className="tooltip-text">Total infectious period in days (asymptomatic/treatable/infectious to recovered), which corresponds to 1/gamma in the model.</span>
           </span>
         </label>
@@ -169,7 +174,7 @@ const SetManually = ({ onClose }) => {
       </div>
       <div className="form-group">
         <label htmlFor="chi">Treatment Window (days):
-          <span className="tooltip">?
+          <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
             <span className="tooltip-text">Treatable to infectious rate in days, which corresponds to 1/chi in the model.</span>
           </span>
         </label>
@@ -185,7 +190,7 @@ const SetManually = ({ onClose }) => {
       </div>
       <div className="form-group">
         <label htmlFor="rho">Traveler contact rate (percent):
-          <span className="tooltip">?
+          <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
             <span className="tooltip-text">Travelers contact residents at a reduced rate, rho, which is a multiplier used to reduce the age-specific mixing rate parameters.</span>
           </span>
         </label>
@@ -202,7 +207,7 @@ const SetManually = ({ onClose }) => {
 
       <div className="form-group" style ={{alignItems: 'center'}}>
         <label htmlFor="nu">High/Low death rate: 
-        <span className="tooltip">?
+        <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
             <span className="tooltip-text"> Asymptomatic/Treatable/Infectious to Deceased, which corresponds to 1/nu in the model</span>
           </span>
         </label>
@@ -232,55 +237,6 @@ const SetManually = ({ onClose }) => {
             <label htmlFor="nuHighNo">Low <br></br> (2009 H1N1)</label>
           </div>
         </div>
-      </div>
-
-      <div className="form-group">
-        <label htmlFor="vaccine_wastage_factor">Vaccine Wastage Factor (days):
-          <span className="tooltip">?
-            <span className="tooltip-text">Half the vaccine stockpile will be wasted every N days.</span>
-          </span>
-        </label>
-        <input
-          type="number"
-          id="vaccine_wastage_factor"
-          value={vaccine_wastage_factor}
-          onChange={e => setVaccineWastageFactor(parseFloat(e.target.value))}
-          step="0.1"
-          min="0"
-          required
-        />
-      </div>
-      <div className="form-group">
-        <label htmlFor="antiviral_wastage_factor">Antiviral Wastage Factor (days):
-          <span className="tooltip">?
-            <span className="tooltip-text">Half the antiviral stockpile will be wasted every N days.</span>
-          </span>
-        </label>
-        <input
-          type="number"
-          id="antiviral_wastage_factor"
-          value={antiviral_wastage_factor}
-          onChange={e => setAntiviralWastageFactor(parseFloat(e.target.value))}
-          step="0.1"
-          min="0"
-          required
-        />
-      </div>
-      <div className="form-group">
-        <label htmlFor="antiviral_effectiveness">Antiviral Effectiveness (percent):
-          <span className="tooltip">?
-            <span className="tooltip-text">Antiviral effectiveness is the probability that an individual treated within the treatment window will recover.</span>
-          </span>
-        </label>
-        <input
-          type="number"
-          id="antiviral_effectiveness"
-          value={antiviral_effectiveness}
-          onChange={e => setAntiviralEffectiveness(parseFloat(e.target.value))}
-          step="0.1"
-          min="0"
-          required
-        />
       </div>
       {/* Add other input fields here */}
       <button type="submit">Save</button>

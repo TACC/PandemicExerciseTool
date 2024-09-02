@@ -8,6 +8,7 @@ import InitialMapPercent from './InitialMapPercent';
 import SetParametersDropdown from './SetParametersDropdown';
 import Interventions from './Interventions';
 import SavedParameters from './SavedParameters';
+import AddInitialCases from './AddInitialCases';
 
 import './HomeView.css';
 import PlayPauseButton from './PlayPauseButton';
@@ -30,6 +31,9 @@ import OUTPUT_9 from './OUTPUT_9.json';
 const HomeView = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [eventData, setEventData] = useState([]);
+  const [id, setId] = useState([]);
+  const [taskId, setTaskId] = useState([]);
+
   const [outputFiles] = useState([
     OUTPUT_0, OUTPUT_1, OUTPUT_2, OUTPUT_3, OUTPUT_4, OUTPUT_5,
     OUTPUT_6, OUTPUT_7, OUTPUT_8, OUTPUT_9
@@ -56,7 +60,7 @@ const HomeView = () => {
   const handleRunScenario = () => {
     axios.post('http://localhost:8000/api/pet/', {
       disease_name: localStorage.getItem('diseaseName'),
-      reproduction_number: localStorage.getItem('reproductionNumber'),
+      R0: localStorage.getItem('reproductionNumber'),
       beta_scale: localStorage.getItem('beta_scale'),
       tau: localStorage.getItem('tau'),
       kappa: localStorage.getItem('kappa'),
@@ -64,16 +68,28 @@ const HomeView = () => {
       chi: localStorage.getItem('chi'),
       rho: localStorage.getItem('rho'),
       nu: localStorage.getItem('nu'),
-      vaccine_wastage_factor: localStorage.getItem('vaccine_wastage_factor'),
-      antiviral_effectiveness: localStorage.getItem('antiviral_effectiveness'),
-      antiviral_wastage_factor: localStorage.getItem('antiviral_wastage_factor'),
+      initial_infected: localStorage.getItem('initial_infected')
     })
     .then(response => {
-      console.log('Disease parameters updated successfully:', response.data);
+      console.log('Disease parameters updated successfully:', response.data['id']);
+      const newId = response.data['id'];
+      setId(newId);
+
+    // Now that the ID is set, perform the GET request
+    return axios.get('http://localhost:8000/api/pet/' + newId + '/run');
     })
+
+    .then(response => {
+      console.log('Job runs successfully:', response.data['task_id']);
+      setTaskId(response.data['task_id']);
+    })
+
     .catch(error => {
-      console.error('Error updating disease parameters:', error);
+      console.error('Error running job:', error);
     });
+  };
+
+ // console.log('Current ID', id);
 
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
@@ -88,7 +104,6 @@ const HomeView = () => {
         }
       });
     }, 1000);
-  };
 
   const handlePauseScenario = () => {
     if (intervalRef.current) {
@@ -178,6 +193,7 @@ const HomeView = () => {
       </div>
     </div>
   );
+
 };
 
 export default HomeView;

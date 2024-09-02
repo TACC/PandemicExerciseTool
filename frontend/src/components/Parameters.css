@@ -71,3 +71,9 @@ button:hover {
   opacity: 1;
 }
 
+.toggletip-icon {
+  width: 24px; /* Adjusted size */
+  height: 24px;
+  cursor: pointer;
+  vertical-align: middle; /* Aligns the icon with the middle of the text */
+}
