@@ -75,15 +75,13 @@ const HomeView = () => {
       const newId = response.data['id'];
       setId(newId);
 
-    // Now that the ID is set, perform the GET request
-    return axios.get('http://localhost:8000/api/pet/' + newId + '/run');
+      // Now that the ID is set, perform the GET request
+      return axios.get('http://localhost:8000/api/pet/' + newId + '/run');
     })
-
     .then(response => {
       console.log('Job runs successfully:', response.data['task_id']);
       setTaskId(response.data['task_id']);
     })
-
     .catch(error => {
       console.error('Error running job:', error);
     });
@@ -106,6 +104,15 @@ const HomeView = () => {
     }, 1000);
 
   const handlePauseScenario = () => {
+
+    axios.get('http://localhost:8000/api/delete/' + taskId)
+      .then(response => {
+        console.log('Simulation stopped successfully:', response.data['task_id']);
+      })
+      .catch(error => {
+        console.error('Error stopping job:', error);
+      });
+
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
     }
