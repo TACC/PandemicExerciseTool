@@ -51,7 +51,7 @@ const SetParametersDropdown = ({ counties, onSave }) => {
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <span className="modal-close" onClick={closeInitialCases}>×</span>
             <h2>Add Initial Cases</h2>
-            <AddInitialCases counties={counties} onSubmit={(data) => { console.log('Initial Cases:', data); handleSave(); }} />
+            <AddInitialCases onClose={closeInitialCases} counties={counties} onSubmit={(data) => { console.log('Initial Cases:', data); handleSave(); }} />
           </div>
         </div>
       )}
