@@ -5,8 +5,8 @@ import toggletip from  './images/toggletip.svg';
 const SetManually = ({ onClose }) => {
   // Load initial state from localStorage or set default values
   const [diseaseName, setDiseaseName] = useState(localStorage.getItem('diseaseName') || '');
-  const [reproductionNumber, setReproductionNumber] = useState(parseFloat(localStorage.getItem('reproductionNumber')) || 1.8);
-  const [beta_scale, setBetaScale] = useState(parseFloat(localStorage.getItem('beta_scale'), 10) || 1);
+  const [reproductionNumber, setReproductionNumber] = useState(parseFloat(localStorage.getItem('reproductionNumber')) || 1.2);
+  const [beta_scale, setBetaScale] = useState(parseFloat(localStorage.getItem('beta_scale'), 10) || 10);
   const [tau, setTau] = useState(parseFloat(localStorage.getItem('tau')) || 1.2);
   const [kappa, setKappa] = useState(parseFloat(localStorage.getItem('kappa')) || 1.9);
   const [gamma, setGamma] = useState(parseFloat(localStorage.getItem('gamma')) || 4.1);
