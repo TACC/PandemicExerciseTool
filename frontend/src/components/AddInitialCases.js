@@ -12,7 +12,7 @@ const ageGroupMapping = {
   '65+ years': '5'
 };
 
-const AddInitialCases = ({ counties }) => {
+const AddInitialCases = ({ counties, onClose }) => {
   const [numberOfCases, setNumberOfCases] = useState(10000);
   const [selectedCounty, setSelectedCounty] = useState(null);
   const [selectedAgeGroup, setSelectedAgeGroup] = useState(null);
@@ -70,6 +70,9 @@ const AddInitialCases = ({ counties }) => {
   
     // Save the JSON string to localStorage
     localStorage.setItem('initial_infected', jsonString);
+
+    // close the dialog
+    onClose();
   };
   
 
@@ -167,7 +170,7 @@ const AddInitialCases = ({ counties }) => {
           ))}
         </tbody>
       </table>
-      <div><button onClick={handleSaveToLocalStorage}>Save Settings</button></div>
+      <div><button onClick={handleSaveToLocalStorage}>Save</button></div>
     </div>
   );
 };

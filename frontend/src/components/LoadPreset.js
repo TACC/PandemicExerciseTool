@@ -4,15 +4,15 @@ import './Parameters.css'; // Import the CSS file for styling
 const LoadPreset = () => {
   // Load initial state from localStorage or set default values
   const [diseaseName, setDiseaseName] = useState(localStorage.getItem('diseaseName') || '');
-  const [reproductionNumber, setReproductionNumber] = useState(parseFloat(localStorage.getItem('reproductionNumber')) || 1.8);
+  const [reproductionNumber, setReproductionNumber] = useState(parseFloat(localStorage.getItem('reproductionNumber')) || 1.2);
   const [latencyPeriod, setLatencyPeriod] = useState(parseInt(localStorage.getItem('latencyPeriod'), 10) || 5);
   const [asymptomaticPeriod, setAsymptomaticPeriod] = useState(parseInt(localStorage.getItem('asymptomaticPeriod'), 10) || 2);
   const [infectiousPeriod, setInfectiousPeriod] = useState(parseInt(localStorage.getItem('infectiousPeriod'), 10) || 7);
-  const [beta_scale, setBetaScale] = useState(parseInt(localStorage.getItem('beta_scale'), 10) || 65);
+  const [beta_scale, setBetaScale] = useState(parseInt(localStorage.getItem('beta_scale'), 10) || 10);
   const [tau, setTau] = useState(parseFloat(localStorage.getItem('tau')) || 1.2);
-  const [kappa, setKappa] = useState(parseFloat(localStorage.getItem('kappa')) || 0.52631579);
+  const [kappa, setKappa] = useState(parseFloat(localStorage.getItem('kappa')) || 1.9);
   const [chi, setChi] = useState(localStorage.getItem('chi') || '1.0');
-  const [gamma, setGamma] = useState(parseFloat(localStorage.getItem('gamma')) || 0.24390244);
+  const [gamma, setGamma] = useState(parseFloat(localStorage.getItem('gamma')) || 4.1);
   const [nu_high, setNuHigh] = useState(localStorage.getItem('nu_high') || 'no');
   const [vaccine_wastage_factor, setVaccineWastageFactor] = useState(parseInt(localStorage.getItem('vaccine_wastage_factor'), 10) || 60);
   const [antiviral_effectiveness, setAntiviralEffectiveness] = useState(parseFloat(localStorage.getItem('antiviral_effectiveness')) || 0.8);

@@ -40,4 +40,4 @@ services:
             - rabbitmq
             - django-backend
         deploy:
-            replicas: 2
+            replicas: 1

@@ -3,15 +3,15 @@ import { saveAs } from 'file-saver'; // Import FileSaver
 import './Parameters.css'; // Import the CSS file for styling
 
 const Disease = () => {
-  const [reproductionNumber, setReproductionNumber] = useState(1.8);
+  const [reproductionNumber, setReproductionNumber] = useState(1.2);
   const [latencyPeriod, setLatencyPeriod] = useState(5); // Default in days
   const [asymptomaticPeriod, setAsymptomaticPeriod] = useState(2); // Default in days
   const [infectiousPeriod, setInfectiousPeriod] = useState(7); // Default in days
-  const [beta_scale, setBetaScale] = useState(65);
-  const [tau, setTau] = useState(0.83333333);
-  const [kappa, setKappa] = useState(0.52631579);
+  const [beta_scale, setBetaScale] = useState(10);
+  const [tau, setTau] = useState(1.2);
+  const [kappa, setKappa] = useState(1.9);
   const [chi, setChi] = useState('1.0');
-  const [gamma, setGamma] = useState(0.24390244);
+  const [gamma, setGamma] = useState(4.1);
   const [nu_high, setNuHigh] = useState('no');
   const [vaccine_wastage_factor, setVaccineWastageFactor] = useState(60);
   const [antiviral_effectiveness, setAntiviralEffectiveness] = useState(0.8);
