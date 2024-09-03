@@ -28,4 +28,5 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('api/pet/<pet_id>/run', views.run_job),
     path('api/delete/<task_id>', views.delete_job),
+    path('api/output/<day>', views.get_output),
 ]
