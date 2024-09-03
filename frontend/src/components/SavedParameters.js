@@ -13,9 +13,9 @@ const SavedParameters = () => {
     Chi: localStorage.getItem('chi') || 'N/A',
     Rho: localStorage.getItem('rho') || 'N/A',
     Nu: localStorage.getItem('nu') || 'N/A',
-    VaccineWastageFactor: localStorage.getItem('vaccine_wastage_factor') || 'N/A',
-    AntiviralEffectiveness: localStorage.getItem('antiviral_effectiveness') || 'N/A',
-    AntiviralWastageFactor: localStorage.getItem('antiviral_wastage_factor') || 'N/A',
+    //VaccineWastageFactor: localStorage.getItem('vaccine_wastage_factor') || 'N/A',
+    //AntiviralEffectiveness: localStorage.getItem('antiviral_effectiveness') || 'N/A',
+    //AntiviralWastageFactor: localStorage.getItem('antiviral_wastage_factor') || 'N/A',
   };
 
   // Map of user-friendly labels
@@ -29,9 +29,9 @@ const SavedParameters = () => {
     Chi: 'Treatment Window',
     Rho: 'Traveler Contact Rate',
     Nu: 'High/Low Death Rate',
-    VaccineWastageFactor: 'Vaccine Wastage Factor',
-    AntiviralEffectiveness: 'Antiviral Effectiveness',
-    AntiviralWastageFactor: 'Antiviral Wastage Factor',
+    //VaccineWastageFactor: 'Vaccine Wastage Factor',
+    //AntiviralEffectiveness: 'Antiviral Effectiveness',
+    //AntiviralWastageFactor: 'Antiviral Wastage Factor',
   };
 
   return (
