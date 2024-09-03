@@ -91,7 +91,7 @@ const InitialMapPercent = ({ outputData }) => {
       if (outputData) {
         const data = await parseData(outputData, texasCounties, populationData);
         setCountyData(data);
-        console.log('County data loaded:', data); // Debug log
+        //console.log('County data loaded:', data); // Debug log
       }
     };
 
@@ -128,7 +128,7 @@ const InitialMapPercent = ({ outputData }) => {
   const geoJsonStyle = (feature) => {
     const countyInfo = countyData.find(item => item.fips === feature.properties.geoid);
     const infectedPercent = countyInfo ? parseFloat(countyInfo.infectedPercent) : 0;
-    console.log(`County: ${feature.properties.name}, Infected %: ${infectedPercent}`); // Debug log
+    //console.log(`County: ${feature.properties.name}, Infected %: ${infectedPercent}`); // Debug log
     return {
       fillColor: getColor(infectedPercent),
       weight: 1,
