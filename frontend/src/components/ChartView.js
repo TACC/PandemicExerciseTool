@@ -17,15 +17,6 @@ import './styles.css';
 import './left-panel.css';
 
 import OUTPUT_0 from './OUTPUT_0.json';
-import OUTPUT_1 from './OUTPUT_1.json';
-import OUTPUT_2 from './OUTPUT_2.json';
-import OUTPUT_3 from './OUTPUT_3.json';
-import OUTPUT_4 from './OUTPUT_4.json';
-import OUTPUT_5 from './OUTPUT_5.json';
-import OUTPUT_6 from './OUTPUT_6.json';
-import OUTPUT_7 from './OUTPUT_7.json';
-import OUTPUT_8 from './OUTPUT_8.json';
-import OUTPUT_9 from './OUTPUT_9.json';
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 const layout = [
@@ -39,8 +30,7 @@ const ChartView = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [eventData, setEventData] = useState([]);
   const [outputFiles] = useState([
-    OUTPUT_0, OUTPUT_1, OUTPUT_2, OUTPUT_3, OUTPUT_4, OUTPUT_5,
-    OUTPUT_6, OUTPUT_7, OUTPUT_8, OUTPUT_9
+    OUTPUT_0
   ]);
   const intervalRef = useRef(null);
 

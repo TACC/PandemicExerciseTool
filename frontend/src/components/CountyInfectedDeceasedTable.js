@@ -3,6 +3,8 @@ import '../App.css'; // Adjust CSS as needed
 import search from './images/search.png'; // Assuming you have this image
 import { csv } from 'd3-fetch'; // Assuming you use d3-fetch for CSV parsing
 
+// Absolute counts of infected and deceased cases by county
+
 // Function to load county names from CSV (Example, adjust as per your actual CSV loading mechanism)
 const loadCountyNames = async () => {
   const data = await csv('/data/fips_county_names_HSRs.csv'); // Adjust filename as per your CSV file
