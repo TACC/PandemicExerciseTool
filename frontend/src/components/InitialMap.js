@@ -5,6 +5,8 @@ import 'leaflet/dist/leaflet.css';
 import texasOutline from './texasOutline.json';
 import './Legend.css'; // Ensure you have a CSS file for styling
 
+// Map reflecting infected counts
+
 const getColor = (infectedCount) => {
   return infectedCount > 5000 ? '#800026' :
     infectedCount > 2000 ? '#BD0026' :

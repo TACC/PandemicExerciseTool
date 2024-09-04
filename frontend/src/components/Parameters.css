@@ -77,3 +77,7 @@ button:hover {
   cursor: pointer;
   vertical-align: middle; /* Aligns the icon with the middle of the text */
 }
+
+.centered-input {
+  text-align: center;
+}

@@ -28,12 +28,12 @@ const SetParametersDropdown = ({ counties, onSave }) => {
   return (
     <div className="dropdown-container">
       <button className="parameters-button" onClick={toggleDropdown}>
-        <span className="dropdown-text">Set Parameters</span>
+        <span className="dropdown-text">Set Scenario</span>
         <span className={`dropdown-arrow ${showDropdown ? 'open' : ''}`}>▾</span>
       </button>
       {showDropdown && (
         <div className="dropdown-menu">
-          <button className="dropdown-item" onClick={openSetManually}>Set Manually</button>
+          <button className="dropdown-item" onClick={openSetManually}>Disease Parameters</button>
           <button className="dropdown-item" onClick={openInitialCases}>Initial Cases</button>
         </div>
       )}
@@ -41,7 +41,7 @@ const SetParametersDropdown = ({ counties, onSave }) => {
         <div className="modal-overlay" onClick={closeSetManually}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <span className="modal-close" onClick={closeSetManually}>×</span>
-            <h2>Set Manually</h2>
+            <h2>Disease Parameters</h2>
             <SetManually onClose={closeSetManually} onSubmit={(data) => { console.log('Set Manually:', data); handleSave(); }} />
           </div>
         </div>
