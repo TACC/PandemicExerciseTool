@@ -18,7 +18,7 @@
 .dropdown-text {
   color: black !important;
   font-weight: bold;
-  font-size: 20px;
+  font-size: 18px;
   text-align: center; /* Horizontally centers the text */
   display: flex; /* Enables flexbox layout */
   justify-content: center; /* Horizontally centers the content */
@@ -55,7 +55,7 @@
 
 .dropdown-item {
   display: block;
-  padding: 10px 16px;
+  padding: 10px 10px;
   cursor: pointer;
   border-bottom: 1px solid #ccc;
   background: none;
@@ -64,6 +64,7 @@
   font-size: medium;
   font-weight: bold;
   font-size: 18px;
+  white-space: nowrap;
 }
 
 .dropdown-menu:hover {

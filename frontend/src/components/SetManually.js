@@ -3,7 +3,61 @@ import './Parameters.css'; // Import the CSS file for styling
 import toggletip from  './images/toggletip.svg';
 
 const SetManually = ({ onClose }) => {
+
+   // Define scenarios with their corresponding values
+   const scenarios = {
+    "Slow Transmission, Mild Severity (2009 H1N1)": {
+      id: 1,
+      disease_name: "2009 H1N1",
+      R0: 1.2,
+      beta_scale: 1.0,
+      tau: 1.2,
+      kappa: 1.9,
+      gamma: 4.1,
+      chi: 1.0,
+      rho: 0.39,
+      nu: "low"
+    },
+    "Slow Transmission, High Severity (1918 Influenza)": {
+      id: 2,
+      disease_name: "1918 Influenza",
+      R0: 1.2,
+      beta_scale: 1.0,
+      tau: 1.2,
+      kappa: 1.9,
+      gamma: 4.1,
+      chi: 1.0,
+      rho: 0.39,
+      nu: "high"
+    },
+    "Fast Transmission, Mild Severity (2009 H1N1)": {
+      id: 3,
+      disease_name: "2009 H1N1",
+      R0: 1.8,
+      beta_scale: 10.0,
+      tau: 1.2,
+      kappa: 1.9,
+      gamma: 4.1,
+      chi: 1.0,
+      rho: 0.39,
+      nu: "low"
+    },
+    "Fast Transmission, High Severity (1918 Influenza)": {
+      id: 4,
+      disease_name: "1918 Influenza",
+      R0: 1.8,
+      beta_scale: 10.0,
+      tau: 1.2,
+      kappa: 1.9,
+      gamma: 4.1,
+      chi: 1.0,
+      rho: 0.39,
+      nu: "high"
+    }
+  };
+
   // Load initial state from localStorage or set default values
+  const [selectedScenario, setSelectedScenario] = useState('');
   const [diseaseName, setDiseaseName] = useState(localStorage.getItem('diseaseName') || '');
   const [reproductionNumber, setReproductionNumber] = useState(parseFloat(localStorage.getItem('reproductionNumber')) || 1.2);
   const [beta_scale, setBetaScale] = useState(parseFloat(localStorage.getItem('beta_scale'), 10) || 10);
@@ -17,6 +71,24 @@ const SetManually = ({ onClose }) => {
   const [antiviral_effectiveness, setAntiviralEffectiveness] = useState(parseFloat(localStorage.getItem('antiviral_effectiveness')) || 0.8);
   const [antiviral_wastage_factor, setAntiviralWastageFactor] = useState(parseFloat(localStorage.getItem('antiviral_wastage_factor')) || 60);
 
+
+    // Function to update the form with scenario values
+    const handleScenarioChange = (event) => {
+      const scenarioName = event.target.value;
+      setSelectedScenario(scenarioName);
+      const scenario = scenarios[scenarioName];
+      if (scenario) {
+        setDiseaseName(scenario.disease_name);
+        setReproductionNumber(scenario.R0);
+        setBetaScale(scenario.beta_scale);
+        setTau(scenario.tau);
+        setKappa(scenario.kappa);
+        setGamma(scenario.gamma);
+        setChi(scenario.chi);
+        setRho(scenario.rho);
+        setNuHigh(scenario.nu);
+      }
+    };
   // Save state to localStorage when it changes
   useEffect(() => {
     localStorage.setItem('diseaseName', diseaseName);
@@ -96,18 +168,34 @@ const SetManually = ({ onClose }) => {
 
   return (
     <form className="parameters-form" onSubmit={handleSubmit}>
+      {/* Scenario Selection Dropdown */}
       <div className="form-group">
-        <label htmlFor="diseaseName">Disease Name:</label>
+        <label htmlFor="scenarioSelection">Load from Catalog</label>
+        <select id="scenarioSelection" value={selectedScenario} onChange={handleScenarioChange}>
+          <option value="" className="centered-input">--Select Scenario--</option>
+          {Object.keys(scenarios).map((scenarioName) => (
+            <option key={scenarioName}
+            className="centered-input" 
+            value={scenarioName}>
+              {scenarioName}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="diseaseName">Scenario Name</label>
         <input
           type="text"
           id="diseaseName"
+          className="centered-input"
           value={diseaseName}
           onChange={e => setDiseaseName(e.target.value)}
           required
         />
       </div>
       <div className="form-group">
-        <label htmlFor="reproductionNumber">Reproduction Number (R0):
+        <label htmlFor="reproductionNumber">Reproduction Number (R0)
         <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
             <span className="tooltip-text">R0 indicates the contagiousness of the virus at a given point time and roughly corresponds to the average number of people a typical case will infect.</span>
           </span>
@@ -115,6 +203,7 @@ const SetManually = ({ onClose }) => {
         <input
           type="number"
           id="reproductionNumber"
+          className="centered-input"
           value={reproductionNumber}
           onChange={e => setReproductionNumber(parseFloat(e.target.value))}
           step="0.1"
@@ -124,7 +213,7 @@ const SetManually = ({ onClose }) => {
       </div>
       <div className="form-group">
         <label htmlFor="tau">
-          Latency Period (days):
+          Latency Period (days)
           <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
             <span className="tooltip-text">Average latency period, in days, which corresponds to 1/tau in the model.</span>
           </span>
@@ -132,6 +221,7 @@ const SetManually = ({ onClose }) => {
         <input
           type="number"
           id="tau"
+          className="centered-input"
           value={tau}
           onChange={e => setTau(parseFloat(e.target.value))}
           step="0.1"
@@ -141,7 +231,7 @@ const SetManually = ({ onClose }) => {
       </div>
       <div className="form-group">
         <label htmlFor="kappa">
-          Asymptomatic Period (days):
+          Asymptomatic Period (days)
           <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
             <span className="tooltip-text">The time period during which an infected individual shows no symptoms but can still spread the infection, which corresponds to 1/kappa in the model.</span>
           </span>
@@ -149,6 +239,7 @@ const SetManually = ({ onClose }) => {
         <input
           type="number"
           id="kappa"
+          className="centered-input"
           value={kappa}
           onChange={e => setKappa(parseFloat(e.target.value, 10))}
           step="0.1"
@@ -157,7 +248,7 @@ const SetManually = ({ onClose }) => {
         />
       </div>
       <div className="form-group">
-        <label htmlFor="gamma">Infectious Period (days):
+        <label htmlFor="gamma">Infectious Period (days)
           <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
             <span className="tooltip-text">Total infectious period in days (asymptomatic/treatable/infectious to recovered), which corresponds to 1/gamma in the model.</span>
           </span>
@@ -165,6 +256,7 @@ const SetManually = ({ onClose }) => {
         <input
           type="number"
           id="gamma"
+          className="centered-input"
           value={gamma}
           onChange={e => setGamma(parseFloat(e.target.value, 10))}
           step="0.1"
@@ -173,14 +265,15 @@ const SetManually = ({ onClose }) => {
         />
       </div>
       <div className="form-group">
-        <label htmlFor="chi">Treatment Window (days):
+        <label htmlFor="chi">Therapeutic Window (days)
           <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-            <span className="tooltip-text">Treatable to infectious rate in days, which corresponds to 1/chi in the model.</span>
+            <span className="tooltip-text">Period in which treatment can be dispensed, which corresponds to 1/chi in the model.</span>
           </span>
         </label>
         <input
           type="number"
           id="chi"
+          className="centered-input"
           value={chi}
           onChange={e => setChi(parseFloat(e.target.value, 10))}
           step="0.1"
@@ -188,25 +281,9 @@ const SetManually = ({ onClose }) => {
           required
         />
       </div>
-      <div className="form-group">
-        <label htmlFor="rho">Traveler contact rate (percent):
-          <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-            <span className="tooltip-text">Travelers contact residents at a reduced rate, rho, which is a multiplier used to reduce the age-specific mixing rate parameters.</span>
-          </span>
-        </label>
-        <input
-          type="number"
-          id="rho"
-          value={rho}
-          onChange={e => setRho(parseFloat(e.target.value))}
-          step="0.01"
-          min="0"
-          required
-        />
-      </div>
 
       <div className="form-group" style ={{alignItems: 'center'}}>
-        <label htmlFor="nu">High/Low death rate: 
+        <label htmlFor="nu">High/Low death rate 
         <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
             <span className="tooltip-text"> Asymptomatic/Treatable/Infectious to Deceased, which corresponds to 1/nu in the model</span>
           </span>

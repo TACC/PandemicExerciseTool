@@ -37,7 +37,7 @@ const Interventions = () => {
         <div className="dropdown-menu">
           <button className="dropdown-item" onClick={openAntivirals}>Antivirals Stockpile</button>
           <button className="dropdown-item" onClick={openVaccine}>Vaccine Stockpile</button>
-          <button className="dropdown-item" onClick={openNonPharmaceutical}>Public Health Announcements</button>
+          <button className="dropdown-item" onClick={openNonPharmaceutical}>Non-pharmaceutical Interventions</button>
         </div>
       )}
       {isAntiviralsOpen && (
@@ -62,7 +62,7 @@ const Interventions = () => {
         <div className="modal-overlay" onClick={closeNonPharmaceutical}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <span className="modal-close" onClick={closeNonPharmaceutical}>&times;</span>
-            <h2>Non-Pharmaceutical</h2>
+            <h2>Non-pharmaceutical Interventions</h2>
             <NonPharmaceutical onSubmit={(data) => { console.log('Non-Pharmaceutical:', data); closeNonPharmaceutical(); }} />
           </div>
         </div>

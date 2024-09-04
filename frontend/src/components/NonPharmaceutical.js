@@ -51,6 +51,21 @@ const NonPharmaceutical = ({ onSubmit }) => {
       </div>
 
       <div className="form-group">
+        <label htmlFor="location">Location:</label>
+        <select
+          id="location"
+          value={formData.location}
+          onChange={e => handleChange('location', e.target.value)}
+          required
+        >
+          <option value="" disabled>Select a location</option>
+          <option value="By County">By County</option>
+          <option value="Statewide">Statewide</option>
+          <option value="By Region">By Region</option>
+        </select>
+      </div>
+
+      <div className="form-group">
         <label htmlFor="duration">Duration (days):</label>
         <input
           type="number"
@@ -80,22 +95,6 @@ const NonPharmaceutical = ({ onSubmit }) => {
           </div>
         ))}
       </div>
-
-      <div className="form-group">
-        <label htmlFor="location">Location:</label>
-        <select
-          id="location"
-          value={formData.location}
-          onChange={e => handleChange('location', e.target.value)}
-          required
-        >
-          <option value="" disabled>Select a location</option>
-          <option value="By County">By County</option>
-          <option value="Statewide">Statewide</option>
-          <option value="By Region">By Region</option>
-        </select>
-      </div>
-
       <button type="submit">Submit Data</button>
     </form>
   );

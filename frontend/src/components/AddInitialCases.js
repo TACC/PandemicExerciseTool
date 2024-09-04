@@ -119,13 +119,13 @@ const AddInitialCases = ({ counties, onClose }) => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="county">County</label>
+          <label htmlFor="county">Location</label>
           <Select
             id="county"
             value={selectedCounty}
             onChange={setSelectedCounty}
             options={countyOptions}
-            placeholder="Select a County"
+            placeholder="Select a county"
             isClearable
             isSearchable
           />

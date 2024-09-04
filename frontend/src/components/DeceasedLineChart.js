@@ -81,7 +81,7 @@ const DeceasedLineChart = ({ eventData }) => {
       y: {
         title: {
           display: true,
-          text: 'Total Deceased',
+          text: 'Total Deaths',
           color: 'black', // Change y-axis title color to black
           font: {
             size: 20, // Larger y-axis title font size
