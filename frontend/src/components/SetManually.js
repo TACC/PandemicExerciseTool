@@ -3,7 +3,61 @@ import './Parameters.css'; // Import the CSS file for styling
 import toggletip from  './images/toggletip.svg';
 
 const SetManually = ({ onClose }) => {
+
+   // Define scenarios with their corresponding values
+   const scenarios = {
+    "Slow Transmission, Mild Severity (2009 H1N1)": {
+      id: 1,
+      disease_name: "2009 H1N1",
+      R0: 1.2,
+      beta_scale: 1.0,
+      tau: 1.2,
+      kappa: 1.9,
+      gamma: 4.1,
+      chi: 1.0,
+      rho: 0.39,
+      nu: "low"
+    },
+    "Slow Transmission, High Severity (1918 Influenza)": {
+      id: 2,
+      disease_name: "1918 Influenza",
+      R0: 1.2,
+      beta_scale: 1.0,
+      tau: 1.2,
+      kappa: 1.9,
+      gamma: 4.1,
+      chi: 1.0,
+      rho: 0.39,
+      nu: "high"
+    },
+    "Fast Transmission, Mild Severity (2009 H1N1)": {
+      id: 3,
+      disease_name: "2009 H1N1",
+      R0: 1.8,
+      beta_scale: 10.0,
+      tau: 1.2,
+      kappa: 1.9,
+      gamma: 4.1,
+      chi: 1.0,
+      rho: 0.39,
+      nu: "low"
+    },
+    "Fast Transmission, High Severity (1918 Influenza)": {
+      id: 4,
+      disease_name: "1918 Influenza",
+      R0: 1.8,
+      beta_scale: 10.0,
+      tau: 1.2,
+      kappa: 1.9,
+      gamma: 4.1,
+      chi: 1.0,
+      rho: 0.39,
+      nu: "high"
+    }
+  };
+
   // Load initial state from localStorage or set default values
+  const [selectedScenario, setSelectedScenario] = useState('');
   const [diseaseName, setDiseaseName] = useState(localStorage.getItem('diseaseName') || '');
   const [reproductionNumber, setReproductionNumber] = useState(parseFloat(localStorage.getItem('reproductionNumber')) || 1.2);
   const [beta_scale, setBetaScale] = useState(parseFloat(localStorage.getItem('beta_scale'), 10) || 10);
@@ -17,6 +71,24 @@ const SetManually = ({ onClose }) => {
   const [antiviral_effectiveness, setAntiviralEffectiveness] = useState(parseFloat(localStorage.getItem('antiviral_effectiveness')) || 0.8);
   const [antiviral_wastage_factor, setAntiviralWastageFactor] = useState(parseFloat(localStorage.getItem('antiviral_wastage_factor')) || 60);
 
+
+    // Function to update the form with scenario values
+    const handleScenarioChange = (event) => {
+      const scenarioName = event.target.value;
+      setSelectedScenario(scenarioName);
+      const scenario = scenarios[scenarioName];
+      if (scenario) {
+        setDiseaseName(scenario.disease_name);
+        setReproductionNumber(scenario.R0);
+        setBetaScale(scenario.beta_scale);
+        setTau(scenario.tau);
+        setKappa(scenario.kappa);
+        setGamma(scenario.gamma);
+        setChi(scenario.chi);
+        setRho(scenario.rho);
+        setNuHigh(scenario.nu);
+      }
+    };
   // Save state to localStorage when it changes
   useEffect(() => {
     localStorage.setItem('diseaseName', diseaseName);
@@ -96,6 +168,21 @@ const SetManually = ({ onClose }) => {
 
   return (
     <form className="parameters-form" onSubmit={handleSubmit}>
+      {/* Scenario Selection Dropdown */}
+      <div className="form-group">
+        <label htmlFor="scenarioSelection">Load from Catalog</label>
+        <select id="scenarioSelection" value={selectedScenario} onChange={handleScenarioChange}>
+          <option value="" className="centered-input">--Select Scenario--</option>
+          {Object.keys(scenarios).map((scenarioName) => (
+            <option key={scenarioName}
+            className="centered-input" 
+            value={scenarioName}>
+              {scenarioName}
+            </option>
+          ))}
+        </select>
+      </div>
+
       <div className="form-group">
         <label htmlFor="diseaseName">Scenario Name</label>
         <input
