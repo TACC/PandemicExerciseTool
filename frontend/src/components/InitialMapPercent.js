@@ -189,7 +189,7 @@ const InitialMapPercent = ({ outputData }) => {
         id="map"
         center={[31.0, -100.0]}
         zoom={6}
-        style={{ height: '600px', width: '1700px' }}
+        style={{ height: '600px', width: '1700px', backgroundColor: 'white' }}
         whenCreated={mapInstance => { mapRef.current = mapInstance; }}
       >
         {countyData.length > 0 && (
