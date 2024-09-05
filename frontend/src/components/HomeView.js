@@ -132,36 +132,27 @@ const HomeView = () => {
     };
   }, [isRunning, currentIndex]);
 
-
   useEffect(() => {
-
-    if (currentIndex != 0) {
+    if (currentIndex !== 0) {
       const data_entries = Object.entries(data.data);
-      console.log('Entries[0][1]:', data_entries[0][1]);
-      const data_entries_keys = Object.keys(data_entries[0][1]);
-      console.log('Keys:', data_entries_keys);
-      const deceasedCount = data_entries[226][1]['compartment_summary']['D'];
-
-      //console.log('Entries[0][compartment_summary]:', data_entries[0]['compartment_summary']);
-      //const deceasedCount = data_entries.reduce((acc, node) => {
-      //    const {D} = node.compartment_summary;
-      //    return acc + D;
-      //}, 0);
-
-      console.log('deceasedCount:', deceasedCount);
-
+  
+      // Use reduce to iterate over counties and accumulate deceased counts
+      const totalDeceasedCount = data_entries.reduce((acc, [countyKey, countyData]) => {
+        const deceasedCount = countyData['compartment_summary']['D'] || 0;
+        return acc + deceasedCount; // Accumulate deceased count
+      }, 0); // Initialize accumulator at 0
+  
+      console.log('Total Deceased Count:', totalDeceasedCount);
+  
+      // Update event data with the accumulated deceased count for the current day
       setEventData((eventData) => {
         const newData = [...eventData];
-        newData.push( { day: currentIndex, deceased: deceasedCount } );
-        //console.log('New event data:', newData);
+        newData.push({ day: currentIndex, deceased: totalDeceasedCount });
         return newData;
-      }, [deceasedCount]);
+      });
     }
-
-
-  }, [data])
-
-
+  }, [data, currentIndex]);
+  
   const [saved, setSaved] = useState(false);
 
   const handleSave = () => {
