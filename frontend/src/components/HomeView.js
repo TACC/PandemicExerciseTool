@@ -18,15 +18,7 @@ import './left-panel.css';
 import axios from 'axios';
 
 import OUTPUT_0 from './OUTPUT_0.json';
-//import OUTPUT_1 from './OUTPUT_1.json';
-//import OUTPUT_2 from './OUTPUT_2.json';
-//import OUTPUT_3 from './OUTPUT_3.json';
-//import OUTPUT_4 from './OUTPUT_4.json';
-//import OUTPUT_5 from './OUTPUT_5.json';
-//import OUTPUT_6 from './OUTPUT_6.json';
-//import OUTPUT_7 from './OUTPUT_7.json';
-//import OUTPUT_8 from './OUTPUT_8.json';
-//import OUTPUT_9 from './OUTPUT_9.json';
+
 
 
 const HomeView = () => {
@@ -41,12 +33,6 @@ const HomeView = () => {
   const [eventData, setEventData] = useState([]);
 
   const [outputFiles] = useState([ OUTPUT_0 ])
-
-  //const [currentIndex, setCurrentIndex] = useState(0);
-  //const [outputFiles] = useState([
-  //  OUTPUT_0, OUTPUT_1, OUTPUT_2, OUTPUT_3, OUTPUT_4, OUTPUT_5,
-  //  OUTPUT_6, OUTPUT_7, OUTPUT_8, OUTPUT_9
-  //]);
 
 
   const handleToggleScenario = () => {
@@ -95,12 +81,6 @@ const HomeView = () => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
     }
-
-    intervalRef.current = setInterval(() => {
-      setCurrentIndex((prevIndex) => {
-          return prevIndex + 1;
-      });
-    }, 1000);
   };
 
   const handlePauseScenario = () => {
@@ -118,105 +98,69 @@ const HomeView = () => {
     }
   };
 
-///////////////////////
 
   useEffect(() => {
     const fetchData = async (currentIndex) => {
-        try {
-            const response = await axios.get(`http://localhost:8000/api/output/${currentIndex}`);
-            if (response.status === 200) {
-              //setData(prevData => [...prevData, response.data]);
-              setData(response.data);
-              setCurrentIndex(prevIndex => prevIndex + 1);
+      try {
+        const response = await axios.get(`http://localhost:8000/api/output/${currentIndex}`);
+        
+        if (response.status === 200) {
+          setData(response.data);
 
-              console.log('Data fetched successfully:', data.day);
-              console.log('Current Index:', currentIndex);
-              //const deceasedCount = data.data.reduce((acc, node_id) => {
-
-              //  const { D } = node_id.compartments;
-              //  const totalDeceased = [
-              //    ...D.U.L,
-              //    ...D.U.H,
-              //    ...D.V.L,
-              //    ...D.V.H,
-              //  ].reduce((sum, value) => sum + value, 0);
-              //  return acc + totalDeceased;
-              //}, 0);
-              
-              //const exposedCount = data.data.compartment_summary.E.reduce((acc, value) => acc + value, 0);
-              //console.log(('exposedCount:', exposedCount));
-
-             setEventData((data) => {
-               const newData = [...data];
-               if (!newData[currentIndex]) {
-                 newData[currentIndex] = { day: currentIndex, deceased: 1 };
-               } else {
-                 newData[currentIndex].deceased = 1;
-               }
-               return newData.slice(0, currentIndex + 1);
-             });
-
-            } else {
-                console.log('No data available for index:', currentIndex);
-            }
-        } catch (error) {
-            console.log('Error fetching data:', error);
+          console.log('Current Index before increment:', currentIndex);
+          setCurrentIndex((prevIndex) => {
+            return prevIndex + 1;
+          });
         }
+
+      } catch (error) {
+        console.log('Data not here yet:', error);
+      }
     };
 
     if (isRunning) {
       intervalRef.current = setInterval(() => {
+          console.log('Fetching data for index:', currentIndex);
           fetchData(currentIndex);
       }, 1000); // Check every 1 second
     }
 
     return () => {
       if (intervalRef.current) {
-          clearInterval(intervalRef.current);
+        clearInterval(intervalRef.current);
       }
     };
-
   }, [isRunning, currentIndex]);
-
-/////////////////////
-
-//  useEffect(() => {
-//    if (outputFiles[currentIndex]) {
-//      console.log('Output Data:', outputFiles[currentIndex]);
-//
-//      const deceasedCount = outputFiles[currentIndex].data.reduce((acc, county) => {
-//        const { D } = county.compartments;
-//        const totalDeceased = [
-//          ...D.U.L,
-//          ...D.U.H,
-//          ...D.V.L,
-//          ...D.V.H,
-//        ].reduce((sum, value) => sum + value, 0);
-//        return acc + totalDeceased;
-//      }, 0);
-//
-//      setEventData((prevData) => {
-//        const newData = [...prevData];
-//        if (!newData[currentIndex]) {
-//          newData[currentIndex] = { day: currentIndex, deceased: Math.round(deceasedCount) };
-//        } else {
-//          newData[currentIndex].deceased = Math.round(deceasedCount);
-//        }
-//        return newData.slice(0, currentIndex + 1);
-//      });
-//    }
-//  }, [currentIndex, outputFiles]);
-
 
 
   useEffect(() => {
-    const delay = 500;
-    const timer = setTimeout(() => {
-      console.log('Data processed for day:', currentIndex);
-    }, delay);
 
-    return () => clearTimeout(timer);
-  }, [currentIndex]);
+    if (currentIndex != 0) {
+      const data_entries = Object.entries(data.data);
+      console.log('Entries[0][1]:', data_entries[0][1]);
+      const data_entries_keys = Object.keys(data_entries[0][1]);
+      console.log('Keys:', data_entries_keys);
+      const deceasedCount = data_entries[226][1]['compartment_summary']['D'];
+
+      //console.log('Entries[0][compartment_summary]:', data_entries[0]['compartment_summary']);
+      //const deceasedCount = data_entries.reduce((acc, node) => {
+      //    const {D} = node.compartment_summary;
+      //    return acc + D;
+      //}, 0);
+
+      console.log('deceasedCount:', deceasedCount);
+
+      setEventData((eventData) => {
+        const newData = [...eventData];
+        newData.push( { day: currentIndex, deceased: deceasedCount } );
+        //console.log('New event data:', newData);
+        return newData;
+      }, [deceasedCount]);
+    }
+
+
+  }, [data])
+
 
   const [saved, setSaved] = useState(false);
 
