@@ -9,6 +9,8 @@ import SetParametersDropdown from './SetParametersDropdown';
 import Interventions from './Interventions';
 import SavedParameters from './SavedParameters';
 import AddInitialCases from './AddInitialCases';
+import CountyInfectedDeceasedTable from './CountyInfectedDeceasedTable';
+import InfectedMap from './InfectedMap';
 
 import './HomeView.css';
 import PlayPauseButton from './PlayPauseButton';
@@ -18,8 +20,6 @@ import './left-panel.css';
 import axios from 'axios';
 
 import OUTPUT_0 from './OUTPUT_0.json';
-
-
 
 const HomeView = () => {
 
@@ -131,27 +131,46 @@ const HomeView = () => {
       }
     };
   }, [isRunning, currentIndex]);
-
   useEffect(() => {
     if (currentIndex !== 0) {
       const data_entries = Object.entries(data.data);
   
-      // Use reduce to iterate over counties and accumulate deceased counts
-      const totalDeceasedCount = data_entries.reduce((acc, [countyKey, countyData]) => {
-        const deceasedCount = countyData['compartment_summary']['D'] || 0;
-        return acc + deceasedCount; // Accumulate deceased count
-      }, 0); // Initialize accumulator at 0
+      // Map through data_entries to collect fips_id, infected counts, and deceased counts for each county
+      const countyInfectedDeceasedData = data_entries.map(([countyKey, countyData]) => {
+        const fips_id = countyData['fips_id'];  // Get the fips_id for the county
+        const infectedCount = countyData['compartment_summary']['I'] || 0;  // Get the infected count
+        const deceasedCount = countyData['compartment_summary']['D'] || 0;  // Get the deceased count
+  
+        // Log the infected and deceased counts per county
+        // console.log(`County FIPS: ${fips_id}, Infected: ${infectedCount}, Deceased: ${deceasedCount}`);
+  
+        return {
+          fips: fips_id,        // Store fips_id
+          infected: infectedCount, // Store infected count
+          deceased: deceasedCount, // Store deceased count
+        };
+      });
+  
+      // Calculate the total deceased count for the current day
+      const totalDeceasedCount = countyInfectedDeceasedData.reduce(
+        (acc, countyData) => acc + countyData.deceased, 
+        0
+      );
+  
+      // Update the eventData to include the county-level fips, infected, and deceased information
+      setEventData((prevEventData) => [
+        ...prevEventData,
+        {
+          day: currentIndex,
+          counties: countyInfectedDeceasedData,  // Store array of county data for the current day
+          totalDeceased: totalDeceasedCount,     // Store total deceased count for the day
+        },
+      ]);
   
       console.log('Total Deceased Count:', totalDeceasedCount);
-  
-      // Update event data with the accumulated deceased count for the current day
-      setEventData((eventData) => {
-        const newData = [...eventData];
-        newData.push({ day: currentIndex, deceased: totalDeceasedCount });
-        return newData;
-      });
     }
   }, [data, currentIndex]);
+  
   
   const [saved, setSaved] = useState(false);
 
@@ -174,7 +193,7 @@ const HomeView = () => {
   
       <div className="middle-panel">
         <div className="map-and-chart-container">
-          <InitialMapPercent outputData={outputFiles[0]} className="map-size" />
+          <InfectedMap eventData={eventData} className="map-size" />
           <div className="separator"></div> 
           <DeceasedLineChart eventData={eventData} className="chart-size" />
         </div>
