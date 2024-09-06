@@ -11,6 +11,7 @@ import SavedParameters from './SavedParameters';
 import AddInitialCases from './AddInitialCases';
 import CountyInfectedDeceasedTable from './CountyInfectedDeceasedTable';
 import InfectedMap from './InfectedMap';
+import InfectedDeceasedTable from './InfectedDeceasedTable';
 
 import './HomeView.css';
 import PlayPauseButton from './PlayPauseButton';
@@ -199,7 +200,7 @@ const HomeView = () => {
         </div>
       </div> 
       <div className="right-panel">
-        <CountyPercentageTable className="percentage-table" outputData={outputFiles[0]} />
+        <InfectedDeceasedTable eventData={eventData} currentIndex={currentIndex}/>
       </div>
   
       <div className="footer">

@@ -149,7 +149,7 @@ const InfectedMap = ({ eventData }) => {
         id="map"
         center={[31.0, -100.0]}
         zoom={6}
-        style={{ height: '500px', width: '1500px', backgroundColor: 'white' }}
+        style={{ height: '620px', width: '1700px', backgroundColor: 'white' }}
         whenCreated={mapInstance => { mapRef.current = mapInstance; }}
       >
         {countyData.length > 0 && (
@@ -160,6 +160,14 @@ const InfectedMap = ({ eventData }) => {
             onEachFeature={onEachCounty}
           />
         )}
+          <GeoJSON
+        data={texasOutline}
+        style={{
+          color: '#333', // Outline color
+          weight: 2,     // Outline weight
+          fillOpacity: 0 // Make sure the fill is transparent
+        }}
+      />  
         <Legend />
       </MapContainer>
     </div>
