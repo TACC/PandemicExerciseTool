@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../App.css'; // Adjust CSS as needed
-import search from './images/search.png'; // Assuming you have this image
+import search from './images/search.svg'; // Assuming you have this image
 import { csv } from 'd3-fetch'; // Assuming you use d3-fetch for CSV parsing
 
 // Absolute counts of infected and deceased cases by county
@@ -45,30 +45,23 @@ const parseData = (jsonData, countyNameLookup) => {
     };
   });
 };
-
 function CountyInfectedDeceasedTable({ outputData }) {
   const [sortedData, setSortedData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortDirection, setSortDirection] = useState({
     county: 'asc',
-    infected: 'desc', // Set default sort direction for infected to descending
-    deceased: 'desc', // Set default sort direction for deceased to descending
+    infected: 'desc',
+    deceased: 'desc',
   });
 
   useEffect(() => {
-    const fetchAndParseData = async () => {
-      const countyNameLookup = await loadCountyNames();
-      const parsedData = parseData(outputData, countyNameLookup);
-
+    if (outputData.length > 0) {
       // Sort data by infected count in descending order by default
-      const sortedByInfected = parsedData.sort((a, b) => b.infected - a.infected);
+      const sortedByInfected = [...outputData].sort((a, b) => b.infected - a.infected);
       setSortedData(sortedByInfected);
-    };
-
-    fetchAndParseData();
+    }
   }, [outputData]);
 
-  // Function to handle sorting by county name, infected count, or deceased count
   const sortData = (key) => {
     const sorted = [...sortedData];
     sorted.sort((a, b) => {
@@ -89,9 +82,8 @@ function CountyInfectedDeceasedTable({ outputData }) {
     });
   };
 
-  // Function to filter data based on search term
-  const filteredData = sortedData.filter((county) =>
-    county.county.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredData = sortedData.filter((entry) =>
+    entry.county ? entry.county.toLowerCase().includes(searchTerm.toLowerCase()) : true
   );
 
   return (
@@ -131,11 +123,11 @@ function CountyInfectedDeceasedTable({ outputData }) {
             </tr>
           </thead>
           <tbody>
-            {filteredData.map((county, index) => (
+            {filteredData.map((entry, index) => (
               <tr key={index} className={index % 2 === 0 ? 'even-row' : 'odd-row'}>
-                <td>{county.county}</td>
-                <td>{county.infected}</td>
-                <td>{county.deceased}</td>
+                <td>{entry.county || 'Unknown'}</td>
+                <td>{entry.infected}</td>
+                <td>{entry.deceased}</td>
               </tr>
             ))}
           </tbody>
