@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import '../App.css'; // Adjust CSS as needed
-import search from './images/search.svg'; // Assuming you have this image
+import searchIcon from './images/search.svg'; // Updated to use search.svg
 import { csv } from 'd3-fetch'; // Assuming you use d3-fetch for CSV parsing
+import './Table.css';
 
-// Absolute counts of infected and deceased cases by county
-
-// Function to load county names from CSV (Example, adjust as per your actual CSV loading mechanism)
+// Function to load county names from CSV
 const loadCountyNames = async () => {
   const data = await csv('/data/fips_county_names_HSRs.csv'); // Adjust filename as per your CSV file
   const lookup = {};
@@ -17,36 +15,9 @@ const loadCountyNames = async () => {
   return lookup;
 };
 
-// Function to parse data and calculate infected and deceased counts
-const parseData = (jsonData, countyNameLookup) => {
-  return jsonData.data.map((county) => {
-    const { fips_id, compartments } = county;
-    const { I, D } = compartments;
-    const totalInfected = [
-      ...I.U.L,
-      ...I.U.H,
-      ...I.V.L,
-      ...I.V.H
-    ].reduce((sum, value) => sum + value, 0);
-    const totalDeceased = [
-      ...D.U.L,
-      ...D.U.H,
-      ...D.V.L,
-      ...D.V.H
-    ].reduce((sum, value) => sum + value, 0);
-
-    const countyName = countyNameLookup[fips_id] || 'Unknown';
-
-    return {
-      county: countyName,
-      fips: fips_id,
-      infected: Math.round(totalInfected),
-      deceased: Math.round(totalDeceased),
-    };
-  });
-};
-function CountyInfectedDeceasedTable({ outputData }) {
-  const [sortedData, setSortedData] = useState([]);
+function InfectedDeceasedTable({ eventData }) {
+  const [mergedData, setMergedData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortDirection, setSortDirection] = useState({
     county: 'asc',
@@ -55,18 +26,33 @@ function CountyInfectedDeceasedTable({ outputData }) {
   });
 
   useEffect(() => {
-    if (outputData.length > 0) {
-      // Sort data by infected count in descending order by default
-      const sortedByInfected = [...outputData].sort((a, b) => b.infected - a.infected);
-      setSortedData(sortedByInfected);
-    }
-  }, [outputData]);
+    const fetchData = async () => {
+      const countyNameLookup = await loadCountyNames();
 
+      const merged = eventData.map(event => {
+        const dayData = event.counties.map(county => ({
+          county: countyNameLookup[county.fips] || 'Unknown',
+          infected: county.infected,
+          deceased: county.deceased,
+        }));
+
+        return dayData;
+      }).flat(); // Flatten array to merge all days' data
+
+      setMergedData(merged);
+      setFilteredData(merged); // Initialize filtered data
+    };
+
+    fetchData();
+  }, [eventData]);
+
+  // Function to handle sorting
   const sortData = (key) => {
-    const sorted = [...sortedData];
+    const sorted = [...filteredData];
     sorted.sort((a, b) => {
-      const valueA = a[key];
-      const valueB = b[key];
+      const valueA = key === 'county' ? a[key].toLowerCase() : parseFloat(a[key]);
+      const valueB = key === 'county' ? b[key].toLowerCase() : parseFloat(b[key]);
+
       if (valueA < valueB) {
         return sortDirection[key] === 'asc' ? -1 : 1;
       }
@@ -75,25 +61,33 @@ function CountyInfectedDeceasedTable({ outputData }) {
       }
       return 0;
     });
-    setSortedData(sorted);
+
+    setFilteredData(sorted);
     setSortDirection({
       ...sortDirection,
       [key]: sortDirection[key] === 'asc' ? 'desc' : 'asc',
     });
   };
 
-  const filteredData = sortedData.filter((entry) =>
-    entry.county ? entry.county.toLowerCase().includes(searchTerm.toLowerCase()) : true
-  );
+  // Function to filter data based on search term
+  useEffect(() => {
+    const lowerCaseSearchTerm = searchTerm.toLowerCase();
+    const filtered = mergedData.filter(county =>
+      county.county.toLowerCase().includes(lowerCaseSearchTerm)
+    );
+    setFilteredData(filtered);
+  }, [searchTerm, mergedData]);
 
   return (
     <div className="table-container">
       <div className="search-container">
-        <img src={search} alt="Search" className="search-icon" />
+        <div className="search-icon-box">
+          <img src={searchIcon} alt="Search" className="search-icon" />
+        </div>
         <input
           type="text"
           className="search-input"
-          placeholder="Search County..."
+          placeholder="Search Counties..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
@@ -123,11 +117,11 @@ function CountyInfectedDeceasedTable({ outputData }) {
             </tr>
           </thead>
           <tbody>
-            {filteredData.map((entry, index) => (
+            {filteredData.map((county, index) => (
               <tr key={index} className={index % 2 === 0 ? 'even-row' : 'odd-row'}>
-                <td>{entry.county || 'Unknown'}</td>
-                <td>{entry.infected}</td>
-                <td>{entry.deceased}</td>
+                <td>{county.county}</td>
+                <td>{county.infected}</td>
+                <td>{county.deceased}</td>
               </tr>
             ))}
           </tbody>
@@ -137,4 +131,4 @@ function CountyInfectedDeceasedTable({ outputData }) {
   );
 }
 
-export default CountyInfectedDeceasedTable;
+export default InfectedDeceasedTable;

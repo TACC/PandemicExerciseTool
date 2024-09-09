@@ -8,7 +8,19 @@
     border: 1px solid #ccc;
     border-radius: 5px;
     background-color: #f9f9f9;
+    position: relative;
   }
+
+  .add-initial-cases-form .form-group {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 1rem; /* space between form elements */
+  }
+
+  .add-initial-cases-form .form-group:nth-child(1) {
+    z-index: 2; /* ensure the location dropdown stays on top */
+  }
+  
   
   .form-group {
     display: flex;

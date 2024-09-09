@@ -9,6 +9,9 @@ import SetParametersDropdown from './SetParametersDropdown';
 import Interventions from './Interventions';
 import SavedParameters from './SavedParameters';
 import AddInitialCases from './AddInitialCases';
+import CountyInfectedDeceasedTable from './CountyInfectedDeceasedTable';
+import InfectedMap from './InfectedMap';
+import InfectedDeceasedTable from './InfectedDeceasedTable';
 
 import './HomeView.css';
 import PlayPauseButton from './PlayPauseButton';
@@ -18,8 +21,6 @@ import './left-panel.css';
 import axios from 'axios';
 
 import OUTPUT_0 from './OUTPUT_0.json';
-
-
 
 const HomeView = () => {
 
@@ -31,7 +32,6 @@ const HomeView = () => {
   const [taskId, setTaskId] = useState([]);
   const [data, setData] = useState([]);
   const [eventData, setEventData] = useState([]);
-
   const [outputFiles] = useState([ OUTPUT_0 ])
 
 
@@ -132,36 +132,48 @@ const HomeView = () => {
     };
   }, [isRunning, currentIndex]);
 
-
   useEffect(() => {
-
-    if (currentIndex != 0) {
+    if (currentIndex !== 0) {
       const data_entries = Object.entries(data.data);
-      console.log('Entries[0][1]:', data_entries[0][1]);
-      const data_entries_keys = Object.keys(data_entries[0][1]);
-      console.log('Keys:', data_entries_keys);
-      const deceasedCount = data_entries[226][1]['compartment_summary']['D'];
+      const total_counts = data.total_summary;
 
-      //console.log('Entries[0][compartment_summary]:', data_entries[0]['compartment_summary']);
-      //const deceasedCount = data_entries.reduce((acc, node) => {
-      //    const {D} = node.compartment_summary;
-      //    return acc + D;
-      //}, 0);
+      console.log('Total counts:', total_counts);
 
-      console.log('deceasedCount:', deceasedCount);
+      // Map through data_entries to collect fips_id, infected counts, and deceased counts for each county
+      const countyInfectedDeceasedData = data_entries.map(([countyKey, countyData]) => {
+        const fips_id = countyData['fips_id'];  // Get the fips_id for the county
+        const infectedCount = countyData['compartment_summary']['I'] || 0;  // Get the infected count
+        const deceasedCount = countyData['compartment_summary']['D'] || 0;  // Get the deceased count
+  
+        return {
+          fips: fips_id,        // Store fips_id
+          infected: infectedCount, // Store infected count
+          deceased: deceasedCount, // Store deceased count
+        };
+      });
+  
+      // Calculate the total deceased count for the current day
+      const totalDeceasedCount = total_counts['D'];
+      // const totalSusceptibleCount = total_counts['S'];
+      //console.log('Total Susceptible Count:', totalSusceptibleCount);
+      
+      console.log('Total Deceased Count:', totalDeceasedCount);
+  
+      // Update the eventData to include the county-level fips, infected, and deceased information
+      setEventData((prevEventData) => [
+        ...prevEventData,
+        {
+          day: currentIndex,
+          counties: countyInfectedDeceasedData,  // Store array of county data for the current day
+          totalDeceased: totalDeceasedCount,     // Store total deceased count for the day
+        },
+      ]);
 
-      setEventData((eventData) => {
-        const newData = [...eventData];
-        newData.push( { day: currentIndex, deceased: deceasedCount } );
-        //console.log('New event data:', newData);
-        return newData;
-      }, [deceasedCount]);
+      console.log('Event Data:', eventData);
     }
-
-
-  }, [data])
-
-
+  }, [data, currentIndex]);
+  
+  
   const [saved, setSaved] = useState(false);
 
   const handleSave = () => {
@@ -183,13 +195,13 @@ const HomeView = () => {
   
       <div className="middle-panel">
         <div className="map-and-chart-container">
-          <InitialMapPercent outputData={outputFiles[0]} className="map-size" />
+          <InfectedMap eventData={eventData} className="map-size" />
           <div className="separator"></div> 
           <DeceasedLineChart eventData={eventData} className="chart-size" />
         </div>
       </div> 
       <div className="right-panel">
-        <CountyPercentageTable className="percentage-table" outputData={outputFiles[0]} />
+        <InfectedDeceasedTable eventData={eventData} currentIndex={currentIndex}/>
       </div>
   
       <div className="footer">

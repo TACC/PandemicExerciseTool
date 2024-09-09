@@ -189,13 +189,9 @@ const InitialMapPercent = ({ outputData }) => {
         id="map"
         center={[31.0, -100.0]}
         zoom={6}
-        style={{ height: '600px', width: '1700px' }}
+        style={{ height: '600px', width: '1700px', backgroundColor: 'white' }}
         whenCreated={mapInstance => { mapRef.current = mapInstance; }}
       >
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        />
         {countyData.length > 0 && (
           <GeoJSON
             key={JSON.stringify(outputData)}

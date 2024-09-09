@@ -13,7 +13,7 @@ const DeceasedLineChart = ({ eventData }) => {
     datasets: [
       {
         label: 'Deceased',
-        data: eventData.map(event => event.deceased),
+        data: eventData.map(event => event.totalDeceased),
         fill: false,
         borderColor: 'rgba(75,192,192,1)', // Line color
         backgroundColor: 'rgba(75,192,192,0)', // No fill color
