@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 import './AddInitialCases.css'; // Import the CSS file for styling
 
@@ -31,25 +31,51 @@ const AddInitialCases = ({ counties, onClose }) => {
     label: county
   }));
 
+  // Load saved cases from localStorage on component mount
+  useEffect(() => {
+    const savedCases = localStorage.getItem('initial_infected');
+    if (savedCases) {
+      const parsedCases = JSON.parse(savedCases);
+      console.log('Loaded cases from localStorage:', parsedCases); // Log loaded cases
+      setCasesList(parsedCases);
+    }
+  }, []);
+
+  // Save cases to localStorage whenever the cases list changes
+  useEffect(() => {
+    if (casesList.length > 0) {
+      localStorage.setItem('initial_infected', JSON.stringify(casesList));
+      console.log('Saved cases to localStorage:', casesList); // Log saved cases
+    }
+  }, [casesList]);
+
   const handleSubmit = event => {
     event.preventDefault();
 
+    // Ensure both county and age group are selected before adding
+    if (!selectedCounty || !selectedAgeGroup) {
+      alert('Please select both a county and an age group.');
+      return;
+    }
+
     // Get the county name and ID from the texasMapping.json
-    const countyName = selectedCounty ? selectedCounty.label : '';
+    const countyName = selectedCounty.label;
     const countyId = texasMapping[countyName] || '';
 
     // Map age group to number
-    const ageGroupNumber = ageGroupMapping[selectedAgeGroup ? selectedAgeGroup.value : ''] || '';
+    const ageGroupNumber = ageGroupMapping[selectedAgeGroup.value] || '';
 
     // Create a new case object
     const newCase = {
       county: countyId,
       infected: numberOfCases,
-      age_group: ageGroupNumber
+      age_group: ageGroupNumber,
+      county_display: countyName, // Store the display name for county
+      age_group_display: selectedAgeGroup.label // Store the display name for age group
     };
 
-    // Update the cases list with county name for display
-    setCasesList([...casesList, { ...newCase, county_display: countyName, age_group_display: selectedAgeGroup ? selectedAgeGroup.label : '' }]);
+    // Update the cases list
+    setCasesList(prevCasesList => [...prevCasesList, newCase]);
 
     // Reset form fields
     setNumberOfCases(10000);
@@ -57,67 +83,21 @@ const AddInitialCases = ({ counties, onClose }) => {
     setSelectedAgeGroup(null);
   };
 
-  const handleSaveToLocalStorage = () => {
-    // Build the array of objects directly from casesList
-    const jsonData = casesList.map(({ county, infected, age_group }) => ({
-      county,
-      infected,
-      age_group
-    }));
-  
-    // Convert the JSON object to a JSON string with proper formatting
-    const jsonString = JSON.stringify(jsonData);
-  
-    // Save the JSON string to localStorage
-    localStorage.setItem('initial_infected', jsonString);
-
-    // close the dialog
-    onClose();
-  };
-  
-
-  /*
-  const handleDownload = () => {
-    // Build the array of objects directly from casesList
-    const jsonData = casesList.map(({ county, infected, age_group }) => ({
-      county,
-      infected,
-      age_group
-    }));
-  
-    // Convert the JSON object to a JSON string with proper formatting
-    const jsonString = JSON.stringify(jsonData, null, 2);
-  
-    // Trigger the download of the JSON file
-    const blob = new Blob([jsonString], { type: "application/json;charset=utf-8" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "initial_infected.json";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };*/
-  
-
   const handleRemove = index => {
     // Remove the case at the specified index
     setCasesList(casesList.filter((_, i) => i !== index));
   };
 
+  const handleSaveToLocalStorage = () => {
+    // Explicitly save the cases and close the dialog
+    localStorage.setItem('initial_infected', JSON.stringify(casesList));
+    console.log('Explicitly saved cases before closing:', casesList); // Log the save
+    onClose();
+  };
+
   return (
     <div>
       <form className="add-initial-cases-form" onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="numberOfCases">Number of Cases</label>
-          <input
-            type="number"
-            id="numberOfCases"
-            value={numberOfCases}
-            onChange={e => setNumberOfCases(e.target.value)}
-            required
-          />
-        </div>
-
         <div className="form-group">
           <label htmlFor="county">Location</label>
           <Select
@@ -128,6 +108,17 @@ const AddInitialCases = ({ counties, onClose }) => {
             placeholder="Select a county"
             isClearable
             isSearchable
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="numberOfCases">Number of Cases</label>
+          <input
+            type="number"
+            id="numberOfCases"
+            value={numberOfCases}
+            onChange={e => setNumberOfCases(e.target.value)}
+            required
           />
         </div>
 
@@ -170,7 +161,10 @@ const AddInitialCases = ({ counties, onClose }) => {
           ))}
         </tbody>
       </table>
-      <div><button onClick={handleSaveToLocalStorage}>Save</button></div>
+
+      <div>
+        <button onClick={handleSaveToLocalStorage}>Save and Close</button>
+      </div>
     </div>
   );
 };
