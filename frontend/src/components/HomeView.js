@@ -32,7 +32,6 @@ const HomeView = () => {
   const [taskId, setTaskId] = useState([]);
   const [data, setData] = useState([]);
   const [eventData, setEventData] = useState([]);
-
   const [outputFiles] = useState([ OUTPUT_0 ])
 
 
@@ -132,18 +131,19 @@ const HomeView = () => {
       }
     };
   }, [isRunning, currentIndex]);
+
   useEffect(() => {
     if (currentIndex !== 0) {
       const data_entries = Object.entries(data.data);
-  
+      const total_counts = data.total_summary;
+
+      console.log('Total counts:', total_counts);
+
       // Map through data_entries to collect fips_id, infected counts, and deceased counts for each county
       const countyInfectedDeceasedData = data_entries.map(([countyKey, countyData]) => {
         const fips_id = countyData['fips_id'];  // Get the fips_id for the county
         const infectedCount = countyData['compartment_summary']['I'] || 0;  // Get the infected count
         const deceasedCount = countyData['compartment_summary']['D'] || 0;  // Get the deceased count
-  
-        // Log the infected and deceased counts per county
-        // console.log(`County FIPS: ${fips_id}, Infected: ${infectedCount}, Deceased: ${deceasedCount}`);
   
         return {
           fips: fips_id,        // Store fips_id
@@ -153,10 +153,11 @@ const HomeView = () => {
       });
   
       // Calculate the total deceased count for the current day
-      const totalDeceasedCount = countyInfectedDeceasedData.reduce(
-        (acc, countyData) => acc + countyData.deceased, 
-        0
-      );
+      const totalDeceasedCount = total_counts['D'];
+      // const totalSusceptibleCount = total_counts['S'];
+      //console.log('Total Susceptible Count:', totalSusceptibleCount);
+      
+      console.log('Total Deceased Count:', totalDeceasedCount);
   
       // Update the eventData to include the county-level fips, infected, and deceased information
       setEventData((prevEventData) => [
@@ -167,8 +168,8 @@ const HomeView = () => {
           totalDeceased: totalDeceasedCount,     // Store total deceased count for the day
         },
       ]);
-  
-      console.log('Total Deceased Count:', totalDeceasedCount);
+
+      console.log('Event Data:', eventData);
     }
   }, [data, currentIndex]);
   

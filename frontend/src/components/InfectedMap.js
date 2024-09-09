@@ -124,7 +124,7 @@ const InfectedMap = ({ eventData }) => {
   const geoJsonStyle = (feature) => {
     const countyInfo = countyData.find(item => item.fips === feature.properties.geoid);
     const infectedCount = countyInfo ? countyInfo.infected : 0;
-    console.log(`County: ${feature.properties.name}, Infected: ${infectedCount}`); // Debug log
+    // console.log(`County: ${feature.properties.name}, Infected: ${infectedCount}`); // Debug log
     return {
       fillColor: getColor(infectedCount),
       weight: 1,
@@ -163,8 +163,8 @@ const InfectedMap = ({ eventData }) => {
           <GeoJSON
         data={texasOutline}
         style={{
-          color: '#333', // Outline color
-          weight: 2,     // Outline weight
+          color: '#000', // Outline color
+          weight: 4,     // Outline weight
           fillOpacity: 0 // Make sure the fill is transparent
         }}
       />  
