@@ -17,7 +17,7 @@ const DeceasedLineChart = ({ eventData }) => {
         fill: false,
         borderColor: 'rgba(75,192,192,1)', // Line color
         backgroundColor: 'rgba(75,192,192,0)', // No fill color
-        tension: 0.1,
+       // tension: 0.1,
         pointRadius: 3, // Optional: Add some radius for data points
       },
     ],
@@ -33,24 +33,31 @@ const DeceasedLineChart = ({ eventData }) => {
       },
       tooltip: {
         enabled: true, // Ensure tooltip is enabled
+        backgroundColor: 'rgba(0, 0, 0, 0.7)', // Darker background for the tooltip
+        titleFont: {
+          size: 18, // Larger font for the tooltip title
+          family: 'Gilroy',
+        },
+        bodyFont: {
+          size: 16, // Larger font for the tooltip body
+          family: 'Gilroy',
+        },
+        padding: 15, // Increase padding inside the tooltip
         callbacks: {
           title: function (context) {
             const day = context[0].label;
-            return `Day ${day}`; // Tooltip title showing "Day _: _"
+            return `Day ${day}`; // Tooltip title showing "Day _"
           },
           label: function (context) {
-            return `Deceased: ${context.raw}`;
+            return `Deceased: ${context.raw}`; // Tooltip label showing deceased count
           },
         },
-        // Optionally, customize tooltip font style here
-        // For the tooltip, add font settings directly within the tooltip callbacks
-        // or via global settings if you need it to be applied globally
       },
       title: {
         display: true,
         text: 'Total Deaths',
         font: {
-          size: 25, // Larger title font size
+          size: 30, // Larger title font size
           weight: 'bold',
           family: 'Gilroy', // Font family
         },
@@ -63,7 +70,7 @@ const DeceasedLineChart = ({ eventData }) => {
           text: 'Day',
           color: 'black', // Change x-axis title color to black
           font: {
-            size: 20, // Larger x-axis title font size
+            size: 25, // Larger x-axis title font size
             family: 'Gilroy', // Font family
           },
         },
@@ -84,7 +91,7 @@ const DeceasedLineChart = ({ eventData }) => {
           text: 'Total Deaths',
           color: 'black', // Change y-axis title color to black
           font: {
-            size: 20, // Larger y-axis title font size
+            size: 25, // Larger y-axis title font size
             family: 'Gilroy', // Font family
           },
         },
