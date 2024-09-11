@@ -51,7 +51,7 @@ button:hover {
 
 .tooltip .tooltip-text {
   visibility: hidden;
-  width: 220px;
+  width: 400px;
   background-color: black;
   color: #fff;
   text-align: center;
@@ -61,7 +61,7 @@ button:hover {
   z-index: 9999; /* Ensure the tooltip has a high z-index */
   bottom: 125%; /* Position the tooltip above the text */
   left: 50%;
-  margin-left: -110px; /* Use half of the width to center the tooltip */
+  margin-left: -300px; /* Use half of the width to center the tooltip */
   opacity: 0;
   transition: opacity 0.3s;
 }

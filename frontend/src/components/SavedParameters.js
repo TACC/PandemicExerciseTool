@@ -20,7 +20,7 @@ const SavedParameters = () => {
 
   // Map of user-friendly labels
   const labels = {
-    DiseaseName: 'Disease Name',
+    DiseaseName: 'Scenario Name',
     ReproductionNumber: 'Reproduction Number',
     BetaScale: 'Beta Scale',
     Tau: 'Latency Period',

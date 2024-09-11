@@ -13,7 +13,7 @@
 
 
 table th {
-  font-size: 18px; /* Adjust as needed */
+  font-size: large; /* Adjust as needed */
   padding: 10px 20px; /* Reduce right-side padding */
   text-align: left; /* Ensure text aligns properly */
   position: relative; /* Allow absolute positioning of button */

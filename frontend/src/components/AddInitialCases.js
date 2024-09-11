@@ -116,6 +116,7 @@ const AddInitialCases = ({ counties, onClose }) => {
           <input
             type="number"
             id="numberOfCases"
+            className= "centered-input"
             value={numberOfCases}
             onChange={e => setNumberOfCases(e.target.value)}
             required

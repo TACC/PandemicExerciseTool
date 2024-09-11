@@ -52,3 +52,19 @@
     background-color: #0056b3;
   }
   
+  .centered-input {
+    text-align: center;
+    font-size: large;
+    padding: 8px;
+    height: 20%;
+    width: 97%;
+    border: 1px solid #ccc; /* Similar border */
+  }
+
+
+input[type="number"],
+input[type="radio"] {
+  padding: 5px;
+  margin-right: 10px;
+  height: 20%;
+}
