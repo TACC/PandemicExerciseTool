@@ -73,11 +73,12 @@
 }
 
 .county-tooltip {
-  font-size: 18px; /* Increase font size */
-  font-family: 'Gilroy', sans-serif; /* Set the font family */
-  padding: 10px; /* Add padding inside the tooltip */
-  background-color: rgba(0, 0, 0, 0.7); /* Darken the background */
-  color: white; /* Set text color to white */
-  border-radius: 5px; /* Optional: add rounded corners */
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Optional: add shadow for better visibility */
+  width: 150px;
+  background-color: white;
+  color: black;
+  font-weight: lighter;
+  border: 2px solid black;
+  position: absolute;
+  z-index: 9999; /* Ensure the tooltip has a high z-index */
+  text-align: left;
 }

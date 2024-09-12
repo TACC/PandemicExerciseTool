@@ -33,9 +33,3 @@
   margin-right: 8px;
   vertical-align: middle;
 }
-
-.remove-button {
-  background-color: #f1f1f1;
-  border: 2px solid black; /* Add a black border */
-  border-radius: 4px;
-}

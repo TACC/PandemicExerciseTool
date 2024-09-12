@@ -153,7 +153,8 @@
 }
 
 .saved-parameters-panel {
-  margin-top: 60px; /* Space between the SavedParameters and the elements above */
+  margin-top: 5px; /* Space between the SavedParameters and the elements above */
+
 }
 
 .play-pause-container {
