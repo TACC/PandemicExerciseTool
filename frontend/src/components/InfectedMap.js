@@ -128,7 +128,7 @@ const InfectedMap = ({ eventData }) => {
     return {
       fillColor: getColor(infectedCount),
       weight: 1,
-      color: 'white',
+      color: 'black',
       fillOpacity: 0.7
     };
   };
@@ -143,6 +143,13 @@ const InfectedMap = ({ eventData }) => {
     }
   }, [eventData]);
 
+  useEffect(() => {
+    if (mapRef.current && outlineLayerRef.current) {
+      outlineLayerRef.current.bringToFront(); // Keep the black outline on top
+    }
+  }, []); // Ensure this only runs once when the map is created
+
+
   return (
     <div>
     <MapContainer
@@ -152,29 +159,11 @@ const InfectedMap = ({ eventData }) => {
       style={{ height: '620px', width: '1700px', backgroundColor: 'white' }}
       whenCreated={mapInstance => { mapRef.current = mapInstance; }}
     >
-      {countyData.length > 0 && (
-        <GeoJSON
-          key={JSON.stringify(eventData)}
-          data={texasOutline}
-          style={geoJsonStyle}
-          onEachFeature={onEachCounty}
-        />
-      )}
-
-      {/* Ref for the black outline layer */}
       <GeoJSON
+        key={JSON.stringify(countyData)}
         data={texasOutline}
-        style={{
-          color: '#000',  // Black outline color
-          weight: 1,      // Thicker outline for visibility
-          fillOpacity: 0, // Transparent fill
-          interactive: false, // Disable interaction
-        }}
-        ref={(layer) => {
-          if (layer) {
-            layer.bringToFront(); // Bring the outline layer to the front
-          }
-        }}
+        style={geoJsonStyle}
+        onEachFeature={onEachCounty}
       />
 
       <Legend />
