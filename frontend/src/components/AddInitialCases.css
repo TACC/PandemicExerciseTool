@@ -68,3 +68,18 @@ input[type="radio"] {
   margin-right: 10px;
   height: 20%;
 }
+
+h3 {
+  font-weight: lighter;
+}
+
+.remove-button {
+  background-color: #f1f1f1;
+  border: 2px solid black; /* Add a black border */
+  border-radius: 4px;
+}
+
+
+.remove-button:hover {
+  background-color: #6c757d; /* Change this to the gray color you want on hover */
+}

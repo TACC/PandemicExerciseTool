@@ -97,6 +97,7 @@ const AddInitialCases = ({ counties, onClose }) => {
 
   return (
     <div>
+      <h3>You can add multiple initial cases.</h3>
       <form className="add-initial-cases-form" onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="county">Location</label>
@@ -139,7 +140,7 @@ const AddInitialCases = ({ counties, onClose }) => {
         <button type="submit">+ Add Cases</button>
       </form>
 
-      <h3>Added Cases</h3>
+      <h2>Added Cases</h2>
       <table className="cases-table">
         <thead>
           <tr>
@@ -156,7 +157,7 @@ const AddInitialCases = ({ counties, onClose }) => {
               <td>{caseItem.infected}</td>
               <td>{caseItem.age_group_display}</td>
               <td>
-                <button onClick={() => handleRemove(index)}>Remove</button>
+                <button class="remove-button" onClick={() => handleRemove(index)}>Remove</button>
               </td>
             </tr>
           ))}

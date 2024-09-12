@@ -160,11 +160,11 @@ const InfectedMap = ({ eventData }) => {
             onEachFeature={onEachCounty}
           />
         )}
-          <GeoJSON
+      <GeoJSON
         data={texasOutline}
         style={{
           color: '#000', // Outline color
-          weight: 4,     // Outline weight
+          weight: 1,     // Outline weight
           fillOpacity: 0 // Make sure the fill is transparent
         }}
       />  
