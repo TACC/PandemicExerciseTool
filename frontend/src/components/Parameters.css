@@ -29,8 +29,9 @@ input[type="radio"] {
 
 button {
   padding: 10px 15px;
-  background-color: #007bff;
-  color: white;
+  background-color: #f7b13c;
+  color: black;
+  font-weight: bold;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -38,7 +39,7 @@ button {
 }
 
 button:hover {
-  background-color: #0056b3;
+  background-color: #f7b13c;
 }
 
 .tooltip {
@@ -51,19 +52,21 @@ button:hover {
 
 .tooltip .tooltip-text {
   visibility: hidden;
-  width: 220px;
-  background-color: black;
-  color: #fff;
-  text-align: center;
+  width: 400px;
+  background-color: white;
+  color: black;
+  font-weight: lighter;
   border-radius: 6px;
-  padding: 5px 0;
+  border: 2px solid black;
+  padding: 10px 10px;
   position: absolute;
   z-index: 9999; /* Ensure the tooltip has a high z-index */
   bottom: 125%; /* Position the tooltip above the text */
   left: 50%;
-  margin-left: -110px; /* Use half of the width to center the tooltip */
+  margin-left: -300px; /* Use half of the width to center the tooltip */
   opacity: 0;
   transition: opacity 0.3s;
+  text-align: left;
 }
 
 .tooltip:hover .tooltip-text {
@@ -80,4 +83,125 @@ button:hover {
 
 .centered-input {
   text-align: center;
+}
+
+save-button {
+  padding: 10px 15px;
+  background-color: #f7b13c;
+  color: black;
+  font-weight: bold;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 400px;
+}
+
+save-button:hover {
+  background-color: #f7b13c;
+}
+
+button[type="submit"] {
+  background-color: orange !important; /* Adding !important can force override */
+  color: black !important;
+}
+
+.saved-parameters-panel {
+  padding: 10px;
+  font-family: Arial, sans-serif;
+}
+
+.parameter-item {
+  margin-bottom: 10px; /* Smaller margin between parameter sections */
+}
+
+.parameter-label {
+  margin-bottom: 5px; /* Smaller margin below the label */
+}
+
+.parameter-value {
+  font-weight: bold;
+  margin-top: 10px; /* Smaller margin between label and value */
+}
+
+.parameter-separator {
+  margin: 10px 0; /* Smaller space between parameter sections */
+  border: none;
+  border-top: 1px solid #ccc;
+}
+
+.section-separator {
+  margin: 20px 0; /* Larger space between parameter and initial cases section */
+  border: none;
+  border-top: 2px solid #333; /* More prominent separator between sections */
+}
+
+.initial-cases-section {
+  margin-top: 20px;
+  position: relative; /* For the Edit button positioning */
+  padding: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.initial-cases-section.hovered {
+  background-color: #FEEFD8; /* Orange background on hover */
+}
+
+.section-label {
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.initial-case-item {
+  margin-bottom: 10px; /* Space between each initial case item */
+}
+
+.initial-case-info {
+  font-weight: normal;
+}
+
+.case-separator {
+  margin: 10px 0;
+  border: none;
+  border-top: 1px solid #ccc;
+}
+
+.edit-button {
+  position: absolute;
+  top: 5px; /* Align at the top */
+  right: 5px; /* Align at the right */
+  background-color: transparent;
+  color: black;
+  border: none;
+  padding: 2px 2px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 1px;
+  display: flex;
+  justify-content: right; /* Center text and icon horizontally within the button */
+  align-items: right; /* Align text and icon vertically */
+  visibility: hidden; /* Hidden by default, shown on hover */
+}
+
+.edit-button:hover {
+  background-color: transparent;
+}
+
+.edit-icon {
+  width: 16px;
+  height: 16px;
+  margin-left: 5px; /* Space between the text and the icon */
+  background-color: transparent;
+}
+
+.initial-cases-section.hovered .edit-button {
+  visibility: visible; /* Show the button when the section is hovered */
+}
+
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  cursor: pointer;
+  font-size: 30px;
+  color: #333;
 }

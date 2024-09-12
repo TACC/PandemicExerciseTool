@@ -201,7 +201,8 @@ const HomeView = () => {
         </div>
       </div> 
       <div className="right-panel">
-        <InfectedDeceasedTable eventData={eventData} currentIndex={currentIndex}/>
+        <InfectedDeceasedTable eventData={eventData}/>
+
       </div>
   
       <div className="footer">

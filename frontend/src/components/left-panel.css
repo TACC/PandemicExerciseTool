@@ -12,6 +12,7 @@
   justify-content: flex-start; /* Align items to the top */
   gap: 10px; /* Adjust the spacing between the buttons */
   z-index: 1;
+  border-right: 2px solid black;
 }
 
 @media (max-width: 768px) {

@@ -19,8 +19,8 @@
 .info.legend .legend-item {
   display: flex;
   align-items: center;
+  font-size: 14px; /* Font size for legend items */  
   margin-bottom: 4px;
-  font-size: 14px; /* Font size for legend items */
 }
 
 .info.legend .color-box {
@@ -62,6 +62,7 @@
 
 .info.legend .legend-item:nth-child(6) .color-box {
   background: #FEB24C; /* 100–200 */
+
 }
 
 .info.legend .legend-item:nth-child(7) .color-box {
@@ -70,4 +71,15 @@
 
 .info.legend .legend-item:nth-child(8) .color-box {
   background: #FFEDA0; /* 0–50 */
+}
+
+.county-tooltip {
+  width: 150px;
+  background-color: white;
+  color: black;
+  font-weight: lighter;
+  border: 2px solid black;
+  position: absolute;
+  z-index: 9999; /* Ensure the tooltip has a high z-index */
+  text-align: left;
 }

@@ -18,7 +18,7 @@
 .dropdown-text {
   color: black !important;
   font-weight: bold;
-  font-size: 18px;
+  font-size: large;
   text-align: center; /* Horizontally centers the text */
   display: flex; /* Enables flexbox layout */
   justify-content: center; /* Horizontally centers the content */
@@ -61,9 +61,8 @@
   background: none;
   color: black;
   text-align: center; /* Align text to the left */
-  font-size: medium;
+  font-size: large;
   font-weight: bold;
-  font-size: 18px;
   white-space: nowrap;
 }
 
@@ -191,9 +190,9 @@
 .modal-close {
   position: absolute;
   top: 10px;
-  right: 10px;
+  right: 20px;
   cursor: pointer;
-  font-size: 24px;
+  font-size: 30px;
   color: #333;
 }
 

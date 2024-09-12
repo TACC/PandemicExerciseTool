@@ -29,22 +29,30 @@ function InfectedDeceasedTable({ eventData }) {
     const fetchData = async () => {
       const countyNameLookup = await loadCountyNames();
 
-      const merged = eventData.map(event => {
-        const dayData = event.counties.map(county => ({
-          county: countyNameLookup[county.fips] || 'Unknown',
-          infected: county.infected,
-          deceased: county.deceased,
-        }));
+      if (!eventData || eventData.length === 0) {
+        console.warn('eventData is empty');
+        return;
+      }
 
-        return dayData;
-      }).flat(); // Flatten array to merge all days' data
+      // Get the latest day's data (most recent)
+      const latestDayEventData = eventData[eventData.length - 1]?.counties || [];
 
-      setMergedData(merged);
-      setFilteredData(merged); // Initialize filtered data
+      // Map and transform data for display
+      const dayData = latestDayEventData.map(county => ({
+        county: countyNameLookup[county.fips] || 'Unknown',
+        infected: county.infected,
+        deceased: county.deceased,
+      }));
+
+      console.log('Day Data (latest):', dayData); // Debugging output
+
+      setMergedData(dayData);
+      setFilteredData(dayData); // Initialize filtered data to current day's data
     };
 
     fetchData();
-  }, [eventData]);
+  }, [eventData]); // Rerun the effect when eventData changes
+
 
   // Function to handle sorting
   const sortData = (key) => {
@@ -117,13 +125,20 @@ function InfectedDeceasedTable({ eventData }) {
             </tr>
           </thead>
           <tbody>
-            {filteredData.map((county, index) => (
-              <tr key={index} className={index % 2 === 0 ? 'even-row' : 'odd-row'}>
-                <td>{county.county}</td>
-                <td>{county.infected}</td>
-                <td>{county.deceased}</td>
+            {filteredData.length === 0 ? (
+              <tr>
+                <td colSpan="3">No data available for the selected day.</td>
               </tr>
-            ))}
+            ) : (
+              filteredData.map((county, index) => (
+                <tr key={index} className={index % 2 === 0 ? 'even-row' : 'odd-row'}>
+                  <td>{county.county}</td>
+                  <td>{county.infected}</td>
+                  <td>{county.deceased}</td>
+                </tr>
+              ))
+            )}
+
           </tbody>
         </table>
       </div>

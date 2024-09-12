@@ -80,7 +80,6 @@
     justify-content: space-between;
     background-color: #f8f9fa;
     padding: 10px;
-    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
     position: fixed;
     bottom: 0;
     left: 0;
@@ -88,6 +87,7 @@
     height: 80px;
     z-index: 1000;
     transition: background-color 0.3s ease;
+    border-top: 2px solid black; /* Add this line */
   }
   
   .footer-overlay {
@@ -153,7 +153,8 @@
 }
 
 .saved-parameters-panel {
-  margin-top: 60px; /* Space between the SavedParameters and the elements above */
+  margin-top: 5px; /* Space between the SavedParameters and the elements above */
+
 }
 
 .play-pause-container {

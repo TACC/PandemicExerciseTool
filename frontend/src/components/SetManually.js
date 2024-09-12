@@ -197,7 +197,7 @@ const SetManually = ({ onClose }) => {
       <div className="form-group">
         <label htmlFor="reproductionNumber">Reproduction Number (R0)
         <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-            <span className="tooltip-text">R0 indicates the contagiousness of the virus at a given point time and roughly corresponds to the average number of people a typical case will infect.</span>
+            <span className="tooltip-text">The contagiousness of the virus at a given point in time and roughly corresponds to the average number of people a typical case will infect</span>
           </span>
         </label>
         <input
@@ -215,7 +215,7 @@ const SetManually = ({ onClose }) => {
         <label htmlFor="tau">
           Latency Period (days)
           <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-            <span className="tooltip-text">Average latency period, in days, which corresponds to 1/tau in the model.</span>
+            <span className="tooltip-text">Time period in which an exposed individual is not yet infectious</span>
           </span>
         </label>
         <input
@@ -233,7 +233,7 @@ const SetManually = ({ onClose }) => {
         <label htmlFor="kappa">
           Asymptomatic Period (days)
           <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-            <span className="tooltip-text">The time period during which an infected individual shows no symptoms but can still spread the infection, which corresponds to 1/kappa in the model.</span>
+            <span className="tooltip-text">The time period during which an infected individual shows no symptoms but can still spread the infection</span>
           </span>
         </label>
         <input
@@ -250,7 +250,7 @@ const SetManually = ({ onClose }) => {
       <div className="form-group">
         <label htmlFor="gamma">Infectious Period (days)
           <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-            <span className="tooltip-text">Total infectious period in days (asymptomatic/treatable/infectious to recovered), which corresponds to 1/gamma in the model.</span>
+            <span className="tooltip-text">Total time period during which a transmitting individual (asymptomatic, treatable, infectious) can spread the infection before recovery</span>
           </span>
         </label>
         <input
@@ -267,7 +267,7 @@ const SetManually = ({ onClose }) => {
       <div className="form-group">
         <label htmlFor="chi">Therapeutic Window (days)
           <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-            <span className="tooltip-text">Period in which treatment can be dispensed, which corresponds to 1/chi in the model.</span>
+            <span className="tooltip-text">Period in which treatment can be dispensed</span>
           </span>
         </label>
         <input
@@ -283,9 +283,9 @@ const SetManually = ({ onClose }) => {
       </div>
 
       <div className="form-group" style ={{alignItems: 'center'}}>
-        <label htmlFor="nu">High/Low death rate 
+        <label htmlFor="nu">Case Fatality Rate
         <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-            <span className="tooltip-text"> Asymptomatic/Treatable/Infectious to Deceased, which corresponds to 1/nu in the model</span>
+            <span className="tooltip-text"> Asymptomatic/Treatable/Infectious to Deceased</span>
           </span>
         </label>
         <div style={{ display: 'flex', gap: '10px'}}>
@@ -299,7 +299,7 @@ const SetManually = ({ onClose }) => {
               onChange={e => setNuHigh(e.target.value)}
               required
             />
-            <label htmlFor="nuHighYes">High <br></br>(1918 Influenza) </label>
+            <label htmlFor="nuHighYes">1918 Influenza <br></br>(High) </label>
           </div>
           <div>
             <input
@@ -311,12 +311,12 @@ const SetManually = ({ onClose }) => {
               onChange={e => setNuHigh(e.target.value)}
               required
             />
-            <label htmlFor="nuHighNo">Low <br></br> (2009 H1N1)</label>
+            <label htmlFor="nuHighNo">2009 H1N1 <br></br> (Low)</label>
           </div>
         </div>
       </div>
       {/* Add other input fields here */}
-      <button type="submit">Save</button>
+      <button type="submit" class="save-button">Save</button>
     </form>
   );
 };

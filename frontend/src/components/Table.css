@@ -13,15 +13,16 @@
 
 
 table th {
-  font-size: 18px; /* Adjust as needed */
+  font-size: large; /* Adjust as needed */
+  font-weight: bold;
   padding: 10px 20px; /* Reduce right-side padding */
   text-align: left; /* Ensure text aligns properly */
   position: relative; /* Allow absolute positioning of button */
 }
 
 table td {
-  font-size: 18px;
-  padding: 8px; /* Decrease padding if needed */
+  font-size: large;
+  padding: 12px; /* Decrease padding if needed */
 }
 
 .sort-button {
@@ -76,7 +77,7 @@ table td {
   outline: none; /* Remove the default outline */
   padding: 8px; /* Padding inside the input field */
   flex: 1; /* Allow the input to grow and fill available space */
-  font-size: 18px; /* Adjust font size as needed */
+  font-size: large; /* Adjust font size as needed */
   height: 40px; /* Set the height of the input to match the icon */
   border-radius: 0; /* Ensure square corners */
 }
