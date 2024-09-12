@@ -53,6 +53,7 @@ function InfectedDeceasedTable({ eventData }) {
     fetchData();
   }, [eventData]); // Rerun the effect when eventData changes
 
+
   // Function to handle sorting
   const sortData = (key) => {
     const sorted = [...filteredData];
@@ -137,6 +138,7 @@ function InfectedDeceasedTable({ eventData }) {
                 </tr>
               ))
             )}
+
           </tbody>
         </table>
       </div>

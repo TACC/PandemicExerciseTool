@@ -169,6 +169,7 @@ const InfectedMap = ({ eventData }) => {
       <Legend />
     </MapContainer>
   </div>
+
   );
 };
 
