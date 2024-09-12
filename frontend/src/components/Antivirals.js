@@ -7,67 +7,55 @@ const Antivirals = ({ onSubmit }) => {
   const [antiviralWastageFactor, setAntiviralWastageFactor] = useState(localStorage.getItem('antiviral_wastage_factor') || 60);
   const [antiviralStockpileDay, setAntiviralStockpileDay] = useState(50);
   const [antiviralStockpileAmount, setAntiviralStockpileAmount] = useState(10000);
-  const [antiviralStockpileList, setAntiviralStockpileList] = useState([]);
+  const [antiviralStockpileList, setAntiviralStockpileList] = useState(JSON.parse(localStorage.getItem('antiviral_stockpile')) || []);
+  const [stockpileCounter, setStockpileCounter] = useState(0);
 
-  const handleSubmit = event => {
+  const handleSetParams = event => {
+    console.log('Submitting parameters...');
     event.preventDefault();
     localStorage.setItem('antiviral_effectiveness', antiviralEffectiveness);
     localStorage.setItem('antiviral_wastage_factor', antiviralWastageFactor);
   };
 
-  const handleSubmitStockpile = event => {
+  const handleAddStockpile = event => {
+    console.log('Adding stockpile...');
     event.preventDefault();
-
     // Ensure both fields are filled out
     if (!antiviralStockpileDay || !antiviralStockpileAmount){
       alert('Please enter all required fields');
       return;
     }
-
     // Create a new object with the values from the form
     const newAVS = {
       day: antiviralStockpileDay,
       amount: antiviralStockpileAmount
     };
-
     // Add the new object to the list
     setAntiviralStockpileList(prevList => [...prevList, newAVS]);
-
-    // Reset the form fields
-    setAntiviralStockpileDay(50);
-    setAntiviralStockpileAmount(10000);
+    setStockpileCounter(stockpileCounter + 1);
   };
 
   const handleRemove = index => {
+    console.log('Removing case at index:', index);
     // Remove the case at the specified index
     setAntiviralStockpileList(antiviralStockpileList.filter((_, i) => i !== index));
+    setStockpileCounter(stockpileCounter - 1);
+  };
+
+  const handleSave = () => {
+    console.log('Saving parameters...');
+    onSubmit(antiviralEffectiveness, antiviralWastageFactor, antiviralStockpileList);
   };
 
 
-  // Load saved stockpiles from localStorage on component mount
   useEffect(() => {
-    const savedAntiviralStockpile = localStorage.getItem('antiviral_stockpile');
-    if (savedAntiviralStockpile) {
-      const parsedAntiviralStockpile = JSON.parse(savedAntiviralStockpile);
-      console.log('Loaded cases from localStorage:', parsedAntiviralStockpile); // Log loaded cases
-      setAntiviralStockpileList(parsedAntiviralStockpile);
-    }
-  }, []);
-
-  // Save cases to localStorage whenever the cases list changes
-  useEffect(() => {
-    if (antiviralStockpileList.length > 0) {
-      localStorage.setItem('antiviral_stockpile', JSON.stringify(antiviralStockpileList));
-      console.log('Saved antiviral stockpile to localStorage:', antiviralStockpileList); // Log saved cases
-    }
-  }, [antiviralStockpileList]);
-
+    localStorage.setItem('antiviral_stockpile', JSON.stringify(antiviralStockpileList));
+  }, [stockpileCounter]);
 
 
   return (
     <div>
-      <form className="parameters-form" onSubmit={handleSubmit}>
-
+      <form className="parameters-form" onSubmit={handleSetParams}>
         <div className="form-group">
           <label htmlFor="antiviralEffectiveness">Antiviral Effectiveness
             <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
@@ -98,71 +86,78 @@ const Antivirals = ({ onSubmit }) => {
             value={antiviralWastageFactor}
             onChange={e => setAntiviralWastageFactor(e.target.value)}
             min="0"
-            max="100"
+            max="1000"
             step="1"
             required
           />
         </div>
 
-        <button type="submit">Save Antiviral Parameters</button>
+        <button type="submit">Set Antiviral Parameters</button>
       </form>
 
-        <form className="parameters-form" onSubmit={handleSubmitStockpile}>
-          <div className="form-group">
-          <label htmlFor="antiviralStockpileDay">New Stockpile Day
-          <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-              <span className="tooltip-text">Specify day that new antiviral stockpile becomes available.</span>
-            </span>
-          </label>
-          <input
-            type="number"
-            id="antiviralStockpileDay"
-            value={antiviralStockpileDay}
-            onChange={e => setAntiviralStockpileDay(e.target.value)}
-            min="1"
-            required
-          />
-          </div>
-          <div className="form-group">
-          <label htmlFor="antiviralStockpileAmount">New Stockpile Amount
-          <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-              <span className="tooltip-text">Specify number of antivirals in new stockpile.</span>
-            </span>
-          </label>
-          <input
-            type="number"
-            id="antiviralStockpileAmount"
-            value={antiviralStockpileAmount}
-            onChange={e => setAntiviralStockpileAmount(e.target.value)}
-            min="0"
-            required
-          />
-          </div>
-          <button type="submit">Add New Antiviral Stockpile</button>
-        </form>
+      <form className="parameters-form" onSubmit={handleAddStockpile}>
+        <div className="form-group">
+        <label htmlFor="antiviralStockpileDay">New Stockpile Day
+        <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
+            <span className="tooltip-text">Specify day that new antiviral stockpile becomes available.</span>
+          </span>
+        </label>
+        <input
+          type="number"
+          id="antiviralStockpileDay"
+          value={antiviralStockpileDay}
+          onChange={e => setAntiviralStockpileDay(e.target.value)}
+          min="1"
+          max="1000"
+          step="1"
+          required
+        />
+        </div>
 
-        <h3>Added Stockpiles</h3>
-        <table className="avs-table">
-          <thead>
-            <tr>
-              <th>Day</th>
-              <th>Amount</th>
-              <th>Actions</th>
+        <div className="form-group">
+        <label htmlFor="antiviralStockpileAmount">New Stockpile Amount
+        <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
+            <span className="tooltip-text">Specify number of antivirals in new stockpile.</span>
+          </span>
+        </label>
+        <input
+          type="number"
+          id="antiviralStockpileAmount"
+          value={antiviralStockpileAmount}
+          onChange={e => setAntiviralStockpileAmount(e.target.value)}
+          min="0"
+          step="1"
+          required
+        />
+        </div>
+
+        <button type="submit">Add New Antiviral Stockpile</button>
+      </form>
+
+      <h3>Added Stockpiles</h3>
+      <table className="avs-table">
+        <thead>
+          <tr>
+            <th>Day</th>
+            <th>Amount</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {antiviralStockpileList.map((avsItem, index) => (
+            <tr key={index}>
+              <td>{avsItem.day}</td>
+              <td>{avsItem.amount}</td>
+              <td>
+                <button onClick={() => handleRemove(index)}>Remove</button>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {antiviralStockpileList.map((avsItem, index) => (
-              <tr key={index}>
-                <td>{avsItem.day}</td>
-                <td>{avsItem.amount}</td>
-                <td>
-                  <button onClick={() => handleRemove(index)}>Remove</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+          ))}
+        </tbody>
+      </table>
+
+      <div><button onClick={handleSave}>Save</button></div>
+    </div>
   );
 };
 
