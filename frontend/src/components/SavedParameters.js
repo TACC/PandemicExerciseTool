@@ -35,6 +35,10 @@ const SavedParameters = () => {
     Nu: 'Case Fatality Rate',
   };
 
+  // Retrieve initial cases from localStorage
+  const initialCases = JSON.parse(localStorage.getItem('initial_infected')) || [];
+
+
 
   const antiviralParams = {
     antiviralEffectiveness: localStorage.getItem('antiviral_effectiveness') || 'N/A',
@@ -46,11 +50,15 @@ const SavedParameters = () => {
     antiviralWastageFactor: 'Antiviral Wastage Factor',
   }
 
+  const antiviralStockpileList = JSON.parse(localStorage.getItem('antiviral_stockpile')) || [];
+
+  //const vaccineStrategyRaw = localStorage.getItem('vaccine_strategy') || 'N/A';
+
   const vaccineParams = {
     vaccineEffectiveness: localStorage.getItem('vaccine_effectiveness') || 'N/A',
     vaccineAdherence: localStorage.getItem('vaccine_adherence') || 'N/A',
     vaccineWastageFactor: localStorage.getItem('vaccine_wastage_factor') || 'N/A',
-    vaccineStrategy: localStorage.getItem('vaccine_strategy') || 'N/A',
+    vaccineStrategy: localStorage.getItem('vaccine_strategy') === 'children' ? 'children first' : 'pro rata',
   }
 
   const vaccineLabels = {
@@ -60,8 +68,10 @@ const SavedParameters = () => {
     vaccineStrategy: 'Vaccine Strategy',
   }
   
-  // Retrieve initial cases from localStorage
-  const initialCases = JSON.parse(localStorage.getItem('initial_infected')) || [];
+  const vaccineStockpileList = JSON.parse(localStorage.getItem('vaccine_stockpile')) || [];
+
+  const nonpharmaList = JSON.parse(localStorage.getItem('nonpharma_list')) || [];
+
 
   // Function to handle modal opening and closing
   const openModal = () => setModalOpen(true);
@@ -126,29 +136,64 @@ const SavedParameters = () => {
         </>
       ) : (
         <>
-          <div><h3>Antiviral</h3></div>
+          <div><h3>Antivirals</h3></div>
           {Object.keys(antiviralParams).map((key, index) => (
             <div key={key} className="parameter-item">
               <div className="parameter-label">{antiviralLabels[key]}</div>
               <div className="parameter-value">{antiviralParams[key]}</div>
-              {index < Object.keys(antiviralParams).length - 1 && (
+              {index < Object.keys(antiviralParams).length && (
                 <hr className="parameter-separator" />
               )}
             </div>
           ))}
+
+          <div className="section-label">Antiviral Stockpile</div>
+          {antiviralStockpileList.map((item, index) => (
+            <div key={index} className="initial-case-item">
+              <div className="initial-case-info">
+                Day: <strong>{item.day}</strong>, {' '}
+                Antivirals: <strong>{item.amount}</strong>
+              </div>
+            </div>
+          ))}
+
           <hr className="section-separator" />
 
-          <div><h3>Vaccine</h3></div>
+
+          <div><h3>Vaccines</h3></div>
           {Object.keys(vaccineParams).map((key, index) => (
             <div key={key} className="parameter-item">
               <div className="parameter-label">{vaccineLabels[key]}</div>
               <div className="parameter-value">{vaccineParams[key]}</div>
-              {index < Object.keys(vaccineParams).length - 1 && (
+              {index < Object.keys(vaccineParams).length && (
                 <hr className="parameter-separator" />
               )}
             </div>
           ))}
+
+          <div className="section-label">Vaccine Stockpile</div>
+          {vaccineStockpileList.map((item, index) => (
+            <div key={index} className="initial-case-item">
+              <div className="initial-case-info">
+                Day: <strong>{item.day}</strong>, {' '}
+                Vaccines: <strong>{item.amount}</strong>
+              </div>
+            </div>
+          ))}
+
           <hr className="section-separator" />
+
+          <div><h3>Non-Pharma</h3></div>
+          <div className="section-label"></div>
+          {nonpharmaList.map((item, index) => (
+            <div key={index} className="initial-case-item">
+              <div className="initial-case-info">
+                NPI on day <strong>{item.day}</strong> with {' '}
+                <strong>{item.effectiveness}</strong> effectiveness {' '}
+                and half-life of <strong>{item.halflife}</strong> days
+              </div>
+            </div>
+          ))}
 
         </>
       )}
