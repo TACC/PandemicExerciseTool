@@ -1,27 +1,60 @@
 .saved-parameters-panel {
-    width: 100%; /* Ensure panel takes full width of its container */
-    padding: 20px; /* Add some padding inside the panel */
-    box-sizing: border-box; /* Include padding in width calculation */
-    overflow-x: auto; /* Allow horizontal scrolling if the table is too wide */
-  }
-  
-  .parameters-table {
-    width: 100%; /* Make sure the table takes full width of the panel */
-    border-collapse: collapse; /* Collapse table borders */
-    table-layout: fixed; /* Ensure the table uses fixed layout */
-  }
-  
-  .parameters-table th,
-  .parameters-table td {
-    padding: 10px; /* Add padding inside table cells */
-    border: 1px solid #ddd; /* Light border for table cells */
-    text-align: left; /* Align text to the left */
-  }
-  
-  .parameters-table th {
-    background-color: #f4f4f4; /* Light background for header cells */
-    position: sticky; /* Make header sticky */
-    top: 0; /* Stick to the top of the table */
-    z-index: 1; /* Ensure header is above table content */
-  }
-  
+  width: 100%; /* Ensure panel takes full width of its container */
+  padding: 20px; /* Add some padding inside the panel */
+  box-sizing: border-box; /* Include padding in width calculation */
+  overflow-x: auto; /* Allow horizontal scrolling if the table is too wide */
+}
+
+.parameters-table {
+  width: 100%; /* Make sure the table takes full width of the panel */
+  border-collapse: collapse; /* Collapse table borders */
+  table-layout: fixed; /* Ensure the table uses fixed layout */
+}
+
+.parameters-table th,
+.parameters-table td {
+  padding: 10px; /* Add padding inside table cells */
+  border: 1px solid #ddd; /* Light border for table cells */
+  text-align: left; /* Align text to the left */
+}
+
+.parameters-table th {
+  background-color: #f4f4f4; /* Light background for header cells */
+  position: sticky; /* Make header sticky */
+  top: 0; /* Stick to the top of the table */
+  z-index: 1; /* Ensure header is above table content */
+}
+
+/* Added for styling the toggle buttons on the left panel */
+.toggle-section {
+  display: flex;
+  justify-content: left;
+  margin-bottom: 20px;
+}
+
+/* Style for the buttons */
+.toggle-button {
+  background-color: white;
+  color: gray; /* Button text color */
+  padding: 10px 10px;
+  margin: 0 0px; /* Space between buttons */
+  cursor: pointer;
+  font-size: 18px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+  text-decoration: underline;
+  text-underline-offset: 6px;
+  text-decoration-thickness: 3px;
+  text-decoration-color: lightgray;
+}
+
+/* Style for the active button */
+.toggle-button.active {
+  color: black; /* Active button text is white */
+  text-decoration-color: black;
+}
+
+/* Make text blue for the inactive button when hovered */
+.toggle-button:hover {
+  background-color: #f7b13c;
+}
