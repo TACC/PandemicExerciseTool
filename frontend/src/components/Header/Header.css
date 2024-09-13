@@ -69,6 +69,12 @@
   background-color: #102c41;
 }
 
+.tab-button:hover {
+  border-bottom: 2px solid #dfa53d;
+  font-weight: bold;
+  background-color: #102c41;
+}
+
 .tab-content {
   overflow: auto;
   padding: 20px;

@@ -20,19 +20,15 @@ import './styles.css';
 import './left-panel.css';
 import axios from 'axios';
 
-import OUTPUT_0 from './OUTPUT_0.json';
-
 const HomeView = () => {
 
   const [isRunning, setIsRunning] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
-
   const intervalRef = useRef(null);
   const [id, setId] = useState([]);
   const [taskId, setTaskId] = useState([]);
   const [data, setData] = useState([]);
   const [eventData, setEventData] = useState([]);
-  const [outputFiles] = useState([ OUTPUT_0 ])
 
 
   const handleToggleScenario = () => {
