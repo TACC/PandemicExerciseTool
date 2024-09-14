@@ -191,7 +191,7 @@ const HomeView = () => {
   
       <div className="middle-panel">
         <div className="map-and-chart-container">
-          <InfectedMap eventData={eventData} className="map-size" />
+          <InfectedMap eventData={eventData} currentIndex={currentIndex} className="map-size" />
           <div className="separator"></div> 
           <DeceasedLineChart eventData={eventData} className="chart-size" />
         </div>
@@ -207,11 +207,10 @@ const HomeView = () => {
         </div>
         <div className="timeline-panel">
           <TimelineSlider
-            totalDays={currentIndex}
+            totalDays={eventData.length}
             selectedDay={currentIndex}
             onDayChange={handleDayChange}
-            onScenarioRun={handleRunScenario}
-            onScenarioPause={handlePauseScenario}
+            isRunning={isRunning}
           />
         </div>
       </div>
