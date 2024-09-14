@@ -1,102 +1,138 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import toggletip from  './images/toggletip.svg';
 import './NonPharmaceutical.css';
 
 const NonPharmaceutical = ({ onSubmit }) => {
-  const [formData, setFormData] = useState({
-    name: '',
-    duration: 0,
-    effectiveness: {
-      '0-4 years': 0,
-      '5-24 years': 0,
-      '25-49 years': 0,
-      '50-64 years': 0,
-      '65+ years': 0
-    },
-    location: ''
-  });
+  const [nonpharmaDay, setNonpharmaDay] = useState(50);
+  const [nonpharmaEffectiveness, setNonpharmaEffectiveness] = useState(0.40);
+  const [nonpharmaHalflife, setNonpharmaHalflife] = useState(10);
+  const [nonpharmaList, setNonpharmaList] = useState(JSON.parse(localStorage.getItem("nonpharma_list")) || []);
+  const [nonpharmaCounter, setNonpharmaCounter] = useState(0);
 
-  const handleSubmit = event => {
+
+  const handleAddNPI = event => {
+    console.log("Adding NPI...");
     event.preventDefault();
-    onSubmit(formData);
+    // Ensure all fields are filled out
+    if (!nonpharmaDay || !nonpharmaEffectiveness || !nonpharmaHalflife) {
+      alert('Please enter all required fields');
+      return;
+    }
+    // Create a new object with the values from the form
+    const newNPI = {
+      day: nonpharmaDay,
+      effectiveness: nonpharmaEffectiveness,
+      halflife: nonpharmaHalflife
+    };
+    // Add the new object to the list
+    setNonpharmaList(prevList => [...prevList, newNPI]);
+    setNonpharmaCounter(nonpharmaCounter + 1);
   };
 
-  const handleChange = (field, value) => {
-    setFormData(prevState => ({
-      ...prevState,
-      [field]: value
-    }));
+  const handleRemove = index => {
+    console.log('Removing case at index:', index);
+    // Remove the case at the specified index
+    setNonpharmaList(nonpharmaList.filter((_, i) => i !== index));
+    setNonpharmaCounter(nonpharmaCounter - 1);
   };
 
-  const handleEffectivenessChange = (ageGroup, value) => {
-    setFormData(prevState => ({
-      ...prevState,
-      effectiveness: {
-        ...prevState.effectiveness,
-        [ageGroup]: value
-      }
-    }));
+  const handleSave = () => {
+    console.log('Saving parameters...');
+    onSubmit(nonpharmaList);
   };
+
+
+  useEffect(() => {
+    localStorage.setItem("nonpharma_list", JSON.stringify(nonpharmaList));
+  }, [nonpharmaCounter]);
+
 
   return (
-    <form className="parameters-form" onSubmit={handleSubmit}>
-      <div className="form-group">
-        <label htmlFor="name">Name:</label>
-        <input
-          type="text"
-          id="name"
-          value={formData.name}
-          onChange={e => handleChange('name', e.target.value)}
-          required
-        />
-      </div>
-
-      <div className="form-group">
-        <label htmlFor="location">Location:</label>
-        <select
-          id="location"
-          value={formData.location}
-          onChange={e => handleChange('location', e.target.value)}
-          required
-        >
-          <option value="" disabled>Select a location</option>
-          <option value="By County">By County</option>
-          <option value="Statewide">Statewide</option>
-          <option value="By Region">By Region</option>
-        </select>
-      </div>
-
-      <div className="form-group">
-        <label htmlFor="duration">Duration (days):</label>
+    <div>
+      <form className="parameters-form" onSubmit={handleAddNPI}>
+        <div className="form-group">
+        <label htmlFor="nonpharmaDay">NPI Day
+        <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
+            <span className="tooltip-text">Specify day that non-pharmaceutical intervention occurs.</span>
+          </span>
+        </label>
         <input
           type="number"
-          id="duration"
-          value={formData.duration}
-          onChange={e => handleChange('duration', parseInt(e.target.value, 10))}
-          min="0"
+          id="nonpharmaDay"
+          value={nonpharmaDay}
+          onChange={e => setNonpharmaDay(e.target.value)}
+          min="1"
+          max="1000"
+          step="1"
           required
         />
-      </div>
+        </div>
 
-      <div className="form-group">
-        <label>Age-Specific Effectiveness:</label>
-        {Object.keys(formData.effectiveness).map(ageGroup => (
-          <div key={ageGroup} className="form-group">
-            <label htmlFor={`effectiveness-${ageGroup}`}>{ageGroup}:</label>
-            <input
-              type="number"
-              id={`effectiveness-${ageGroup}`}
-              value={formData.effectiveness[ageGroup]}
-              onChange={e => handleEffectivenessChange(ageGroup, parseFloat(e.target.value))}
-              min="0"
-              max="100"
-              step="0.1"
-              required
-            />
-          </div>
-        ))}
-      </div>
-      <button type="submit">Submit Data</button>
-    </form>
+        <div className="form-group">
+        <label htmlFor="nonpharmaEffectiveness">NPI Effectiveness
+        <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
+            <span className="tooltip-text">Specify effectiveness of non-pharmaceutical intervention (0 = not effective, 1 = completely effective).</span>
+          </span>
+        </label>
+        <input
+          type="number"
+          id="nonpharmaEffectiveness"
+          value={nonpharmaEffectiveness}
+          onChange={e => setNonpharmaEffectiveness(e.target.value)}
+          min="0"
+          max="1"
+          step="0.01"
+          required
+        />
+        </div>
+
+        <div className="form-group">
+        <label htmlFor="nonpharmaHalflife">NPI Half-life (days)
+        <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
+            <span className="tooltip-text">Specify half-life of non-pharmaceutical intervention in days (NPI is half as effective after N days).</span>
+          </span>
+        </label>
+        <input
+          type="number"
+          id="nonpharmaHalflife"
+          value={nonpharmaHalflife}
+          onChange={e => setNonpharmaHalflife(e.target.value)}
+          min="1"
+          max="1000"
+          step="0.1"
+          required
+        />
+        </div>
+
+        <button type="submit">Add New NPI</button>
+      </form>
+
+      <h3>Added NPIs</h3>
+      <table className="npi-table">
+        <thead>
+          <tr>
+            <th>Day</th>
+            <th>Effectiveness</th>
+            <th>Half-life</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {nonpharmaList.map((npiItem, index) => (
+            <tr key={index}>
+              <td>{npiItem.day}</td>
+              <td>{ npiItem.effectiveness}</td>
+              <td>{ npiItem.halflife}</td>
+              <td>
+                <button onClick={() => handleRemove(index)}>Remove</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <div><button onClick={handleSave}>Save</button></div>
+    </div>
   );
 };
 
