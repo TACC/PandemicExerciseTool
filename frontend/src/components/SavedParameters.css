@@ -1,6 +1,6 @@
 .saved-parameters-panel {
   width: 100%; /* Ensure panel takes full width of its container */
-  padding: 20px; /* Add some padding inside the panel */
+  padding: 10px; /* Add some padding inside the panel */
   box-sizing: border-box; /* Include padding in width calculation */
   overflow-x: auto; /* Allow horizontal scrolling if the table is too wide */
 }
@@ -56,5 +56,5 @@
 
 /* Make text blue for the inactive button when hovered */
 .toggle-button:hover {
-  background-color: #f7b13c;
+  background-color: #FEEFD8;
 }
