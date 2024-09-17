@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import toggletip from  './images/toggletip.svg';
+import './AddInitialCases.css';
 
 
 const Antivirals = ({ onSubmit }) => {
@@ -149,7 +150,7 @@ const Antivirals = ({ onSubmit }) => {
               <td>{avsItem.day}</td>
               <td>{avsItem.amount}</td>
               <td>
-                <button onClick={() => handleRemove(index)}>Remove</button>
+                <button class="remove-button" onClick={() => handleRemove(index)}>Remove</button>
               </td>
             </tr>
           ))}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import toggletip from  "./images/toggletip.svg";
-
+import './AddInitialCases.css';
 
 const Vaccine = ({ onSubmit }) => {
   const [vaccineEffectiveness, setVaccineEffectiveness] = useState(localStorage.getItem('vaccine_effectiveness') || 0.50);
@@ -80,7 +80,7 @@ const Vaccine = ({ onSubmit }) => {
         <div className="form-group">
           <label htmlFor="vaccineAdherence">Vaccine Adherence
             <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-              <span className="tooltip-text">Fraction of population that take adhere to the vaccine schedule (0 = none, 1 = all)</span>
+              <span className="tooltip-text">Fraction of population that adhere to the vaccine schedule (0 = none, 1 = all)</span>
             </span>
           </label>
           <input
@@ -117,30 +117,32 @@ const Vaccine = ({ onSubmit }) => {
               <span className="tooltip-text">"Pro rata" distributes vaccine stockpiles to all age groups equally, "Children" distributes vaccine stockpiles to youngest age groups first.</span>
             </span>
           </label>
-          <div style={{ display: "flex", gap: "10px"}}>
-            <div>
-              <input
-                type="radio"
-                id="prorataAll"
-                name="vaccineStrategy"
-                value="all"
-                checked={vaccineStrategy === "all"}
-                onChange={e => setVaccineStrategy(e.target.value)}
-                required
-              />
-              <label htmlFor="prorataAll">Pro Rata</label>
-            </div>
-            <div>
-              <input
-                type="radio"
-                id="prorataChildren"
-                name="vaccineStrategy"
-                value="children"
-                checked={vaccineStrategy === "children"}
-                onChange={e => setVaccineStrategy(e.target.value)}
-                required
-              />
-              <label htmlFor="prorataChildren">Children</label>
+          <div className="radio-group"> 
+            <div style={{ display: "flex", gap: "10px"}}>
+              <div>
+                <input
+                  type="radio"
+                  id="prorataAll"
+                  name="vaccineStrategy"
+                  value="all"
+                  checked={vaccineStrategy === "all"}
+                  onChange={e => setVaccineStrategy(e.target.value)}
+                  required
+                />
+                <label htmlFor="prorataAll">Pro Rata</label>
+              </div>
+              <div>
+                <input
+                  type="radio"
+                  id="prorataChildren"
+                  name="vaccineStrategy"
+                  value="children"
+                  checked={vaccineStrategy === "children"}
+                  onChange={e => setVaccineStrategy(e.target.value)}
+                  required
+                />
+                <label htmlFor="prorataChildren">Children</label>
+              </div>
             </div>
           </div>
         </div>
@@ -202,7 +204,7 @@ const Vaccine = ({ onSubmit }) => {
               <td>{vsItem.day}</td>
               <td>{vsItem.amount}</td>
               <td>
-                <button onClick={() => handleRemove(index)}>Remove</button>
+                <button class="remove-button" onClick={() => handleRemove(index)}>Remove</button>
               </td>
             </tr>
           ))}

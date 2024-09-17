@@ -17,6 +17,7 @@ code {
   src: local("GilroyRegular"),
     url("./fonts/Gilroy-Regular.ttf") format("truetype");
   font-weight: normal;
+  font-display: swap; 
 }
 
 @font-face {
@@ -24,6 +25,7 @@ code {
   src: local("GilroyBold"),
     url("./fonts/Gilroy-Bold.ttf") format("truetype");
   font-weight: normal;
+  font-display: swap;
 }
 
 .content {

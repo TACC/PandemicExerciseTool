@@ -38,8 +38,6 @@ const SavedParameters = () => {
   // Retrieve initial cases from localStorage
   const initialCases = JSON.parse(localStorage.getItem('initial_infected')) || [];
 
-
-
   const antiviralParams = {
     antiviralEffectiveness: localStorage.getItem('antiviral_effectiveness') || 'N/A',
     antiviralWastageFactor: localStorage.getItem('antiviral_wastage_factor') || 'N/A',
@@ -98,7 +96,7 @@ const SavedParameters = () => {
       {/* Conditionally render content based on selected view */}
       {view === 'scenario' ? (
         // Scenario View: Existing content
-        <>
+        <div className = "scenario-section">
           {Object.keys(parameters).map((key, index) => (
             <div key={key} className="parameter-item">
               <div className="parameter-label">{labels[key]}</div>
@@ -133,9 +131,9 @@ const SavedParameters = () => {
               </button>
             )}
           </div>
-        </>
+        </div>
       ) : (
-        <>
+        <div className="interventions-section">
           <div><h3>Antivirals</h3></div>
           {Object.keys(antiviralParams).map((key, index) => (
             <div key={key} className="parameter-item">
@@ -183,7 +181,7 @@ const SavedParameters = () => {
 
           <hr className="section-separator" />
 
-          <div><h3>Non-Pharma</h3></div>
+          <div><h3>NPI</h3></div>
           <div className="section-label"></div>
           {nonpharmaList.map((item, index) => (
             <div key={index} className="initial-case-item">
@@ -195,7 +193,7 @@ const SavedParameters = () => {
             </div>
           ))}
 
-        </>
+        </div>
       )}
 
       {isModalOpen && (

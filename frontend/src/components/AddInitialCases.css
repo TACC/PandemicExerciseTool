@@ -62,8 +62,7 @@
   }
 
 
-input[type="number"],
-input[type="radio"] {
+input[type="number"] {
   padding: 5px;
   margin-right: 10px;
   height: 20%;
@@ -82,4 +81,29 @@ h3 {
 
 .remove-button:hover {
   background-color: #6c757d; /* Change this to the gray color you want on hover */
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Adds spacing between each radio option */
+}
+
+.radio-group div {
+  display: flex;
+  align-items: center; /* Aligns radio button and text vertically */
+}
+
+.radio-group input[type="radio"] {
+  margin: 0; /* Removes extra margin around the radio button */
+}
+
+.radio-group label {
+  margin-left: 5px; /* Adds space between the radio button and the label */
+  line-height: 1; /* Adjust line-height for proper alignment */
 }
