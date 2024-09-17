@@ -37,7 +37,7 @@ const SavedParameters = () => {
 
   // Retrieve initial cases from localStorage
   const initialCases = JSON.parse(localStorage.getItem('initial_infected')) || [];
-
+  
   const antiviralParams = {
     antiviralEffectiveness: localStorage.getItem('antiviral_effectiveness') || 'N/A',
     antiviralWastageFactor: localStorage.getItem('antiviral_wastage_factor') || 'N/A',
@@ -49,8 +49,6 @@ const SavedParameters = () => {
   }
 
   const antiviralStockpileList = JSON.parse(localStorage.getItem('antiviral_stockpile')) || [];
-
-  //const vaccineStrategyRaw = localStorage.getItem('vaccine_strategy') || 'N/A';
 
   const vaccineParams = {
     vaccineEffectiveness: localStorage.getItem('vaccine_effectiveness') || 'N/A',
@@ -192,7 +190,6 @@ const SavedParameters = () => {
               </div>
             </div>
           ))}
-
         </div>
       )}
 

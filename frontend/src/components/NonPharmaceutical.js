@@ -106,7 +106,6 @@ const NonPharmaceutical = ({ onSubmit }) => {
 
         <button type="submit">Add New NPI</button>
       </form>
-
       <h2>Added NPIs</h2>
       <table className="npi-table">
         <thead>
