@@ -1,5 +1,3 @@
-
-
 // InfectedMap.js
 import React, { useEffect, useState, useRef } from 'react';
 import { MapContainer, TileLayer, GeoJSON, useMap } from 'react-leaflet';
@@ -7,7 +5,6 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import texasOutline from './texasOutline.json';
 import './Legend.css'; // Ensure you have a CSS file for styling
-import '../fonts/fonts.css'
 
 // Function to determine color based on infected count
 const getColor = (infectedCount) => {
@@ -75,17 +72,18 @@ const Legend = () => {
 };
 
 // Main component to render the map
-const InfectedMap = ({ eventData }) => {
+const InfectedMap = ({ eventData, currentIndex}) => {
   const [countyData, setCountyData] = useState([]);
   const mapRef = useRef();
 
   useEffect(() => {
     const texasCounties = parseTexasOutline(texasOutline);
-    if (eventData && eventData.length > 0) {
-      // Assume we're using the latest day's data
-      const latestDayEventData = eventData[eventData.length - 1]?.counties || [];
+    if (eventData && eventData.length > 0 && typeof currentIndex !== 'undefined') {
+      // Get the event data for the specific day (currentIndex)
+      const specificDayEventData = eventData.find(event => event.day === currentIndex)?.counties || [];
+
       const data = texasCounties.map(county => {
-        const countyEvent = latestDayEventData.find(event => event.fips === county.geoid);
+        const countyEvent = specificDayEventData.find(event => event.fips === county.geoid);
         return {
           county: county.name,
           fips: county.geoid,
@@ -93,9 +91,9 @@ const InfectedMap = ({ eventData }) => {
         };
       });
       setCountyData(data);
-      console.log('County data loaded:', data); // Debug log
+      // console.log(`County data loaded for day ${currentIndex}:`, data); // Debug log
     }
-  }, [eventData]);
+  }, [eventData, currentIndex]);
 
   const onEachCounty = (feature, layer) => {
     const geoid = feature.properties.geoid;
@@ -127,7 +125,6 @@ const InfectedMap = ({ eventData }) => {
   const geoJsonStyle = (feature) => {
     const countyInfo = countyData.find(item => item.fips === feature.properties.geoid);
     const infectedCount = countyInfo ? countyInfo.infected : 0;
-    // console.log(`County: ${feature.properties.name}, Infected: ${infectedCount}`); // Debug log
     return {
       fillColor: getColor(infectedCount),
       weight: 1,
@@ -136,6 +133,7 @@ const InfectedMap = ({ eventData }) => {
     };
   };
 
+  /*
   useEffect(() => {
     if (mapRef.current) {
       mapRef.current.eachLayer(layer => {
@@ -145,34 +143,34 @@ const InfectedMap = ({ eventData }) => {
       });
     }
   }, [eventData]);
+*/
+  /*
 
   useEffect(() => {
     if (mapRef.current && outlineLayerRef.current) {
       outlineLayerRef.current.bringToFront(); // Keep the black outline on top
     }
   }, []); // Ensure this only runs once when the map is created
-
+  */
 
   return (
     <div>
-    <MapContainer
-      id="map"
-      center={[31.0, -100.0]}
-      zoom={6}
-      style={{ height: '620px', width: '1700px', backgroundColor: 'white' }}
-      whenCreated={mapInstance => { mapRef.current = mapInstance; }}
-    >
-      <GeoJSON
-        key={JSON.stringify(countyData)}
-        data={texasOutline}
-        style={geoJsonStyle}
-        onEachFeature={onEachCounty}
-      />
-
-      <Legend />
-    </MapContainer>
-  </div>
-
+      <MapContainer
+        id="map"
+        center={[31.0, -100.0]}
+        zoom={6}
+        style={{ height: '620px', width: '1700px', backgroundColor: 'white' }}
+        whenCreated={mapInstance => { mapRef.current = mapInstance; }}
+      >
+        <GeoJSON
+          key={JSON.stringify(countyData)}
+          data={texasOutline}
+          style={geoJsonStyle}
+          onEachFeature={onEachCounty}
+        />
+        <Legend />
+      </MapContainer>
+    </div>
   );
 };
 

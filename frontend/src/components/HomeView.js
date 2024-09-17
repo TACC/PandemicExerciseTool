@@ -191,7 +191,7 @@ const HomeView = () => {
   
       <div className="middle-panel">
         <div className="map-and-chart-container">
-        <InfectedMap eventData={eventData} className="map-size" />
+        <InfectedMap currentIndex={currentIndex} eventData={eventData} className="map-size" />
           <div className="separator"></div> 
           <DeceasedLineChart currentIndex={currentIndex} eventData={eventData} className="chart-size" />
         </div>
