@@ -112,7 +112,7 @@ const SavedParameters = () => {
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
           >
-            <div className="section-label">Initial Cases</div>
+           <div><h3>Initial Cases</h3></div>
             {initialCases.map((caseItem, index) => (
               <div key={index} className="initial-case-item">
                 <div className="initial-case-info">
