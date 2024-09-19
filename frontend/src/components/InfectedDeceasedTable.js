@@ -15,7 +15,7 @@ const loadCountyNames = async () => {
   return lookup;
 };
 
-function InfectedDeceasedTable({ eventData }) {
+function InfectedDeceasedTable({ eventData, currentIndex }) {
   const [mergedData, setMergedData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -34,24 +34,24 @@ function InfectedDeceasedTable({ eventData }) {
         return;
       }
 
-      // Get the latest day's data (most recent)
-      const latestDayEventData = eventData[eventData.length - 1]?.counties || [];
+        // Get the data for the specific day (currentIndex)
+        const specificDayEventData = eventData.find(event => event.day === currentIndex)?.counties || [];
 
       // Map and transform data for display
-      const dayData = latestDayEventData.map(county => ({
+      const dayData = specificDayEventData.map(county => ({
         county: countyNameLookup[county.fips] || 'Unknown',
         infected: county.infected,
         deceased: county.deceased,
       }));
 
-      console.log('Day Data (latest):', dayData); // Debugging output
+      console.log(`Day Data (index ${currentIndex}):`, dayData); // Debugging output
 
       setMergedData(dayData);
       setFilteredData(dayData); // Initialize filtered data to current day's data
     };
 
     fetchData();
-  }, [eventData]); // Rerun the effect when eventData changes
+  }, [eventData, currentIndex]); // Rerun the effect when eventData changes
 
 
   // Function to handle sorting

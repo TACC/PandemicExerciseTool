@@ -1,11 +1,16 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import './TimelineSlider.css';
-import PlayPauseButton from './PlayPauseButton';
 
-const TimelineSlider = ({ totalDays, selectedDay, onDayChange, onScenarioRun, onScenarioPause }) => {
-    const handleChange = (value) => {
+const TimelineSlider = ({ totalDays, selectedDay, onDayChange, isRunning }) => {
+  const [maxDay, setMaxDay] = useState(totalDays);
+
+  useEffect(() => {
+    setMaxDay(isRunning ? totalDays : selectedDay);
+  }, [isRunning, selectedDay, totalDays]);
+
+  const handleChange = (value) => {
     onDayChange(value);
   };
 
@@ -13,19 +18,19 @@ const TimelineSlider = ({ totalDays, selectedDay, onDayChange, onScenarioRun, on
     <div className="timeline-container">
       <Slider
         min={0}
-        max={selectedDay}
-        value={Math.min(selectedDay, totalDays - 1)}
+        max={maxDay}
+        value={Math.min(selectedDay, maxDay)}
         onChange={handleChange}
         railStyle={{ backgroundColor: '#ccc' }}
         trackStyle={{ backgroundColor: '#007bff' }}
         handleStyle={{ borderColor: '#007bff' }}
       />
       <div className="timeline-slider">
-        {Array.from({ length: selectedDay + 1 }).map((_, index) => (
+        {Array.from({ length: maxDay + 1 }).map((_, index) => (
           <div
             key={index}
             className={`timeline-item ${index === selectedDay ? 'active' : ''}`}
-            onClick={() => onDayChange(index)}
+            onClick={() => handleChange(index)}
           >
             <span className="timeline-date">{index}</span>
           </div>
@@ -35,4 +40,4 @@ const TimelineSlider = ({ totalDays, selectedDay, onDayChange, onScenarioRun, on
   );
 };
 
-export default TimelineSlider;
+export default React.memo(TimelineSlider);

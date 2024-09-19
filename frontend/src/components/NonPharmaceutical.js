@@ -106,8 +106,7 @@ const NonPharmaceutical = ({ onSubmit }) => {
 
         <button type="submit">Add New NPI</button>
       </form>
-
-      <h3>Added NPIs</h3>
+      <h2>Added NPIs</h2>
       <table className="npi-table">
         <thead>
           <tr>
@@ -124,7 +123,7 @@ const NonPharmaceutical = ({ onSubmit }) => {
               <td>{ npiItem.effectiveness}</td>
               <td>{ npiItem.halflife}</td>
               <td>
-                <button onClick={() => handleRemove(index)}>Remove</button>
+                <button class="remove-button" onClick={() => handleRemove(index)}>Remove</button>
               </td>
             </tr>
           ))}

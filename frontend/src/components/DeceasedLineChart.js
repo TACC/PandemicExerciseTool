@@ -6,7 +6,7 @@ import '../fonts/fonts.css';
 // Register ChartJS components
 ChartJS.register(LineElement, PointElement, CategoryScale, LinearScale, Title, Tooltip, Legend);
 
-const DeceasedLineChart = ({ eventData }) => {
+const DeceasedLineChart = ({ eventData, currentIndex }) => {
   // Prepare data for the chart
   const data = {
     labels: eventData.map(event => event.day), // Only day numbers on the x-axis
@@ -17,8 +17,13 @@ const DeceasedLineChart = ({ eventData }) => {
         fill: false,
         borderColor: 'rgba(75,192,192,1)', // Line color
         backgroundColor: 'rgba(75,192,192,0)', // No fill color
-       // tension: 0.1,
         pointRadius: 3, // Optional: Add some radius for data points
+        pointBackgroundColor: eventData.map((_, index) =>
+          index === currentIndex ? 'red' : 'rgba(75,192,192,1)' // Highlight the current day
+        ),
+        pointBorderWidth: eventData.map((_, index) =>
+          index === currentIndex ? 5 : 1 // Thicker border for the current day's point
+        ),
       },
     ],
   };
@@ -80,9 +85,6 @@ const DeceasedLineChart = ({ eventData }) => {
             size: 20, // Larger x-axis tick labels font size
             family: 'Gilroy', // Font family
           },
-          callback: function (value, index, values) {
-            return `${value}`; // Display only the day number on the x-axis
-          },
         },
       },
       y: {
@@ -114,4 +116,4 @@ const DeceasedLineChart = ({ eventData }) => {
   );
 };
 
-export default DeceasedLineChart;
+export default React.memo(DeceasedLineChart);

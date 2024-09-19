@@ -1,3 +1,5 @@
+
+
 // InfectedMap.js
 import React, { useEffect, useState, useRef } from 'react';
 import { MapContainer, TileLayer, GeoJSON, useMap } from 'react-leaflet';
@@ -5,6 +7,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import texasOutline from './texasOutline.json';
 import './Legend.css'; // Ensure you have a CSS file for styling
+import '../fonts/fonts.css'
 
 // Function to determine color based on infected count
 const getColor = (infectedCount) => {
