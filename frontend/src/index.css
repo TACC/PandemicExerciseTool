@@ -24,7 +24,7 @@ code {
   font-family: "GilroyBold";
   src: local("GilroyBold"),
     url("./fonts/Gilroy-Bold.ttf") format("truetype");
-  font-weight: normal;
+  font-weight: bold;
   font-display: swap;
 }
 

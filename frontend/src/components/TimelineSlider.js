@@ -4,12 +4,7 @@ import 'rc-slider/assets/index.css';
 import './TimelineSlider.css';
 
 const TimelineSlider = ({ totalDays, selectedDay, onDayChange, isRunning }) => {
-  const [maxDay, setMaxDay] = useState(totalDays);
-
-  useEffect(() => {
-    setMaxDay(isRunning ? totalDays : selectedDay);
-  }, [isRunning, selectedDay, totalDays]);
-
+  
   const handleChange = (value) => {
     onDayChange(value);
   };
@@ -18,15 +13,16 @@ const TimelineSlider = ({ totalDays, selectedDay, onDayChange, isRunning }) => {
     <div className="timeline-container">
       <Slider
         min={0}
-        max={maxDay}
-        value={Math.min(selectedDay, maxDay)}
+        max={totalDays}
+        value={selectedDay}
         onChange={handleChange}
         railStyle={{ backgroundColor: '#ccc' }}
         trackStyle={{ backgroundColor: '#007bff' }}
         handleStyle={{ borderColor: '#007bff' }}
+        disabled={isRunning}
       />
       <div className="timeline-slider">
-        {Array.from({ length: maxDay + 1 }).map((_, index) => (
+        {Array.from({ length: totalDays + 1}).map((_, index) => (
           <div
             key={index}
             className={`timeline-item ${index === selectedDay ? 'active' : ''}`}
