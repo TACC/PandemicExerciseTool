@@ -1,7 +1,7 @@
 import React from 'react';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, LineElement, PointElement, CategoryScale, LinearScale, Title, Tooltip, Legend } from 'chart.js';
-import '../fonts/fonts.css';
+import '../index.css';
 
 // Register ChartJS components
 ChartJS.register(LineElement, PointElement, CategoryScale, LinearScale, Title, Tooltip, Legend);
@@ -41,11 +41,11 @@ const DeceasedLineChart = ({ eventData, currentIndex }) => {
         backgroundColor: 'rgba(0, 0, 0, 0.7)', // Darker background for the tooltip
         titleFont: {
           size: 18, // Larger font for the tooltip title
-          family: 'Gilroy',
+          family: 'GilroyBold',
         },
         bodyFont: {
           size: 16, // Larger font for the tooltip body
-          family: 'Gilroy',
+          family: 'GilroyBold',
         },
         padding: 15, // Increase padding inside the tooltip
         callbacks: {
@@ -64,7 +64,7 @@ const DeceasedLineChart = ({ eventData, currentIndex }) => {
         font: {
           size: 30, // Larger title font size
           weight: 'bold',
-          family: 'Gilroy', // Font family
+          family: 'GilroyBold', // Font family
         },
       },
     },
@@ -76,14 +76,14 @@ const DeceasedLineChart = ({ eventData, currentIndex }) => {
           color: 'black', // Change x-axis title color to black
           font: {
             size: 25, // Larger x-axis title font size
-            family: 'Gilroy', // Font family
+            family: 'GilroyRegular', // Font family
           },
         },
         ticks: {
           color: 'black', // Change x-axis tick labels color to black
           font: {
             size: 20, // Larger x-axis tick labels font size
-            family: 'Gilroy', // Font family
+            family: 'GilroyRegular', // Font family
           },
         },
       },
@@ -94,14 +94,14 @@ const DeceasedLineChart = ({ eventData, currentIndex }) => {
           color: 'black', // Change y-axis title color to black
           font: {
             size: 25, // Larger y-axis title font size
-            family: 'Gilroy', // Font family
+            family: 'GilroyRegular', // Font family
           },
         },
         ticks: {
           color: 'black', // Change y-axis tick labels color to black
           font: {
             size: 16, // Larger y-axis tick labels font size
-            family: 'Gilroy', // Font family
+            family: 'GilroyRegular', // Font family
           },
         },
         beginAtZero: true,
