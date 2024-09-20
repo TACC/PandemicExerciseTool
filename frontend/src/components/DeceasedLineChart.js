@@ -84,6 +84,7 @@ const DeceasedLineChart = ({ eventData, currentIndex }) => {
           font: {
             size: 20, // Larger x-axis tick labels font size
             family: 'GilroyRegular', // Font family
+
           },
         },
       },

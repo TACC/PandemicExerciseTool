@@ -4,12 +4,7 @@ import 'rc-slider/assets/index.css';
 import './TimelineSlider.css';
 
 const TimelineSlider = ({ totalDays, selectedDay, onDayChange, isRunning }) => {
-  /*const [maxDay, setMaxDay] = useState(totalDays);
-
-  useEffect(() => {
-    setMaxDay(isRunning ? totalDays : selectedDay);
-  }, [isRunning, selectedDay, totalDays]);
-*/
+  
   const handleChange = (value) => {
     onDayChange(value);
   };

@@ -27,9 +27,7 @@ const HomeView = () => {
   const intervalRef = useRef(null);
   const [id, setId] = useState([]);
   const [taskId, setTaskId] = useState([]);
-  //const [data, setData] = useState([]);
   const [eventData, setEventData] = useState([]);
-
   const handleToggleScenario = () => {
 
     if (isRunning) {
@@ -111,8 +109,6 @@ const HomeView = () => {
         const response = await axios.get(`http://localhost:8000/api/output/${requestedIndex}`);
         
         if (response.status === 200) {
-         // setData(response.data);
-
           console.log('Requested Index:', requestedIndex);
           setCurrentIndex(response.data.day);
           console.log('Day:', response.data.day);
@@ -168,62 +164,8 @@ const HomeView = () => {
       setTimeout(() => {
         fetchData(nextAvailable);
       }, 1000);
-      /*
-
-      intervalRef.current = setInterval(() => {
-          console.log('Fetching data for index:', currentIndex);
-          fetchData(currentIndex);
-      }, 1000); // Check every 1 second */
     }
-
-    /*return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    }; */
   }, [isRunning, eventData]);
-
-  
-  /*useEffect(() => {
-    if (currentIndex !== 0) {
-      const data_entries = Object.entries(data.data);
-      const total_counts = data.total_summary;
-
-      console.log('Total counts:', total_counts);
-
-      // Map through data_entries to collect fips_id, infected counts, and deceased counts for each county
-      const countyInfectedDeceasedData = data_entries.map(([countyKey, countyData]) => {
-        const fips_id = countyData['fips_id'];  // Get the fips_id for the county
-        const infectedCount = countyData['compartment_summary']['I'] || 0;  // Get the infected count
-        const deceasedCount = countyData['compartment_summary']['D'] || 0;  // Get the deceased count
-  
-        return {
-          fips: fips_id,        // Store fips_id
-          infected: infectedCount, // Store infected count
-          deceased: deceasedCount, // Store deceased count
-        };
-      });
-  
-      // Calculate the total deceased count for the current day
-      const totalDeceasedCount = total_counts['D'];
-      // const totalSusceptibleCount = total_counts['S'];
-      //console.log('Total Susceptible Count:', totalSusceptibleCount);
-      
-      console.log('Total Deceased Count:', totalDeceasedCount);
-  
-      // Update the eventData to include the county-level fips, infected, and deceased information
-      setEventData((prevEventData) => [
-        ...prevEventData,
-        {
-          day: currentIndex,
-          counties: countyInfectedDeceasedData,  // Store array of county data for the current day
-          totalDeceased: totalDeceasedCount,     // Store total deceased count for the day
-        },
-      ]);
-
-      console.log('Event Data:', eventData);
-    }
-  }, [data, currentIndex]); */
   
   
   const [saved, setSaved] = useState(false);
