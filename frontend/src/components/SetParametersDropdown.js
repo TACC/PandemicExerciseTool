@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import AddInitialCases from './AddInitialCases';
 import SetManually from './SetManually';
 import './SetParametersDropdown.css';
+import { createPortal } from 'react-dom';
 
 const SetParametersDropdown = ({ counties, onSave }) => {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -38,16 +39,22 @@ const SetParametersDropdown = ({ counties, onSave }) => {
         </div>
       )}
       {isSetManuallyOpen && (
-        <div className="TESTNONE" onClick={closeSetManually}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <span className="modal-close" onClick={closeSetManually}>×</span>
-            <h2>Disease Parameters</h2>
-            <SetManually onClose={closeSetManually} onSubmit={(data) => { console.log('Set Manually:', data); handleSave(); }} />
-          </div>
+        <div>
+          {/* Appending modal window to document.body prevents a rendering bug on Safari */}
+          {createPortal(
+            <div className="modal-overlay" onClick={closeSetManually}>
+              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                <span className="modal-close" onClick={closeSetManually}>×</span>
+                <h2>Disease Parameters</h2>
+                <SetManually onClose={closeSetManually} onSubmit={(data) => { console.log('Set Manually:', data); handleSave(); }} />
+              </div>
+            </div>,
+            document.body
+          )}
         </div>
       )}
       {isInitialCasesOpen && (
-        <div className="TESTNONE" onClick={closeInitialCases}>
+        <div className="modal-overlay" onClick={closeInitialCases}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <span className="modal-close" onClick={closeInitialCases}>×</span>
             <h2>Add Initial Cases</h2>
