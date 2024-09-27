@@ -54,12 +54,17 @@ const SetParametersDropdown = ({ counties, onSave }) => {
         </div>
       )}
       {isInitialCasesOpen && (
-        <div className="modal-overlay" onClick={closeInitialCases}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <span className="modal-close" onClick={closeInitialCases}>×</span>
-            <h2>Add Initial Cases</h2>
-            <AddInitialCases onClose={closeInitialCases} counties={counties} onSubmit={(data) => { console.log('Initial Cases:', data); handleSave(); }} />
-          </div>
+        <div>
+          {createPortal(
+            <div className="modal-overlay" onClick={closeInitialCases}>
+              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                <span className="modal-close" onClick={closeInitialCases}>×</span>
+                <h2>Add Initial Cases</h2>
+                <AddInitialCases onClose={closeInitialCases} counties={counties} onSubmit={(data) => { console.log('Initial Cases:', data); handleSave(); }} />
+              </div>
+            </div>,
+            document.body
+          )}
         </div>
       )}
     </div>
@@ -67,5 +72,3 @@ const SetParametersDropdown = ({ counties, onSave }) => {
 };
 
 export default SetParametersDropdown;
-
-// FIXME: className="modal-overlay" changed to "TESTNONE" for debugging; restore changes before merging!
