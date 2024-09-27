@@ -138,9 +138,10 @@ const AddInitialCases = ({ counties, onClose }) => {
           />
         </div>
 
-        <button type="submit">+ Add Cases</button>
+        <button className="addCases_button" type="submit">+ Add Cases</button>
       </form>
 
+      <br></br>
       <h2>Added Cases</h2>
       <table className="cases-table">
         <thead>
@@ -166,7 +167,7 @@ const AddInitialCases = ({ counties, onClose }) => {
       </table>
 
       <div>
-        <button onClick={handleSaveToLocalStorage}>Save and Close</button>
+        <button onClick={handleSaveToLocalStorage}  className="save_button" >Save and Close</button>
       </div>
     </div>
   );

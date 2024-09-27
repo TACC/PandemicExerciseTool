@@ -93,7 +93,7 @@ const Antivirals = ({ onSubmit }) => {
           />
         </div>
 
-        <button type="submit">Set Antiviral Parameters</button>
+        <button type="submit" className="save_button" >Set Antiviral Parameters</button>
       </form>
 
       <form className="parameters-form" onSubmit={handleAddStockpile}>
@@ -132,7 +132,7 @@ const Antivirals = ({ onSubmit }) => {
         />
         </div>
 
-        <button type="submit">Add New Antiviral Stockpile</button>
+        <button type="submit" className="save_button">Add New Antiviral Stockpile</button>
       </form>
 
       <h3>Added Stockpiles</h3>
@@ -157,7 +157,7 @@ const Antivirals = ({ onSubmit }) => {
         </tbody>
       </table>
 
-      <div><button onClick={handleSave}>Save</button></div>
+      <div><button onClick={handleSave} className="save_button" >Save</button></div>
     </div>
   );
 };

@@ -164,9 +164,9 @@ const InitialMap = ({ outputData }) => {
     <div>
       <MapContainer
         id="map"
-        center={[31.0, -100.0]}
+        // center={[31.0, -100.0]}
         zoom={6}
-        style={{ height: '500px', width: '800px' }}
+        style={{ height: '100px', width: '100px' }}
         whenCreated={mapInstance => { mapRef.current = mapInstance; }}
       >
         <TileLayer

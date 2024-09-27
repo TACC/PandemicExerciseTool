@@ -104,7 +104,7 @@ const NonPharmaceutical = ({ onSubmit }) => {
         />
         </div>
 
-        <button type="submit">Add New NPI</button>
+        <button type="submit" className="save_button">Add New NPI</button>
       </form>
       <h2>Added NPIs</h2>
       <table className="npi-table">
@@ -130,7 +130,7 @@ const NonPharmaceutical = ({ onSubmit }) => {
         </tbody>
       </table>
 
-      <div><button onClick={handleSave}>Save</button></div>
+      <div><button onClick={handleSave} className="save_button">Save</button></div>
     </div>
   );
 };

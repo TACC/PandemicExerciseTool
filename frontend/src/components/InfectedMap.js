@@ -3,7 +3,7 @@
 // InfectedMap.js
 import React, { useEffect, useState, useRef } from 'react';
 import { MapContainer, TileLayer, GeoJSON, useMap } from 'react-leaflet';
-import L from 'leaflet';
+import L, { transformation } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import texasOutline from './texasOutline.json';
 import './Legend.css'; // Ensure you have a CSS file for styling
@@ -162,7 +162,7 @@ const InfectedMap = ({ eventData, currentIndex}) => {
         id="map"
         center={[31.0, -100.0]}
         zoom={6}
-        style={{ height: '620px', width: '1700px', backgroundColor: 'white' }}
+        style={{ height: '36rem', width: '50rem',backgroundColor: 'white', transformation: scaleService  }}
         whenCreated={mapInstance => { mapRef.current = mapInstance; }}
       >
         <GeoJSON
