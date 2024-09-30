@@ -111,11 +111,13 @@
     display: flex;
     flex-direction: column; /* Stack the map and chart vertically, change to "row" for left & right orientation */ 
     align-items: center; 
-    width: 66em;
+    /* width: 66em; */
+    width: calc(100vw - 40em);
+    height: calc(100vh - 10em);
   }
   
   /* Make map and chart have equal height */
-.map-size {
+.map-size, .chart-size {
   flex: 1; /* Allows both map and chart to grow equally */
   width: 100%; /* Full width of the container */
   box-sizing: border-box; /* Include padding and border in the element's total width and height */
