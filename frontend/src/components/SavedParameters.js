@@ -4,6 +4,7 @@ import AddInitialCases from './AddInitialCases';
 import texasCounties from './counties';
 import editIcon from './images/edit.svg'
 import './SavedParameters.css';
+import { createPortal } from 'react-dom';
 
 
 const SavedParameters = () => {
@@ -194,11 +195,16 @@ const SavedParameters = () => {
       )}
 
       {isModalOpen && (
-        <div className="modal-overlay" onClick={closeModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h2>Add Initial Cases</h2>
-            <AddInitialCases counties={texasCounties} onClose={closeModal} />
-          </div>
+        <div>
+          {createPortal(
+          <div className="modal-overlay" onClick={closeModal}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <h2>Add Initial Cases</h2>
+              <AddInitialCases counties={texasCounties} onClose={closeModal} />
+            </div>
+          </div>,
+          document.body
+          )}
         </div>
       )}
     </div>

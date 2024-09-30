@@ -13,7 +13,7 @@ const ageGroupMapping = {
 };
 
 const AddInitialCases = ({ counties, onClose }) => {
-  const [numberOfCases, setNumberOfCases] = useState(10000);
+  const [numberOfCases, setNumberOfCases] = useState(100);
   const [selectedCounty, setSelectedCounty] = useState(null);
   const [selectedAgeGroup, setSelectedAgeGroup] = useState(null);
   const [casesList, setCasesList] = useState([]);
@@ -78,7 +78,7 @@ const AddInitialCases = ({ counties, onClose }) => {
     setCasesList(prevCasesList => [...prevCasesList, newCase]);
 
     // Reset form fields
-    setNumberOfCases(10000);
+    setNumberOfCases(100);
     setSelectedCounty(null);
     setSelectedAgeGroup(null);
   };
@@ -158,7 +158,7 @@ const AddInitialCases = ({ counties, onClose }) => {
               <td>{caseItem.infected}</td>
               <td>{caseItem.age_group_display}</td>
               <td>
-                <button class="remove-button" onClick={() => handleRemove(index)}>Remove</button>
+                <button className="remove-button" onClick={() => handleRemove(index)}>Remove</button>
               </td>
             </tr>
           ))}
