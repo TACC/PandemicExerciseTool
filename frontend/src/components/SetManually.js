@@ -10,7 +10,7 @@ const SetManually = ({ onClose }) => {
       id: 1,
       disease_name: "2009 H1N1",
       R0: 1.2,
-      beta_scale: 1.0,
+      beta_scale: 10.0,
       tau: 1.2,
       kappa: 1.9,
       gamma: 4.1,
@@ -22,7 +22,7 @@ const SetManually = ({ onClose }) => {
       id: 2,
       disease_name: "1918 Influenza",
       R0: 1.2,
-      beta_scale: 1.0,
+      beta_scale: 10.0,
       tau: 1.2,
       kappa: 1.9,
       gamma: 4.1,
@@ -316,7 +316,7 @@ const SetManually = ({ onClose }) => {
         </div>
       </div>
       {/* Add other input fields here */}
-      <button type="submit" class="save-button">Save</button>
+      <button type="submit" className="save-button">Save</button>
     </form>
   );
 };
