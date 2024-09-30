@@ -41,7 +41,7 @@ const HomeView = () => {
   };
 
   const handleDayChange = (index) => {
-    debugger;
+    //debugger;
     console.log(`Day changed to: ${index}`);
     setCurrentIndex(index);
   };
@@ -99,13 +99,13 @@ const HomeView = () => {
 
 
   useEffect(() => {
-    debugger;
+    //debugger;
     const nextAvailable = eventData.length;
     console.log("Length test", eventData.length);
     console.log("next available", nextAvailable)
     
     const fetchData = async (requestedIndex) => {
-      debugger;
+      //debugger;
       try {
         const response = await axios.get(`http://localhost:8000/api/output/${requestedIndex}`);
         
@@ -171,7 +171,7 @@ const HomeView = () => {
       }
     };
 
-    debugger;
+    //debugger;
 
     if (isRunning) {
       setTimeout(() => {
