@@ -164,16 +164,8 @@ th {
   color: #dfa53d;
 }
 
-
-.parameters-form {
-  margin-top: 20px;
-  position: relative;
-  z-index: 1000;
-}
-
 .dropdown-section {
   margin-bottom: 20px;
-
 }
 
 .dropdown-section button {
