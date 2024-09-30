@@ -9,13 +9,12 @@
 
 .timeline-container {
   flex-grow: 1;
-  max-width: 102%;
+  max-width: 100%;
   height: 2rem; /* Adjust as needed */
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-bottom: 2rem;
-  margin-left: -2.5rem;
 }
 
 .timeline-slider {
@@ -28,7 +27,6 @@
 
 .timeline-item {
   cursor: pointer;
-  /* min-width: 30px; */
   text-align: center;
   position: relative;
 }
