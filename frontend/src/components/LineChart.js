@@ -11,6 +11,10 @@ const LineChart = ({ eventData, currentIndex }) => {
     
   const chartRef = useRef(null);
 
+  // checking that the title font is available (i.e., document.fonts.ready) doesn't work
+  // this is likely because the Line chart title looks like an SVG image (<canvas>) to the DOM
+  // FIXME: how to render <Line> only once we're sure the font has loaded
+
   // force the chart to re-render on page load, re-rendering with correct font
   // NOTE: forcing a re-render is bad React, but waiting for fonts to load didn't resolve the issue
   useEffect(() => {
