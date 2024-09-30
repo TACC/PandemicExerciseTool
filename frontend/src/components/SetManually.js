@@ -315,7 +315,6 @@ const SetManually = ({ onClose }) => {
           </div>
         </div>
       </div>
-      {/* Add other input fields here */}
       <button type="submit" className="save-button">Save</button>
     </form>
   );

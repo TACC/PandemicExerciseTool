@@ -18,7 +18,7 @@
 .dropdown-text {
   color: black !important;
   font-weight: bold;
-  font-size: large;
+  font-size: medium;
   text-align: center; /* Horizontally centers the text */
   display: flex; /* Enables flexbox layout */
   justify-content: center; /* Horizontally centers the content */
@@ -41,29 +41,18 @@
   transform: translateY(-50%) rotate(180deg);
 }
 
-.dropdown-menu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background-color: white;
-  border: 1px solid #ccc;
-  width: 100%;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
 .dropdown-item {
   display: block;
-  padding: 10px 10px;
+  padding: 10px 30px;
   cursor: pointer;
   border-bottom: 1px solid #ccc;
   background: none;
   color: black;
   text-align: center; /* Align text to the left */
-  font-size: large;
+  font-size : medium;
   font-weight: bold;
   white-space: nowrap;
+  width: 100%;
 }
 
 .dropdown-menu:hover {
@@ -83,7 +72,7 @@
   padding: 15px 16px; /* Ensure padding matches the dropdown items */
   background-color: #f7b13c; /* Example background color */
   color: white;
-  font-size: large;
+  font-size: medium;
   font-weight: bold;
   border: none;
   border-radius: 4px;
@@ -174,10 +163,9 @@
 .modal-content {
   background-color: white;
   border-radius: 8px;
-  padding: 20px;
-  max-width: 600px;
-  width: 90%;
-  max-height: 90vh; /* Ensure it fits within the viewport height */
+  padding: 40px;
+  max-width: 55vw;
+  max-height: 75vh; /* Ensure it fits within the viewport height */
   overflow-y: auto; /* Add scroll if content overflows */
   position: fixed;
   top: 50%;

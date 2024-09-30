@@ -6,16 +6,16 @@
 }
 
 .scenario-section {
-  font-size: large;
+  font-size: small;
 }
 
 .interventions-section {
-  font-size: large;
+  font-size: small;
 }
 
 .initial-cases-section {
   padding: 0px; /* Add some padding inside the panel */ 
-  font-size: large;
+  font-size: small;
 }
 
 .parameters-table {
@@ -42,8 +42,8 @@
 .toggle-section {
   display: flex;
   justify-content: left;
-  margin-bottom: 20px;
-  padding: 5px;
+  margin-bottom: 15px;
+  font-size: small;
 }
 
 /* Style for the buttons */
@@ -53,12 +53,12 @@
   padding: 10px 10px;
   margin: 0 0px; /* Space between buttons */
   cursor: pointer;
-  font-size: 18px;
+  font-size: 17px;
   border-radius: 5px;
   transition: background-color 0.3s ease;
   text-decoration: underline;
   text-underline-offset: 6px;
-  text-decoration-thickness: 3px;
+  text-decoration-thickness: 2px;
   text-decoration-color: lightgray;
   font-weight: normal;
 }

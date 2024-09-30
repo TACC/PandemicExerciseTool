@@ -11,10 +11,23 @@
   padding: 10px;
   display: flex;
   align-items: center;
-  width: 100%;
+  width: 100vw;
+  height: 3em;
   position: fixed;
   top: 0;
   left: 0;
+}
+
+@media screen and (max-width: 500px) {
+  .header a {
+    float: none;
+    display: block;
+    text-align: left;
+  }
+  
+  .header-right {
+    float: none;
+  }
 }
 
 .logo-container {
@@ -23,9 +36,8 @@
 }
 
 .logo {
-  width: 90px;
-  height: 90px;
-  margin-right: 10px;
+  width: 4em;
+  height: 4em;
 }
 
 .center-container {
@@ -38,28 +50,29 @@
 
 .text-container {
   text-align: left;
-  font-size: large;
+  font-size: 0.8em;
   white-space: nowrap; /* Prevent the title from wrapping */
-  margin-right: 40px;
 }
 
 .tabs {
   display: flex;
   justify-content: center;
   flex-wrap: nowrap; /* Prevent tabs from wrapping to the next line */
-  margin: 0 600px;
+  margin: 0 19em;
 }
 
+
 .tab-button {
-  padding: 10px 20px;
+  padding: 5px 0.9em;
+  width: max-content;
   cursor: pointer;
   border: none;
   background: #102c41;
   outline: none;
   transition: background-color 0.3s;
   color: white;
-  margin: 0 5px;
-  font-size: xx-large;
+  margin: 0 0.5em;
+  font-size: 1.2em;
   white-space: nowrap; /* Prevent tab text from wrapping */
 }
 
@@ -75,9 +88,4 @@
   background-color: #102c41;
 }
 
-.tab-content {
-  overflow: auto;
-  padding: 20px;
-  margin-top: 110px;
-  background-color: white;
-}
+

@@ -146,7 +146,7 @@ const Vaccine = ({ onSubmit }) => {
             </div>
           </div>
         </div>
-        <button type="submit">Set Vaccine Parameters</button>
+        <button type="submit" className="save_button" >Set Vaccine Parameters</button>
       </form>
 
 
@@ -186,7 +186,7 @@ const Vaccine = ({ onSubmit }) => {
         />
         </div>
 
-        <button type="submit">Add New Vaccine Stockpile</button>
+        <button type="submit" className="save_button" >Add New Vaccine Stockpile</button>
       </form>
 
       <h3>Added Stockpiles</h3>
@@ -211,7 +211,7 @@ const Vaccine = ({ onSubmit }) => {
         </tbody>
       </table>
 
-      <div><button onClick={handleSave}>Save</button></div>
+      <div><button onClick={handleSave} className="save_button" >Save</button></div>
     </div>
   );
 };

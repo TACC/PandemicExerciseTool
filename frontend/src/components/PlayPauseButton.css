@@ -2,13 +2,14 @@
 .scenario-button,
 .pause-button {
   padding: 10px 20px;
-  font-size: x-large;
+  font-size: large;
   cursor: pointer;
   border: none;
   font-weight: bold;
   color: black;
   transition: background-color 0.3s;
-  height: 50px;
+  height: 2.5em;
+  width: 12.5em;
 }
 
 .scenario-button {

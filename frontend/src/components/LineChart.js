@@ -120,7 +120,7 @@ const LineChart = ({ eventData, currentIndex }) => {
         display: true, // Display legend for all datasets
         labels: {
           font: {
-            size: 18, // Increase the font size for legend labels
+            size: 13, // Increase the font size for legend labels
             family: 'GilroyRegular', // You can customize the font family as well
           },
           color: 'black', // Set the color of the labels (optional)
@@ -128,14 +128,21 @@ const LineChart = ({ eventData, currentIndex }) => {
       },
       tooltip: {
         enabled: true,
-        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+        backgroundColor: 'white', // Set background color to white
+        titleColor: 'black', // Set title text color to black
+        bodyColor: 'black', // Set body text color to black
+        borderColor: 'black', // Set border color to black
+        borderWidth: 2, // Set border width to 2px
+        padding: 10, // Padding inside the tooltip
+        cornerRadius: 0, // Make the border corners sharp (no rounding)
         titleFont: {
-          size: 18,
-          family: 'GilroyBold',
+          size: 16,
+          family: 'GilroyRegular',
+          color: 'black'
         },
         bodyFont: {
-          size: 20,
-          family: 'GilroyBold',
+          size: 14,
+          family: 'GilroyRegular',
         },
         padding: 15,
         callbacks: {
@@ -153,7 +160,7 @@ const LineChart = ({ eventData, currentIndex }) => {
         text: 'Total Compartments',
         color: 'black',
         font: {
-          size: 30,
+          size: 25,
           weight: 'bold',
           family: 'GilroyBold',
         },
@@ -166,14 +173,14 @@ const LineChart = ({ eventData, currentIndex }) => {
           text: 'Day',
           color: 'black',
           font: {
-            size: 25,
+            size: 20,
             family: 'GilroyRegular',
           },
         },
         ticks: {
           color: 'black',
           font: {
-            size: 20,
+            size: 16,
             family: 'GilroyRegular',
           },
         },
@@ -184,7 +191,7 @@ const LineChart = ({ eventData, currentIndex }) => {
           text: 'Population Count',
           color: 'black',
           font: {
-            size: 25,
+            size: 20,
             family: 'GilroyRegular',
           },
         },
