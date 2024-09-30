@@ -7,6 +7,14 @@ import '../index.css';
 // Register ChartJS components
 ChartJS.register(LineElement, PointElement, CategoryScale, LinearScale, Title, Tooltip, Legend);
 
+// const MyChart = () => {
+//   useEffect(() => {
+//     // Set global default font for all charts
+//     ChartJS.defaults.global.font.family = "GilroyBold";
+//     console.log(ChartJS.defaults.global.font);
+//   }, []);
+// }
+
 const LineChart = ({ eventData, currentIndex }) => {
     
   const chartRef = useRef(null);
@@ -17,12 +25,20 @@ const LineChart = ({ eventData, currentIndex }) => {
 
   // force the chart to re-render on page load, re-rendering with correct font
   // NOTE: forcing a re-render is bad React, but waiting for fonts to load didn't resolve the issue
+  // useEffect(() => {
+  //   if (chartRef.current) {
+  //     setTimeout(() => {
+  //       chartRef.current.update();    // force chart re-render
+  //     }, 10);
+  //   }
+  // }, []);
+
+  const [isPageLoaded, setIsPageLoaded] = useState(false);
+
   useEffect(() => {
-    if (chartRef.current) {
-      setTimeout(() => {
-        chartRef.current.update();    // force chart re-render
-      }, 10);
-    }
+    window.onload = () => {
+      setIsPageLoaded(true);    // ensure page is fully loaded before rendering
+    };
   }, []);
 
   // Prepare data for the chart
