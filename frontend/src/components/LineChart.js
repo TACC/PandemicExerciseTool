@@ -1,4 +1,5 @@
 import React from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, LineElement, PointElement, CategoryScale, LinearScale, Title, Tooltip, Legend } from 'chart.js';
 import '../index.css';
@@ -7,6 +8,19 @@ import '../index.css';
 ChartJS.register(LineElement, PointElement, CategoryScale, LinearScale, Title, Tooltip, Legend);
 
 const LineChart = ({ eventData, currentIndex }) => {
+    
+  const chartRef = useRef(null);
+
+  // force the chart to re-render on page load, re-rendering with correct font
+  // NOTE: forcing a re-render is bad React, but waiting for fonts to load didn't resolve the issue
+  useEffect(() => {
+    if (chartRef.current) {
+      setTimeout(() => {
+        chartRef.current.update();    // force chart re-render
+      }, 10);
+    }
+  }, []);
+
   // Prepare data for the chart
   const data = {
     labels: eventData.map(event => event.day), // Only day numbers on the x-axis
@@ -202,7 +216,8 @@ const LineChart = ({ eventData, currentIndex }) => {
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%', minHeight: '300px' }}>
-      <Line data={data} options={options} />
+      {/* {isFontLoaded && <Line data={data} options={options} />} */}
+      <Line ref={chartRef} data={data} options={options} />
     </div>
   );
 };
