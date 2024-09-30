@@ -68,7 +68,7 @@
 }
 
 .parameters-button {
-  width: 15rem; /* Set a fixed width that matches the dropdown menu width */
+  width: 400px; /* Set a fixed width that matches the dropdown menu width */
   padding: 15px 16px; /* Ensure padding matches the dropdown items */
   background-color: #f7b13c; /* Example background color */
   color: white;

@@ -18,7 +18,6 @@ import './HomeView.css';
 import PlayPauseButton from './PlayPauseButton';
 import './leaflet-overrides.css';
 import './styles.css';
-// import './left-panel.css';
 import axios from 'axios';
 
 const HomeView = () => {
@@ -189,7 +188,7 @@ const HomeView = () => {
   };
 
   return (
-    <div className="home-view">
+    <div>
       <div className="left-panel">
         <SetParametersDropdown counties={texasCounties} onSave={handleSave} />
         <div className="interventions-container">
@@ -203,8 +202,8 @@ const HomeView = () => {
       <div className="middle-panel">
         <div className="map-and-chart-container">
         <InfectedMap currentIndex={currentIndex} eventData={eventData} className="map-size" />
-          <div className="separator"></div> 
-          <LineChart currentIndex={currentIndex} eventData={eventData} className="chart-size" />
+        <div className="separator"></div> 
+        <LineChart currentIndex={currentIndex} eventData={eventData} className="chart-size" />
         </div>
       </div> 
 

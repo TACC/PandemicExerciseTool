@@ -28,9 +28,42 @@
     justify-content: flex-start; /* Align items to the top */
     border: none;
   }
+
+  .left-panel {
+    width: 14rem;
+    /* Fixed width for the left panel */
+    background-color: #fff;
+    /* Background color */
+    padding: 10px;
+    position: fixed;
+    /* Fixes the panel to the left side */
+    top: 4.25rem;
+    /* Adjust this value slightly if needed */
+    left: 0;
+    height: calc(100% - 10rem);
+    /* Full height minus top margin */
+    overflow-y: auto;
+    /* Scroll if content overflows */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    /* Align items to the top */
+    gap: 10px;
+    /* Adjust the spacing between the buttons */
+    z-index: 1;
+    border-right: 2px solid black;
+  }
+  
+  
+  button {
+    width: 80%;
+    padding: 10px;
+    /* Adjust the padding as needed */
+    box-sizing: border-box;
+  }
   
   .map-section {
-    height: 35%; /* Adjust height to fit the viewport */
+    height: 55%; /* Adjust height to fit the viewport */
   }
   
   .timeline-section {
@@ -86,28 +119,28 @@
   
   .timeline-panel {
     flex-grow: 1;
-    margin-left: 20px;
     margin-top: 20px;
     z-index: 3;
   }
 
   .middle-panel {
-    flex: 1; /* Takes up the remaining space between left and right panels */
+    /* flex: 1; Takes up the remaining space between left and right panels */
+    position: relative;
+    top: 3rem;
+    height: calc(100% - 10rem);
+    margin-left: -3rem;
     display: flex;
     flex-direction: column;
     padding: 10px;
-    height: 78vh; /* Full viewport height */
     overflow: hidden; /* Prevent scrollbars in the middle panel */
-    width: 2000px;
+    /* width: 1000px; */
     z-index: 1;
+    background-color:blue ;
   }
   
   .map-and-chart-container {
     display: flex;
     flex-direction: column; /* Stack the map and chart vertically, change to "row" for left & right orientation */ 
-    width: 85%;
-    height: 100%;
-    margin-left: 45px;
     align-items: center; 
   }
   
@@ -132,7 +165,7 @@
   height: 2px; /* Thickness of the line */
   background-color: #ccc; /* Color of the line */
   width: 100%; /* Full width of the container */
-  margin: 40px 0; /* Margins to space out the map and chart */
+  margin: 30px 0; /* Margins to space out the map and chart */
   flex-shrink: 0; /* Prevent shrinking */
 }
 
