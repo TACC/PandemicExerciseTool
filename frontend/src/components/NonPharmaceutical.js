@@ -49,7 +49,7 @@ const NonPharmaceutical = ({ onSubmit }) => {
 
   return (
     <div>
-      <form className="parameters-form" onSubmit={handleAddNPI}>
+      <form className="interventions" onSubmit={handleAddNPI}>
         <div className="form-group">
         <label htmlFor="nonpharmaDay">NPI Day
         <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
