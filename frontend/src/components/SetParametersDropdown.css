@@ -163,10 +163,9 @@
 .modal-content {
   background-color: white;
   border-radius: 8px;
-  padding: 10px;
-  max-width: 40rem;
-  width: 85%;
-  max-height: 70vh; /* Ensure it fits within the viewport height */
+  padding: 40px;
+  max-width: 55vw;
+  max-height: 75vh; /* Ensure it fits within the viewport height */
   overflow-y: auto; /* Add scroll if content overflows */
   position: fixed;
   top: 50%;

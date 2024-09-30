@@ -15,14 +15,13 @@
   }
   
   .right-panel {
-    width: 26rem; /* Fixed width for the right panel */
+    width: 23.75em; /* Fixed width for the right panel */
     background-color: transparent; /* Background color */
-    padding: 0px;
     position: fixed; /* Fixes the panel to the right side */
-    top: 4.25rem;    /* Adjust this value slightly if needed */
+    top: auto;    /* Adjust this value slightly if needed */
     right: 0;
-    height: calc(100% - 9.1rem); /* Full height minus top margin with footer */
-    z-index: 1; /* Ensure it is on top */
+    height: calc(100% - 1.5em); /* Full height minus top margin with footer */
+    /* z-index: 1; Ensure it is on top */
     display: flex;
     flex-direction: column;
     justify-content: flex-start; /* Align items to the top */
@@ -30,48 +29,20 @@
   }
 
   .left-panel {
-    width: 14rem;
-    /* Fixed width for the left panel */
+    width: 14em; /* Fixed width for the left panel */
     background-color: #fff;
-    /* Background color */
     padding: 10px;
-    position: fixed;
-    /* Fixes the panel to the left side */
-    top: 4.25rem;
-    /* Adjust this value slightly if needed */
+    position: fixed; /* Fixes the panel to the left side */
+    top: 4.25em; /* Adjust this value slightly if needed */
     left: 0;
-    height: calc(100% - 10rem);
-    /* Full height minus top margin */
-    overflow-y: auto;
-    /* Scroll if content overflows */
+    height: calc(100% - 10em); /* Full height minus top margin + footer */
+    overflow-y: auto; /* Scroll if content overflows */
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    /* Align items to the top */
-    gap: 10px;
-    /* Adjust the spacing between the buttons */
+    justify-content: flex-start;  /* Align items to the top */
+    gap: 10px; /* Adjust the spacing between the buttons */
     z-index: 1;
     border-right: 2px solid black;
-  }
-  
-  
-  button {
-    width: 80%;
-    padding: 10px;
-    /* Adjust the padding as needed */
-    box-sizing: border-box;
-  }
-  
-  .map-section {
-    height: 55%; /* Adjust height to fit the viewport */
-  }
-  
-  .timeline-section {
-    height: 10%; /* Smaller height for timeline slider */
-  }
-  
-  .table-section {
-    height: 5%; /* Remaining space for the table */
   }
   
   /* Adjust the height for smaller screens */
@@ -101,7 +72,7 @@
     bottom: 0;
     left: 0;
     width: 99%;
-    height: 60px;
+    height: 50px;
     z-index: 1000;
     transition: background-color 0.3s ease;
     border-top: 2px solid black; /* Add this line */
@@ -125,47 +96,37 @@
 
   .middle-panel {
     /* flex: 1; Takes up the remaining space between left and right panels */
-    position: relative;
-    top: 3rem;
-    height: calc(100% - 10rem);
-    margin-left: -3rem;
+    position: fixed;
+    /* left: 20vw; */
+    left: 16em;
+    top: 4.25em;
     display: flex;
     flex-direction: column;
     padding: 10px;
     overflow: hidden; /* Prevent scrollbars in the middle panel */
-    /* width: 1000px; */
     z-index: 1;
-    background-color:blue ;
   }
   
   .map-and-chart-container {
     display: flex;
     flex-direction: column; /* Stack the map and chart vertically, change to "row" for left & right orientation */ 
     align-items: center; 
+    width: 66em;
   }
   
   /* Make map and chart have equal height */
-.map-size, .chart-size {
+.map-size {
   flex: 1; /* Allows both map and chart to grow equally */
   width: 100%; /* Full width of the container */
   box-sizing: border-box; /* Include padding and border in the element's total width and height */
 }
 
-/* Ensure map component fills its container */
-.map-size {
-  padding: 10px; /* Optional: add padding if needed */
-}
-
-/* Ensure chart component fills its container */
-.chart-size {
-  padding: 10px; /* Optional: add padding if needed */
-}
 
 .separator {
   height: 2px; /* Thickness of the line */
   background-color: #ccc; /* Color of the line */
   width: 100%; /* Full width of the container */
-  margin: 30px 0; /* Margins to space out the map and chart */
+  margin: 15px 0; /* Margins to space out the map and chart */
   flex-shrink: 0; /* Prevent shrinking */
 }
 

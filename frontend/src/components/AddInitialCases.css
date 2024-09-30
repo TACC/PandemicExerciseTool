@@ -14,7 +14,7 @@
   .add-initial-cases-form .form-group {
     position: relative;
     z-index: 1;
-    margin-bottom: 1rem; /* space between form elements */
+    margin-bottom: 1em; /* space between form elements */
   }
 
   .add-initial-cases-form .form-group:nth-child(1) {
@@ -78,7 +78,7 @@ h3 {
   border-radius: 4px;
   margin-right: auto;
   margin-left: auto;
-  padding: 0.3rem;
+  padding: 0.3em;
 }
 
 .remove-button:hover {
@@ -86,11 +86,11 @@ h3 {
 }
 
 .save_button {
- margin-top: 0.5rem;
+ margin-top: 0.5em;
 }
 
 .addCases_button, .save_button {
-  padding: 5rem, 5rem, auto, auto;
+  padding: 5em, 5em, auto, auto;
   margin-right: auto;
   margin-left: auto;
   background-color: #f7b13c;
@@ -99,7 +99,7 @@ h3 {
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  width: 15rem;
+  width: 15em;
 }
 
 .form-group {

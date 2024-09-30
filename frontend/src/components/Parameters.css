@@ -2,14 +2,18 @@
   display: flex;
   flex-direction: column;
   position: relative; /* Ensure the parent container has relative positioning */
-  gap: 5px;
-  max-width: 400px;
-  margin: 20px auto;
-  padding: 20px;
+  /* gap: 5px; */
+  margin: 10px auto;
+  padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
   background-color: #f9f9f9;
 }
+
+/* input {
+  max-width: 50%;
+} */
+
 
 .form-group {
   margin-bottom: 15px;
@@ -22,9 +26,9 @@ label {
 }
 
 input[type="number"],
-input[type="radio"] {
+input[type="radio"],.centered-input {
   padding: 5px;
-  margin-right: 10px;
+  /* margin-right: 10px; */
 }
 
 button {
@@ -35,7 +39,7 @@ button {
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  width: 400px;
+  /* width: 400px; */
 }
 
 button:hover {
@@ -52,7 +56,7 @@ button:hover {
 
 .tooltip .tooltip-text {
   visibility: hidden;
-  width: 400px;
+  /* width: 400px; */
   background-color: white;
   color: black;
   font-weight: lighter;
@@ -86,7 +90,7 @@ button:hover {
 }
 
 .save_button {
-  padding: 5rem, 5rem, auto, auto;
+  padding: 5em, 5em, auto, auto;
   margin-right: auto;
   margin-left: auto;
   background-color: #f7b13c;
@@ -95,7 +99,6 @@ button:hover {
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  width: 15rem;
 }
 
 .save_button:hover {
