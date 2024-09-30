@@ -158,7 +158,7 @@ const AddInitialCases = ({ counties, onClose }) => {
               <td>{caseItem.infected}</td>
               <td>{caseItem.age_group_display}</td>
               <td>
-                <button class="remove-button" onClick={() => handleRemove(index)}>Remove</button>
+                <button className="remove-button" onClick={() => handleRemove(index)}>Remove</button>
               </td>
             </tr>
           ))}
