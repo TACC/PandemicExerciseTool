@@ -59,7 +59,7 @@ const Vaccine = ({ onSubmit }) => {
 
   return (
     <div>
-      <form className="parameters-form" onSubmit={handleSetParams}>
+      <form className="interventions" onSubmit={handleSetParams}>
         <div className="form-group">
           <label htmlFor="vaccineEffectiveness">Vaccine Effectiveness
             <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
@@ -150,7 +150,7 @@ const Vaccine = ({ onSubmit }) => {
       </form>
 
 
-      <form className="parameters-form" onSubmit={handleAddStockpile}>
+      <form className="interventions" onSubmit={handleAddStockpile}>
         <div className="form-group">
         <label htmlFor="vaccineStockpileDay">New Stockpile Day
         <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import toggletip from  './images/toggletip.svg';
-import './NonPharmaceutical.css';
+// import './NonPharmaceutical.css';
+import './AddInitialCases.css'; // Import the CSS file for styling
+
 
 const NonPharmaceutical = ({ onSubmit }) => {
   const [nonpharmaDay, setNonpharmaDay] = useState(50);
