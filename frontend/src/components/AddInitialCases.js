@@ -138,10 +138,9 @@ const AddInitialCases = ({ counties, onClose }) => {
           />
         </div>
 
-        <button className="addCases_button" type="submit">+ Add Cases</button>
+        <button className="save_button" type="submit">+ Add Cases</button>
       </form>
 
-      <br></br>
       <h2>Added Cases</h2>
       <table className="cases-table">
         <thead>

@@ -68,7 +68,7 @@
 }
 
 .parameters-button {
-  width: 400px; /* Set a fixed width that matches the dropdown menu width */
+  width: 100%; /* Set a fixed width that matches the dropdown menu width */
   padding: 15px 16px; /* Ensure padding matches the dropdown items */
   background-color: #f7b13c; /* Example background color */
   color: white;
@@ -90,7 +90,7 @@
 
 
 .interventions-button {
-  width: 400px; /* Set a fixed width that matches the dropdown menu width */
+  width: 100%; /* Set a fixed width that matches the dropdown menu width */
   padding: 15px 16px; /* Ensure padding matches the dropdown items */
   background-color: #f1f1f1; /* Example background color */
   color: black; /* Change text color to contrast with the background */
@@ -164,8 +164,9 @@
   background-color: white;
   border-radius: 8px;
   padding: 40px;
-  max-width: 55vw;
-  max-height: 75vh; /* Ensure it fits within the viewport height */
+  min-width: 25vw;
+  max-width: 25vw;
+  max-height: 80vh; /* Ensure it fits within the viewport height */
   overflow-y: auto; /* Add scroll if content overflows */
   position: fixed;
   top: 50%;
@@ -187,5 +188,6 @@
 }
 
 .modal-content h2 {
-  margin-top: 0;
+  margin-bottom: 0;
+  font-size: x-large;
 }

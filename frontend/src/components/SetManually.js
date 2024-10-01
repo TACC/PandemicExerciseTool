@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import './Parameters.css'; // Import the CSS file for styling
+// import './Parameters.css'; // Import the CSS file for styling
+import './AddInitialCases.css'; // Import the CSS file for styling
 import toggletip from  './images/toggletip.svg';
 
 const SetManually = ({ onClose }) => {

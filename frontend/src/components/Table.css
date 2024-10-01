@@ -3,8 +3,10 @@
   /* Remove border if present */
   border: none;
   /* padding: 10px 20px; Adjust padding if necessary */
-  transform: scale(0.90);
+  /* transform: scale(0.90); */
+  margin-top: 2.4em;
   margin-left: 0.8em;
+  margin-right: 0.8em;
 }
 
 .table-scroll {
@@ -18,7 +20,7 @@
 table th {
   font-size: medium; /* Adjust as needed */
   font-weight: bold;
-  /* padding: 10px 10px; Reduce right-side padding */
+  /* padding: 10px 10px; /* Reduce right-side padding */  
   text-align: left; /* Ensure text aligns properly */
   position: relative; /* Allow absolute positioning of button */
 }

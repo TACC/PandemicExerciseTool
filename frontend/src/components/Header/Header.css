@@ -52,13 +52,17 @@
   text-align: left;
   font-size: 0.8em;
   white-space: nowrap; /* Prevent the title from wrapping */
+  margin-left: auto;
+  padding-right: 2em;
 }
 
 .tabs {
   display: flex;
   justify-content: center;
   flex-wrap: nowrap; /* Prevent tabs from wrapping to the next line */
-  margin: 0 19em;
+  padding-right: auto;
+  margin-left: auto;
+  margin-right: 0;
 }
 
 
