@@ -29,4 +29,5 @@ urlpatterns = [
     path('api/pet/<pet_id>/run', views.run_job),
     path('api/delete/<task_id>', views.delete_job),
     path('api/output/<day>', views.get_output),
+    path('api/reset', views.reset_state),
 ]
