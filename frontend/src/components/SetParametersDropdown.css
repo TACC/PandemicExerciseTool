@@ -9,9 +9,6 @@
   border-radius: 4px;
   overflow: hidden;
 }
-h2 {
-  font-size: large;
-}
 
 .dropdown-container {
   position: relative;
@@ -191,5 +188,6 @@ h2 {
 }
 
 .modal-content h2 {
-  margin-top: 0;
+  margin-bottom: 0;
+  font-size: x-large;
 }

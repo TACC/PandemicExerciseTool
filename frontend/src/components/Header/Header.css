@@ -61,6 +61,8 @@
   justify-content: center;
   flex-wrap: nowrap; /* Prevent tabs from wrapping to the next line */
   padding-right: auto;
+  margin-left: auto;
+  margin-right: 0;
 }
 
 
