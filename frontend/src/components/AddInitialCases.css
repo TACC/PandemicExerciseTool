@@ -38,10 +38,6 @@ button {
   cursor: pointer;
 }
 
-button:hover {
-  background-color: #f7b13c;
-}
-
 /* Tooltip Section -- In the Modal */
 .tooltip {
   display: inline-block;

@@ -28,7 +28,7 @@ const NewSimulationButton = () => {
             <div className="modal-overlay" onClick={toggleModal}>
               <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <span className="modal-close" onClick={toggleModal}>×</span>
-                <h2>New Simulation</h2>
+                <h2>Warning!</h2>
                 <p>Starting a new simulation will clear all previous parameters and erase previous simulation data. Do you wish to continue?</p>
                 <div className="confirmation-buttons">
                   <button className="cancel-reset-button" onClick={toggleModal}>Cancel</button>
