@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-// import './Parameters.css'; // Import the CSS file for styling
 import './AddInitialCases.css'; // Import the CSS file for styling
 import toggletip from  './images/toggletip.svg';
 
@@ -289,7 +288,7 @@ const SetManually = ({ onClose }) => {
             <span className="tooltip-text"> Asymptomatic/Treatable/Infectious to Deceased</span>
           </span>
         </label>
-        <div style={{ display: 'flex', gap: '10px'}}>
+        <div style={{ display: 'flex', gap: '5em'}}>
           <div>
             <input
               type="radio"
@@ -316,7 +315,7 @@ const SetManually = ({ onClose }) => {
           </div>
         </div>
       </div>
-      <button type="submit" className="save-button">Save</button>
+      <button type="submit" className="save_button">Save</button>
     </form>
   );
 };

@@ -56,7 +56,7 @@ const Antivirals = ({ onSubmit }) => {
 
   return (
     <div>
-      <form className="interventions" onSubmit={handleSetParams}>
+      <form className="intervention-form" onSubmit={handleSetParams}>
         <div className="form-group">
           <label htmlFor="antiviralEffectiveness">Antiviral Effectiveness
             <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
@@ -96,7 +96,7 @@ const Antivirals = ({ onSubmit }) => {
         <button type="submit" className="save_button" >Set Antiviral Parameters</button>
       </form>
 
-      <form className="interventions" onSubmit={handleAddStockpile}>
+      <form className="intervention-form" onSubmit={handleAddStockpile}>
         <div className="form-group">
         <label htmlFor="antiviralStockpileDay">New Stockpile Day
         <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>

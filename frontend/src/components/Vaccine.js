@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import './Parameters.css'
 import toggletip from  "./images/toggletip.svg";
 import './AddInitialCases.css';
 
@@ -60,7 +59,7 @@ const Vaccine = ({ onSubmit }) => {
 
   return (
     <div>
-      <form className="interventions" onSubmit={handleSetParams}>
+      <form className="intervention-form" onSubmit={handleSetParams}>
         <div className="form-group">
           <label htmlFor="vaccineEffectiveness">Vaccine Effectiveness
             <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
@@ -118,8 +117,8 @@ const Vaccine = ({ onSubmit }) => {
               <span className="tooltip-text">"Pro rata" distributes vaccine stockpiles to all age groups equally, "Children" distributes vaccine stockpiles to youngest age groups first.</span>
             </span>
           </label>
-          <div className="radio-group"> 
-            <div style={{ display: "flex", gap: "10px"}}>
+          <div> 
+            <div style={{ display: "flex", gap: '5em'}}>
               <div>
                 <input
                   type="radio"
@@ -151,7 +150,7 @@ const Vaccine = ({ onSubmit }) => {
       </form>
 
 
-      <form className="interventions" onSubmit={handleAddStockpile}>
+      <form className="intervention-form" onSubmit={handleAddStockpile}>
         <div className="form-group">
         <label htmlFor="vaccineStockpileDay">New Stockpile Day
         <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>

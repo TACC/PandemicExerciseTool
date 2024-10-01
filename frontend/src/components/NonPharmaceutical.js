@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import toggletip from  './images/toggletip.svg';
-// import './NonPharmaceutical.css';
 import './AddInitialCases.css'; // Import the CSS file for styling
 
 
@@ -51,7 +50,7 @@ const NonPharmaceutical = ({ onSubmit }) => {
 
   return (
     <div>
-      <form className="interventions" onSubmit={handleAddNPI}>
+      <form className="intervention-form" onSubmit={handleAddNPI}>
         <div className="form-group">
         <label htmlFor="nonpharmaDay">NPI Day
         <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>

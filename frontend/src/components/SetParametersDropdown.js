@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import AddInitialCases from './AddInitialCases';
 import SetManually from './SetManually';
-// import './SetParametersDropdown.css';
 import './AddInitialCases.css'; // Import the CSS file for styling
 
 import { createPortal } from 'react-dom';
