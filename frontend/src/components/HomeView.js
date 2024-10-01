@@ -5,6 +5,7 @@ import DeceasedLineChart from './DeceasedLineChart';
 import StateCountyDropdowns from './StateCountyDropdown';
 import CountyPercentageTable from './CountyPercentageTable';
 import InitialMapPercent from './InitialMapPercent';
+import NewSimulationButton from './NewSimulationButton';
 import SetParametersDropdown from './SetParametersDropdown';
 import Interventions from './Interventions';
 import SavedParameters from './SavedParameters';
@@ -199,6 +200,7 @@ const HomeView = () => {
   return (
     <div>
       <div className="left-panel">
+        <NewSimulationButton />
         <SetParametersDropdown counties={texasCounties} onSave={handleSave} />
         <div className="interventions-container">
           <Interventions />
