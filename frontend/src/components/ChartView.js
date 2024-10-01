@@ -14,7 +14,7 @@ import 'react-resizable/css/styles.css';
 import PlayPauseButton from './PlayPauseButton';
 import './leaflet-overrides.css';
 import './styles.css';
-import './left-panel.css';
+// import './left-panel.css';
 
 import OUTPUT_0 from './OUTPUT_0.json';
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import './Parameters.css'
 import toggletip from  "./images/toggletip.svg";
-
+import './AddInitialCases.css';
 
 const Vaccine = ({ onSubmit }) => {
   const [vaccineEffectiveness, setVaccineEffectiveness] = useState(localStorage.getItem('vaccine_effectiveness') || 0.50);
@@ -60,7 +60,7 @@ const Vaccine = ({ onSubmit }) => {
 
   return (
     <div>
-      <form className="parameters-form" onSubmit={handleSetParams}>
+      <form className="interventions" onSubmit={handleSetParams}>
         <div className="form-group">
           <label htmlFor="vaccineEffectiveness">Vaccine Effectiveness
             <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
@@ -81,7 +81,7 @@ const Vaccine = ({ onSubmit }) => {
         <div className="form-group">
           <label htmlFor="vaccineAdherence">Vaccine Adherence
             <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-              <span className="tooltip-text">Fraction of population that take adhere to the vaccine schedule (0 = none, 1 = all)</span>
+              <span className="tooltip-text">Fraction of population that adhere to the vaccine schedule (0 = none, 1 = all)</span>
             </span>
           </label>
           <input
@@ -118,38 +118,40 @@ const Vaccine = ({ onSubmit }) => {
               <span className="tooltip-text">"Pro rata" distributes vaccine stockpiles to all age groups equally, "Children" distributes vaccine stockpiles to youngest age groups first.</span>
             </span>
           </label>
-          <div style={{ display: "flex", gap: "10px"}}>
-            <div>
-              <input
-                type="radio"
-                id="prorataAll"
-                name="vaccineStrategy"
-                value="pro_rata"
-                checked={vaccineStrategy === "pro_rata"}
-                onChange={e => setVaccineStrategy(e.target.value)}
-                required
-              />
-              <label htmlFor="prorataAll">Pro Rata</label>
-            </div>
-            <div>
-              <input
-                type="radio"
-                id="prorataChildren"
-                name="vaccineStrategy"
-                value="children"
-                checked={vaccineStrategy === "children"}
-                onChange={e => setVaccineStrategy(e.target.value)}
-                required
-              />
-              <label htmlFor="prorataChildren">Children</label>
+          <div className="radio-group"> 
+            <div style={{ display: "flex", gap: "10px"}}>
+              <div>
+                <input
+                  type="radio"
+                  id="prorataAll"
+                  name="vaccineStrategy"
+                  value="pro_rata"
+                  checked={vaccineStrategy === "pro_rata"}
+                  onChange={e => setVaccineStrategy(e.target.value)}
+                  required
+                />
+                <label htmlFor="prorataAll">Pro Rata</label>
+              </div>
+              <div>
+                <input
+                  type="radio"
+                  id="prorataChildren"
+                  name="vaccineStrategy"
+                  value="children"
+                  checked={vaccineStrategy === "children"}
+                  onChange={e => setVaccineStrategy(e.target.value)}
+                  required
+                />
+                <label htmlFor="prorataChildren">Children</label>
+              </div>
             </div>
           </div>
         </div>
-        <button type="submit">Set Vaccine Parameters</button>
+        <button type="submit" className="save_button" >Set Vaccine Parameters</button>
       </form>
 
 
-      <form className="parameters-form" onSubmit={handleAddStockpile}>
+      <form className="interventions" onSubmit={handleAddStockpile}>
         <div className="form-group">
         <label htmlFor="vaccineStockpileDay">New Stockpile Day
         <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
@@ -185,7 +187,7 @@ const Vaccine = ({ onSubmit }) => {
         />
         </div>
 
-        <button type="submit">Add New Vaccine Stockpile</button>
+        <button type="submit" className="save_button" >Add New Vaccine Stockpile</button>
       </form>
 
       <h3>Added Stockpiles</h3>
@@ -203,14 +205,14 @@ const Vaccine = ({ onSubmit }) => {
               <td>{vsItem.day}</td>
               <td>{vsItem.amount}</td>
               <td>
-                <button onClick={() => handleRemove(index)}>Remove</button>
+                <button class="remove-button" onClick={() => handleRemove(index)}>Remove</button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      <div><button onClick={handleSave}>Save</button></div>
+      <div><button onClick={handleSave} className="save_button" >Save</button></div>
     </div>
   );
 };

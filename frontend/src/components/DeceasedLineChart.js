@@ -1,12 +1,12 @@
 import React from 'react';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, LineElement, PointElement, CategoryScale, LinearScale, Title, Tooltip, Legend } from 'chart.js';
-import '../fonts/fonts.css';
+import '../index.css';
 
 // Register ChartJS components
 ChartJS.register(LineElement, PointElement, CategoryScale, LinearScale, Title, Tooltip, Legend);
 
-const DeceasedLineChart = ({ eventData }) => {
+const DeceasedLineChart = ({ eventData, currentIndex }) => {
   // Prepare data for the chart
   const data = {
     labels: eventData.map(event => event.day), // Only day numbers on the x-axis
@@ -17,8 +17,13 @@ const DeceasedLineChart = ({ eventData }) => {
         fill: false,
         borderColor: 'rgba(75,192,192,1)', // Line color
         backgroundColor: 'rgba(75,192,192,0)', // No fill color
-       // tension: 0.1,
         pointRadius: 3, // Optional: Add some radius for data points
+        pointBackgroundColor: eventData.map((_, index) =>
+          index === currentIndex ? 'red' : 'rgba(75,192,192,1)' // Highlight the current day
+        ),
+        pointBorderWidth: eventData.map((_, index) =>
+          index === currentIndex ? 5 : 1 // Thicker border for the current day's point
+        ),
       },
     ],
   };
@@ -36,11 +41,11 @@ const DeceasedLineChart = ({ eventData }) => {
         backgroundColor: 'rgba(0, 0, 0, 0.7)', // Darker background for the tooltip
         titleFont: {
           size: 18, // Larger font for the tooltip title
-          family: 'Gilroy',
+          family: 'GilroyBold',
         },
         bodyFont: {
           size: 16, // Larger font for the tooltip body
-          family: 'Gilroy',
+          family: 'GilroyBold',
         },
         padding: 15, // Increase padding inside the tooltip
         callbacks: {
@@ -59,7 +64,7 @@ const DeceasedLineChart = ({ eventData }) => {
         font: {
           size: 30, // Larger title font size
           weight: 'bold',
-          family: 'Gilroy', // Font family
+          family: 'GilroyBold', // Font family
         },
       },
     },
@@ -71,17 +76,15 @@ const DeceasedLineChart = ({ eventData }) => {
           color: 'black', // Change x-axis title color to black
           font: {
             size: 25, // Larger x-axis title font size
-            family: 'Gilroy', // Font family
+            family: 'GilroyRegular', // Font family
           },
         },
         ticks: {
           color: 'black', // Change x-axis tick labels color to black
           font: {
             size: 20, // Larger x-axis tick labels font size
-            family: 'Gilroy', // Font family
-          },
-          callback: function (value, index, values) {
-            return `${value}`; // Display only the day number on the x-axis
+            family: 'GilroyRegular', // Font family
+
           },
         },
       },
@@ -92,14 +95,14 @@ const DeceasedLineChart = ({ eventData }) => {
           color: 'black', // Change y-axis title color to black
           font: {
             size: 25, // Larger y-axis title font size
-            family: 'Gilroy', // Font family
+            family: 'GilroyRegular', // Font family
           },
         },
         ticks: {
           color: 'black', // Change y-axis tick labels color to black
           font: {
             size: 16, // Larger y-axis tick labels font size
-            family: 'Gilroy', // Font family
+            family: 'GilroyRegular', // Font family
           },
         },
         beginAtZero: true,
@@ -114,4 +117,4 @@ const DeceasedLineChart = ({ eventData }) => {
   );
 };
 
-export default DeceasedLineChart;
+export default React.memo(DeceasedLineChart);

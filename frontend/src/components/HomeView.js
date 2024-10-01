@@ -12,29 +12,22 @@ import AddInitialCases from './AddInitialCases';
 import CountyInfectedDeceasedTable from './CountyInfectedDeceasedTable';
 import InfectedMap from './InfectedMap';
 import InfectedDeceasedTable from './InfectedDeceasedTable';
+import LineChart from './LineChart';
 
 import './HomeView.css';
 import PlayPauseButton from './PlayPauseButton';
 import './leaflet-overrides.css';
 import './styles.css';
-import './left-panel.css';
 import axios from 'axios';
-
-import OUTPUT_0 from './OUTPUT_0.json';
 
 const HomeView = () => {
 
   const [isRunning, setIsRunning] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
-
   const intervalRef = useRef(null);
   const [id, setId] = useState([]);
   const [taskId, setTaskId] = useState([]);
-  const [data, setData] = useState([]);
   const [eventData, setEventData] = useState([]);
-  const [outputFiles] = useState([ OUTPUT_0 ])
-
-
   const handleToggleScenario = () => {
 
     if (isRunning) {
@@ -47,11 +40,16 @@ const HomeView = () => {
   };
 
   const handleDayChange = (index) => {
+    debugger;
     console.log(`Day changed to: ${index}`);
     setCurrentIndex(index);
   };
 
   const handleRunScenario = () => {
+
+    setEventData([]);
+    setCurrentIndex(0);    
+
     axios.post('http://localhost:8000/api/pet/', {
       disease_name: localStorage.getItem('diseaseName'),
       R0: localStorage.getItem('reproductionNumber'),
@@ -109,78 +107,86 @@ const HomeView = () => {
 
 
   useEffect(() => {
-    const fetchData = async (currentIndex) => {
+    debugger;
+    const nextAvailable = eventData.length;
+    console.log("Length test", eventData.length);
+    console.log("next available", nextAvailable)
+    
+    const fetchData = async (requestedIndex) => {
+      debugger;
       try {
-        const response = await axios.get(`http://localhost:8000/api/output/${currentIndex}`);
+        const response = await axios.get(`http://localhost:8000/api/output/${requestedIndex}`);
         
         if (response.status === 200) {
-          setData(response.data);
-
-          console.log('Current Index before increment:', currentIndex);
-          setCurrentIndex((prevIndex) => {
-            return prevIndex + 1;
+          console.log('Requested Index:', requestedIndex);
+          setCurrentIndex(response.data.day);
+          console.log('Day:', response.data.day);
+          const data_entries = Object.entries(response.data.data);
+          const total_counts = response.data.total_summary;
+    
+          console.log('Total counts:', total_counts);
+    
+          // Map through data_entries to collect fips_id, infected counts, and deceased counts for each county
+          const countyInfectedDeceasedData = data_entries.map(([countyKey, countyData]) => {
+            const fips_id = countyData['fips_id'];  // Get the fips_id for the county
+         //   const susceptibleCount = countyData['compartment_summary']['S'] || 0;  // Get the susceptible count;
+            const infectedCount = countyData['compartment_summary']['I'] || 0;  // Get the infected count
+            const deceasedCount = countyData['compartment_summary']['D'] || 0;  // Get the deceased count
+      
+            return {
+              fips: fips_id,        // Store fips_id
+         //     susceptible: susceptibleCount, // Store susceptible count
+              infected: infectedCount, // Store infected count
+              deceased: deceasedCount, // Store deceased count
+            };
           });
+      
+          // Calculate the total deceased count for the current day
+          const totalSusceptibleCount = total_counts['S'];
+          const totalExposedCount = total_counts['E'];
+          const totalAsymptomaticCount = total_counts['A'];
+          const totalTreatableCount = total_counts['T'];
+          const totalInfectedCount = total_counts['I'];
+          const totalRecoveredCount = total_counts['R'];
+          const totalDeceasedCount = total_counts['D'];
+
+          console.log('Total Deceased Count:', totalDeceasedCount);
+      
+          // Update the eventData to include the county-level fips, infected, and deceased information
+          setEventData((prevEventData) => [
+            ...prevEventData,
+            {
+              day: response.data.day,
+              counties: countyInfectedDeceasedData,  // Store array of county data for the current day
+              totalSusceptible: totalSusceptibleCount,
+              totalExposed: totalExposedCount,     // Store total exposed count for the day
+              totalAsymptomaticCount: totalAsymptomaticCount,     // Store total asymptomatic count for the day
+              totalTreatableCount: totalTreatableCount,     // Store total treatable count for the day
+              totalInfectedCount: totalInfectedCount,     // Store total infected count for the day
+              totalRecoveredCount: totalRecoveredCount,     // Store total recovered count for the day
+              totalDeceased: totalDeceasedCount,     // Store total deceased count for the day
+            },
+          ]);
+    
+          console.log('Event Data:', eventData);
         }
 
       } catch (error) {
         console.log('Data not here yet:', error);
+        setTimeout(() => {
+          fetchData(nextAvailable);
+        }, 1000);
       }
     };
+
+    debugger;
 
     if (isRunning) {
-      intervalRef.current = setInterval(() => {
-          console.log('Fetching data for index:', currentIndex);
-          fetchData(currentIndex);
-      }, 1000); // Check every 1 second
+      setTimeout(() => {
+        fetchData(nextAvailable);
+      }, 1000);
     }
-
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, [isRunning, currentIndex]);
-
-  useEffect(() => {
-    if (currentIndex !== 0) {
-      const data_entries = Object.entries(data.data);
-      const total_counts = data.total_summary;
-
-      console.log('Total counts:', total_counts);
-
-      // Map through data_entries to collect fips_id, infected counts, and deceased counts for each county
-      const countyInfectedDeceasedData = data_entries.map(([countyKey, countyData]) => {
-        const fips_id = countyData['fips_id'];  // Get the fips_id for the county
-        const infectedCount = countyData['compartment_summary']['I'] || 0;  // Get the infected count
-        const deceasedCount = countyData['compartment_summary']['D'] || 0;  // Get the deceased count
-  
-        return {
-          fips: fips_id,        // Store fips_id
-          infected: infectedCount, // Store infected count
-          deceased: deceasedCount, // Store deceased count
-        };
-      });
-  
-      // Calculate the total deceased count for the current day
-      const totalDeceasedCount = total_counts['D'];
-      // const totalSusceptibleCount = total_counts['S'];
-      //console.log('Total Susceptible Count:', totalSusceptibleCount);
-      
-      console.log('Total Deceased Count:', totalDeceasedCount);
-  
-      // Update the eventData to include the county-level fips, infected, and deceased information
-      setEventData((prevEventData) => [
-        ...prevEventData,
-        {
-          day: currentIndex,
-          counties: countyInfectedDeceasedData,  // Store array of county data for the current day
-          totalDeceased: totalDeceasedCount,     // Store total deceased count for the day
-        },
-      ]);
-
-      console.log('Event Data:', eventData);
-    }
-  }, [data, currentIndex]);
+  }, [isRunning, eventData]);
   
   
   const [saved, setSaved] = useState(false);
@@ -191,7 +197,7 @@ const HomeView = () => {
   };
 
   return (
-    <div className="home-view">
+    <div>
       <div className="left-panel">
         <SetParametersDropdown counties={texasCounties} onSave={handleSave} />
         <div className="interventions-container">
@@ -204,14 +210,14 @@ const HomeView = () => {
   
       <div className="middle-panel">
         <div className="map-and-chart-container">
-          <InfectedMap eventData={eventData} className="map-size" />
-          <div className="separator"></div> 
-          <DeceasedLineChart eventData={eventData} className="chart-size" />
+        <InfectedMap currentIndex={currentIndex} eventData={eventData} className="map-size" />
+        <div className="separator"></div> 
+        <LineChart currentIndex={currentIndex} eventData={eventData} className="chart-size" />
         </div>
       </div> 
-      <div className="right-panel">
-        <InfectedDeceasedTable eventData={eventData}/>
 
+      <div className="right-panel">
+        <InfectedDeceasedTable currentIndex={currentIndex} eventData={eventData}/>
       </div>
   
       <div className="footer">
@@ -220,11 +226,10 @@ const HomeView = () => {
         </div>
         <div className="timeline-panel">
           <TimelineSlider
-            totalDays={currentIndex}
+            totalDays={eventData.length}
             selectedDay={currentIndex}
             onDayChange={handleDayChange}
-            onScenarioRun={handleRunScenario}
-            onScenarioPause={handlePauseScenario}
+            isRunning={isRunning}
           />
         </div>
       </div>

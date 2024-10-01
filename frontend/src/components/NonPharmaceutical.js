@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import toggletip from  './images/toggletip.svg';
-import './NonPharmaceutical.css';
+// import './NonPharmaceutical.css';
+import './AddInitialCases.css'; // Import the CSS file for styling
+
 
 const NonPharmaceutical = ({ onSubmit }) => {
   const [nonpharmaDay, setNonpharmaDay] = useState(50);
@@ -49,7 +51,7 @@ const NonPharmaceutical = ({ onSubmit }) => {
 
   return (
     <div>
-      <form className="parameters-form" onSubmit={handleAddNPI}>
+      <form className="interventions" onSubmit={handleAddNPI}>
         <div className="form-group">
         <label htmlFor="nonpharmaDay">NPI Day
         <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
@@ -104,10 +106,9 @@ const NonPharmaceutical = ({ onSubmit }) => {
         />
         </div>
 
-        <button type="submit">Add New NPI</button>
+        <button type="submit" className="save_button">Add New NPI</button>
       </form>
-
-      <h3>Added NPIs</h3>
+      <h2>Added NPIs</h2>
       <table className="npi-table">
         <thead>
           <tr>
@@ -124,14 +125,14 @@ const NonPharmaceutical = ({ onSubmit }) => {
               <td>{ npiItem.effectiveness}</td>
               <td>{ npiItem.halflife}</td>
               <td>
-                <button onClick={() => handleRemove(index)}>Remove</button>
+                <button class="remove-button" onClick={() => handleRemove(index)}>Remove</button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      <div><button onClick={handleSave}>Save</button></div>
+      <div><button onClick={handleSave} className="save_button">Save</button></div>
     </div>
   );
 };

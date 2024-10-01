@@ -13,7 +13,7 @@ const ageGroupMapping = {
 };
 
 const AddInitialCases = ({ counties, onClose }) => {
-  const [numberOfCases, setNumberOfCases] = useState(10000);
+  const [numberOfCases, setNumberOfCases] = useState(100);
   const [selectedCounty, setSelectedCounty] = useState(null);
   const [selectedAgeGroup, setSelectedAgeGroup] = useState(null);
   const [casesList, setCasesList] = useState([]);
@@ -78,7 +78,7 @@ const AddInitialCases = ({ counties, onClose }) => {
     setCasesList(prevCasesList => [...prevCasesList, newCase]);
 
     // Reset form fields
-    setNumberOfCases(10000);
+    setNumberOfCases(100);
     setSelectedCounty(null);
     setSelectedAgeGroup(null);
   };
@@ -138,7 +138,7 @@ const AddInitialCases = ({ counties, onClose }) => {
           />
         </div>
 
-        <button type="submit">+ Add Cases</button>
+        <button className="save_button" type="submit">+ Add Cases</button>
       </form>
 
       <h2>Added Cases</h2>
@@ -158,7 +158,7 @@ const AddInitialCases = ({ counties, onClose }) => {
               <td>{caseItem.infected}</td>
               <td>{caseItem.age_group_display}</td>
               <td>
-                <button class="remove-button" onClick={() => handleRemove(index)}>Remove</button>
+                <button className="remove-button" onClick={() => handleRemove(index)}>Remove</button>
               </td>
             </tr>
           ))}
@@ -166,7 +166,7 @@ const AddInitialCases = ({ counties, onClose }) => {
       </table>
 
       <div>
-        <button onClick={handleSaveToLocalStorage}>Save and Close</button>
+        <button onClick={handleSaveToLocalStorage}  className="save_button" >Save and Close</button>
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import toggletip from  './images/toggletip.svg';
+import './AddInitialCases.css';
 
 
 const Antivirals = ({ onSubmit }) => {
@@ -55,7 +56,7 @@ const Antivirals = ({ onSubmit }) => {
 
   return (
     <div>
-      <form className="parameters-form" onSubmit={handleSetParams}>
+      <form className="interventions" onSubmit={handleSetParams}>
         <div className="form-group">
           <label htmlFor="antiviralEffectiveness">Antiviral Effectiveness
             <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
@@ -92,10 +93,10 @@ const Antivirals = ({ onSubmit }) => {
           />
         </div>
 
-        <button type="submit">Set Antiviral Parameters</button>
+        <button type="submit" className="save_button" >Set Antiviral Parameters</button>
       </form>
 
-      <form className="parameters-form" onSubmit={handleAddStockpile}>
+      <form className="interventions" onSubmit={handleAddStockpile}>
         <div className="form-group">
         <label htmlFor="antiviralStockpileDay">New Stockpile Day
         <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
@@ -131,7 +132,7 @@ const Antivirals = ({ onSubmit }) => {
         />
         </div>
 
-        <button type="submit">Add New Antiviral Stockpile</button>
+        <button type="submit" className="save_button">Add New Antiviral Stockpile</button>
       </form>
 
       <h3>Added Stockpiles</h3>
@@ -149,14 +150,14 @@ const Antivirals = ({ onSubmit }) => {
               <td>{avsItem.day}</td>
               <td>{avsItem.amount}</td>
               <td>
-                <button onClick={() => handleRemove(index)}>Remove</button>
+                <button class="remove-button" onClick={() => handleRemove(index)}>Remove</button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      <div><button onClick={handleSave}>Save</button></div>
+      <div><button onClick={handleSave} className="save_button" >Save</button></div>
     </div>
   );
 };

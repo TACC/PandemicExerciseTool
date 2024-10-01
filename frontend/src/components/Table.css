@@ -1,35 +1,40 @@
 .table-container {
+  flex: auto;
   /* Remove border if present */
   border: none;
-  padding: 10px 20px; /* Adjust padding if necessary */
-  margin: 0; /* Adjust margin if necessary */
+  /* padding: 10px 20px; Adjust padding if necessary */
+  /* transform: scale(0.90); */
+  margin-top: 2.4em;
+  margin-left: 0.8em;
+  margin-right: 0.8em;
 }
 
 .table-scroll {
   /* Remove border if present */
   border: none;
-  overflow: auto; /* Ensure scrolling if necessary */
+  overflow-y: auto; /* Ensure scrolling if necessary */
+  overflow-x: hidden;
+  max-width: 23.5;
 }
 
-
 table th {
-  font-size: large; /* Adjust as needed */
+  font-size: medium; /* Adjust as needed */
   font-weight: bold;
-  padding: 10px 20px; /* Reduce right-side padding */
+  /* padding: 10px 10px; /* Reduce right-side padding */  
   text-align: left; /* Ensure text aligns properly */
   position: relative; /* Allow absolute positioning of button */
 }
 
 table td {
-  font-size: large;
-  padding: 12px; /* Decrease padding if needed */
+  font-size: medium;
+  padding: 7px; /* Decrease padding if needed */
 }
 
 .sort-button {
     background: transparent;
     border: none;
     cursor: pointer;
-    font-size: 16px; /* Adjust font size as needed */
+    font-size: medium; /* Adjust font size as needed */
     margin-left: 10px;
     width: 2px;
   }
@@ -47,6 +52,7 @@ table td {
   display: flex; /* Align items in a row */
   align-items: center; /* Vertically align items to the center */
   margin-bottom: 10px;
+  max-width: 23.75em;
 }
 
 /* Search icon box styling */
@@ -59,8 +65,8 @@ table td {
   border-top: 1px solid black; /* Black border on the top */
   border-left: 1px solid black; /* Black border on the left */
   border-bottom: 1px solid black; /* Black border on the bottom */
-  height: 40px;
-  width: 40px;
+  height: 30px;
+  width: 30px;
 }
 
 /* Search icon styling */
@@ -78,6 +84,6 @@ table td {
   padding: 8px; /* Padding inside the input field */
   flex: 1; /* Allow the input to grow and fill available space */
   font-size: large; /* Adjust font size as needed */
-  height: 40px; /* Set the height of the input to match the icon */
+  height: 30px; /* Set the height of the input to match the icon */
   border-radius: 0; /* Ensure square corners */
 }

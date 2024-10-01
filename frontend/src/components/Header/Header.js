@@ -13,10 +13,10 @@ const Header = ({ currentIndex, setCurrentIndex }) => {
     switch (activeTab) {
       case 'home':
         return <HomeView currentIndex={currentIndex} setCurrentIndex={setCurrentIndex}/>;
-      case 'chart':
+     /* case 'chart':
         return <ChartView />;
       case 'gallery':
-        return <GalleryView />;
+        return <GalleryView />;*/
       case 'userguide':
         return <UserGuideView />;
       default:
@@ -39,18 +39,6 @@ const Header = ({ currentIndex, setCurrentIndex }) => {
             Home
           </button>
           <button
-            className={`tab-button ${activeTab === 'chart' ? 'active' : ''}`}
-            onClick={() => setActiveTab('chart')}
-          >
-            Chart View
-          </button>
-          <button
-            className={`tab-button ${activeTab === 'gallery' ? 'active' : ''}`}
-            onClick={() => setActiveTab('gallery')}
-          >
-            Gallery
-          </button>
-          <button
             className={`tab-button ${activeTab === 'userguide' ? 'active' : ''}`}
             onClick={() => setActiveTab('userguide')}
           >
@@ -58,7 +46,7 @@ const Header = ({ currentIndex, setCurrentIndex }) => {
           </button>
         </div>
         <div className="text-container">
-          <h1>Pandemic Simulator</h1>
+          <h1>Interactive Outbreak Simulator</h1>
         </div>
       </div>
       <div className="tab-content">

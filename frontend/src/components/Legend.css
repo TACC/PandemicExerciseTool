@@ -74,12 +74,13 @@
 }
 
 .county-tooltip {
-  width: 150px;
+  width: 200px;
+  font-size: large;
   background-color: white;
   color: black;
   font-weight: lighter;
   border: 2px solid black;
   position: absolute;
   z-index: 9999; /* Ensure the tooltip has a high z-index */
-  text-align: left;
+  text-align: center;
 }

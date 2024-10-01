@@ -4,6 +4,7 @@ import AddInitialCases from './AddInitialCases';
 import texasCounties from './counties';
 import editIcon from './images/edit.svg'
 import './SavedParameters.css';
+import { createPortal } from 'react-dom';
 
 
 const SavedParameters = () => {
@@ -37,9 +38,7 @@ const SavedParameters = () => {
 
   // Retrieve initial cases from localStorage
   const initialCases = JSON.parse(localStorage.getItem('initial_infected')) || [];
-
-
-
+  
   const antiviralParams = {
     antiviralEffectiveness: localStorage.getItem('antiviral_effectiveness') || 'N/A',
     antiviralWastageFactor: localStorage.getItem('antiviral_wastage_factor') || 'N/A',
@@ -51,8 +50,6 @@ const SavedParameters = () => {
   }
 
   const antiviralStockpileList = JSON.parse(localStorage.getItem('antiviral_stockpile')) || [];
-
-  //const vaccineStrategyRaw = localStorage.getItem('vaccine_strategy') || 'N/A';
 
   const vaccineParams = {
     vaccineEffectiveness: localStorage.getItem('vaccine_effectiveness') || 'N/A',
@@ -98,7 +95,7 @@ const SavedParameters = () => {
       {/* Conditionally render content based on selected view */}
       {view === 'scenario' ? (
         // Scenario View: Existing content
-        <>
+        <div className = "scenario-section">
           {Object.keys(parameters).map((key, index) => (
             <div key={key} className="parameter-item">
               <div className="parameter-label">{labels[key]}</div>
@@ -114,7 +111,7 @@ const SavedParameters = () => {
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
           >
-            <div className="section-label">Initial Cases</div>
+           <div><h3>Initial Cases</h3></div>
             {initialCases.map((caseItem, index) => (
               <div key={index} className="initial-case-item">
                 <div className="initial-case-info">
@@ -133,9 +130,9 @@ const SavedParameters = () => {
               </button>
             )}
           </div>
-        </>
+        </div>
       ) : (
-        <>
+        <div className="interventions-section">
           <div><h3>Antivirals</h3></div>
           {Object.keys(antiviralParams).map((key, index) => (
             <div key={key} className="parameter-item">
@@ -183,7 +180,7 @@ const SavedParameters = () => {
 
           <hr className="section-separator" />
 
-          <div><h3>Non-Pharma</h3></div>
+          <div><h3>NPI</h3></div>
           <div className="section-label"></div>
           {nonpharmaList.map((item, index) => (
             <div key={index} className="initial-case-item">
@@ -194,16 +191,20 @@ const SavedParameters = () => {
               </div>
             </div>
           ))}
-
-        </>
+        </div>
       )}
 
       {isModalOpen && (
-        <div className="modal-overlay" onClick={closeModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h2>Add Initial Cases</h2>
-            <AddInitialCases counties={texasCounties} onClose={closeModal} />
-          </div>
+        <div>
+          {createPortal(
+          <div className="modal-overlay" onClick={closeModal}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <h2>Add Initial Cases</h2>
+              <AddInitialCases counties={texasCounties} onClose={closeModal} />
+            </div>
+          </div>,
+          document.body
+          )}
         </div>
       )}
     </div>
