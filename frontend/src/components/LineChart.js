@@ -7,34 +7,13 @@ import '../index.css';
 // Register ChartJS components
 ChartJS.register(LineElement, PointElement, CategoryScale, LinearScale, Title, Tooltip, Legend);
 
-// const MyChart = () => {
-//   useEffect(() => {
-//     // Set global default font for all charts
-//     ChartJS.defaults.global.font.family = "GilroyBold";
-//     console.log(ChartJS.defaults.global.font);
-//   }, []);
-// }
-
 const LineChart = ({ eventData, currentIndex }) => {
     
   const chartRef = useRef(null);
 
-  // checking that the title font is available (i.e., document.fonts.ready) doesn't work
-  // this is likely because the Line chart title looks like an SVG image (<canvas>) to the DOM
-  // FIXME: how to render <Line> only once we're sure the font has loaded
-
-  // force the chart to re-render on page load, re-rendering with correct font
-  // NOTE: forcing a re-render is bad React, but waiting for fonts to load didn't resolve the issue
-  // useEffect(() => {
-  //   if (chartRef.current) {
-  //     setTimeout(() => {
-  //       chartRef.current.update();    // force chart re-render
-  //     }, 10);
-  //   }
-  // }, []);
-
   const [isPageLoaded, setIsPageLoaded] = useState(false);
 
+  // checking everything is loaded prevents a bug where the chart title rendered with the wrong font
   useEffect(() => {
     window.onload = () => {
       setIsPageLoaded(true);    // ensure page is fully loaded before rendering
@@ -236,7 +215,6 @@ const LineChart = ({ eventData, currentIndex }) => {
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%', minHeight: '300px' }}>
-      {/* {isFontLoaded && <Line data={data} options={options} />} */}
       <Line ref={chartRef} data={data} options={options} />
     </div>
   );
