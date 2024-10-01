@@ -16,7 +16,8 @@ const LineChart = ({ eventData, currentIndex }) => {
         data: eventData.map(event => event.totalSusceptible),
         fill: false,
         borderColor: 'rgba(75,192,192,1)', // Line color for Susceptible
-        pointRadius: 3,
+        backgroundColor: 'rgba(75,192,192,1)', 
+        pointRadius: 1,
         pointBackgroundColor: eventData.map((_, index) =>
           index === currentIndex ? 'red' : 'rgba(75,192,192,1)'
         ),
@@ -29,7 +30,8 @@ const LineChart = ({ eventData, currentIndex }) => {
         data: eventData.map(event => event.totalExposed),
         fill: false,
         borderColor: 'rgba(255,165,0,1)', // Line color for Exposed
-        pointRadius: 3,
+        backgroundColor: 'rgba(255,165,0,1)', 
+        pointRadius: 1,
         pointBackgroundColor: eventData.map((_, index) =>
           index === currentIndex ? 'red' : 'rgba(255,165,0,1)'
         ),
@@ -42,7 +44,8 @@ const LineChart = ({ eventData, currentIndex }) => {
         data: eventData.map(event => event.totalAsymptomaticCount),
         fill: false,
         borderColor: 'rgba(173,216,230,1)', // Line color for Asymptomatic
-        pointRadius: 3,
+        backgroundColor: 'rgba(173,216,230,1)',
+        pointRadius: 1,
         pointBackgroundColor: eventData.map((_, index) =>
           index === currentIndex ? 'red' : 'rgba(173,216,230,1)'
         ),
@@ -55,7 +58,8 @@ const LineChart = ({ eventData, currentIndex }) => {
         data: eventData.map(event => event.totalTreatableCount),
         fill: false,
         borderColor: 'rgba(34,139,34,1)', // Line color for Treatable
-        pointRadius: 3,
+        backgroundColor: 'rgba(34,139,34,1)',
+        pointRadius: 1,
         pointBackgroundColor: eventData.map((_, index) =>
           index === currentIndex ? 'red' : 'rgba(34,139,34,1)'
         ),
@@ -68,7 +72,8 @@ const LineChart = ({ eventData, currentIndex }) => {
         data: eventData.map(event => event.totalInfectedCount),
         fill: false,
         borderColor: 'rgba(255,69,0,1)', // Line color for Infected
-        pointRadius: 3,
+        backgroundColor: 'rgba(255,69,0,1)',
+        pointRadius: 1,
         pointBackgroundColor: eventData.map((_, index) =>
           index === currentIndex ? 'red' : 'rgba(255,69,0,1)'
         ),
@@ -81,7 +86,8 @@ const LineChart = ({ eventData, currentIndex }) => {
         data: eventData.map(event => event.totalRecoveredCount),
         fill: false,
         borderColor: 'rgba(0,0,255,1)', // Line color for Recovered
-        pointRadius: 3,
+        backgroundColor: 'rgba(0,0,255,1)',
+        pointRadius: 1,
         pointBackgroundColor: eventData.map((_, index) =>
           index === currentIndex ? 'red' : 'rgba(0,0,255,1)'
         ),
@@ -94,7 +100,8 @@ const LineChart = ({ eventData, currentIndex }) => {
         data: eventData.map(event => event.totalDeceased),
         fill: false,
         borderColor: 'rgba(0,0,0,1)', // Line color for Deceased
-        pointRadius: 3,
+        backgroundColor: 'rgba(0,0,0,1)',
+        pointRadius: 1,
         pointBackgroundColor: eventData.map((_, index) =>
           index === currentIndex ? 'red' : 'rgba(0,0,0,1)'
         ),
@@ -105,43 +112,46 @@ const LineChart = ({ eventData, currentIndex }) => {
     ],
   };
 
-  // Chart options
   const options = {
     responsive: true,
     maintainAspectRatio: false,
     elements: {
       line: {
-        tension: 0, // Adjust tension, lower value flattens the line, reducing dips
-        cubicInterpolationMode: 'monotone', // Smooths out the line
+        tension: 0,
+        cubicInterpolationMode: 'monotone',
       },
     },
     plugins: {
       legend: {
-        display: true, // Display legend for all datasets
+        display: true,
+        fill: true,
         labels: {
           font: {
-            size: 13, // Increase the font size for legend labels
-            family: 'GilroyRegular', // You can customize the font family as well
+            size: 16,
+            family: 'GilroyRegular',
           },
-          color: 'black', // Set the color of the labels (optional)
+          color: 'black',
+          boxWidth: 15,
+          boxHeight: 15,
+          usePointStyle: false,
         },
       },
       tooltip: {
         enabled: true,
-        backgroundColor: 'white', // Set background color to white
-        titleColor: 'black', // Set title text color to black
-        bodyColor: 'black', // Set body text color to black
-        borderColor: 'black', // Set border color to black
-        borderWidth: 2, // Set border width to 2px
-        padding: 10, // Padding inside the tooltip
-        cornerRadius: 0, // Make the border corners sharp (no rounding)
+        intersect: false, // Makes sure the tooltip follows the cursor vertically
+        backgroundColor: 'white',
+        titleColor: 'black',
+        bodyColor: 'black',
+        borderColor: 'black',
+        borderWidth: 2,
+        padding: 10,
+        cornerRadius: 0,
         titleFont: {
-          size: 16,
+          size: 18,
           family: 'GilroyRegular',
-          color: 'black'
         },
         bodyFont: {
-          size: 14,
+          size: 18,
           family: 'GilroyRegular',
         },
         padding: 15,
@@ -165,6 +175,29 @@ const LineChart = ({ eventData, currentIndex }) => {
           family: 'GilroyBold',
         },
       },
+      // Custom plugin to draw the vertical line
+      crosshairLine: {
+        id: 'crosshairLine',
+        afterDraw(chart) {
+          if (chart.tooltip._active && chart.tooltip._active.length) {
+            const activePoint = chart.tooltip._active[0];
+            const ctx = chart.ctx;
+            const x = activePoint.element.x; // Get x position of the active point
+            const topY = chart.scales.y.top;
+            const bottomY = chart.scales.y.bottom;
+  
+            // Draw the vertical line
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(x, topY);
+            ctx.lineTo(x, bottomY);
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+            ctx.stroke();
+            ctx.restore();
+          }
+        },
+      },
     },
     scales: {
       x: {
@@ -180,9 +213,12 @@ const LineChart = ({ eventData, currentIndex }) => {
         ticks: {
           color: 'black',
           font: {
-            size: 16,
+            size: 20,
             family: 'GilroyRegular',
           },
+        },
+        grid: {
+          display: false,
         },
       },
       y: {
@@ -203,10 +239,37 @@ const LineChart = ({ eventData, currentIndex }) => {
           },
         },
         beginAtZero: true,
+        grid: {
+          display: false,
+        },
       },
     },
   };
-
+  
+  // Register the plugin
+  ChartJS.register({
+    id: 'crosshairLine',
+    afterDraw(chart) {
+      if (chart.tooltip._active && chart.tooltip._active.length) {
+        const activePoint = chart.tooltip._active[0];
+        const ctx = chart.ctx;
+        const x = activePoint.element.x; // Get x position of the active point
+        const topY = chart.scales.y.top;
+        const bottomY = chart.scales.y.bottom;
+  
+        // Draw the vertical line
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(x, topY);
+        ctx.lineTo(x, bottomY);
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+        ctx.stroke();
+        ctx.restore();
+      }
+    },
+  });
+  
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%', minHeight: '300px' }}>
       <Line data={data} options={options} />
