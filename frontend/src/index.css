@@ -140,9 +140,9 @@ code {
 
 .reset-button {
   width: 100%; /* Set a fixed width that matches the dropdown menu width */
-  padding: 15px 16px; /* Ensure padding matches the dropdown items */
-  background-color: #f7b13c; /* Example background color */
-  color: black;
+  /*padding: 15px 16px;*/
+  background-color: #fb4934;
+  color: white;
   font-size: medium;
   font-weight: bold;
   border: none;
@@ -163,7 +163,7 @@ code {
   cursor: pointer;
   margin: auto;
   float: left;
-  padding: 1em 2em 1em 2em;
+  padding: 1vw 2vw 1vw 2vw;
   font-size: large;
   font-weight: bold;
   border: none;
@@ -175,7 +175,7 @@ code {
   cursor: pointer;
   margin: auto;
   float: right;
-  padding: 1em 2em 1em 2em;
+  padding: 1vw 2vw 1vw 2vw;
   font-size: large;
   font-weight: bold;
   border: none;
