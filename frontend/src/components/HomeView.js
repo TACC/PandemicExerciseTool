@@ -60,7 +60,16 @@ const HomeView = () => {
       chi: localStorage.getItem('chi'),
       rho: localStorage.getItem('rho'),
       nu: localStorage.getItem('nu'),
-      initial_infected: localStorage.getItem('initial_infected')
+      initial_infected: localStorage.getItem('initial_infected'),
+      phas: localStorage.getItem('nonpharma_list'),
+      antiviral_effectiveness: localStorage.getItem('antiviral_effectiveness'),
+      antiviral_wastage_factor: localStorage.getItem('antiviral_wastage_factor'),
+      antiviral_stockpile: localStorage.getItem('antiviral_stockpile'),
+      vaccine_effectiveness: localStorage.getItem('vaccine_effectiveness'),
+      vaccine_adherence: localStorage.getItem('vaccine_adherence'),
+      vaccine_wastage_factor: localStorage.getItem('vaccine_wastage_factor'),
+      vaccine_pro_rata: localStorage.getItem('vaccine_strategy'),
+      vaccine_stockpile: localStorage.getItem('vaccine_stockpile'),
     })
     .then(response => {
       console.log('Disease parameters updated successfully:', response.data['id']);

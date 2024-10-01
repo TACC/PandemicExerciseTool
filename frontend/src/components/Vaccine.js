@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import './Parameters.css'
 import toggletip from  "./images/toggletip.svg";
 import './AddInitialCases.css';
 
@@ -124,8 +125,8 @@ const Vaccine = ({ onSubmit }) => {
                   type="radio"
                   id="prorataAll"
                   name="vaccineStrategy"
-                  value="all"
-                  checked={vaccineStrategy === "all"}
+                  value="pro_rata"
+                  checked={vaccineStrategy === "pro_rata"}
                   onChange={e => setVaccineStrategy(e.target.value)}
                   required
                 />
