@@ -25,16 +25,20 @@ def return_valid_input(input):
     try: phas = json.loads(input['phas'])
     except TypeError: phas = None
     
-    try: avs = json.loads(input['phas'])
+    try: avs = json.loads(input['antiviral_stockpile'])
     except TypeError: avs = None
     
-    try: va = json.loads(input['phas'])
+    try: va = json.loads(input['vaccine_adherence'])
     except TypeError: va = None
+    if va is not None:
+        va = [va] * 5
     
-    try: ve = json.loads(input['phas'])
+    try: ve = json.loads(input['vaccine_effectiveness'])
     except TypeError: ve = None
+    if ve is not None:
+        ve = [ve] * 5
     
-    try: vs = json.loads(input['phas'])
+    try: vs = json.loads(input['vaccine_stockpile'])
     except TypeError: vs = None
     
     input_file = {
