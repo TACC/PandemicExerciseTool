@@ -264,6 +264,8 @@ const SetManually = ({ onClose }) => {
           required
         />
       </div>
+
+{/*}
       <div className="form-group">
         <label htmlFor="chi">Therapeutic Window (days)
           <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
@@ -280,7 +282,7 @@ const SetManually = ({ onClose }) => {
           min="0"
           required
         />
-      </div>
+      </div> */}
 
       <div className="form-group" style ={{alignItems: 'center'}}>
         <label htmlFor="nu">Case Fatality Rate

@@ -167,7 +167,7 @@ const LineChart = ({ eventData, currentIndex }) => {
       },
       title: {
         display: true,
-        text: 'Total Compartments',
+        text: 'Statewide Trends',
         color: 'black',
         font: {
           size: 25,
