@@ -138,3 +138,53 @@ code {
   font-size: 16px;
 }
 
+.reset-button {
+  width: 100%; /* Set a fixed width that matches the dropdown menu width */
+  /*padding: 15px 16px;*/
+  background-color: #fb4934;
+  color: white;
+  font-size: medium;
+  font-weight: bold;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center; /* Center text and arrow horizontally */
+  align-items: center; /* Center text and arrow vertically */
+  position: relative;
+  box-sizing: border-box; /* Ensure padding and borders are included in the width */
+}
+
+.confirmation-buttons {
+  margin-top: 10%;
+}
+
+.cancel-reset-button {
+  cursor: pointer;
+  margin: auto;
+  float: left;
+  padding: 1vw 2vw 1vw 2vw;
+  font-size: large;
+  font-weight: bold;
+  border: none;
+  border-radius: 4px;
+  background-color: #f7b13c;
+}
+
+.confirm-reset-button {
+  cursor: pointer;
+  margin: auto;
+  float: right;
+  padding: 1vw 2vw 1vw 2vw;
+  font-size: large;
+  font-weight: bold;
+  border: none;
+  border-radius: 4px;
+  background-color: #fb4934;
+  color: white;
+  transition: 0.2s;
+}
+
+.confirm-reset-button:hover {
+  background-color: #cc241d;
+}

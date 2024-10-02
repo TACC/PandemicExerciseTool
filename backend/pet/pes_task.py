@@ -14,7 +14,7 @@ app = Celery('pes', broker='pyamqp://rabbitmq')
 myclient = pymongo.MongoClient("mongodb://mongo-db:27017/")
 mydb = myclient["PES"]
 mycol = mydb["days"]
-mycol.drop() # I think this deletes all the data
+#mycol.drop()
 
 
 def return_valid_input(input):

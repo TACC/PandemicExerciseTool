@@ -5,11 +5,10 @@ from rest_framework import viewsets
 from .serializers import PETSerializer
 from .models import PET
 from celery.result import AsyncResult
-from .pes_task import run_pes
+from .pes_task import run_pes, app
 
 import requests
 import pymongo
-import json
 
 myclient = pymongo.MongoClient("mongodb://mongo-db:27017/")
 mydb = myclient["PES"]
@@ -38,3 +37,8 @@ def get_output(request, day):
         del mydoc['_id']
         return JsonResponse(mydoc, status=200)
 
+def reset_state(request):
+    if request.method == 'GET':
+        mycol.delete_many({})
+        app.control.purge()
+        return JsonResponse({'result': 'State Reset'}, status=200)
