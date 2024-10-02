@@ -15,14 +15,12 @@
   }
   
   .right-panel {
-    width: 23.75em;
+    height: 115%;
     background-color: transparent; /* Background color */
     position: fixed; /* Fixes the panel to the right side */
     top: auto;    /* Adjust this value slightly if needed */
     right: 0;
-    height: calc(100% - 1.5em); /* Full height minus top margin with footer */
-    /* z-index: 1; Ensure it is on top */
-    display: flex;
+    /* display: flex; */
     flex-direction: column;
     justify-content: flex-start; /* Align items to the top */
     border: none;
@@ -44,10 +42,7 @@
     z-index: 1;
     border-right: 2px solid black;
   }
-  
-  /* Adjust the height for smaller screens */
-
- 
+    
   .footer {
     display: flex;
     align-items: center;
@@ -81,23 +76,19 @@
   }
 
   .middle-panel {
-    /* flex: 1; Takes up the remaining space between left and right panels */
     position: fixed;
-    /* left: 20vw; */
     left: 16em;
     top: 4.25em;
     display: flex;
     flex-direction: column;
     padding: 10px;
     overflow: hidden; /* Prevent scrollbars in the middle panel */
-    z-index: 1;
   }
   
   .map-and-chart-container {
     display: flex;
     flex-direction: column; /* Stack the map and chart vertically, change to "row" for left & right orientation */ 
     align-items: center; 
-    /* width: 66em; */
     width: calc(100vw - 40em);
     height: calc(100vh - 10em);
   }
@@ -126,3 +117,28 @@
   width: 300px; /* Fixed width for the button */
   z-index: 3;
 }
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media (max-width:768px) {
+  .left-panel {
+    max-width: 12em;
+    /* Change button sizing */
+    /* Change font sizing */
+  }
+  .timeline-panel {
+    margin-left: -3.5em;
+  }
+} 
+
+/* @media (max-width:1324px) {
+  .right-panel {
+    transform: scale(90%);
+    top: -4em;
+    margin-right: -2em;
+  }
+}  */
+
+/* Large devices (laptops/desktops, 992px and up) */
+/* @media only screen and (min-width: 992px) {
+
+} */

@@ -12,6 +12,13 @@
   width: 12.5em;
 }
 
+/* Medium devices (landscape tablets, 768px and up) */
+@media (max-width:768px) {
+  .scenario-button {
+    max-width: 10em;
+  }
+} 
+
 .scenario-button {
   background-color: #f7b13c;
 }

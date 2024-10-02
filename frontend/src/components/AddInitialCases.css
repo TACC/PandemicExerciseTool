@@ -112,6 +112,11 @@ button[type="submit"] {
   max-width: min-content;
   margin-right: auto;
   margin-left: auto;
+  /* z-index: -1; */
+}
+
+th, tr, .cases-table{
+  z-index: -1;
 }
 
 /* End of Form Group Scetions -- In the Modal */
@@ -251,3 +256,8 @@ h3 {
   visibility: visible;
 }
 /* Ends of Initial Cases Section  -- Left Panel*/
+
+
+.dropdown-menu, .dropdown-container {
+  z-index: 99999;
+}

@@ -101,7 +101,7 @@ function InfectedDeceasedTable({ eventData, currentIndex }) {
         />
       </div>
       <div className="table-scroll">
-        <table>
+        <table style={{width: "96%"}}>
           <thead>
             <tr>
               <th>
