@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './Parameters.css'; // Import the CSS file for styling
+// import './Parameters.css'; // Import the CSS file for styling
 import AddInitialCases from './AddInitialCases';
 import texasCounties from './counties';
 import editIcon from './images/edit.svg'
