@@ -3,11 +3,12 @@
 .info.legend {
   background: white;
   border: 2px solid #ccc;
-  border-radius: 5px;
-  padding: 15px;
+  border-radius: 3px;
+  padding: 0.8em;
   font-size: 14px;
   font-family: Arial, sans-serif;
   width: 9em; /* Adjust width as needed */
+  margin-right: 7em;
 }
 
 .info.legend .legend-header {
@@ -19,12 +20,12 @@
 .info.legend .legend-item {
   display: flex;
   align-items: center;
-  font-size: 14px; /* Font size for legend items */  
+  font-size: small; /* Font size for legend items */  
   margin-bottom: 4px;
 }
 
 .info.legend .color-box {
-  width: 30px; /* Width of color box */
+  width: 20px; /* Width of color box */
   height: 20px; /* Height of color box */
   margin-right: 10px; /* Spacing between color box and label */
 }

@@ -6,7 +6,7 @@
   /* transform: scale(0.90); */
   margin-top: 2.4em;
   margin-left: 0.8em;
-  margin-right: 0.8em;
+  margin-right: 3em;
 }
 
 .table-scroll {
@@ -21,13 +21,15 @@ table th {
   font-size: medium; /* Adjust as needed */
   font-weight: bold;
   /* padding: 10px 10px; /* Reduce right-side padding */  
+  margin-top: 1em;
   text-align: left; /* Ensure text aligns properly */
   position: relative; /* Allow absolute positioning of button */
 }
 
 table td {
-  font-size: medium;
+  font-size: small;
   padding: 7px; /* Decrease padding if needed */
+  margin-top: 0.4em;
 }
 
 .sort-button {
@@ -52,7 +54,7 @@ table td {
   display: flex; /* Align items in a row */
   align-items: center; /* Vertically align items to the center */
   margin-bottom: 10px;
-  max-width: 23.75em;
+  max-width: 26em;
 }
 
 /* Search icon box styling */
@@ -83,7 +85,7 @@ table td {
   outline: none; /* Remove the default outline */
   padding: 8px; /* Padding inside the input field */
   flex: 1; /* Allow the input to grow and fill available space */
-  font-size: large; /* Adjust font size as needed */
+  font-size: medium; /* Adjust font size as needed */
   height: 30px; /* Set the height of the input to match the icon */
   border-radius: 0; /* Ensure square corners */
 }
