@@ -4,8 +4,8 @@ import toggletip from  './images/toggletip.svg';
 
 const SetManually = ({ onClose }) => {
 
-   // Define scenarios with their corresponding values
-   const scenarios = {
+  // Define scenarios with their corresponding values
+  const scenarios = {
     "Slow Transmission, Mild Severity (2009 H1N1)": {
       id: 1,
       disease_name: "2009 H1N1",
@@ -66,49 +66,46 @@ const SetManually = ({ onClose }) => {
   const [gamma, setGamma] = useState(parseFloat(localStorage.getItem('gamma')) || 4.1);
   const [chi, setChi] = useState(parseFloat(localStorage.getItem('chi')) || 1.0);
   const [rho, setRho] = useState(parseFloat(localStorage.getItem('rho')) || 0.39);
-  const [nu, setNu] = useState(localStorage.getItem('nu') || [0.000022319,0.000040975,0.000083729,0.000061809,0.000008978]);
-  const [vaccine_wastage_factor, setVaccineWastageFactor] = useState(parseFloat(localStorage.getItem('vaccine_wastage_factor')) || 60);
-  const [antiviral_effectiveness, setAntiviralEffectiveness] = useState(parseFloat(localStorage.getItem('antiviral_effectiveness')) || 0.8);
-  const [antiviral_wastage_factor, setAntiviralWastageFactor] = useState(parseFloat(localStorage.getItem('antiviral_wastage_factor')) || 60);
+  //const [nu, setNu] = useState(localStorage.getItem('nu') || [0.000022319,0.000040975,0.000083729,0.000061809,0.000008978]);
+  const [nuText, setNuText] = useState(localStorage.getItem('nu') || "0.000022319,0.000040975,0.000083729,0.000061809,0.000008978");
+  const [nu, setNu] = useState(nuText.split(',') || [0.000022319,0.000040975,0.000083729,0.000061809,0.000008978]);
 
-    // State to store values for each age group
-    const [ageGroupValues, setAgeGroupValues] = useState({
-        '0-4': '0.000022319',
-        '5-24': '000040975',
-        '25-49': '0.000083729',
-        '50-64': '0.000061809',
-        '65+': '0.000008978'
+  // State to store values for each age group
+  const [ageGroupValues, setAgeGroupValues] = useState({
+    '0-4': '0.000022319',
+    '5-24': '0.000040975',
+    '25-49': '0.000083729',
+    '50-64': '0.000061809',
+    '65+': '0.000008978'
+  });
+
+  // Function to update the form with scenario values
+  const handleScenarioChange = (event) => {
+    const scenarioName = event.target.value;
+    setSelectedScenario(scenarioName);
+    const scenario = scenarios[scenarioName];
+    if (scenario) {
+      setDiseaseName(scenario.disease_name);
+      setReproductionNumber(scenario.R0);
+      setBetaScale(scenario.beta_scale);
+      setTau(scenario.tau);
+      setKappa(scenario.kappa);
+      setGamma(scenario.gamma);
+      setChi(scenario.chi);
+      setRho(scenario.rho);
+      setNu(scenario.nu);
+      setAgeGroupValues({
+        '0-4': scenario.nu[0]?.toString() || 0.000022319,
+        '5-24': scenario.nu[1]?.toString() || 0.000040975,
+        '25-49': scenario.nu[2]?.toString() || 0.000083729,
+        '50-64': scenario.nu[3]?.toString() || 0.000061809,
+        '65+': scenario.nu[4]?.toString() || 0.000008978
       });
+    }
+  };
 
-    // Function to update the form with scenario values
-    const handleScenarioChange = (event) => {
-      const scenarioName = event.target.value;
-      setSelectedScenario(scenarioName);
-      const scenario = scenarios[scenarioName];
-      if (scenario) {
-        setDiseaseName(scenario.disease_name);
-        setReproductionNumber(scenario.R0);
-        setBetaScale(scenario.beta_scale);
-        setTau(scenario.tau);
-        setKappa(scenario.kappa);
-        setGamma(scenario.gamma);
-        setChi(scenario.chi);
-        setRho(scenario.rho);
-        setNu(scenario.nu);
-
-        setAgeGroupValues({
-          '0-4': scenario.nu[0]?.toString() || 0.000022319,
-          '5-24': scenario.nu[1]?.toString() || 0.000040975,
-          '25-49': scenario.nu[2]?.toString() || 0.000083729,
-          '50-64': scenario.nu[3]?.toString() || 0.000061809,
-          '65+': scenario.nu[4]?.toString() || 0.000008978
-        });
-      }
-    };
-
-
-   // Function to handle input change and update nu array
-   const handleInputChange = (event, ageGroup, index) => {
+  // Function to handle input change and update nu array
+  const handleInputChange = (event, ageGroup, index) => {
     const value = event.target.value;
 
     // Update age group values without validation
@@ -120,7 +117,8 @@ const SetManually = ({ onClose }) => {
     // Update the nu array with the new value for the corresponding age group
     const updatedNu = [...nu];
     updatedNu[index] = value === '' ? null : parseFloat(value); // Convert value to number or null
-    setNu(updatedNu);
+    //setNuText(JSON.stringify(updatedNu));
+    setNu(updatedNu)
   };
 
   // Save state to localStorage when it changes
@@ -158,19 +156,8 @@ const SetManually = ({ onClose }) => {
 
   useEffect(() => {
     localStorage.setItem('nu', nu);
+    console.log('nu = ', nu)
   }, [nu]);
-
-  useEffect(() => {
-    localStorage.setItem('vaccine_wastage_factor', vaccine_wastage_factor);
-  }, [vaccine_wastage_factor]);
-
-  useEffect(() => {
-    localStorage.setItem('antiviral_effectiveness', antiviral_effectiveness);
-  }, [antiviral_effectiveness]);
-
-  useEffect(() => {
-    localStorage.setItem('antiviral_wastage_factor', antiviral_wastage_factor);
-  }, [antiviral_wastage_factor]);
 
   const handleSubmit = event => {
     event.preventDefault();
@@ -185,9 +172,6 @@ const SetManually = ({ onClose }) => {
       chi: chi.toString(),
       rho: rho.toString(),
       nu: nu.toString(),
-      vaccine_wastage_factor: vaccine_wastage_factor.toString(),
-      antiviral_effectiveness: antiviral_effectiveness.toString(),
-      antiviral_wastage_factor: antiviral_wastage_factor.toString(),
     };
 
     Object.keys(params).forEach(key => {
@@ -216,7 +200,6 @@ const SetManually = ({ onClose }) => {
           ))}
         </select>
       </div>
-
       <div className="form-group">
         <label htmlFor="diseaseName">Scenario Name</label>
         <input
@@ -230,7 +213,7 @@ const SetManually = ({ onClose }) => {
       </div>
       <div className="form-group">
         <label htmlFor="reproductionNumber">Reproduction Number (R0)
-        <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
+          <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
             <span className="tooltip-text">The contagiousness of the virus at a given point in time and roughly corresponds to the average number of people a typical case will infect</span>
           </span>
         </label>
@@ -298,7 +281,6 @@ const SetManually = ({ onClose }) => {
           required
         />
       </div>
-
 {/*}
       <div className="form-group">
         <label htmlFor="chi">Therapeutic Window (days)
@@ -316,16 +298,16 @@ const SetManually = ({ onClose }) => {
           min="0"
           required
         />
-      </div> */}
-
+      </div> 
+*/}
       <div className="form-group" style ={{alignItems: 'center'}}>
-        <label htmlFor="nu">Case Fatality Rate
-        <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-            <span className="tooltip-text"> Asymptomatic/Treatable/Infectious to Deceased</span>
+        <label htmlFor="nu">Case Fatality Rate (1/days)
+          <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
+            <span className="tooltip-text">Rate at which infected individuals (asymptomatic / treatable / infectious) will die as a result of infection.</span>
           </span>
         </label>
     {/* Age group inputs */}
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <div>
             <label htmlFor="ageGroup0-4">0-4 years: </label>
             <input
@@ -341,7 +323,6 @@ const SetManually = ({ onClose }) => {
               required
             />
           </div>
-          
           <div>
             <label htmlFor="ageGroup5-24">5-24 years: </label>
             <input
@@ -357,7 +338,6 @@ const SetManually = ({ onClose }) => {
               required
             />
           </div>
-
           <div>
             <label htmlFor="ageGroup25-49">25-49 years: </label>
             <input
@@ -373,7 +353,6 @@ const SetManually = ({ onClose }) => {
               required
             />
           </div>
-
           <div>
             <label htmlFor="ageGroup50-64">50-64 years: </label>
             <input
@@ -389,7 +368,6 @@ const SetManually = ({ onClose }) => {
               required
             />
           </div>
-
           <div>
             <label htmlFor="ageGroup65Plus">65+ years: </label>
             <input
@@ -406,7 +384,6 @@ const SetManually = ({ onClose }) => {
             />
           </div>
         </div>
-
       </div>
       
       <button type="submit" className="save_button">Save</button>
