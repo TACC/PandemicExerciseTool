@@ -61,7 +61,7 @@ def return_valid_input(input):
         'gamma': input['gamma'],
         'chi': input['chi'],
         'rho': input['rho'],
-        'nu': input['nu'] 
+        'nu': input['nu'].split(',')
       },
       'initial_infected': json.loads(input['initial_infected']),
       'public_health_announcements': phas,

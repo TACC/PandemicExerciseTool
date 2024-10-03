@@ -11,7 +11,7 @@ class PET(models.Model):
     gamma = models.FloatField()
     chi = models.FloatField()
     rho = models.FloatField()
-    nu = models.CharField(max_length=4, choices={'high':'high', 'low':'low'})
+    nu = models.TextField()
 
     initial_infected = models.TextField(null=True)
     phas = models.TextField(null=True)
