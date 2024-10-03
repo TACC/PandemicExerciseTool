@@ -301,9 +301,9 @@ const SetManually = ({ onClose }) => {
       </div> 
 */}
       <div className="form-group" style ={{alignItems: 'center'}}>
-        <label htmlFor="nu">Case Fatality Rate
+        <label htmlFor="nu">Case Fatality Rate (1/days)
           <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-            <span className="tooltip-text"> Asymptomatic/Treatable/Infectious to Deceased</span>
+            <span className="tooltip-text">Rate at which infected individuals (asymptomatic / treatable / infectious) will die as a result of infection.</span>
           </span>
         </label>
     {/* Age group inputs */}
