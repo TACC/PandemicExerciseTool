@@ -251,3 +251,10 @@ h3 {
   visibility: visible;
 }
 /* Ends of Initial Cases Section  -- Left Panel*/
+
+.cfr-form {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+}

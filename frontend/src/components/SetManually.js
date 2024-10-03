@@ -303,13 +303,13 @@ const SetManually = ({ onClose }) => {
       <div className="form-group" style ={{alignItems: 'center'}}>
         <label htmlFor="nu">Case Fatality Rate (1/days)
           <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-            <span className="tooltip-text">Rate at which infected individuals (asymptomatic / treatable / infectious) will die as a result of infection.</span>
+            <span className="tooltip-text">Rate at which infected individuals (asymptomatic, treatable, infectious) will die as a result of infection.</span>
           </span>
         </label>
     {/* Age group inputs */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <div>
-            <label htmlFor="ageGroup0-4">0-4 years: </label>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%' }}>
+          <div className = "cfr-form">
+            <label style = {{width: '100%'}} htmlFor="ageGroup0-4">0-4 years: </label>
             <input
               type="number"
               id="ageGroup0-4"
@@ -323,8 +323,8 @@ const SetManually = ({ onClose }) => {
               required
             />
           </div>
-          <div>
-            <label htmlFor="ageGroup5-24">5-24 years: </label>
+          <div className = "cfr-form">
+            <label style = {{width: '100%'}} htmlFor="ageGroup5-24">5-24 years: </label>
             <input
               type="number"
               id="ageGroup5-24"
@@ -338,8 +338,8 @@ const SetManually = ({ onClose }) => {
               required
             />
           </div>
-          <div>
-            <label htmlFor="ageGroup25-49">25-49 years: </label>
+          <div className = "cfr-form">
+            <label style = {{width: '100%'}} htmlFor="ageGroup25-49">25-49 years: </label>
             <input
               type="number"
               id="ageGroup25-49"
@@ -353,8 +353,8 @@ const SetManually = ({ onClose }) => {
               required
             />
           </div>
-          <div>
-            <label htmlFor="ageGroup50-64">50-64 years: </label>
+          <div className = "cfr-form">
+            <label style = {{width: '100%'}} htmlFor="ageGroup50-64">50-64 years: </label>
             <input
               type="number"
               id="ageGroup50-64"
@@ -368,8 +368,8 @@ const SetManually = ({ onClose }) => {
               required
             />
           </div>
-          <div>
-            <label htmlFor="ageGroup65Plus">65+ years: </label>
+          <div className = "cfr-form">
+            <label style = {{width: '100%'}} htmlFor="ageGroup65Plus">65+ years: </label>
             <input
               type="number"
               id="ageGroup65Plus"

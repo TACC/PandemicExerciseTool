@@ -205,13 +205,13 @@ const HomeView = () => {
   return (
     <div>
       <div className="left-panel">
-        <NewSimulationButton />
         <SetParametersDropdown counties={texasCounties} onSave={handleSave} />
         <div className="interventions-container">
           <Interventions />
         </div>
         <div className="saved-parameters-panel">
           <SavedParameters />
+          <NewSimulationButton />
         </div>
       </div>
   

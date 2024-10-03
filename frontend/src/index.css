@@ -141,8 +141,8 @@ code {
 .reset-button {
   width: 100%; /* Set a fixed width that matches the dropdown menu width */
   /*padding: 15px 16px;*/
-  background-color: #fb4934;
-  color: white;
+  background-color: white;
+  color: rgb(53, 75, 148);
   font-size: medium;
   font-weight: bold;
   border: none;
@@ -154,6 +154,7 @@ code {
   position: relative;
   box-sizing: border-box; /* Ensure padding and borders are included in the width */
 }
+
 
 .confirmation-buttons {
   margin-top: 10%;
@@ -186,5 +187,5 @@ code {
 }
 
 .confirm-reset-button:hover {
-  background-color: #cc241d;
+  background-color: #fb4934;
 }
