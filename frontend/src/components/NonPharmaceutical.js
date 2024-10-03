@@ -2,9 +2,12 @@ import React, { useState, useEffect } from 'react';
 import toggletip from  './images/toggletip.svg';
 import './AddInitialCases.css'; // Import the CSS file for styling
 
+const texasMapping = require('./texasMapping.json'); // Import the Texas mapping JSON
 
 const NonPharmaceutical = ({ onSubmit }) => {
-  const [nonpharmaDay, setNonpharmaDay] = useState(50);
+  const [nonpharmaName, setNonpharmaName] = useState(localStorage.getItem('nonpharma_name') || 'School Closures');
+  const [nonpharmaDay, setNonpharmaDay] = useState(40);
+  const [nonpharmaDuration, setNonpharmaDuration] = useState(10);
   const [nonpharmaEffectiveness, setNonpharmaEffectiveness] = useState(0.40);
   const [nonpharmaHalflife, setNonpharmaHalflife] = useState(10);
   const [nonpharmaList, setNonpharmaList] = useState(JSON.parse(localStorage.getItem("nonpharma_list")) || []);
@@ -15,13 +18,15 @@ const NonPharmaceutical = ({ onSubmit }) => {
     console.log("Adding NPI...");
     event.preventDefault();
     // Ensure all fields are filled out
-    if (!nonpharmaDay || !nonpharmaEffectiveness || !nonpharmaHalflife) {
+    if (!nonpharmaName || !nonpharmaDay || !nonpharmaDuration|| !nonpharmaEffectiveness || !nonpharmaHalflife) {
       alert('Please enter all required fields');
       return;
     }
     // Create a new object with the values from the form
     const newNPI = {
+      name: nonpharmaName,
       day: nonpharmaDay,
+      duration: nonpharmaDuration,
       effectiveness: nonpharmaEffectiveness,
       halflife: nonpharmaHalflife
     };
@@ -52,6 +57,18 @@ const NonPharmaceutical = ({ onSubmit }) => {
     <div>
       <form className="intervention-form" onSubmit={handleAddNPI}>
         <div className="form-group">
+          <label htmlFor="nonpharmaName">NPI Name</label>
+          <input
+            type="text"
+            id="nonpharmaName"
+            className="centered-input"
+            value={nonpharmaName}
+            onChange={e => setNonpharmaName(e.target.value)}
+            required
+          />
+        </div>
+        
+        <div className="form-group">
         <label htmlFor="nonpharmaDay">NPI Day
         <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
             <span className="tooltip-text">Specify day that non-pharmaceutical intervention occurs.</span>
@@ -68,6 +85,25 @@ const NonPharmaceutical = ({ onSubmit }) => {
           required
         />
         </div>
+
+        <div className="form-group">
+        <label htmlFor="nonpharmaDuration">NPI Duration (days)
+        <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
+            <span className="tooltip-text">Specify the duration for the non-pharmaceutical intervention.</span>
+          </span>
+        </label>
+        <input
+          type="number"
+          id="nonpharmaDuration"
+          value={nonpharmaDuration}
+          onChange={e => setNonpharmaDuration(e.target.value)}
+          min="1"
+          max="1000"
+          step="1"
+          required
+        />
+        </div>
+
 
         <div className="form-group">
         <label htmlFor="nonpharmaEffectiveness">NPI Effectiveness
@@ -111,6 +147,7 @@ const NonPharmaceutical = ({ onSubmit }) => {
       <table className="npi-table">
         <thead>
           <tr>
+            <th>Name</th>
             <th>Day</th>
             <th>Effectiveness</th>
             <th>Half-life</th>
@@ -120,6 +157,7 @@ const NonPharmaceutical = ({ onSubmit }) => {
         <tbody>
           {nonpharmaList.map((npiItem, index) => (
             <tr key={index}>
+              <td>{npiItem.name}</td>
               <td>{npiItem.day}</td>
               <td>{ npiItem.effectiveness}</td>
               <td>{ npiItem.halflife}</td>
