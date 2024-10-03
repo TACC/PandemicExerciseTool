@@ -1,17 +1,24 @@
 import React, { useState, useEffect } from 'react';
+import Select from 'react-select';
 import toggletip from  './images/toggletip.svg';
 import './AddInitialCases.css'; // Import the CSS file for styling
 
 const texasMapping = require('./texasMapping.json'); // Import the Texas mapping JSON
 
-const NonPharmaceutical = ({ onSubmit }) => {
+const NonPharmaceutical = ({ counties, onSubmit }) => {
   const [nonpharmaName, setNonpharmaName] = useState(localStorage.getItem('nonpharma_name') || 'School Closures');
   const [nonpharmaDay, setNonpharmaDay] = useState(40);
   const [nonpharmaDuration, setNonpharmaDuration] = useState(10);
-  const [nonpharmaEffectiveness, setNonpharmaEffectiveness] = useState(0.40);
-  const [nonpharmaHalflife, setNonpharmaHalflife] = useState(10);
-  const [nonpharmaList, setNonpharmaList] = useState(JSON.parse(localStorage.getItem("nonpharma_list")) || []);
+  const [nonpharmaEffectiveness, setNonpharmaEffectiveness] = useState(localStorage.getItem('effectiveness') || 0.40);
+  const [nonpharmaHalflife, setNonpharmaHalflife] = useState(localStorage.getItem('duration') || 10);
+  const [nonpharmaList, setNonpharmaList] = useState(JSON.parse(localStorage.getItem("non_pharma_interventions")) || []);
   const [nonpharmaCounter, setNonpharmaCounter] = useState(0);
+  const [nonpharmaCounties, setNonpharmaCounties] = useState(localStorage.getItem('location') || 0);
+
+  const countyOptions = counties.map(county => ({
+    value: county,
+    label: county
+  }));
 
 
   const handleAddNPI = event => {
@@ -27,8 +34,9 @@ const NonPharmaceutical = ({ onSubmit }) => {
       name: nonpharmaName,
       day: nonpharmaDay,
       duration: nonpharmaDuration,
+      // halflife: nonpharmaHalflife
+      location: nonpharmaCounties.map((county) => (county.value)),    // only pass the value returned from <Select />
       effectiveness: nonpharmaEffectiveness,
-      halflife: nonpharmaHalflife
     };
     // Add the new object to the list
     setNonpharmaList(prevList => [...prevList, newNPI]);
@@ -49,7 +57,7 @@ const NonPharmaceutical = ({ onSubmit }) => {
 
 
   useEffect(() => {
-    localStorage.setItem("nonpharma_list", JSON.stringify(nonpharmaList));
+    localStorage.setItem("non_pharma_interventions", JSON.stringify(nonpharmaList));
   }, [nonpharmaCounter]);
 
 
@@ -123,23 +131,35 @@ const NonPharmaceutical = ({ onSubmit }) => {
         />
         </div>
 
-        <div className="form-group">
-        <label htmlFor="nonpharmaHalflife">NPI Half-life (days)
-        <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-            <span className="tooltip-text">Specify half-life of non-pharmaceutical intervention in days (NPI is half as effective after N days).</span>
-          </span>
-        </label>
-        <input
-          type="number"
-          id="nonpharmaHalflife"
-          value={nonpharmaHalflife}
-          onChange={e => setNonpharmaHalflife(e.target.value)}
-          min="1"
-          max="1000"
-          step="0.1"
-          required
+        {/* <div className="form-group"> */}
+        {/* <label htmlFor="nonpharmaHalflife">NPI Half-life (days) */}
+        {/* <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/> */}
+        {/*     <span className="tooltip-text">Specify half-life of non-pharmaceutical intervention in days (NPI is half as effective after N days).</span> */}
+        {/*   </span> */}
+        {/* </label> */}
+        {/* <input */}
+        {/*   type="number" */}
+        {/*   id="nonpharmaHalflife" */}
+        {/*   value={nonpharmaHalflife} */}
+        {/*   onChange={e => setNonpharmaHalflife(e.target.value)} */}
+        {/*   min="1" */}
+        {/*   max="1000" */}
+        {/*   step="0.1" */}
+        {/*   required */}
+        {/* /> */}
+        {/* </div> */}
+
+        <label htmlFor="county">Location</label>
+        <Select
+          id="county"
+          value={nonpharmaCounties}
+          onChange={setNonpharmaCounties}
+          isMulti={true}
+          options={countyOptions}
+          placeholder="Select counties"
+          isClearable
+          isSearchable
         />
-        </div>
 
         <button type="submit" className="save_button">Add New NPI</button>
       </form>
@@ -150,7 +170,6 @@ const NonPharmaceutical = ({ onSubmit }) => {
             <th>Name</th>
             <th>Day</th>
             <th>Effectiveness</th>
-            <th>Half-life</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -160,9 +179,8 @@ const NonPharmaceutical = ({ onSubmit }) => {
               <td>{npiItem.name}</td>
               <td>{npiItem.day}</td>
               <td>{ npiItem.effectiveness}</td>
-              <td>{ npiItem.halflife}</td>
               <td>
-                <button class="remove-button" onClick={() => handleRemove(index)}>Remove</button>
+                <button className="remove-button" onClick={() => handleRemove(index)}>Remove</button>
               </td>
             </tr>
           ))}

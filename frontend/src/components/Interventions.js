@@ -5,11 +5,12 @@ import NonPharmaceutical from './NonPharmaceutical';
 import './SetParametersDropdown.css';
 import { createPortal } from 'react-dom';
 
-const Interventions = () => {
+const Interventions = ( {counties} ) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [isAntiviralsOpen, setIsAntiviralsOpen] = useState(false);
   const [isVaccineOpen, setIsVaccineOpen] = useState(false);
   const [isNonPharmaceuticalOpen, setIsNonPharmaceuticalOpen] = useState(false);
+  const [selectedCounty, setSelectedCounty] = useState(null);
 
   const toggleDropdown = () => setShowDropdown(!showDropdown);
   const openAntivirals = () => {
@@ -76,7 +77,7 @@ const Interventions = () => {
               <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <span className="modal-close" onClick={closeNonPharmaceutical}>&times;</span>
                 <h2>Non-Pharmaceutical Interventions</h2>
-                <NonPharmaceutical onSubmit={(npil) => { console.log('Non-Pharmaceutical:', npil); closeNonPharmaceutical(); }} />
+                <NonPharmaceutical counties={counties} onSubmit={(npil) => { console.log('Non-Pharmaceutical:', npil); closeNonPharmaceutical(); }} />
               </div>
             </div>,
             document.body
