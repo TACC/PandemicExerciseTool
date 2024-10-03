@@ -89,7 +89,7 @@ h3 {
 @media only screen and (max-width: 600px) {
   .toggle-button {
     font-size: 1.09em;
-    padding: 4px 4px;
+    padding: 5px 5px;
   }
 }
 
@@ -97,7 +97,7 @@ h3 {
 @media only screen and (min-width: 600px) {
   .toggle-button {
     font-size: 1.16em;
-    padding: 6px 6px;
+    padding: 7px 7px;
   }
 }
 
@@ -105,6 +105,22 @@ h3 {
 @media only screen and (min-width: 768px) {
   .toggle-button {
     font-size: 1.25em;
-    padding: 7px 7px;
+    padding: 9px 9px;
+  }
+}
+
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {
+  .toggle-button {
+    font-size: 1.25em;
+    padding: 10px 10px;
+  }
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {
+  .toggle-button {
+    font-size: 1.25em;
+    padding: 10.5px 10.5px;
   }
 }

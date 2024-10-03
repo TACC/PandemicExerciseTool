@@ -120,28 +120,28 @@
 /* Extra small devices (phones, 600px and down) */
 @media only screen and (max-width: 600px) {
   .left-panel {
-    max-width: 11em;
+    max-width: 12em;
   }
 }
 
 /* Small devices (portrait tablets and large phones, 600px and up) */
 @media only screen and (min-width: 600px) {
   .left-panel {
-    max-width: 12em;
+    max-width: 13em;
   }
 }
 
 /* Medium devices (landscape tablets, 768px and up) */
 @media only screen and (min-width: 768px) {
   .left-panel {
-    max-width: 13em;
+    max-width: 14em;
   }
 }
 
 /* Large devices (laptops/desktops, 992px and up) */
 @media only screen and (min-width: 992px) {
   .left-panel {
-    max-width: 15em;
+    min-width: 15em;
   }
 }
 
