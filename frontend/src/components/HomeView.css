@@ -15,12 +15,11 @@
   }
   
   .right-panel {
-    height: 115%;
+    height: calc(100vh - 7.5em);
     background-color: transparent; /* Background color */
     position: fixed; /* Fixes the panel to the right side */
     top: auto;    /* Adjust this value slightly if needed */
     right: 0;
-    /* display: flex; */
     flex-direction: column;
     justify-content: flex-start; /* Align items to the top */
     border: none;
@@ -117,28 +116,3 @@
   width: 300px; /* Fixed width for the button */
   z-index: 3;
 }
-
-/* Medium devices (landscape tablets, 768px and up) */
-@media (max-width:768px) {
-  .left-panel {
-    max-width: 12em;
-    /* Change button sizing */
-    /* Change font sizing */
-  }
-  .timeline-panel {
-    margin-left: -3.5em;
-  }
-} 
-
-/* @media (max-width:1324px) {
-  .right-panel {
-    transform: scale(90%);
-    top: -4em;
-    margin-right: -2em;
-  }
-}  */
-
-/* Large devices (laptops/desktops, 992px and up) */
-/* @media only screen and (min-width: 992px) {
-
-} */

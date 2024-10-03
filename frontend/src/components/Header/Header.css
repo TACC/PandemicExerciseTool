@@ -11,7 +11,7 @@
   padding: 10px;
   display: flex;
   align-items: center;
-  width: 100vw;
+  width: 100%;
   height: 3em;
   position: fixed;
   top: 0;
@@ -50,7 +50,6 @@
 
 .text-container {
   text-align: left;
-  font-size: 0.8em;
   white-space: nowrap; /* Prevent the title from wrapping */
   margin-left: auto;
   padding-right: 4em;
@@ -75,7 +74,6 @@
   transition: background-color 0.3s;
   color: white;
   margin: 0 0.5em;
-  font-size: 1.2em;
   white-space: nowrap; /* Prevent tab text from wrapping */
 }
 
@@ -89,6 +87,57 @@
   border-bottom: 2px solid #dfa53d;
   font-weight: bold;
   background-color: #102c41;
+}
+
+/* Extra small devices (phones, 600px and down)  */
+@media only screen and (max-width: 600px) {
+  /* Later make this into a clickable menu icon */
+  h1 {
+    font-size: 1em;
+  }
+  .tab-button{
+    font-size: 0.8em;
+  }
+}
+
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 600px) {
+  h1 {
+    font-size: 1.20em;
+  }
+  .tab-button{
+    font-size: 0.8em;
+  }
+}
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) {
+  h1 {
+    font-size: 1.30em;
+  }
+  .tab-button{
+    font-size: 1.1em;
+  }
+}
+
+/* Large devices (laptops/desktops, 992px and up) */
+@media screen and (min-width: 992px) {
+  h1 {
+    font-size: 1.70em;
+  }
+  .tab-button{
+    font-size: 1.2em;
+  }
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {
+  h1 {
+    font-size: 1.80em;
+  }
+  .tab-button{
+    font-size: 1.3em;
+  }
 }
 
 
