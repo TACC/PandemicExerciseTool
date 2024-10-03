@@ -26,7 +26,6 @@
   }
 
   .left-panel {
-    width: 14em;
     height: calc(100% - 10em); /* Full height minus top margin + footer */
     background-color: #fff;
     padding: 10px;
@@ -115,4 +114,40 @@
 .play-pause-container {
   width: 300px; /* Fixed width for the button */
   z-index: 3;
+}
+
+
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {
+  .left-panel {
+    max-width: 11em;
+  }
+}
+
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 600px) {
+  .left-panel {
+    max-width: 12em;
+  }
+}
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) {
+  .left-panel {
+    max-width: 13em;
+  }
+}
+
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {
+  .left-panel {
+    max-width: 15em;
+  }
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {
+  .left-panel {
+    max-width: 16em;
+  }
 }

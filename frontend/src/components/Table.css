@@ -3,7 +3,7 @@
   /* Remove border if present */
   border: none;
   margin-top: 2.4em;
-  max-width: min-content;
+  /* max-width: max-content; */
 }
 
 .table-scroll {
@@ -17,11 +17,11 @@ table th {
   font-weight: bold;
   text-align: left; /* Ensure text aligns properly */
   position: relative; /* Allow absolute positioning of button */
-  padding: 0.45em;
+  padding: 0.70em;
 }
 
 table td {
-  padding: 0.45em; /* Decrease padding if needed */
+  padding: 0.55em; /* Decrease padding if needed */
 }
 
 .sort-button {
@@ -29,7 +29,7 @@ table td {
     border: none;
     cursor: pointer;
     font-size: medium; /* Adjust font size as needed */
-    margin-left: 10px;
+    margin-left: 15px;
     width: 2px;
   }
   
@@ -85,13 +85,10 @@ table td {
 /* Extra small devices (phones, 600px and down) */
 @media only screen and (max-width: 600px) {
   table th {
-    font-size: 0.55em;
+    font-size: 0.65em;
   }
   table td {
-    font-size: 0.50em;
-  }
-  .table-container {
-    max-width: min-content;
+    font-size: 0.60em;
   }
 }
 
@@ -103,9 +100,6 @@ table td {
   table td {
     font-size: 0.60em;
   }
-  .table-container {
-    max-width: min-content;
-  }
 }
 
 /* Medium devices (landscape tablets, 768px and up) */
@@ -115,9 +109,6 @@ table td {
   }
   table td {
     font-size: 0.65em;
-  }
-  .table-container {
-    max-width: min-content;
   }
 }
 
@@ -129,9 +120,6 @@ table td {
   table td {
     font-size: 0.70em;
   }
-  .table-container {
-    max-width: min-content;
-  }
 }
 
 /* Extra large devices (large laptops and desktops, 1200px and up) */
@@ -141,8 +129,5 @@ table td {
   }
   table td {
     font-size: 0.75em;
-  }
-  .table-container {
-    max-width: min-content;
   }
 }

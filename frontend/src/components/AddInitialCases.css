@@ -112,7 +112,6 @@ button[type="submit"] {
   max-width: min-content;
   margin-right: auto;
   margin-left: auto;
-  /* z-index: -1; */
 }
 
 th, tr, .cases-table{
@@ -195,9 +194,8 @@ h3 {
 
 /* Start of Initial Cases Section -- Left Panel*/
 .initial-cases-section {
-  margin-top: 20px;
+  margin-top: 0.5em;
   position: relative;
-  padding: 10px;
   transition: background-color 0.3s ease;
 }
 
@@ -226,7 +224,7 @@ h3 {
 
 .edit-button {
   position: absolute;
-  top: 5px;
+  top: 0;
   right: 5px;
   background-color: transparent;
   color: black;
