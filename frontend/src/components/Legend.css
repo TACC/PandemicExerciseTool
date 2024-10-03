@@ -7,7 +7,6 @@
   padding: 15px;
   font-size: 14px;
   font-family: Arial, sans-serif;
-  width: 9em; /* Adjust width as needed */
 }
 
 .info.legend .legend-header {
@@ -83,4 +82,39 @@
   position: absolute;
   z-index: 9999; /* Ensure the tooltip has a high z-index */
   text-align: center;
+}
+
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {
+  /* .info.legend {
+    transform: scale(80%);
+  } */
+}
+
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 600px) {
+  /* .info.legend {
+    transform: scale(85%);
+  } */
+}
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) {
+  /* .info.legend {
+    transform: scale(90%);
+  } */
+}
+
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {
+  /* .info.legend {
+    transform: scale(95%);
+  } */
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {
+  .info.legend {
+    width: 11em;
+  }
 }
