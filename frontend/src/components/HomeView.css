@@ -15,11 +15,11 @@
   }
   
   .right-panel {
-    width: 23.75em;
+    width: 27em;
     background-color: transparent; /* Background color */
     position: fixed; /* Fixes the panel to the right side */
     top: auto;    /* Adjust this value slightly if needed */
-    right: 0;
+    right: 0.5em;
     height: calc(100% - 1.5em); /* Full height minus top margin with footer */
     /* z-index: 1; Ensure it is on top */
     display: flex;
@@ -98,7 +98,7 @@
     flex-direction: column; /* Stack the map and chart vertically, change to "row" for left & right orientation */ 
     align-items: center; 
     /* width: 66em; */
-    width: calc(100vw - 40em);
+    width: calc(100vw - 44em);
     height: calc(100vh - 10em);
   }
   

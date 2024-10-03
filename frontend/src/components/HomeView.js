@@ -11,6 +11,7 @@ import Interventions from './Interventions';
 import SavedParameters from './SavedParameters';
 import AddInitialCases from './AddInitialCases';
 import CountyInfectedDeceasedTable from './CountyInfectedDeceasedTable';
+import InfectedDeceasedTablePercent from './InfectedDeceasedTablePercent';
 import InfectedMap from './InfectedMap';
 import InfectedDeceasedTable from './InfectedDeceasedTable';
 import LineChart from './LineChart';
@@ -133,12 +134,16 @@ const HomeView = () => {
          //   const susceptibleCount = countyData['compartment_summary']['S'] || 0;  // Get the susceptible count;
             const infectedCount = countyData['compartment_summary']['I'] || 0;  // Get the infected count
             const deceasedCount = countyData['compartment_summary']['D'] || 0;  // Get the deceased count
+            const infectedPercent = countyData['compartment_summary_percent']['I'] || 0;  // Get the infected percent
+            const deceasedPercent = countyData['compartment_summary_percent']['D'] || 0;  // Get the deceased percent
       
             return {
               fips: fips_id,        // Store fips_id
          //     susceptible: susceptibleCount, // Store susceptible count
               infected: infectedCount, // Store infected count
               deceased: deceasedCount, // Store deceased count
+              infectedPercent: infectedPercent, // Store infected percent
+              deceasedPercent: deceasedPercent, // Store deceased percent
             };
           });
       
@@ -200,13 +205,13 @@ const HomeView = () => {
   return (
     <div>
       <div className="left-panel">
-        <NewSimulationButton />
         <SetParametersDropdown counties={texasCounties} onSave={handleSave} />
         <div className="interventions-container">
           <Interventions />
         </div>
         <div className="saved-parameters-panel">
           <SavedParameters />
+          <NewSimulationButton />
         </div>
       </div>
   
@@ -219,7 +224,7 @@ const HomeView = () => {
       </div> 
 
       <div className="right-panel">
-        <InfectedDeceasedTable currentIndex={currentIndex} eventData={eventData}/>
+        <InfectedDeceasedTablePercent currentIndex={currentIndex} eventData={eventData}/>
       </div>
   
       <div className="footer">
