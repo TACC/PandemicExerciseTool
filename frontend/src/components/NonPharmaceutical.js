@@ -9,23 +9,43 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
   const [nonpharmaName, setNonpharmaName] = useState(localStorage.getItem('nonpharma_name') || 'School Closures');
   const [nonpharmaDay, setNonpharmaDay] = useState(40);
   const [nonpharmaDuration, setNonpharmaDuration] = useState(10);
-  const [nonpharmaEffectiveness, setNonpharmaEffectiveness] = useState(localStorage.getItem('effectiveness') || 0.40);
+  // const [nonpharmaEffectiveness, setNonpharmaEffectiveness] = useState(localStorage.getItem('effectiveness') || Array(5).fill(0.4));
   const [nonpharmaHalflife, setNonpharmaHalflife] = useState(localStorage.getItem('duration') || 10);
   const [nonpharmaList, setNonpharmaList] = useState(JSON.parse(localStorage.getItem("non_pharma_interventions")) || []);
   const [nonpharmaCounter, setNonpharmaCounter] = useState(0);
   const [nonpharmaCounties, setNonpharmaCounties] = useState(localStorage.getItem('location') || 0);
+  const [numEffectives, setNumEffectives] = useState(localStorage.getItem('numEffectives') || [0.4, 0.4, 0.4, 0.4, 0.4]);
+  const [nonpharmaEffectiveness, setNonpharmaEffectiveness] = useState({
+    '0-4': '0.4',
+    '5-24': '0.4',
+    '25-49': '0.4',
+    '50-64': '0.4',
+    '65+': '0.4'
+  });
 
   const countyOptions = counties.map(county => ({
     value: county,
     label: county
   }));
 
+  const handleEffectivenessChange = (event, ageGroup, index) => {
+    const value = event.target.value;
+
+    setNonpharmaEffectiveness(prevState => ({
+      ...prevState,
+      [ageGroup]: value
+    }));
+    
+    const updatedVals = [...numEffectives];
+    updatedVals[index] = value === '' ? null : parseFloat(value);
+    setNumEffectives(updatedVals);
+  }
 
   const handleAddNPI = event => {
     console.log("Adding NPI...");
     event.preventDefault();
     // Ensure all fields are filled out
-    if (!nonpharmaName || !nonpharmaDay || !nonpharmaDuration|| !nonpharmaEffectiveness || !nonpharmaHalflife) {
+    if (!nonpharmaName || !nonpharmaDay || !nonpharmaDuration|| !nonpharmaEffectiveness || nonpharmaCounties === 0) {
       alert('Please enter all required fields');
       return;
     }
@@ -35,8 +55,9 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
       day: nonpharmaDay,
       duration: nonpharmaDuration,
       // halflife: nonpharmaHalflife
-      location: nonpharmaCounties.map((county) => (county.value)),    // only pass the value returned from <Select />
-      effectiveness: nonpharmaEffectiveness,
+      location: nonpharmaCounties.map((county) => (county.value)).toString(),    // only pass the value returned from <Select />
+      // objEffectiveness: nonpharmaEffectiveness,
+      effectiveness: numEffectives.toString(),
     };
     // Add the new object to the list
     setNonpharmaList(prevList => [...prevList, newNPI]);
@@ -112,25 +133,77 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
         />
         </div>
 
-
-        <div className="form-group">
-        <label htmlFor="nonpharmaEffectiveness">NPI Effectiveness
-        <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-            <span className="tooltip-text">Specify effectiveness of non-pharmaceutical intervention (0 = not effective, 1 = completely effective).</span>
-          </span>
-        </label>
-        <input
-          type="number"
-          id="nonpharmaEffectiveness"
-          value={nonpharmaEffectiveness}
-          onChange={e => setNonpharmaEffectiveness(e.target.value)}
-          min="0"
-          max="1"
-          step="0.01"
-          required
-        />
+        <div className='form-group' style={{alignItems: 'center'}}>
+          <label htmlFor="nonpharmaEffectiveness">NPI Effectiveness
+          <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
+              <span className="tooltip-text">Specify effectiveness of non-pharmaceutical intervention (0 = not effective, 1 = completely effective).</span>
+            </span>
+          </label>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%'}}>
+            <div className="cfr-form">
+              <label style={{ width: '100%' }} htmlFor="ageGroup0-4">0-4 years: </label>
+              <input
+                type="number"
+                id="ageGroup0-4"
+                value={nonpharmaEffectiveness['0-4']}
+                onChange={e => handleEffectivenessChange(e, '0-4', 0)}
+                step="0.01"
+                min='0'
+                max='1'
+                placeholder="Enter decimal value"
+                required
+              />
+              <label style={{ width: '100%' }} htmlFor="ageGroup5-24">5-24 years: </label>
+              <input
+                type="number"
+                id="ageGroup5-24"
+                value={nonpharmaEffectiveness['5-24']}
+                onChange={e => handleEffectivenessChange(e, '5-24', 1)}
+                step="0.01"
+                min='0'
+                max='1'
+                placeholder="Enter decimal value"
+                required
+              />
+              <label style={{ width: '100%' }} htmlFor="ageGroup25-49">0-4 years: </label>
+              <input
+                type="number"
+                id="ageGroup25-49"
+                value={nonpharmaEffectiveness['25-49']}
+                onChange={e => handleEffectivenessChange(e, '25-49', 2)}
+                step="0.01"
+                min='0'
+                max='1'
+                placeholder="Enter decimal value"
+                required
+              />
+              <label style={{ width: '100%' }} htmlFor="ageGroup50-64">50-64 years: </label>
+              <input
+                type="number"
+                id="ageGroup50-64"
+                value={nonpharmaEffectiveness['50-64']}
+                onChange={e => handleEffectivenessChange(e, '50-64', 3)}
+                step="0.01"
+                min='0'
+                max='1'
+                placeholder="Enter decimal value"
+                required
+              />
+              <label style={{ width: '100%' }} htmlFor="ageGroup65Plus">65+ years: </label>
+              <input
+                type="number"
+                id="ageGroup65Plus"
+                value={nonpharmaEffectiveness['65+']}
+                onChange={e => handleEffectivenessChange(e, '65+', 4)}
+                step="0.01"
+                min='0'
+                max='1'
+                placeholder="Enter decimal value"
+                required
+              />
+            </div>
+          </div>
         </div>
-
         {/* <div className="form-group"> */}
         {/* <label htmlFor="nonpharmaHalflife">NPI Half-life (days) */}
         {/* <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/> */}
@@ -178,7 +251,7 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
             <tr key={index}>
               <td>{npiItem.name}</td>
               <td>{npiItem.day}</td>
-              <td>{ npiItem.effectiveness}</td>
+              {/* <td>{ npiItem.effectiveness}</td> */}
               <td>
                 <button className="remove-button" onClick={() => handleRemove(index)}>Remove</button>
               </td>
