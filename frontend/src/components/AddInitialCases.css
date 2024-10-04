@@ -112,6 +112,9 @@ button[type="submit"] {
   max-width: min-content;
   margin-right: auto;
   margin-left: auto;
+}
+
+th, tr, .cases-table{
   z-index: -1;
 }
 
