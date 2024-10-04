@@ -153,6 +153,8 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
                 placeholder="Enter decimal value"
                 required
               />
+              </div>
+              <div className="cfr-form">
               <label style={{ width: '100%' }} htmlFor="ageGroup5-24">5-24 years: </label>
               <input
                 type="number"
@@ -165,7 +167,9 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
                 placeholder="Enter decimal value"
                 required
               />
-              <label style={{ width: '100%' }} htmlFor="ageGroup25-49">0-4 years: </label>
+              </div>
+              <div className="cfr-form">
+              <label style={{ width: '100%' }} htmlFor="ageGroup25-49">25-49 years: </label>
               <input
                 type="number"
                 id="ageGroup25-49"
@@ -177,6 +181,8 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
                 placeholder="Enter decimal value"
                 required
               />
+              </div>
+              <div className="cfr-form">
               <label style={{ width: '100%' }} htmlFor="ageGroup50-64">50-64 years: </label>
               <input
                 type="number"
@@ -189,6 +195,8 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
                 placeholder="Enter decimal value"
                 required
               />
+              </div>
+              <div className="cfr-form">
               <label style={{ width: '100%' }} htmlFor="ageGroup65Plus">65+ years: </label>
               <input
                 type="number"
