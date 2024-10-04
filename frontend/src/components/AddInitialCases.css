@@ -114,6 +114,10 @@ button[type="submit"] {
   margin-left: auto;
 }
 
+th, tr, .cases-table{
+  z-index: -1;
+}
+
 /* End of Form Group Scetions -- In the Modal */
 
 h3 {
