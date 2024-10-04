@@ -14,7 +14,7 @@ class PET(models.Model):
     nu = models.TextField()
 
     initial_infected = models.TextField(null=True)
-    phas = models.TextField(null=True)
+    npis = models.TextField(null=True)
 
     antiviral_effectiveness = models.FloatField(null=True)
     antiviral_wastage_factor = models.FloatField(null=True)

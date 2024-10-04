@@ -8,6 +8,7 @@ import os
 import pymongo
 import signal
 from ctypes import cdll
+from .texasMapping import texas_mapping
 
 app = Celery('pes', broker='pyamqp://rabbitmq')
 
@@ -22,8 +23,16 @@ def return_valid_input(input):
     Take the json response from the get request and put it in the 
     format needed by the Pandemic exercise code
     """
-    try: phas = json.loads(input['phas'])
-    except TypeError: phas = None
+    try: npis = json.loads(input['npis'])
+    except TypeError: npis = None
+    for index, npi in enumerate(npis):
+        new_list = []
+        for county in npi['location'].split(','):
+            new_county = texas_mapping[county]
+            new_list.append(new_county)
+        npis[index]['location'] = (',').join(new_list)
+        eff_list = npi['effectiveness'].split(',')
+        npis[index]['effectiveness'] = eff_list
     
     try: avs = json.loads(input['antiviral_stockpile'])
     except TypeError: avs = None
@@ -64,7 +73,7 @@ def return_valid_input(input):
         'nu': input['nu'].split(',')
       },
       'initial_infected': json.loads(input['initial_infected']),
-      'non_pharma_interventions': phas,
+      'non_pharma_interventions': npis,
       'antivirals': {
         'antiviral_effectiveness': input['antiviral_effectiveness'],
         'antiviral_wastage_factor': input['antiviral_wastage_factor'],

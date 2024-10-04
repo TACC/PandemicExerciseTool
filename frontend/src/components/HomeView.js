@@ -63,7 +63,7 @@ const HomeView = () => {
       rho: localStorage.getItem('rho'),
       nu: localStorage.getItem('nu'),
       initial_infected: localStorage.getItem('initial_infected'),
-      phas: localStorage.getItem('non_pharma_interventions'),
+      npis: localStorage.getItem('non_pharma_interventions'),
       antiviral_effectiveness: localStorage.getItem('antiviral_effectiveness'),
       antiviral_wastage_factor: localStorage.getItem('antiviral_wastage_factor'),
       antiviral_stockpile: localStorage.getItem('antiviral_stockpile'),
