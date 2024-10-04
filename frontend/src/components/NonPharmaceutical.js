@@ -17,10 +17,10 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
   const [numEffectives, setNumEffectives] = useState(localStorage.getItem('numEffectives') || [0.4, 0.4, 0.4, 0.4, 0.4]);
   const [nonpharmaEffectiveness, setNonpharmaEffectiveness] = useState({
     '0-4': '0.4',
-    '5-24': '0.4',
-    '25-49': '0.4',
-    '50-64': '0.4',
-    '65+': '0.4'
+    '5-24': '0.35',
+    '25-49': '0.2',
+    '50-64': '0.25',
+    '65+': '0.1'
   });
 
   const countyOptions = counties.map(county => ({
@@ -45,7 +45,7 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
     console.log("Adding NPI...");
     event.preventDefault();
     // Ensure all fields are filled out
-    if (!nonpharmaName || !nonpharmaDay || !nonpharmaDuration|| !nonpharmaEffectiveness || nonpharmaCounties === 0) {
+    if (!nonpharmaName || !nonpharmaDay || !nonpharmaDuration|| !nonpharmaEffectiveness) {
       alert('Please enter all required fields');
       return;
     }
@@ -55,7 +55,8 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
       day: nonpharmaDay,
       duration: nonpharmaDuration,
       // halflife: nonpharmaHalflife
-      location: nonpharmaCounties.map((county) => (county.value)).toString(),    // only pass the value returned from <Select />
+      location: nonpharmaCounties === 0 ?
+                0 : nonpharmaCounties.map((county) => (county.value)).toString(),    // only pass the value returned from <Select />
       // objEffectiveness: nonpharmaEffectiveness,
       effectiveness: numEffectives.toString(),
     };
@@ -259,7 +260,7 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
             <tr key={index}>
               <td>{npiItem.name}</td>
               <td>{npiItem.day}</td>
-              {/* <td>{ npiItem.effectiveness}</td> */}
+              <td>{ npiItem.effectiveness}</td>
               <td>
                 <button className="remove-button" onClick={() => handleRemove(index)}>Remove</button>
               </td>
