@@ -307,7 +307,6 @@ const SetManually = ({ onClose }) => {
           </span>
         </label>
     {/* Age group inputs */}
-        {/* TODO: we can map over a list of age group tuples and define cfr-form only once. This makes moving to user-determined age groups easier */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%' }}>
           <div className = "cfr-form">
             <label style = {{width: '100%'}} htmlFor="ageGroup0-4">0-4 years: </label>
