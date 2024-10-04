@@ -231,14 +231,18 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
         {/* /> */}
         {/* </div> */}
 
-        <label htmlFor="county">Location</label>
+        <label htmlFor="county">Location
+        <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
+          <span className="tooltip-text">Specify the counties where the NPI takes place (leave blank to apply to all counties).</span>
+        </span>
+        </label>
         <Select
           id="county"
           value={nonpharmaCounties}
           onChange={setNonpharmaCounties}
           isMulti={true}
           options={countyOptions}
-          placeholder="Select counties"
+          placeholder="Select counties (leave blank for all)"
           isClearable
           isSearchable
         />
