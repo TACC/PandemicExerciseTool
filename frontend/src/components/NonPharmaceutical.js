@@ -20,6 +20,13 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
     label: county
   }));
 
+  const ageGroups = [
+    [0, 4],
+    [5, 24],
+    [25, 49],
+    [50, 64],
+    [65, Infinity],
+  ];
 
   const handleAddNPI = event => {
     console.log("Adding NPI...");
@@ -119,16 +126,36 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
             <span className="tooltip-text">Specify effectiveness of non-pharmaceutical intervention (0 = not effective, 1 = completely effective).</span>
           </span>
         </label>
-        <input
-          type="number"
-          id="nonpharmaEffectiveness"
-          value={nonpharmaEffectiveness}
-          onChange={e => setNonpharmaEffectiveness(e.target.value)}
-          min="0"
-          max="1"
-          step="0.01"
-          required
-        />
+        {ageGroups.map((group) => (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100px'}}>
+            <div className="cfr-form">
+              <label style={{ width: '100%' }} htmlFor={`ageGroup${group[0]}-${group[1]}`}>
+                  {group[0]}{group[1] === Infinity ? "+" : `-${group[1]}`}
+              </label>
+              <input
+                type="number"
+                id={`ageGroup${group[0]}-${group[1]}`}
+                name={`ageGroup${group[0]}-${group[1]}`}
+                value='0.4'
+                step="0.01"
+                min="0"
+                max="1"
+                placeholder="Enter decimal value"
+                required
+              />
+            </div>
+        </div>
+        ))}
+        {/* <input */}
+        {/*   type="number" */}
+        {/*   id="nonpharmaEffectiveness" */}
+        {/*   value={nonpharmaEffectiveness} */}
+        {/*   onChange={e => setNonpharmaEffectiveness(e.target.value)} */}
+        {/*   min="0" */}
+        {/*   max="1" */}
+        {/*   step="0.01" */}
+        {/*   required */}
+        {/* /> */}
         </div>
 
         {/* <div className="form-group"> */}
