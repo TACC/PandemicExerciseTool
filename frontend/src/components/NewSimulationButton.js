@@ -21,7 +21,7 @@ const NewSimulationButton = () => {
 
   return (
     <div className="reset-container">
-      <button className="reset-button" onClick={toggleModal}>Reset Simulation</button>
+      <a className="reset-button" onClick={toggleModal}>Reset Simulation</a>
       {isModalOpen && (
         <div>
           {createPortal(
