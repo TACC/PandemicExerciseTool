@@ -64,7 +64,7 @@ def return_valid_input(input):
         'nu': input['nu'].split(',')
       },
       'initial_infected': json.loads(input['initial_infected']),
-      'public_health_announcements': phas,
+      'non_pharma_interventions': phas,
       'antivirals': {
         'antiviral_effectiveness': input['antiviral_effectiveness'],
         'antiviral_wastage_factor': input['antiviral_wastage_factor'],

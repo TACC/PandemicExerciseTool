@@ -81,7 +81,7 @@ class PET(models.Model):
 #      "age_group": "1"
 #    }
 #  ],
-#  "public_health_announcements": [
+#  "non_pharma_interventions": [
 #    {
 #      "day": "50",
 #      "effectiveness": "0.4",

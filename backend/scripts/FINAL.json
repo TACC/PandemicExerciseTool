@@ -47,7 +47,7 @@
       "age_group": "1"
     }
   ],
-  "public_health_announcements": null,
+  "non_pharma_interventions": null,
   "antivirals": {
     "antiviral_effectiveness": null,
     "antiviral_wastage_factor": null,

@@ -51,7 +51,7 @@ input_file = {
     'nu': data['nu'] 
   },
   'initial_infected': json.loads(data['initial_infected']),
-  'public_health_announcements': phas,
+  'non_pharma_interventions': phas,
   'antivirals': {
     'antiviral_effectiveness': data['antiviral_effectiveness'],
     'antiviral_wastage_factor': data['antiviral_wastage_factor'],
