@@ -1,128 +1,165 @@
 .chart-view-container {
-    display: flex;
-    flex-direction: row;
-    height: 100vh; /* Full viewport height */
-  }
-  
-  .interventions-container {
-    padding-bottom: 5px; /* Adjust the value as needed */
-    z-index: 2;
-  }
-  
-  .state-county-dropdowns-container {
-    padding-top: 5px; /* Adjust the value as needed */
-    z-index: 1;
-  }
-  
-  .right-panel {
-    width: 27em;
-    background-color: transparent; /* Background color */
-    position: fixed; /* Fixes the panel to the right side */
-    top: auto;    /* Adjust this value slightly if needed */
-    right: 0.5em;
-    height: calc(100% - 1.5em); /* Full height minus top margin with footer */
-    /* z-index: 1; Ensure it is on top */
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start; /* Align items to the top */
-    border: none;
-  }
+  display: flex;
+  flex-direction: row;
+  height: 100vh; /* Full viewport height */
+}
 
-  .left-panel {
-    width: 14em;
-    height: calc(100% - 10em); /* Full height minus top margin + footer */
-    background-color: #fff;
-    padding: 10px;
-    position: fixed; /* Fixes the panel to the left side */
-    top: 4.25em; /* Adjust this value slightly if needed */
-    left: 0;
-    overflow-y: auto; /* Scroll if content overflows */
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;  /* Align items to the top */
-    gap: 10px; /* Adjust the spacing between the buttons */
-    z-index: 1;
-    border-right: 2px solid black;
-  }
-  
-  /* Adjust the height for smaller screens */
+.interventions-container {
+  padding-bottom: 5px; /* Adjust the value as needed */
+  z-index: 2;
+}
 
- 
-  .footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: #f8f9fa;
-    padding: 10px;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 99%;
-    height: 50px;
-    z-index: 1000;
-    transition: background-color 0.3s ease;
-    border-top: 2px solid black; /* Add this line */
-  }
-  
-  .footer-overlay {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 50px; /* Height of the footer */
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
-    z-index: 1; /* Ensure it's above the footer but below the modal */
-  }
-  
-  .timeline-panel {
-    flex-grow: 1;
-    margin-top: 20px;
-    z-index: 3;
-  }
+.state-county-dropdowns-container {
+  padding-top: 5px; /* Adjust the value as needed */
+  z-index: 1;
+}
 
-  .middle-panel {
-    /* flex: 1; Takes up the remaining space between left and right panels */
-    position: fixed;
-    /* left: 20vw; */
-    left: 16em;
-    top: 4.25em;
-    display: flex;
-    flex-direction: column;
-    padding: 10px;
-    overflow: hidden; /* Prevent scrollbars in the middle panel */
-    z-index: 1;
-  }
-  
-  .map-and-chart-container {
-    display: flex;
-    flex-direction: column; /* Stack the map and chart vertically, change to "row" for left & right orientation */ 
-    align-items: center; 
-    /* width: 66em; */
-    width: calc(100vw - 44em);
-    height: calc(100vh - 10em);
-  }
-  
-  /* Make map and chart have equal height */
+.right-panel {
+  width: 27em;
+  background-color: transparent; /* Background color */
+  position: fixed; /* Fixes the panel to the right side */
+  top: auto;    /* Adjust this value slightly if needed */
+  right: 0.5em;
+  height: calc(100% - 1.5em); /* Full height minus top margin with footer */
+  /* z-index: 1; Ensure it is on top */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Align items to the top */
+  border: none;
+}
+
+.left-panel {
+  width: 14em;
+  height: calc(100% - 10em); /* Full height minus top margin + footer */
+  background-color: #fff;
+  padding: 10px;
+  position: fixed; /* Fixes the panel to the left side */
+  top: 4.25em; /* Adjust this value slightly if needed */
+  left: 0;
+  overflow-y: auto; /* Scroll if content overflows */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;  /* Align items to the top */
+  gap: 10px; /* Adjust the spacing between the buttons */
+  z-index: 1;
+  border-right: 2px solid black;
+}
+
+/* Adjust the height for smaller screens */
+
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #f8f9fa;
+  padding: 10px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 99%;
+  height: 50px;
+  z-index: 1000;
+  transition: background-color 0.3s ease;
+  border-top: 2px solid black; /* Add this line */
+}
+
+.footer-overlay {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 50px; /* Height of the footer */
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+  z-index: 1; /* Ensure it's above the footer but below the modal */
+}
+
+.timeline-panel {
+  flex-grow: 1;
+  margin-top: 20px;
+  z-index: 3;
+}
+
+.middle-panel {
+  /* flex: 1; Takes up the remaining space between left and right panels */
+  position: fixed;
+  /* left: 20vw; */
+  left: 16em;
+  top: 4.25em;
+  /* display: flex;
+  flex-direction: column; */
+  padding: 10px;
+  overflow: hidden; /* Prevent scrollbars in the middle panel */
+}
+
+.map-and-chart-container {
+  display: flex;
+  flex-direction: column; /* Stack the map and chart vertically, change to "row" for left & right orientation */ 
+  align-items: center; 
+  /* width: 66em; */
+  width: calc(100vw - 44em);
+  height: calc(100vh - 10em);
+  position: relative;
+  z-index: 1;
+}
+
+/* Make map and chart have equal height */
 .map-size, .chart-size {
-  flex: 1; /* Allows both map and chart to grow equally */
-  width: 100%; /* Full width of the container */
-  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+flex: 1; /* Allows both map and chart to grow equally */
+width: 100%; /* Full width of the container */
+box-sizing: border-box; /* Include padding and border in the element's total width and height */
 }
 
 
 .separator {
-  height: 2px; /* Thickness of the line */
-  background-color: #ccc; /* Color of the line */
-  width: 100%; /* Full width of the container */
-  margin: 15px 0; /* Margins to space out the map and chart */
-  flex-shrink: 0; /* Prevent shrinking */
+height: 2px; /* Thickness of the line */
+background-color: #ccc; /* Color of the line */
+width: 100%; /* Full width of the container */
+margin: 15px 0; /* Margins to space out the map and chart */
+flex-shrink: 0; /* Prevent shrinking */
 }
 
 .saved-parameters-panel {
-  margin-top: 5px; /* Space between the SavedParameters and the elements above */
+margin-top: 5px; /* Space between the SavedParameters and the elements above */
 }
 
 .play-pause-container {
-  width: 300px; /* Fixed width for the button */
-  z-index: 3;
+width: 300px; /* Fixed width for the button */
+z-index: 3;
+}
+
+
+.top-middle-panel {
+  position: relative;
+  top: 4.25em;
+  z-index: 2;
+  float: right;
+  margin-left: 35em;
+  padding-left: 1em;
+}
+.radio-buttons-container {
+  /* position: relative; */
+
+  
+}
+
+.radio-button {
+display: flex;
+align-items: center;
+font-size: medium;
+margin-right: 10%;
+}
+
+.radio-button input[type="radio"] {
+width: 0.5em; /* Increased radio button size */
+height: 0.5em; /* Increased radio button size */
+justify-content: center;
+margin-right: 0.5em;
+cursor: pointer; /* Ensure it's clear that it's clickable */
+}
+
+.radio-buttons-header h3 {
+font-size: medium; /* Adjust font size */
+/* margin-top: 3.5em; */
+text-align: center;
 }

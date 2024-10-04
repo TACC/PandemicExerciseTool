@@ -112,6 +112,7 @@ button[type="submit"] {
   max-width: min-content;
   margin-right: auto;
   margin-left: auto;
+  z-index: -1;
 }
 
 /* End of Form Group Scetions -- In the Modal */
