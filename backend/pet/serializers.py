@@ -16,7 +16,7 @@ class PETSerializer(serializers.ModelSerializer):
                   'rho', 
                   'nu',
                   'initial_infected',
-                  'phas',
+                  'npis',
                   'antiviral_effectiveness', 
                   'antiviral_wastage_factor',
                   'antiviral_stockpile',
