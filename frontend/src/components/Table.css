@@ -4,6 +4,7 @@
   border: none;
   margin-top: 2.4em;
   /* max-width: max-content; */
+  min-width: 28em;
 }
 
 .table-scroll {
@@ -20,34 +21,16 @@
   background: white;
 }
 
-.table-scroll thead th {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  background: white;
-}
-
 table th {
   font-weight: bold;
+  font-size: large;
   text-align: left; /* Ensure text aligns properly */
   position: relative; /* Allow absolute positioning of button */
   padding: 0.70em;
 }
 
 table td {
-  padding: 0.82em; /* Decrease padding if needed */
-  font-size: small;
-}
-
-/* Bold font for the infected count */
-.bold-text {
-  font-weight: bold;
-}
-
-/* Lighter font for the infected percentage */
-.light-text {
-  font-weight: lighter;
-  font-size: small;
+  padding: 0.8em; /* Decrease padding if needed */
 }
 
 
@@ -73,6 +56,11 @@ table td {
   display: flex; /* Align items in a row */
   align-items: center; /* Vertically align items to the center */
   margin-bottom: 10px;
+}
+
+.light-text {
+  font-weight: lighter;
+  font-size: small;
 }
 
 /* Search icon box styling */
@@ -152,7 +140,7 @@ table td {
 /* Extra large devices (large laptops and desktops, 1200px and up) */
 @media only screen and (min-width: 1200px) {
   table th {
-    font-size: 0.85em;
+    font-size: 1em;
   }
   table td {
     font-size: 0.80em;
