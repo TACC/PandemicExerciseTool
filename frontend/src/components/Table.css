@@ -32,8 +32,20 @@ table th {
 
 table td {
   font-size: small;
-  padding: 7px; /* Decrease padding if needed */
+  padding: 10.5px; /* Decrease padding if needed */
 }
+
+/* Bold font for the infected count */
+.bold-text {
+  font-weight: bold;
+}
+
+/* Lighter font for the infected percentage */
+.light-text {
+  font-weight: lighter;
+  font-size: small;
+}
+
 
 .sort-button {
     background: transparent;

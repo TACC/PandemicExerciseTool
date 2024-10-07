@@ -111,11 +111,11 @@ const SavedParameters = () => {
           <hr className="parameter-separator" />
           <div className="parameter-item">
               <div className="parameter-label">Case Fatality Rate</div>
-              <div className="parameter-value">0-4:   {paramNuList[0]?.toString()}</div>
-              <div className="parameter-value">5-24:  {paramNuList[1]?.toString()}</div>
-              <div className="parameter-value">25-49: {paramNuList[2]?.toString()}</div>
-              <div className="parameter-value">50-64: {paramNuList[3]?.toString()}</div>
-              <div className="parameter-value">65+:   {paramNuList[4]?.toString()}</div>
+              <div className="parameter-value"><span className="light-text"> 0-4:</span>   {paramNuList[0]?.toString()}</div>
+              <div className="parameter-value"><span className="light-text"> 5-24:</span>  {paramNuList[1]?.toString()}</div>
+              <div className="parameter-value"><span className="light-text"> 25-49:</span> {paramNuList[2]?.toString()}</div>
+              <div className="parameter-value"><span className="light-text"> 50-64:</span> {paramNuList[3]?.toString()}</div>
+              <div className="parameter-value"><span className="light-text"> 65+: </span>  {paramNuList[4]?.toString()}</div>
           </div>
           <hr className="section-separator" />
           <div

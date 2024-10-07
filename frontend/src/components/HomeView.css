@@ -120,7 +120,7 @@ flex-shrink: 0; /* Prevent shrinking */
 }
 
 .saved-parameters-panel {
-margin-top: 5px; /* Space between the SavedParameters and the elements above */
+margin-top: 0em; /* Space between the SavedParameters and the elements above */
 }
 
 .play-pause-container {
