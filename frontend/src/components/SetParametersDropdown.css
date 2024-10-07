@@ -32,7 +32,7 @@
   top: 50%;
   right: 10px;
   transform: translateY(-50%);
-  font-size: 20px;
+  font-size: 17px;
   transition: transform 0.3s ease;
   color:black;
 }
@@ -72,7 +72,6 @@
   padding: 15px 16px; /* Ensure padding matches the dropdown items */
   background-color: #f7b13c; /* Example background color */
   color: white;
-  font-size: medium;
   font-weight: bold;
   border: none;
   border-radius: 4px;
@@ -94,7 +93,6 @@
   padding: 15px 16px; /* Ensure padding matches the dropdown items */
   background-color: #f1f1f1; /* Example background color */
   color: black; /* Change text color to contrast with the background */
-  font-size: large;
   font-weight: bold;
   border: 2px solid black; /* Add a black border */
   border-radius: 4px;
@@ -155,7 +153,7 @@
 
 .modal-active .parameters-button,
 .modal-active .interventions-button {
-  width: 400px;
+  width: 100%;
   padding: 15px 16px;
 }
 
@@ -164,7 +162,7 @@
   background-color: white;
   border-radius: 8px;
   padding: 15px;
-  min-width: 27em;
+  min-width: 26em;
   max-height: 85vh; /* Ensure it fits within the viewport height */
   overflow-y: auto; /* Add scroll if content overflows */
   position: fixed;
@@ -189,4 +187,29 @@
 .modal-content h2 {
   margin-bottom: 0.7em;
   font-size: 1.25em;
+}
+
+
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {
+  .dropdown-text,.dropdown-item  {
+    font-size: 0.78em;
+  }
+  .interventions-button{
+    padding: 12px 13px;
+  }
+}
+
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 600px) {
+  .dropdown-text, .dropdown-item {
+    font-size: 0.9em;
+  }
+}
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) {
+  .dropdown-text, .dropdown-item  {
+    font-size: 1em;
+  }
 }

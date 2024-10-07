@@ -12,6 +12,23 @@
   width: 12.5em;
 }
 
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {
+}
+
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 600px) {
+  .timeline-panel {
+    margin-right: 4em;
+  }
+}
+/* Medium devices (landscape tablets, 768px and up) */
+@media (max-width:768px) {
+  .scenario-button {
+    max-width: 10em;
+  }
+} 
+
 .scenario-button {
   background-color: #f7b13c;
 }
