@@ -256,15 +256,19 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
             <th>Name</th>
             <th>Day</th>
             <th>Effectiveness</th>
+            <th>Location</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           {nonpharmaList.map((npiItem, index) => (
             <tr key={index}>
-              <td>{npiItem.name}</td>
-              <td>{npiItem.day}</td>
+              <td>{ npiItem.name }</td>
+              <td>{ npiItem.day }</td>
               <td>{ npiItem.effectiveness }</td>
+              <td>
+                {npiItem.location === 0 ? "all" : npiItem.location}
+              </td>
               <td>
                 <button className="remove-button" onClick={() => handleRemove(index)}>Remove</button>
               </td>
