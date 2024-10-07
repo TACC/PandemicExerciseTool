@@ -14,7 +14,7 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
   const [nonpharmaList, setNonpharmaList] = useState(JSON.parse(localStorage.getItem("non_pharma_interventions")) || []);
   const [nonpharmaCounter, setNonpharmaCounter] = useState(0);
   const [nonpharmaCounties, setNonpharmaCounties] = useState(localStorage.getItem('location') || 0);
-  const [numEffectives, setNumEffectives] = useState(localStorage.getItem('numEffectives') || [0.4, 0.4, 0.4, 0.4, 0.4]);
+  const [numEffectives, setNumEffectives] = useState(localStorage.getItem('numEffectives') || [0.4, 0.35, 0.2, 0.25, 0.1]);
   const [nonpharmaEffectiveness, setNonpharmaEffectiveness] = useState({
     '0-4': '0.4',
     '5-24': '0.35',
@@ -264,7 +264,7 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
             <tr key={index}>
               <td>{npiItem.name}</td>
               <td>{npiItem.day}</td>
-              <td>{ npiItem.effectiveness}</td>
+              <td>{ npiItem.effectiveness }</td>
               <td>
                 <button className="remove-button" onClick={() => handleRemove(index)}>Remove</button>
               </td>
