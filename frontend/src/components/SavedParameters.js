@@ -7,10 +7,43 @@ import './SavedParameters.css';
 import { createPortal } from 'react-dom';
 
 
+const NPIInfo = ({ NPIList }) => {
+  let ageGroups = [
+    "0-4",
+    "5-24",
+    "25-29",
+    "50-64",
+    "65+"
+  ];
+
+  return (
+    <>
+      {NPIList.map((npi, index) => (
+        <div key={index} className="initial-case-item">
+          <div className="initial-case-info">
+            <p>Name: <strong>{npi.name}</strong></p>
+            <p>Begins on <strong>Day {npi.day}</strong></p>
+            <p>Location: {npi.location === 0 ? <strong>all</strong> : 
+              npi.location.split(",").map((county, index) => 
+                (<span key={index}><strong>{county}</strong>{index < npi.location.split(",").length - 1 ? ", " : ""}</span>))}
+            </p>
+            <p>Effectiveness:</p> {npi.effectiveness.split(",").map((effect, index) =>
+                            <p>{ageGroups[index]}: <strong>{effect}</strong></p>)}
+          </div>
+          {index < NPIList.length - 1 && (
+            <hr className="case-separator" />
+          )}
+        </div>
+      ))}
+    </>
+  )
+};
+
 const SavedParameters = () => {
   const [isModalOpen, setModalOpen] = useState(false); // State for modal visibility
   const [hovered, setHovered] = useState(false); // State for hover effect
   const [view, setView] = useState('scenario'); // State to manage toggle between 'scenario' and 'interventions'
+  const [nonpharmaList, setNonpharmaList] = useState(JSON.parse(localStorage.getItem('non_pharma_interventions')) || []);
 
 
   // Retrieve parameters from localStorage
@@ -70,7 +103,7 @@ const SavedParameters = () => {
   
   const vaccineStockpileList = JSON.parse(localStorage.getItem('vaccine_stockpile')) || [];
 
-  const nonpharmaList = JSON.parse(localStorage.getItem('nonpharma_list')) || [];
+  // const nonpharmaList = JSON.parse(localStorage.getItem('non_pharma_interventions')) || [];
 
 
   // Function to handle modal opening and closing
@@ -194,16 +227,17 @@ const SavedParameters = () => {
 
           <div><h3>NPI</h3></div>
           <div className="section-label"></div>
-          {nonpharmaList.map((item, index) => (
-            <div key={index} className="initial-case-item">
-              <div className="initial-case-info">
-                NPI on day <strong>{item.day}</strong> with {' '}
-                <strong>{item.effectiveness}</strong> effectiveness {' '}
-                and half-life of <strong>{item.halflife}</strong> days
-              </div>
-            </div>
-          ))}
-        </div>
+          {/* {nonpharmaList.map((item, index) => ( */}
+          {/*   <div key={index} className="initial-case-item"> */}
+          {/*     <div className="initial-case-info"> */}
+          {/*       NPI on day <strong>{item.day}</strong> with {' '} */}
+          {/*       <strong>{item.effectiveness}</strong> effectiveness {' '} */}
+          {/*       and a duration of <strong>{item.duration}</strong> days */}
+          {/*     </div> */}
+          {/*   </div> */}
+          {/* ))} */}
+          <NPIInfo NPIList={ nonpharmaList } />
+</div>
       )}
 
       {isModalOpen && (
