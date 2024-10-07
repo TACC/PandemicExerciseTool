@@ -34,6 +34,11 @@ def delete_job(request, task_id):
 def get_output(request, day):
     if request.method == 'GET':
         mydoc = mycol.find_one({'day': int(day)})
+        if mydoc is None:
+            return JsonResponse(
+                {"error": f"Day {day} not calculated"},
+                status=404
+            )
         del mydoc['_id']
         return JsonResponse(mydoc, status=200)
 
