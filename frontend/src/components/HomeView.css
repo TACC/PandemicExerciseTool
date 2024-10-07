@@ -160,10 +160,12 @@ z-index: 3;
   float: right;
   margin-left: 35em;
   padding-left: 1em;
+  overflow: hidden; /* Prevent scrolling */
 }
-/* .radio-buttons-container {
-  position: relative;  
-} */
+
+.radio-buttons-container {
+  position: fixed;  
+}
 
 .radio-button {
 display: flex;
@@ -173,8 +175,8 @@ margin-right: 10%;
 }
 
 .radio-button input[type="radio"] {
-width: 0.5em; /* Increased radio button size */
-height: 0.5em; /* Increased radio button size */
+width: 0.55em; /* Increased radio button size */
+height: 0.55em; /* Increased radio button size */
 justify-content: center;
 margin-right: 0.5em;
 cursor: pointer; /* Ensure it's clear that it's clickable */

@@ -225,11 +225,10 @@ const HomeView = () => {
       </div>
 
       <div className='top-middle-panel'>
-        {/* <div className="radio-buttons-header"> */}
-          <h3>Show values as:</h3>
-        {/* </div> */}
         {/* Radio buttons for view selection */}
         <div className="radio-buttons-container">
+        <h3>Show values as:</h3>
+
           <label className={`radio-button ${viewType === 'percent' ? 'active' : ''}`}>
             <input
               type="radio"
