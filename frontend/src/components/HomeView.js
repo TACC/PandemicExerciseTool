@@ -11,7 +11,9 @@ import Interventions from './Interventions';
 import SavedParameters from './SavedParameters';
 import AddInitialCases from './AddInitialCases';
 import CountyInfectedDeceasedTable from './CountyInfectedDeceasedTable';
+import InfectedDeceasedTablePercent from './InfectedDeceasedTablePercent';
 import InfectedMap from './InfectedMap';
+import InfectedMapPercent from './InfectedMapPercent';
 import InfectedDeceasedTable from './InfectedDeceasedTable';
 import LineChart from './LineChart';
 
@@ -22,13 +24,20 @@ import './styles.css';
 import axios from 'axios';
 
 const HomeView = () => {
-
   const [isRunning, setIsRunning] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const intervalRef = useRef(null);
   const [id, setId] = useState([]);
   const [taskId, setTaskId] = useState([]);
   const [eventData, setEventData] = useState([]);
+
+  const [viewType, setViewType] = useState('percent');
+
+  // Handle radio button change
+  const handleViewChange = (e) => {
+    setViewType(e.target.value);
+  };
+
   const handleToggleScenario = () => {
 
     if (isRunning) {
@@ -40,6 +49,7 @@ const HomeView = () => {
     }
   };
 
+
   const handleDayChange = (index) => {
     debugger;
     console.log(`Day changed to: ${index}`);
@@ -49,7 +59,7 @@ const HomeView = () => {
   const handleRunScenario = () => {
 
     setEventData([]);
-    setCurrentIndex(0);    
+    setCurrentIndex(0);
 
     axios.post('http://localhost:8000/api/pet/', {
       disease_name: localStorage.getItem('diseaseName'),
@@ -72,19 +82,19 @@ const HomeView = () => {
       vaccine_pro_rata: localStorage.getItem('vaccine_strategy'),
       vaccine_stockpile: localStorage.getItem('vaccine_stockpile'),
     })
-    .then(response => {
-      console.log('Disease parameters updated successfully:', response.data['id']);
-      const newId = response.data['id'];
-      setId(newId);
-      return axios.get('http://localhost:8000/api/pet/' + newId + '/run');
-    })
-    .then(response => {
-      console.log('Job runs successfully:', response.data['task_id']);
-      setTaskId(response.data['task_id']);
-    })
-    .catch(error => {
-      console.error('Error running job:', error);
-    });
+      .then(response => {
+        console.log('Disease parameters updated successfully:', response.data['id']);
+        const newId = response.data['id'];
+        setId(newId);
+        return axios.get('http://localhost:8000/api/pet/' + newId + '/run');
+      })
+      .then(response => {
+        console.log('Job runs successfully:', response.data['task_id']);
+        setTaskId(response.data['task_id']);
+      })
+      .catch(error => {
+        console.error('Error running job:', error);
+      });
 
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
@@ -112,36 +122,40 @@ const HomeView = () => {
     const nextAvailable = eventData.length;
     console.log("Length test", eventData.length);
     console.log("next available", nextAvailable)
-    
+
     const fetchData = async (requestedIndex) => {
       debugger;
       try {
         const response = await axios.get(`http://localhost:8000/api/output/${requestedIndex}`);
-        
+
         if (response.status === 200) {
           console.log('Requested Index:', requestedIndex);
           setCurrentIndex(response.data.day);
           console.log('Day:', response.data.day);
           const data_entries = Object.entries(response.data.data);
           const total_counts = response.data.total_summary;
-    
+
           console.log('Total counts:', total_counts);
-    
+
           // Map through data_entries to collect fips_id, infected counts, and deceased counts for each county
           const countyInfectedDeceasedData = data_entries.map(([countyKey, countyData]) => {
             const fips_id = countyData['fips_id'];  // Get the fips_id for the county
-         //   const susceptibleCount = countyData['compartment_summary']['S'] || 0;  // Get the susceptible count;
+            //   const susceptibleCount = countyData['compartment_summary']['S'] || 0;  // Get the susceptible count;
             const infectedCount = countyData['compartment_summary']['I'] || 0;  // Get the infected count
             const deceasedCount = countyData['compartment_summary']['D'] || 0;  // Get the deceased count
-      
+            const infectedPercent = countyData['compartment_summary_percent']['I'] || 0;  // Get the infected percent
+            const deceasedPercent = countyData['compartment_summary_percent']['D'] || 0;  // Get the deceased percent
+
             return {
               fips: fips_id,        // Store fips_id
-         //     susceptible: susceptibleCount, // Store susceptible count
+              //     susceptible: susceptibleCount, // Store susceptible count
               infected: infectedCount, // Store infected count
               deceased: deceasedCount, // Store deceased count
+              infectedPercent: infectedPercent, // Store infected percent
+              deceasedPercent: deceasedPercent, // Store deceased percent
             };
           });
-      
+
           // Calculate the total deceased count for the current day
           const totalSusceptibleCount = total_counts['S'];
           const totalExposedCount = total_counts['E'];
@@ -152,7 +166,7 @@ const HomeView = () => {
           const totalDeceasedCount = total_counts['D'];
 
           console.log('Total Deceased Count:', totalDeceasedCount);
-      
+
           // Update the eventData to include the county-level fips, infected, and deceased information
           setEventData((prevEventData) => [
             ...prevEventData,
@@ -168,7 +182,7 @@ const HomeView = () => {
               totalDeceased: totalDeceasedCount,     // Store total deceased count for the day
             },
           ]);
-    
+
           console.log('Event Data:', eventData);
         }
 
@@ -188,40 +202,80 @@ const HomeView = () => {
       }, 1000);
     }
   }, [isRunning, eventData]);
-  
-  
+
+
   const [saved, setSaved] = useState(false);
 
   const handleSave = () => {
-    setSaved(true); 
+    setSaved(true);
     window.location.reload(); // Refresh the page
   };
 
   return (
     <div>
       <div className="left-panel">
-        <NewSimulationButton />
         <SetParametersDropdown counties={texasCounties} onSave={handleSave} />
         <div className="interventions-container">
           <Interventions />
         </div>
         <div className="saved-parameters-panel">
           <SavedParameters />
+          <NewSimulationButton />
         </div>
       </div>
-  
+
+      <div className='top-middle-panel'>
+        {/* <div className="radio-buttons-header"> */}
+          <h3>Show values as:</h3>
+        {/* </div> */}
+        {/* Radio buttons for view selection */}
+        <div className="radio-buttons-container">
+          <label className={`radio-button ${viewType === 'percent' ? 'active' : ''}`}>
+            <input
+              type="radio"
+              value="percent"
+              checked={viewType === 'percent'}
+              onChange={handleViewChange}
+            />
+            Percentage
+          </label>
+          <label className={`radio-button ${viewType === 'count' ? 'active' : ''}`}>
+            <input
+              type="radio"
+              value="count"
+              checked={viewType === 'count'}
+              onChange={handleViewChange}
+            />
+            Count
+          </label>
+        </div>
+      </div>
+
       <div className="middle-panel">
         <div className="map-and-chart-container">
-        <InfectedMap currentIndex={currentIndex} eventData={eventData} className="map-size" />
-        <div className="separator"></div> 
-        <LineChart currentIndex={currentIndex} eventData={eventData} className="chart-size" />
+
+
+          {/* Conditionally render the correct map component */}
+          {viewType === 'percent' ? (
+            <InfectedMapPercent currentIndex={currentIndex} eventData={eventData} className="map-size" />
+          ) : (
+            <InfectedMap currentIndex={currentIndex} eventData={eventData} className="map-size" />
+          )}
+
+          <div className="separator"></div>
+          <LineChart currentIndex={currentIndex} eventData={eventData} className="chart-size" />
         </div>
-      </div> 
+      </div>
 
       <div className="right-panel">
-        <InfectedDeceasedTable currentIndex={currentIndex} eventData={eventData}/>
+        {/* Conditionally render the correct table component */}
+        {viewType === 'percent' ? (
+          <InfectedDeceasedTablePercent currentIndex={currentIndex} eventData={eventData} />
+        ) : (
+          <InfectedDeceasedTable currentIndex={currentIndex} eventData={eventData} />
+        )}
       </div>
-  
+
       <div className="footer">
         <div className="play-pause-container">
           <PlayPauseButton isRunning={isRunning} onToggle={handleToggleScenario} />

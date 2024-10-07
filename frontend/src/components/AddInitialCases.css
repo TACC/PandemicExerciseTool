@@ -256,6 +256,9 @@ h3 {
 /* Ends of Initial Cases Section  -- Left Panel*/
 
 
-.dropdown-menu, .dropdown-container {
-  z-index: 99999;
+.cfr-form {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
 }

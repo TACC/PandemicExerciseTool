@@ -13,6 +13,13 @@
   overflow-x: hidden;
 }
 
+.table-scroll thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: white;
+}
+
 table th {
   font-weight: bold;
   text-align: left; /* Ensure text aligns properly */

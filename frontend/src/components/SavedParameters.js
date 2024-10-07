@@ -21,8 +21,11 @@ const SavedParameters = () => {
     Kappa: localStorage.getItem('kappa') || 'N/A',
     Gamma: localStorage.getItem('gamma') || 'N/A',
     Chi: localStorage.getItem('chi') || 'N/A',
-    Nu: localStorage.getItem('nu') || 'N/A',
+    //Nu: localStorage.getItem('nu') || 'N/A',
   };
+
+  const paramNu = localStorage.getItem('nu') || 'N/A';
+  const paramNuList = paramNu.match(/[^,]+/g);
 
   // Map of user-friendly labels
   const labels = {
@@ -105,6 +108,15 @@ const SavedParameters = () => {
               )}
             </div>
           ))}
+          <hr className="parameter-separator" />
+          <div className="parameter-item">
+              <div className="parameter-label">Case Fatality Rate</div>
+              <div className="parameter-value">0-4:   {paramNuList[0]?.toString()}</div>
+              <div className="parameter-value">5-24:  {paramNuList[1]?.toString()}</div>
+              <div className="parameter-value">25-49: {paramNuList[2]?.toString()}</div>
+              <div className="parameter-value">50-64: {paramNuList[3]?.toString()}</div>
+              <div className="parameter-value">65+:   {paramNuList[4]?.toString()}</div>
+          </div>
           <hr className="section-separator" />
           <div
             className={`initial-cases-section ${hovered ? 'hovered' : ''}`}

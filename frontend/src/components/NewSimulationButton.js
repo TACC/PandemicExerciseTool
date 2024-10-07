@@ -21,18 +21,20 @@ const NewSimulationButton = () => {
 
   return (
     <div className="reset-container">
-      <button className="reset-button" onClick={toggleModal}>New Simulation</button>
+      <a className="reset-button" onClick={toggleModal}>Reset Simulation</a>
       {isModalOpen && (
         <div>
           {createPortal(
             <div className="modal-overlay" onClick={toggleModal}>
               <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <span className="modal-close" onClick={toggleModal}>×</span>
-                <h2 className="reset-warning">Warning!</h2>
-                <p>Starting a new simulation will clear all previous parameters and erase previous simulation data.</p>
-                <div className="confirmation-buttons">
-                  <button className="cancel-reset-button" onClick={toggleModal}>Cancel</button>
-                  <button className="confirm-reset-button" onClick={handleReset}>Reset</button>
+                <div className='reset-content'>
+                  <h2 className="reset-warning">Confirm Reset</h2>
+                  <p>Resetting will remove all disase and interventions parameters. Are you sure you want to continue?</p>
+                  <div className="confirmation-buttons">
+                    <a className="cancel-reset-button" onClick={toggleModal}>Cancel</a>
+                    <button className="confirm-reset-button" onClick={handleReset}>Reset</button>
+                  </div>
                 </div>
               </div>
             </div>,
