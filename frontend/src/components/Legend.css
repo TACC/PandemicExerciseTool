@@ -85,3 +85,8 @@
   z-index: 9999; /* Ensure the tooltip has a high z-index */
   text-align: center;
 }
+
+/* No Outline when clicked on county */
+.leaflet-container path.leaflet-interactive:focus {
+  outline: none;
+}
