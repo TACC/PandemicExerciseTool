@@ -2,8 +2,6 @@
   flex: auto;
   /* Remove border if present */
   border: none;
-  /* padding: 10px 20px; Adjust padding if necessary */
-  /* transform: scale(0.90); */
   margin-top: 2.4em;
   margin-left: 0.8em;
   margin-right: 3em;
@@ -17,10 +15,16 @@
   max-width: 23.5;
 }
 
+.table-scroll thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: white;
+}
+
 table th {
   font-size: medium; /* Adjust as needed */
   font-weight: bold;
-  /* padding: 10px 10px; /* Reduce right-side padding */  
   margin-top: 1em;
   text-align: left; /* Ensure text aligns properly */
   position: relative; /* Allow absolute positioning of button */
@@ -29,7 +33,6 @@ table th {
 table td {
   font-size: small;
   padding: 7px; /* Decrease padding if needed */
-  margin-top: 0.4em;
 }
 
 .sort-button {
