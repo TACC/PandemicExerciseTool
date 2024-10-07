@@ -132,9 +132,9 @@ table td {
 /* Extra large devices (large laptops and desktops, 1200px and up) */
 @media only screen and (min-width: 1200px) {
   table th {
-    font-size: 0.90em;
+    font-size: 0.85em;
   }
   table td {
-    font-size: 0.85em;
+    font-size: 0.80em;
   }
 }
