@@ -10,6 +10,11 @@ from .pes_task import run_pes, app
 import requests
 import pymongo
 
+import logging
+
+
+logger = logging.getLogger(__name__)
+
 myclient = pymongo.MongoClient("mongodb://mongo-db:27017/")
 mydb = myclient["PES"]
 mycol = mydb["days"]
@@ -35,6 +40,7 @@ def get_output(request, day):
     if request.method == 'GET':
         mydoc = mycol.find_one({'day': int(day)})
         if mydoc is None:
+            logger.warning(f"Day {day} not calculated")
             return JsonResponse(
                 {"error": f"Day {day} not calculated"},
                 status=404
