@@ -3,8 +3,7 @@
   /* Remove border if present */
   border: none;
   margin-top: 2.4em;
-  margin-left: 0.8em;
-  margin-right: 3em;
+  /* max-width: max-content; */
 }
 
 .table-scroll {
@@ -12,7 +11,6 @@
   border: none;
   overflow-y: auto; /* Ensure scrolling if necessary */
   overflow-x: hidden;
-  max-width: 23.5;
 }
 
 .table-scroll thead th {
@@ -23,16 +21,14 @@
 }
 
 table th {
-  font-size: medium; /* Adjust as needed */
   font-weight: bold;
-  margin-top: 1em;
   text-align: left; /* Ensure text aligns properly */
   position: relative; /* Allow absolute positioning of button */
+  padding: 0.70em;
 }
 
 table td {
-  font-size: small;
-  padding: 7px; /* Decrease padding if needed */
+  padding: 0.55em; /* Decrease padding if needed */
 }
 
 .sort-button {
@@ -40,7 +36,7 @@ table td {
     border: none;
     cursor: pointer;
     font-size: medium; /* Adjust font size as needed */
-    margin-left: 10px;
+    margin-left: 15px;
     width: 2px;
   }
   
@@ -57,7 +53,6 @@ table td {
   display: flex; /* Align items in a row */
   align-items: center; /* Vertically align items to the center */
   margin-bottom: 10px;
-  max-width: 26em;
 }
 
 /* Search icon box styling */
@@ -70,14 +65,14 @@ table td {
   border-top: 1px solid black; /* Black border on the top */
   border-left: 1px solid black; /* Black border on the left */
   border-bottom: 1px solid black; /* Black border on the bottom */
-  height: 30px;
-  width: 30px;
+  height: 1.5em;
+  width: 1.5em;
 }
 
 /* Search icon styling */
 .search-icon {
-  width: 24px; /* Adjust width as needed */
-  height: 24px; /* Adjust height to match the input field */
+  width: 1.25em; /* Adjust width as needed */
+  height: 1.25em; /* Adjust height to match the input field */
   display: block;
   margin: auto; /* Center the icon within the box */
 }
@@ -89,6 +84,57 @@ table td {
   padding: 8px; /* Padding inside the input field */
   flex: 1; /* Allow the input to grow and fill available space */
   font-size: medium; /* Adjust font size as needed */
-  height: 30px; /* Set the height of the input to match the icon */
+  height: 1.5em; /* Set the height of the input to match the icon */
   border-radius: 0; /* Ensure square corners */
+}
+
+
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {
+  table th {
+    font-size: 0.65em;
+  }
+  table td {
+    font-size: 0.60em;
+  }
+}
+
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 600px) {
+  table th {
+    font-size: 0.65em;
+  }
+  table td {
+    font-size: 0.60em;
+  }
+}
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) {
+  table td {
+    font-size: 0.70em;
+  }
+  table td {
+    font-size: 0.65em;
+  }
+}
+
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {
+  table th {
+    font-size: 0.82em;
+  }
+  table td {
+    font-size: 0.78em;
+  }
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {
+  table th {
+    font-size: 0.90em;
+  }
+  table td {
+    font-size: 0.85em;
+  }
 }
