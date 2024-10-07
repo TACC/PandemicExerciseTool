@@ -15,6 +15,7 @@ import InfectedDeceasedTablePercent from './InfectedDeceasedTablePercent';
 import InfectedMap from './InfectedMap';
 import InfectedMapPercent from './InfectedMapPercent';
 import InfectedDeceasedTable from './InfectedDeceasedTable';
+import InfectedDeceasedTableMerged from './InfectedDeceasedTableMerged';
 import LineChart from './LineChart';
 
 import './HomeView.css';
@@ -225,11 +226,10 @@ const HomeView = () => {
       </div>
 
       <div className='top-middle-panel'>
-        {/* <div className="radio-buttons-header"> */}
-          <h3>Show values as:</h3>
-        {/* </div> */}
         {/* Radio buttons for view selection */}
         <div className="radio-buttons-container">
+        <h3>Show values as:</h3>
+
           <label className={`radio-button ${viewType === 'percent' ? 'active' : ''}`}>
             <input
               type="radio"
@@ -268,12 +268,7 @@ const HomeView = () => {
       </div>
 
       <div className="right-panel">
-        {/* Conditionally render the correct table component */}
-        {viewType === 'percent' ? (
-          <InfectedDeceasedTablePercent currentIndex={currentIndex} eventData={eventData} />
-        ) : (
-          <InfectedDeceasedTable currentIndex={currentIndex} eventData={eventData} />
-        )}
+          <InfectedDeceasedTableMerged currentIndex={currentIndex} eventData={eventData} />
       </div>
 
       <div className="footer">

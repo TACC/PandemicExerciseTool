@@ -120,7 +120,7 @@ flex-shrink: 0; /* Prevent shrinking */
 }
 
 .saved-parameters-panel {
-margin-top: 5px; /* Space between the SavedParameters and the elements above */
+margin-top: 0em; /* Space between the SavedParameters and the elements above */
 }
 
 .play-pause-container {
@@ -136,10 +136,10 @@ z-index: 3;
   float: right;
   margin-left: 35em;
   padding-left: 1em;
+  overflow: hidden;
 }
 .radio-buttons-container {
-  /* position: relative; */
-
+  position: fixed;
   
 }
 
