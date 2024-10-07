@@ -136,10 +136,10 @@ z-index: 3;
   float: right;
   margin-left: 35em;
   padding-left: 1em;
+  overflow: hidden;
 }
 .radio-buttons-container {
-  /* position: relative; */
-
+  position: fixed;
   
 }
 
