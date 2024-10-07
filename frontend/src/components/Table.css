@@ -20,6 +20,13 @@
   background: white;
 }
 
+.table-scroll thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: white;
+}
+
 table th {
   font-weight: bold;
   text-align: left; /* Ensure text aligns properly */
@@ -28,8 +35,21 @@ table th {
 }
 
 table td {
-  padding: 0.55em; /* Decrease padding if needed */
+  padding: 0.82em; /* Decrease padding if needed */
+  font-size: small;
 }
+
+/* Bold font for the infected count */
+.bold-text {
+  font-weight: bold;
+}
+
+/* Lighter font for the infected percentage */
+.light-text {
+  font-weight: lighter;
+  font-size: small;
+}
+
 
 .sort-button {
     background: transparent;
