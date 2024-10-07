@@ -83,6 +83,17 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
   }, [nonpharmaCounter]);
 
 
+  const InfoList = ( {info} ) => {
+    console.log(info);
+    return (
+      <>
+        {info.split(",").map((item, index) => (
+          <p key={index}>{item}</p>
+        ))}
+      </>
+    );
+  };
+
   return (
     <div>
       <form className="intervention-form" onSubmit={handleAddNPI}>
@@ -267,7 +278,8 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
               <td>{ npiItem.day }</td>
               <td>{ npiItem.effectiveness }</td>
               <td>
-                {npiItem.location === 0 ? "all" : npiItem.location}
+                {/* { npiItem.location === 0 ? "all" : <InfoList info={nonpharmaList.location} /> } */}
+                { npiItem.location !== 0 ? <InfoList info={npiItem.location} /> : "all" }
               </td>
               <td>
                 <button className="remove-button" onClick={() => handleRemove(index)}>Remove</button>
