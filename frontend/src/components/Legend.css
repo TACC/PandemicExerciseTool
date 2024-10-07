@@ -118,9 +118,9 @@
   .info.legend {
     width: 11em;
   }
+}
 
 /* No Outline when clicked on county */
 .leaflet-container path.leaflet-interactive:focus {
   outline: none;
-
 }
