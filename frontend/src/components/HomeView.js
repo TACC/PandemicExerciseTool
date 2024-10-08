@@ -73,7 +73,7 @@ const HomeView = () => {
       rho: localStorage.getItem('rho'),
       nu: localStorage.getItem('nu'),
       initial_infected: localStorage.getItem('initial_infected'),
-      phas: localStorage.getItem('nonpharma_list'),
+      npis: localStorage.getItem('non_pharma_interventions'),
       antiviral_effectiveness: localStorage.getItem('antiviral_effectiveness'),
       antiviral_wastage_factor: localStorage.getItem('antiviral_wastage_factor'),
       antiviral_stockpile: localStorage.getItem('antiviral_stockpile'),
@@ -217,7 +217,7 @@ const HomeView = () => {
       <div className="left-panel">
         <SetParametersDropdown counties={texasCounties} onSave={handleSave} />
         <div className="interventions-container">
-          <Interventions />
+          <Interventions  counties={texasCounties} />
         </div>
         <div className="saved-parameters-panel">
           <SavedParameters />
