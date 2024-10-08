@@ -46,7 +46,13 @@
     flex-direction: column;
   }
 
-
+  .left-panel {
+    width: 100%;
+    position: relative; /* Adjust for smaller screens */
+    margin-bottom: 20px;
+    top: 0; /* Reset for mobile view */
+    height: auto; /* Auto height for mobile view */
+  }
 
   .grid-layout {
     margin-left: 0;
