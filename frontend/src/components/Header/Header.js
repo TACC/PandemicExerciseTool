@@ -29,7 +29,7 @@ const Header = ({ currentIndex, setCurrentIndex }) => {
       <div className="header">
         <div className="logo-container">
           <img src={epiengage_logo_darkblue} alt="EpiEngage Logo" className="logo" />
-          <h1 className="logo-name">epiENGAGE</h1>
+          <h1>epiENGAGE</h1>
         </div>
         <div className="tabs">
           <button

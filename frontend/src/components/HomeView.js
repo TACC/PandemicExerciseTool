@@ -16,7 +16,6 @@ import InfectedMap from './InfectedMap';
 import InfectedMapPercent from './InfectedMapPercent';
 import InfectedDeceasedTable from './InfectedDeceasedTable';
 import InfectedDeceasedTableMerged from './InfectedDeceasedTableMerged';
-import InfectedDeceasedTableMergedPercent from './InfectedDeceasedTableMergedPercent';
 import LineChart from './LineChart';
 
 import './HomeView.css';

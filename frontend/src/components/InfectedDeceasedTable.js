@@ -104,21 +104,21 @@ function InfectedDeceasedTable({ eventData, currentIndex }) {
         <table>
           <thead>
             <tr>
-              <th onClick={() => sortData('county')}>
+              <th>
                 County
-                <button className="sort-button" >
+                <button className="sort-button" onClick={() => sortData('county')}>
                   {sortDirection.county === 'asc' ? '↓' : '↑'}
                 </button>
               </th>
-              <th onClick={() => sortData('infected')}>
+              <th>
                 Infected
-                <button className="sort-button">
+                <button className="sort-button" onClick={() => sortData('infected')}>
                   {sortDirection.infected === 'asc' ? '↓' : '↑'}
                 </button>
               </th>
-              <th onClick={() => sortData('deceased')}>
+              <th>
                 Deceased
-                <button className="sort-button" >
+                <button className="sort-button" onClick={() => sortData('deceased')}>
                   {sortDirection.deceased === 'asc' ? '↓' : '↑'}
                 </button>
               </th>

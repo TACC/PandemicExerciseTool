@@ -46,7 +46,7 @@
 /* Added for styling the toggle buttons on the left panel */
 .toggle-section {
   display: flex;
-  justify-content: center;
+  justify-content: left;
   margin-bottom: 15px;
   font-size: small;
 }
@@ -79,49 +79,4 @@
 .toggle-button:hover {
   background-color: #FEEFD8;
   text-decoration-color: black;
-}
-
-h3 {
-  font-size: medium;
-}
-
-/* Extra small devices (phones, 600px and down) */
-@media only screen and (max-width: 600px) {
-  .toggle-button {
-    font-size: 1.09em;
-    padding: 5px 5px;
-  }
-}
-
-/* Small devices (portrait tablets and large phones, 600px and up) */
-@media only screen and (min-width: 600px) {
-  .toggle-button {
-    font-size: 1.16em;
-    padding: 7px 7px;
-  }
-}
-
-/* Medium devices (landscape tablets, 768px and up) */
-@media only screen and (min-width: 768px) {
-  .toggle-button {
-    font-size: 1.25em;
-    padding: 9px 9px;
-  }
-}
-
-/* Large devices (laptops/desktops, 992px and up) */
-@media only screen and (min-width: 992px) {
-  .toggle-button {
-    font-size: 1.25em;
-    padding: 10px 10px;
-  }
-}
-
-/* Extra large devices (large laptops and desktops, 1200px and up) */
-@media only screen and (min-width: 1200px) {
-  .toggle-button {
-    font-size: 1.25em;
-    padding: 10.5px 10.5px;
-    padding-top: 0px;
-  }
 }
