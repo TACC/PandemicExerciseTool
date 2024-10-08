@@ -9,7 +9,6 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
   const [nonpharmaName, setNonpharmaName] = useState(localStorage.getItem('nonpharma_name') || 'School Closures');
   const [nonpharmaDay, setNonpharmaDay] = useState(40);
   const [nonpharmaDuration, setNonpharmaDuration] = useState(10);
-  // const [nonpharmaEffectiveness, setNonpharmaEffectiveness] = useState(localStorage.getItem('effectiveness') || Array(5).fill(0.4));
   const [nonpharmaHalflife, setNonpharmaHalflife] = useState(localStorage.getItem('duration') || 10);
   const [nonpharmaList, setNonpharmaList] = useState(JSON.parse(localStorage.getItem("non_pharma_interventions")) || []);
   const [nonpharmaCounter, setNonpharmaCounter] = useState(0);
@@ -27,6 +26,7 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
     value: county,
     label: county
   }));
+
 
   const handleEffectivenessChange = (event, ageGroup, index) => {
     const value = event.target.value;
@@ -54,9 +54,9 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
       name: nonpharmaName,
       day: nonpharmaDay,
       duration: nonpharmaDuration,
-      // location: nonpharmaCounties === 0 ?
-      //           0 : nonpharmaCounties.map((county) => (county.value)).toString(),    // only pass the value returned from <Select />
-      location: nonpharmaCounties.map((county) => county.value).toString(),
+      location: nonpharmaCounties.map((county) => county.value).includes("All") ?
+                "All" :
+                nonpharmaCounties.map((county) => county.value).toString(),
       effectiveness: numEffectives.toString(),
     };
     // Add the new object to the list
@@ -83,7 +83,6 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
 
 
   const InfoList = ( {info} ) => {
-    console.log(info);
     return (
       <>
         {info.split(",").map((item, index) => (
