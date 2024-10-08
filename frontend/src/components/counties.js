@@ -1,4 +1,5 @@
 const texasCounties = [
+    'All',
     'Anderson',
     'Andrews',
     'Angelina',

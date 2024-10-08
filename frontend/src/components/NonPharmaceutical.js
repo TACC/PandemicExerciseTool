@@ -13,7 +13,7 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
   const [nonpharmaHalflife, setNonpharmaHalflife] = useState(localStorage.getItem('duration') || 10);
   const [nonpharmaList, setNonpharmaList] = useState(JSON.parse(localStorage.getItem("non_pharma_interventions")) || []);
   const [nonpharmaCounter, setNonpharmaCounter] = useState(0);
-  const [nonpharmaCounties, setNonpharmaCounties] = useState(localStorage.getItem('location') || 0);
+  const [nonpharmaCounties, setNonpharmaCounties] = useState(localStorage.getItem('location') || "All");
   const [numEffectives, setNumEffectives] = useState(localStorage.getItem('numEffectives') || [0.4, 0.35, 0.2, 0.25, 0.1]);
   const [nonpharmaEffectiveness, setNonpharmaEffectiveness] = useState({
     '0-4': '0.4',
@@ -54,10 +54,9 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
       name: nonpharmaName,
       day: nonpharmaDay,
       duration: nonpharmaDuration,
-      // halflife: nonpharmaHalflife
-      location: nonpharmaCounties === 0 ?
-                0 : nonpharmaCounties.map((county) => (county.value)).toString(),    // only pass the value returned from <Select />
-      // objEffectiveness: nonpharmaEffectiveness,
+      // location: nonpharmaCounties === 0 ?
+      //           0 : nonpharmaCounties.map((county) => (county.value)).toString(),    // only pass the value returned from <Select />
+      location: nonpharmaCounties.map((county) => county.value).toString(),
       effectiveness: numEffectives.toString(),
     };
     // Add the new object to the list
@@ -244,7 +243,7 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
 
         <label htmlFor="county">Location
         <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-          <span className="tooltip-text">Specify the counties where the NPI takes place (leave blank to apply to all counties)</span>
+          <span className="tooltip-text">Specify the counties where the NPI takes place</span>
         </span>
         </label>
         <Select
@@ -253,9 +252,10 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
           onChange={setNonpharmaCounties}
           isMulti={true}
           options={countyOptions}
-          placeholder="Select counties (leave blank for all)"
+          placeholder="Select counties"
           isClearable
           isSearchable
+          required
         />
 
         <button type="submit" className="save_button">Add New NPI</button>
