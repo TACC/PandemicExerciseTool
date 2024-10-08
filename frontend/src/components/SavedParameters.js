@@ -21,17 +21,27 @@ const NPIInfo = ({ NPIList }) => {
       {NPIList.map((npi, index) => (
         <div key={index} className="initial-case-item">
           <div className="initial-case-info">
-            <p>Name: <strong>{npi.name}</strong></p>
-            <p>Begins on <strong>Day {npi.day}</strong></p>
-            <p>Location: {npi.location === 0 || npi.location === '' ? <strong>All</strong> : 
+            <div className="parameter-label"><span className="light-text"> Name</span></div>
+            <div className="parameter-value"><strong>{npi.name}</strong></div>
+            <hr className="parameter-separator" /> 
+          
+            <div className="parameter-label"><span className="light-text"> Begins on</span></div>
+            <div className="parameter-value"><strong> Day {npi.day} </strong> </div>
+            <hr className="parameter-separator" />
+
+            <div className="parameter-label"><span className="light-text"> Location:</span></div>
+            <div className="parameter-value">{npi.location === 0 || npi.location === '' ? <strong>All</strong> : 
               npi.location.split(",").map((county, index) => 
                 (<span key={index}><strong>{county}</strong>{index < npi.location.split(",").length - 1 ? ", " : ""}</span>))}
-            </p>
-            <p>Effectiveness:</p> {npi.effectiveness.split(",").map((effect, index) =>
-                            <p>{ageGroups[index]}: <strong>{effect}</strong></p>)}
+            </div>
+            <hr className="parameter-separator" />
+            
+            <div className="parameter-label"><span className="light-text"> Effectiveness:</span> 
+            </div> {npi.effectiveness.split(",").map((effect, index) =>
+                            <div className="parameter-value"><span className="light-text"> {ageGroups[index]}: </span><strong>{effect}</strong></div>)}
           </div>
           {index < NPIList.length - 1 && (
-            <hr className="case-separator" />
+            <hr className="section-separator" />
           )}
         </div>
       ))}
@@ -178,6 +188,22 @@ const SavedParameters = () => {
         </div>
       ) : (
         <div className="interventions-section">
+
+        <div><h3>NPIs</h3></div>
+          <div className="section-label"></div>
+          {/* {nonpharmaList.map((item, index) => ( */}
+          {/*   <div key={index} className="initial-case-item"> */}
+          {/*     <div className="initial-case-info"> */}
+          {/*       NPI on day <strong>{item.day}</strong> with {' '} */}
+          {/*       <strong>{item.effectiveness}</strong> effectiveness {' '} */}
+          {/*       and a duration of <strong>{item.duration}</strong> days */}
+          {/*     </div> */}
+          {/*   </div> */}
+          {/* ))} */}
+          <NPIInfo NPIList={ nonpharmaList } />
+
+          <hr className="section-separator" />
+
           <div><h3>Antivirals</h3></div>
           {Object.keys(antiviralParams).map((key, index) => (
             <div key={key} className="parameter-item">
@@ -189,7 +215,7 @@ const SavedParameters = () => {
             </div>
           ))}
 
-          <div className="section-label">Antiviral Stockpile</div>
+          <div className="parameter-label">Antiviral Stockpile</div>
           {antiviralStockpileList.map((item, index) => (
             <div key={index} className="initial-case-item">
               <div className="initial-case-info">
@@ -213,7 +239,7 @@ const SavedParameters = () => {
             </div>
           ))}
 
-          <div className="section-label">Vaccine Stockpile</div>
+          <div className="parameter-label">Vaccine Stockpile</div>
           {vaccineStockpileList.map((item, index) => (
             <div key={index} className="initial-case-item">
               <div className="initial-case-info">
@@ -224,19 +250,6 @@ const SavedParameters = () => {
           ))}
 
           <hr className="section-separator" />
-
-          <div><h3>NPI</h3></div>
-          <div className="section-label"></div>
-          {/* {nonpharmaList.map((item, index) => ( */}
-          {/*   <div key={index} className="initial-case-item"> */}
-          {/*     <div className="initial-case-info"> */}
-          {/*       NPI on day <strong>{item.day}</strong> with {' '} */}
-          {/*       <strong>{item.effectiveness}</strong> effectiveness {' '} */}
-          {/*       and a duration of <strong>{item.duration}</strong> days */}
-          {/*     </div> */}
-          {/*   </div> */}
-          {/* ))} */}
-          <NPIInfo NPIList={ nonpharmaList } />
 </div>
       )}
 

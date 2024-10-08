@@ -37,9 +37,9 @@ const Interventions = ( {counties} ) => {
       </button>
       {showDropdown && (
         <div className="dropdown-menu">
+          <button className="dropdown-item" onClick={openNonPharmaceutical}>Non-Pharmaceutical</button>
           <button className="dropdown-item" onClick={openAntivirals}>Antivirals</button>
           <button className="dropdown-item" onClick={openVaccine}>Vaccines</button>
-          <button className="dropdown-item" onClick={openNonPharmaceutical}>Non-Pharmaceutical</button>
         </div>
       )}
       {isAntiviralsOpen && (
