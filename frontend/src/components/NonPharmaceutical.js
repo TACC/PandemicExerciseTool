@@ -279,7 +279,7 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
               <td>{ npiItem.effectiveness }</td>
               <td>
                 {/* { npiItem.location === 0 ? "all" : <InfoList info={nonpharmaList.location} /> } */}
-                { npiItem.location !== 0 ? <InfoList info={npiItem.location} /> : "all" }
+                { npiItem.location != 0 ? <InfoList info={npiItem.location} /> : "All" }
               </td>
               <td>
                 <button className="remove-button" onClick={() => handleRemove(index)}>Remove</button>

@@ -23,7 +23,7 @@ const NPIInfo = ({ NPIList }) => {
           <div className="initial-case-info">
             <p>Name: <strong>{npi.name}</strong></p>
             <p>Begins on <strong>Day {npi.day}</strong></p>
-            <p>Location: {npi.location === 0 ? <strong>all</strong> : 
+            <p>Location: {npi.location === 0 || npi.location === '' ? <strong>All</strong> : 
               npi.location.split(",").map((county, index) => 
                 (<span key={index}><strong>{county}</strong>{index < npi.location.split(",").length - 1 ? ", " : ""}</span>))}
             </p>
