@@ -112,7 +112,7 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
         <div className="form-group">
         <label htmlFor="nonpharmaDay">NPI Day
         <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-            <span className="tooltip-text">Specify day that non-pharmaceutical intervention occurs.</span>
+            <span className="tooltip-text">Specify day that non-pharmaceutical intervention occurs</span>
           </span>
         </label>
         <input
@@ -130,7 +130,7 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
         <div className="form-group">
         <label htmlFor="nonpharmaDuration">NPI Duration (days)
         <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-            <span className="tooltip-text">Specify the duration for the non-pharmaceutical intervention.</span>
+            <span className="tooltip-text">Specify the duration for the non-pharmaceutical intervention</span>
           </span>
         </label>
         <input
@@ -148,7 +148,7 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
         <div className='form-group' style={{alignItems: 'center'}}>
           <label htmlFor="nonpharmaEffectiveness">NPI Effectiveness
           <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-              <span className="tooltip-text">Specify effectiveness of non-pharmaceutical intervention (0 = not effective, 1 = completely effective).</span>
+              <span className="tooltip-text">Specify effectiveness of non-pharmaceutical intervention (0 = not effective, 1 = completely effective)</span>
             </span>
           </label>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%'}}>
@@ -244,7 +244,7 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
 
         <label htmlFor="county">Location
         <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-          <span className="tooltip-text">Specify the counties where the NPI takes place (leave blank to apply to all counties).</span>
+          <span className="tooltip-text">Specify the counties where the NPI takes place (leave blank to apply to all counties)</span>
         </span>
         </label>
         <Select
