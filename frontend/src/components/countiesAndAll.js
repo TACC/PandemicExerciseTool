@@ -1,4 +1,5 @@
-const texasCounties = [
+const texasCountiesAll = [
+    'All',
     'Anderson',
     'Andrews',
     'Angelina',
@@ -256,5 +257,4 @@ const texasCounties = [
 ];
 
   
-export default texasCounties;
-  
+export default texasCountiesAll;

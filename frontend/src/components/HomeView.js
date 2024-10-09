@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import texasCounties from './counties';
+import texasAllCounties from './countiesAndAll.js';
 import TimelineSlider from './TimelineSlider';
 import DeceasedLineChart from './DeceasedLineChart';
 import StateCountyDropdowns from './StateCountyDropdown';
@@ -217,7 +218,7 @@ const HomeView = () => {
       <div className="left-panel">
         <SetParametersDropdown counties={texasCounties} onSave={handleSave} />
         <div className="interventions-container">
-          <Interventions  counties={texasCounties} />
+          <Interventions  counties={texasAllCounties} />
         </div>
         <div className="saved-parameters-panel">
           <SavedParameters />

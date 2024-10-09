@@ -28,12 +28,12 @@ def return_valid_input(input):
     # except TypeError: npis = None
         for index, npi in enumerate(npis):
             new_list = []
-            if npi['location'] == 0:
-                npis[index]['location'] = '0'
-            else:
-                for county in npi['location'].split(','):
-                    new_county = texas_mapping[county]
-                    new_list.append(new_county)
+            # if npi['location'] == 0:
+            #     npis[index]['location'] = '0'
+            # else:
+            for county in npi['location'].split(','):
+                new_county = texas_mapping[county]
+                new_list.append(new_county)
                 npis[index]['location'] = (',').join(new_list)
             eff_list = npi['effectiveness'].split(',')
             npis[index]['effectiveness'] = eff_list
