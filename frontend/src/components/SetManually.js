@@ -230,7 +230,7 @@ const SetManually = ({ onClose }) => {
       </div>
       <div className="form-group">
         <label htmlFor="tau">
-          Latency Period (days)
+          Latency period (days)
           <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
             <span className="tooltip-text">Average number of days spent asymptomatic immediately after infection</span>
           </span>
@@ -248,7 +248,7 @@ const SetManually = ({ onClose }) => {
       </div>
       <div className="form-group">
         <label htmlFor="kappa">
-          Asymptomatic Period (days)
+          Asymptomatic period (days)
           <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
             <span className="tooltip-text">Average number of days spent infectious, but not yet symptomatic</span>
           </span>
@@ -265,9 +265,10 @@ const SetManually = ({ onClose }) => {
         />
       </div>
       <div className="form-group">
-        <label htmlFor="gamma">Infectious Period (days)
+        <label htmlFor="gamma">Symptomatic period (days)
           <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-            <span className="tooltip-text">Total time period during which a transmitting individual (asymptomatic, treatable, infectious) can spread the infection before recovery</span>
+            <span className="tooltip-text">Average number of days spent symptomatic and infectious
+            </span>
           </span>
         </label>
         <input

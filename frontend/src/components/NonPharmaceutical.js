@@ -242,7 +242,7 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
 
         <label htmlFor="county">Location
         <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-          <span className="tooltip-text">Specify the counties where the NPI takes place</span>
+          <span className="tooltip-text">Select all regions under the NPI</span>
         </span>
         </label>
         <Select
