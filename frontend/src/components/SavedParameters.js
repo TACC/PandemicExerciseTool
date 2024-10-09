@@ -53,7 +53,7 @@ const SavedParameters = () => {
   const [isModalOpen, setModalOpen] = useState(false); // State for modal visibility
   const [hovered, setHovered] = useState(false); // State for hover effect
   const [view, setView] = useState('scenario'); // State to manage toggle between 'scenario' and 'interventions'
-  const [nonpharmaList, setNonpharmaList] = useState(JSON.parse(localStorage.getItem('non_pharma_interventions')) || []);
+  // const [nonpharmaList, setNonpharmaList] = useState(JSON.parse(localStorage.getItem('non_pharma_interventions')) || []);
 
 
   // Retrieve parameters from localStorage
@@ -113,7 +113,7 @@ const SavedParameters = () => {
   
   const vaccineStockpileList = JSON.parse(localStorage.getItem('vaccine_stockpile')) || [];
 
-  // const nonpharmaList = JSON.parse(localStorage.getItem('non_pharma_interventions')) || [];
+  const nonpharmaList = JSON.parse(localStorage.getItem('non_pharma_interventions')) || [];
 
 
   // Function to handle modal opening and closing
