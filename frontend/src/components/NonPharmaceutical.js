@@ -86,7 +86,7 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
     return (
       <>
         {info.split(",").map((item, index) => (
-          <p key={index}>{item}</p>
+          <span key={index}>{item}<br /></span>
         ))}
       </>
     );
@@ -254,6 +254,12 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
           placeholder="Select counties"
           isClearable
           isSearchable
+          styles={{
+            multiValueLabel: (baseStyles => ({
+              ...baseStyles,
+              fontSize: "95%",
+            })),
+          }}
           required
         />
 
@@ -277,10 +283,9 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
               <td>{ npiItem.day }</td>
               <td>{ npiItem.effectiveness }</td>
               <td>
-                {/* { npiItem.location === 0 ? "all" : <InfoList info={nonpharmaList.location} /> } */}
                 { npiItem.location != 0 ? <InfoList info={npiItem.location} /> : "All" }
               </td>
-              <td>
+              <td style={{ display: "table-cell" }}>
                 <button className="remove-button" onClick={() => handleRemove(index)}>Remove</button>
               </td>
             </tr>

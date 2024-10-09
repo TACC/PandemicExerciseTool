@@ -98,7 +98,7 @@ button[type="submit"] {
 
 .remove-button {
   background-color: #f1f1f1;
-  border: 2px solid black;
+  border: 1px solid black;
   border-radius: 4px;
   margin: 0 auto;
   padding: 0.3rem;
