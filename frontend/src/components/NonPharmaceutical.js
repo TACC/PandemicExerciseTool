@@ -108,9 +108,9 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
         </div>
         
         <div className="form-group">
-        <label htmlFor="nonpharmaDay">NPI Day
+        <label htmlFor="nonpharmaDay">NPI start (simulation day)
         <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-            <span className="tooltip-text">Specify day that non-pharmaceutical intervention occurs</span>
+            <span className="tooltip-text">Day of simulation on which the NPI is initiated</span>
           </span>
         </label>
         <input
@@ -126,9 +126,9 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
         </div>
 
         <div className="form-group">
-        <label htmlFor="nonpharmaDuration">NPI Duration (days)
+        <label htmlFor="nonpharmaDuration">NPI duration (days)
         <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-            <span className="tooltip-text">Specify the duration for the non-pharmaceutical intervention</span>
+            <span className="tooltip-text">The number of days that NPI is active</span>
           </span>
         </label>
         <input
@@ -144,9 +144,9 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
         </div>
 
         <div className='form-group' style={{alignItems: 'center'}}>
-          <label htmlFor="nonpharmaEffectiveness">NPI Effectiveness
+          <label htmlFor="nonpharmaEffectiveness">NPI effectiveness (proportion):
           <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-              <span className="tooltip-text">Specify effectiveness of non-pharmaceutical intervention (0 = not effective, 1 = completely effective)</span>
+              <span className="tooltip-text"> Age-specific reduction in susceptibility (0 = no protection; 1 = complete protection)</span>
             </span>
           </label>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%'}}>
@@ -242,7 +242,7 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
 
         <label htmlFor="county">Location
         <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-          <span className="tooltip-text">Specify the counties where the NPI takes place</span>
+          <span className="tooltip-text">Select all regions under the NPI</span>
         </span>
         </label>
         <Select
