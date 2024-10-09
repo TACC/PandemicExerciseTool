@@ -45,7 +45,7 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
     console.log("Adding NPI...");
     event.preventDefault();
     // Ensure all fields are filled out
-    if (!nonpharmaName || !nonpharmaDay || !nonpharmaDuration|| !nonpharmaEffectiveness) {
+    if (!nonpharmaName || !nonpharmaDay || !nonpharmaDuration || !nonpharmaEffectiveness) {
       alert('Please enter all required fields');
       return;
     }
@@ -54,8 +54,8 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
       name: nonpharmaName,
       day: nonpharmaDay,
       duration: nonpharmaDuration,
-      location: nonpharmaCounties.map((county) => county.value).includes("All") ?
-                "All" :
+      location: nonpharmaCounties.map((county) => county.value).includes("Statewide") ?
+                "Statewide" :
                 nonpharmaCounties.map((county) => county.value).toString(),
       effectiveness: numEffectives.toString(),
     };
@@ -86,7 +86,7 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
     return (
       <>
         {info.split(",").map((item, index) => (
-          <p key={index}>{item}</p>
+          <span key={index}>{item}<br /></span>
         ))}
       </>
     );
@@ -254,6 +254,12 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
           placeholder="Select counties"
           isClearable
           isSearchable
+          styles={{
+            multiValueLabel: (baseStyles => ({
+              ...baseStyles,
+              fontSize: "95%",
+            })),
+          }}
           required
         />
 
@@ -273,14 +279,13 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
         <tbody>
           {nonpharmaList.map((npiItem, index) => (
             <tr key={index}>
-              <td>{ npiItem.name }</td>
+              <td style={{ textWrap: "balance" }}>{ npiItem.name }</td>
               <td>{ npiItem.day }</td>
               <td>{ npiItem.effectiveness }</td>
               <td>
-                {/* { npiItem.location === 0 ? "all" : <InfoList info={nonpharmaList.location} /> } */}
                 { npiItem.location != 0 ? <InfoList info={npiItem.location} /> : "All" }
               </td>
-              <td>
+              <td style={{ display: "table-cell" }}>
                 <button className="remove-button" onClick={() => handleRemove(index)}>Remove</button>
               </td>
             </tr>

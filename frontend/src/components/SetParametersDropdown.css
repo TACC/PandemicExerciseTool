@@ -175,6 +175,9 @@
   font-size: medium;
   text-align: center;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  /*min-width: 30vw;*/
+  /*max-width: 35vw;*/
+  width: 30vw;
 }
 
 .modal-close {
