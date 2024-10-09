@@ -84,11 +84,10 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
 
 
   const InfoList = ( {info} ) => {
-    console.log(info);
     return (
       <>
         {info.split(",").map((item, index) => (
-          <p key={index}>{item}</p>
+          <span key={index}>{item}<br /></span>
         ))}
       </>
     );
@@ -253,9 +252,15 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
           onChange={setNonpharmaCounties}
           isMulti={true}
           options={countyOptions}
-          placeholder="Select counties (leave blank for all)"
+          placeholder="Select counties"
           isClearable
           isSearchable
+          styles={{
+            multiValueLabel: (baseStyles) => ({
+              ...baseStyles,
+              fontSize: "95%",
+            }),
+          }}
         />
 
         <button type="submit" className="save_button">Add New NPI</button>
@@ -277,8 +282,7 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
               <td>{ npiItem.name }</td>
               <td>{ npiItem.day }</td>
               <td>{ npiItem.effectiveness }</td>
-              <td>
-                {/* { npiItem.location === 0 ? "all" : <InfoList info={nonpharmaList.location} /> } */}
+              <td style={{ display: "table-cell" }}>
                 { npiItem.location != 0 ? <InfoList info={npiItem.location} /> : "All" }
               </td>
               <td>
