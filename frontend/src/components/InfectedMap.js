@@ -163,7 +163,7 @@ const InfectedMap = ({ eventData, currentIndex}) => {
         center={[31.0, -100.0]}
         zoomSnap={0.2}
         zoom={5.4}
-        style={{ height: '38em', width: '95em',backgroundColor: 'white' }}
+        style={{ height: '38em', width: '80em',backgroundColor: 'white' }}
         whenCreated={mapInstance => { mapRef.current = mapInstance; }}
       >
         <GeoJSON

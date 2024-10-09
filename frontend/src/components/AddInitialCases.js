@@ -98,6 +98,7 @@ const AddInitialCases = ({ counties, onClose }) => {
   return (
     <div>
       <h3>You can add multiple initial cases.</h3>
+      <br></br>
       <form className="add-initial-cases-form" onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="county">Location</label>
