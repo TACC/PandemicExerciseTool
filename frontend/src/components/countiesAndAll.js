@@ -1,5 +1,5 @@
 const texasCountiesAll = [
-    'All',
+    'Statewide',
     'Anderson',
     'Andrews',
     'Angelina',

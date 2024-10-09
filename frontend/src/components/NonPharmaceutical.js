@@ -45,7 +45,7 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
     console.log("Adding NPI...");
     event.preventDefault();
     // Ensure all fields are filled out
-    if (!nonpharmaName || !nonpharmaDay || !nonpharmaDuration|| !nonpharmaEffectiveness) {
+    if (!nonpharmaName || !nonpharmaDay || !nonpharmaDuration || !nonpharmaEffectiveness) {
       alert('Please enter all required fields');
       return;
     }
@@ -54,8 +54,8 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
       name: nonpharmaName,
       day: nonpharmaDay,
       duration: nonpharmaDuration,
-      location: nonpharmaCounties.map((county) => county.value).includes("All") ?
-                "All" :
+      location: nonpharmaCounties.map((county) => county.value).includes("Statewide") ?
+                "Statewide" :
                 nonpharmaCounties.map((county) => county.value).toString(),
       effectiveness: numEffectives.toString(),
     };

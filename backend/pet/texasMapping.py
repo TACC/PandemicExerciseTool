@@ -1,5 +1,5 @@
 texas_mapping = {
-  "All": "0",
+  "Statewide": "0",
   "Anderson": "1",
   "Andrews": "3",
   "Angelina": "5",
