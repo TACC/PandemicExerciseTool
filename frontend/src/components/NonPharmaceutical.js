@@ -279,7 +279,7 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
         <tbody>
           {nonpharmaList.map((npiItem, index) => (
             <tr key={index}>
-              <td>{ npiItem.name }</td>
+              <td style={{ textWrap: "auto" }}>{ npiItem.name }</td>
               <td>{ npiItem.day }</td>
               <td>{ npiItem.effectiveness }</td>
               <td>
