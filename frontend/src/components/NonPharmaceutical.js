@@ -73,6 +73,7 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
 
   const handleSave = () => {
     console.log('Saving parameters...');
+    window.dispatchEvent(new Event("NPIUpdate"));
     onSubmit(nonpharmaList);
   };
 
