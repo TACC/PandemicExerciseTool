@@ -76,7 +76,7 @@ const Interventions = ( {counties} ) => {
             <div className="modal-overlay" onClick={closeNonPharmaceutical}>
               <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <span className="modal-close" onClick={closeNonPharmaceutical}>&times;</span>
-                <h2>Non-Pharmaceutical Interventions</h2>
+                <h2>Non-pharmaceutical intervention</h2>
                 <NonPharmaceutical counties={counties} onSubmit={(npil) => { console.log('Non-Pharmaceutical:', npil); closeNonPharmaceutical(); }} />
               </div>
             </div>,

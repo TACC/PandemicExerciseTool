@@ -214,7 +214,7 @@ const SetManually = ({ onClose }) => {
       <div className="form-group">
         <label htmlFor="reproductionNumber">Reproduction Number (R0)
           <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-            <span className="tooltip-text">The contagiousness of the virus at a given point in time and roughly corresponds to the average number of people a typical case will infect</span>
+            <span className="tooltip-text">Average number of secondary infections in a susceptible population</span>
           </span>
         </label>
         <input
@@ -232,7 +232,7 @@ const SetManually = ({ onClose }) => {
         <label htmlFor="tau">
           Latency Period (days)
           <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-            <span className="tooltip-text">Time period in which an exposed individual is not yet infectious</span>
+            <span className="tooltip-text">Average number of days spent asymptomatic immediately after infection</span>
           </span>
         </label>
         <input
@@ -250,7 +250,7 @@ const SetManually = ({ onClose }) => {
         <label htmlFor="kappa">
           Asymptomatic Period (days)
           <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-            <span className="tooltip-text">The time period during which an infected individual shows no symptoms but can still spread the infection</span>
+            <span className="tooltip-text">Average number of days spent infectious, but not yet symptomatic</span>
           </span>
         </label>
         <input
@@ -301,9 +301,9 @@ const SetManually = ({ onClose }) => {
       </div> 
 */}
       <div className="form-group" style ={{alignItems: 'center'}}>
-        <label htmlFor="nu">Case Fatality Rate (1/days)
+        <label htmlFor="nu">Infection fatality rate (proportion)
           <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-            <span className="tooltip-text">Rate at which infected individuals (asymptomatic, treatable, infectious) will die as a result of infection.</span>
+            <span className="tooltip-text">Proportion of infections that lead to death</span>
           </span>
         </label>
     {/* Age group inputs */}
