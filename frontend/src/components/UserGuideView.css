@@ -1,6 +1,15 @@
+*,
+*::after,
+*::before {
+  margin: 0;
+  padding: 0;
+  /* box-sizing: inherit; */
+}
+
 .user-guide-view {
-  padding: 20px;
   font-family: Arial, sans-serif;
+  margin: 5em;
+  max-width: 90vw;
 }
 
 .text {
@@ -10,7 +19,6 @@
 
 .text h2 {
   font-size: 3em;
-  margin: 0;
   color: black;
   text-align: left;
 }
