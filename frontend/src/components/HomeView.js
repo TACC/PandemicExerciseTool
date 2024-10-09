@@ -17,6 +17,7 @@ import InfectedMap from './InfectedMap';
 import InfectedMapPercent from './InfectedMapPercent';
 import InfectedDeceasedTable from './InfectedDeceasedTable';
 import InfectedDeceasedTableMerged from './InfectedDeceasedTableMerged';
+import InfectedDeceasedTableMergedPercent from './InfectedDeceasedTableMergedPercent.js';
 import LineChart from './LineChart';
 
 import './HomeView.css';
@@ -269,7 +270,11 @@ const HomeView = () => {
       </div>
 
       <div className="right-panel">
-          <InfectedDeceasedTableMerged currentIndex={currentIndex} eventData={eventData} />
+         {viewType === 'percent' ? (
+            <InfectedDeceasedTableMergedPercent currentIndex={currentIndex} eventData={eventData} />
+          ) : (
+            <InfectedDeceasedTableMerged currentIndex={currentIndex} eventData={eventData} />
+        )}
       </div>
 
       <div className="footer">
