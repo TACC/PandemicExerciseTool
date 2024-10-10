@@ -13,4 +13,4 @@ start: ## start dev environment where client code changes will be automatically 
 
 .PHONY: stop
 stop: ## stop dev
-	docker compose -f docker-compose-dev.yml stop
+	docker compose -f docker-compose-dev.yml down
