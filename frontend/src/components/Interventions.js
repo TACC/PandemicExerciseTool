@@ -77,8 +77,11 @@ const Interventions = ( {counties, npiChange} ) => {
               <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <span className="modal-close" onClick={closeNonPharmaceutical}>&times;</span>
                 <h2>Non-pharmaceutical intervention</h2>
-                <NonPharmaceutical counties={counties} onSubmit={(npil) => { console.log('Non-Pharmaceutical:', npil); 
-                  npiChange(npil); closeNonPharmaceutical(); }} />
+                <NonPharmaceutical 
+                  counties={counties} 
+                  onSubmit={(npil) => { console.log('Non-Pharmaceutical:', npil); 
+                    npiChange(npil); closeNonPharmaceutical(); }} 
+                />
               </div>
             </div>,
             document.body

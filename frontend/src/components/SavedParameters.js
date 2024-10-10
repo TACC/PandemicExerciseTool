@@ -18,9 +18,6 @@ const NPIInfo = ({ NPIList }) => {
 
   const [nonpharmaCount, setNonpharmaCount] = useState(NPIList.length);
 
-  useEffect(() => {
-  }, [nonpharmaCount])
-
     return (
     <>
       {NPIList.map((npi, index) => (

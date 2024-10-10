@@ -40,6 +40,11 @@ const HomeView = () => {
     setNPICount(npiList.length);
   }
 
+  const [initialCasesCount, setInitialCasesCount] = useState(localStorage.getItem("initial_infected").length || 0);
+  const handleInitialCasesChange = () => {
+    setInitialCasesCount(localStorage.getItem("initial_infected").length);
+  }
+
   // Handle radio button change
   const handleViewChange = (e) => {
     setViewType(e.target.value);
@@ -221,7 +226,11 @@ const HomeView = () => {
   return (
     <div>
       <div className="left-panel">
-        <SetParametersDropdown counties={texasCounties} onSave={handleSave} />
+        <SetParametersDropdown 
+          counties={texasCounties} 
+          onSave={handleSave} 
+          casesChange={handleInitialCasesChange} 
+        />
         <div className="interventions-container">
           <Interventions counties={texasAllCounties} npiChange={handleNPIChange}/>
         </div>
