@@ -289,28 +289,26 @@ const HomeView = () => {
 
 
     <div class="row">
+      {/* Left Panel */}
       <div class="col-sm-2" style={{ backgroundColor: 'lavender' }}>
-
       </div>
 
+      {/* Middlle Panel - Infected Map (Count and Percentage) and Line Chart */}
       <div class="col-sm-7" style={{ backgroundColor: 'lavenderblush' }}>
-
         <div className="map-and-chart-container">
-
           {viewType === 'percent' ? (
             <InfectedMapPercent currentIndex={currentIndex} eventData={eventData} className="map-size" />
           ) : (
             <InfectedMap currentIndex={currentIndex} eventData={eventData} className="map-size" />
           )}
-
           <div className="separator"></div>
           <LineChart currentIndex={currentIndex} eventData={eventData} className="chart-size" />
         </div>
       </div>
-
+      
+      {/* Right Panel - Infected Decease Table */}
       <div class="col-sm-3" style={{ backgroundColor: 'lavender' }}>
         <InfectedDeceasedTableMerged currentIndex={currentIndex} eventData={eventData} />
-
       </div>
     </div>
 

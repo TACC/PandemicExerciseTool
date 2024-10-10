@@ -1,17 +1,15 @@
 .table-container {
-  /* flex: auto; */
   border: none;
-  /* margin-top: 2.4em;
-  margin-left: 0.8em;
-  margin-right: 3em; */
+  position: relative;
+  z-index: 10;
+  margin: 0 auto; /* Center the container */
+  padding: 0.5em; /* Add padding for better spacing */
 }
 
 .table-scroll {
-  /* Remove border if present */
   border: none;
   overflow-y: auto; /* Ensure scrolling if necessary */
   overflow-x: hidden;
-  max-width: 23.5;
 }
 
 .table-scroll thead th {
@@ -24,14 +22,24 @@
 table th {
   font-size: medium; /* Adjust as needed */
   font-weight: bold;
-  margin-top: 1em;
   text-align: left; /* Ensure text aligns properly */
   position: relative; /* Allow absolute positioning of button */
+  border: 1px solid #ddd; /* Add borders between cells */
+  padding: 0 6px;
 }
 
 table td {
   font-size: small;
-  padding: 10.5px; /* Decrease padding if needed */
+  text-align: left;
+  border: 1px solid #ddd; /* Add borders between cells */
+  padding: 0.55em;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ccc; /* Add border around the table */
+  white-space: nowrap; /* Prevent wrapping */
 }
 
 /* Bold font for the infected count */
@@ -45,51 +53,44 @@ table td {
   font-size: small;
 }
 
-
 .sort-button {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    font-size: medium; /* Adjust font size as needed */
-    margin-left: 10px;
-    width: 2px;
-  }
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: medium; /* Adjust font size as needed */
+  width: 2px;
+}
   
-  .sort-button:hover {
-    background: transparent;
-  }
+.sort-button:hover {
+  background: transparent;
+}
   
-  .sort-button:focus {
-    outline: none; /* Removes default focus outline */
-  }
+.sort-button:focus {
+  outline: none; /* Removes default focus outline */
+}
 
-  /* Container for search input and search icon */
+/* Container for search input and search icon */
 .search-container {
-  display: flex; /* Align items in a row */
   align-items: center; /* Vertically align items to the center */
   margin-bottom: 10px;
-  max-width: 26em;
+  display: flex;
 }
 
 /* Search icon box styling */
 .search-icon-box {
   background: #e5e5e5; /* Light gray background */
-  padding: 8px; /* Padding around the icon */
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 5px; /* Padding around the icon */
   border-top: 1px solid black; /* Black border on the top */
   border-left: 1px solid black; /* Black border on the left */
   border-bottom: 1px solid black; /* Black border on the bottom */
-  height: 30px;
-  width: 30px;
+  height: 2.5em;
+  width: 2.5em;
 }
 
 /* Search icon styling */
 .search-icon {
-  width: 24px; /* Adjust width as needed */
-  height: 24px; /* Adjust height to match the input field */
-  display: block;
+  width: 1.5em; /* Adjust width as needed */
+  height: 1.5em; /* Adjust height to match the input field */
   margin: auto; /* Center the icon within the box */
 }
 
@@ -97,9 +98,17 @@ table td {
 .search-input {
   border: 1px solid black; /* Black border around the input field */
   outline: none; /* Remove the default outline */
-  padding: 8px; /* Padding inside the input field */
-  flex: 1; /* Allow the input to grow and fill available space */
+  padding: 5px; /* Padding inside the input field */
   font-size: medium; /* Adjust font size as needed */
-  height: 30px; /* Set the height of the input to match the icon */
+  height: 2.5em; /* Set the height of the input to match the icon */
   border-radius: 0; /* Ensure square corners */
+  flex: 1; /* Take remaining space */
+}
+
+.even-row {
+  background-color: #f2f2f2; /* Set the background color for even rows */
+}
+
+.odd-row {
+  background-color: #ffffff; /* Set the background color for odd rows */
 }
