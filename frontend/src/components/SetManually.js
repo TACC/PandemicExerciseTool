@@ -70,6 +70,19 @@ const SetManually = ({ onClose }) => {
   const [nuText, setNuText] = useState(localStorage.getItem('nu') || "0.000022319,0.000040975,0.000083729,0.000061809,0.000008978");
   const [nu, setNu] = useState(nuText.split(',') || [0.000022319,0.000040975,0.000083729,0.000061809,0.000008978]);
 
+  const[paramsObject, setParamsObject] = useState({
+    diseaseName: localStorage.getItem('diseaseName') || '',
+    reproductionNumber: parseFloat(localStorage.getItem('reproductionNumber')) || 1.2,
+    beta_scale: parseFloat(localStorage.getItem('beta_scale'), 10) || 10,
+    tau: parseFloat(localStorage.getItem('tau')) || 1.2,
+    kappa: parseFloat(localStorage.getItem('kappa')) || 1.9,
+    gamma: parseFloat(localStorage.getItem('gamma')) || 4.1,
+    chi: parseFloat(localStorage.getItem('chi')) || 1.0,
+    rho: parseFloat(localStorage.getItem('rho')),
+    nuText: localStorage.getItem('nu') || "0.000022319,0.000040975,0.000083729,0.000061809,0.000008978",
+    nu: nuText.split(",") || [0.000022319,0.000040975,0.000083729,0.000061809,0.000008978]
+  });
+
   // State to store values for each age group
   const [ageGroupValues, setAgeGroupValues] = useState({
     '0-4': '0.000022319',
@@ -101,6 +114,20 @@ const SetManually = ({ onClose }) => {
         '50-64': scenario.nu[3]?.toString() || 0.000061809,
         '65+': scenario.nu[4]?.toString() || 0.000008978
       });
+      ///
+      setParamsObject({
+        diseaseName: scenario.disease_name,
+        reproductionNumber: scenario.R0,
+        beta_scale: scenario.beta_scale,
+        tau: scenario.tau,
+        kappa: scenario.kappa,
+        gamma: scenario.gamma,
+        chi: scenario.chi,
+        rho: scenario.rho,
+        nu: scenario.nu,
+        nuText: scenario.nu.join()
+      });
+      console.log("changed parameters to match scenario:", scenario.disease_name);
     }
   };
 
