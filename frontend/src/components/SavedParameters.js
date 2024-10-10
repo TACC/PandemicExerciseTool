@@ -17,26 +17,11 @@ const NPIInfo = ({ NPIList }) => {
   ];
 
   const [nonpharmaCount, setNonpharmaCount] = useState(NPIList.length);
-  console.log("savedparameters rendered");
 
   useEffect(() => {
-    console.log("detected a change in NPI list");
   }, [nonpharmaCount])
 
-  // listening for a custom event fired in NonPharmaceutical.js when changing NPIs
-  // the event is detected, but NPI summaries arent changing
-  // even weirder! count (state var) is being changed, so the component is re-rendered!
-  // I think I also need to remove the event listener after each call but idk
-  // "local storage event won't proc a rerender when LS is changed from another tab"
-  // window.addEventListener("NPIUpdate", () => {
-  //   console.log("NPIUpdate event fired!");
-  //   const newNPIList = JSON.parse(localStorage.getItem('non_pharma_interventions'));
-  //   console.log("old count:", nonpharmaCount);
-  //   console.log("new count:", newNPIList.length);
-  //   setNonpharmaCount(newNPIList.length);
-  // })
-
-  return (
+    return (
     <>
       {NPIList.map((npi, index) => (
         <div key={index} className="initial-case-item">
