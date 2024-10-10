@@ -51,7 +51,7 @@ const NPIInfo = ({ NPIList }) => {
   )
 };
 
-const SavedParameters = () => {
+const SavedParameters = ({ casesChange }) => {
   const [isModalOpen, setModalOpen] = useState(false); // State for modal visibility
   const [hovered, setHovered] = useState(false); // State for hover effect
   const [view, setView] = useState('scenario'); // State to manage toggle between 'scenario' and 'interventions'
@@ -261,7 +261,11 @@ const SavedParameters = () => {
           <div className="modal-overlay" onClick={closeModal}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
               <h2>Add Initial Cases</h2>
-              <AddInitialCases counties={texasCounties} onClose={closeModal} />
+              <AddInitialCases 
+                  counties={texasCounties} 
+                  onClose={closeModal} 
+                  casesChange={casesChange}
+                />
             </div>
           </div>,
           document.body

@@ -235,7 +235,9 @@ const HomeView = () => {
           <Interventions counties={texasAllCounties} npiChange={handleNPIChange}/>
         </div>
         <div className="saved-parameters-panel">
-          <SavedParameters />
+          <SavedParameters 
+            casesChange={handleInitialCasesChange}
+          />
           <NewSimulationButton />
         </div>
       </div>
