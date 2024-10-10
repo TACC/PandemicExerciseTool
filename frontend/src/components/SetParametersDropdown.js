@@ -47,7 +47,12 @@ const SetParametersDropdown = ({ counties, onSave, casesChange }) => {
               <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <span className="modal-close" onClick={closeSetManually}>×</span>
                 <h2>Disease Parameters</h2>
-                <SetManually onClose={closeSetManually} onSubmit={(data) => { console.log('Set Manually:', data); handleSave(); }} />
+                <SetManually 
+                  onClose={closeSetManually} 
+                  onSubmit={(data) => { 
+                    console.log('Set Manually:', data); 
+                    handleSave(); }} 
+                />
               </div>
             </div>,
             document.body
