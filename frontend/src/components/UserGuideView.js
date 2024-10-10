@@ -1,4 +1,5 @@
 import React from 'react';
+import { useState, useEffect, useRef } from "react";
 import './UserGuideView.css'; // Ensure this CSS file is updated
 
 
@@ -119,19 +120,25 @@ const appendixData = [
 ];
 
 const UserGuideView = () => {
+  const [toggleModelInfo, setToggleModelInfo] = useState(false);
+  const [heightEl, setHeightEl] = useState();
+
+  const refHeight = useRef();
+  useEffect(() => {
+    setHeightEl(`${refHeight.current.scrollHeight}px`)
+  }, [])
+
+  const modelInfoToggler = () => {
+    setToggleModelInfo(!toggleModelInfo);
+  }
+
   return (
     <div className="user-guide-view">
       <section className="text">
         <h2>Pandemic Exercise Simulator</h2>
-        <p>Updated as of 8/6/2024</p>
+        <p>Updated as of 10/10/2024</p>
         <a href="https://github.com/TACC/PandemicExerciseSimulator" target="_blank" rel="noopener noreferrer" className="github-link">
         https://github.com/TACC/PandemicExerciseSimulator
-        </a>
-        <p><strong>Overview:</strong> This is a Python implementation of a Pandemic Exercise Simulator using a SEATIRD compartment model and binomial travel model. The simulator was implemented in such a way that it is modular, and can use alternative disease models, travel models, and eventually interventions (e.g. PHAs, antivirals, vaccines).</p>
-        <p>
-        This simulator can be run using the command line interface. It will also be the main calculation engine behind the graphical web app, hosted here (in development): </p>
-        <a href="https://github.com/TACC/PandemicExerciseTool" target="_blank" rel="noopener noreferrer" className="github-link">
-        https://github.com/TACC/PandemicExerciseTool
         </a>
         <p></p>
         <p className="needed-section">
@@ -142,6 +149,26 @@ const UserGuideView = () => {
           <li>Review of the Binomial Travel Model implementation.</li>
           <li>A range of example input data and parameters, as well as expected outputs for testing and verification.</li>
         </ul>
+      </section>
+      <div className="accordion">
+        <button className="accordion-visible" onClick={modelInfoToggler}>
+          <span>About the Model</span>
+        </button>
+        <div 
+          className={toggleModelInfo ? "accordion-toggle animated" : "accordion-toggle"} 
+          ref={refHeight}
+          style={{ height: toggleModelInfo ? `${heightEl}` : "0" }}
+        >
+          <ModelInfo />
+        </div>
+      </div>
+    </div>
+  )
+}
+const ModelInfo = () => {
+  return (
+    <div className="model-info">
+      <section className="text">
         <p><strong>Data Description</strong></p>
         <p>This simulator expects the following inputs to be present:</p>
       </section>
@@ -340,7 +367,7 @@ const UserGuideView = () => {
       </li>
       <li><strong>Line 3-4:</strong> The next action taken depends on what type of event is pulled off the queue. </li>
       <li><strong>Line 5-6:</strong> If the event type is one of {'{EtoA, AtoT, AtoR, AtoD}'}, then:
-        <ul className="sub-list">
+        <ul className="sub-list">react fold content
           <li>The old compartment is decremented by one and the new compartment is incremented by one. For example, if the event is EtoA, then one individual is moved from the Exposed compartment into the Asymptomatic compartment. Then the event is removed from the queue.</li>
         </ul>
       </li>
@@ -375,7 +402,7 @@ const UserGuideView = () => {
 
       <ul className="bullet-points">
           <li><strong>Ta</strong> is time from exposed to asymptomatic</li>
-          <li><strong>Tt</strong> is time from asymptomatic to treatable</li>
+          <li><strong>Tt</strong> is time from asymptomatic to treatable</li>react fold content
           <li><strong>Ti</strong> is time from treatable to infectious</li>
           <li><strong>T{'d<=a'}</strong> is time from asymptomatic to deceased</li>
           <li><strong>T{'d=t,i'}</strong> is time from treatable/infectious to deceased</li>
