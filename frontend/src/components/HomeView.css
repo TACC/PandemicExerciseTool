@@ -4,6 +4,10 @@
   height: 100vh; /* Full viewport height */
 }
 
+.home-container{
+  top: 4.25em;
+}
+
 .interventions-container {
   padding-bottom: 5px; /* Adjust the value as needed */
   z-index: 2;
@@ -57,11 +61,11 @@
   position: fixed;
   bottom: 0;
   left: 0;
-  width: 99%;
-  height: 50px;
+  width: 100%;
+  height: 5em;
   z-index: 1000;
   transition: background-color 0.3s ease;
-  border-top: 2px solid black; /* Add this line */
+  border-top: 2px solid black; 
 }
 
 .footer-overlay {
@@ -80,27 +84,21 @@
   z-index: 3;
 }
 
+.play-pause-container {
+  width: 300px; /* Fixed width for the button */
+  z-index: 3;
+}
+
 .middle-panel {
-  /* flex: 1; Takes up the remaining space between left and right panels */
   position: fixed;
-  /* left: 20vw; */
   left: 16em;
   top: 4.25em;
-  /* display: flex;
-  flex-direction: column; */
   padding: 10px;
   overflow: hidden; /* Prevent scrollbars in the middle panel */
 }
 
 .map-and-chart-container {
-  display: flex;
-  flex-direction: column; /* Stack the map and chart vertically, change to "row" for left & right orientation */ 
-  align-items: center; 
-  /* width: 66em; */
-  width: calc(100vw - 44em);
-  height: calc(100vh - 10em);
   position: relative;
-  z-index: 1;
 }
 
 /* Make map and chart have equal height */
@@ -123,10 +121,7 @@ flex-shrink: 0; /* Prevent shrinking */
 margin-top: 0em; /* Space between the SavedParameters and the elements above */
 }
 
-.play-pause-container {
-width: 300px; /* Fixed width for the button */
-z-index: 3;
-}
+
 
 
 .top-middle-panel {

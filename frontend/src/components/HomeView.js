@@ -214,49 +214,89 @@ const HomeView = () => {
   };
 
   return (
-    <div>
-      <div className="left-panel">
-        <SetParametersDropdown counties={texasCounties} onSave={handleSave} />
-        <div className="interventions-container">
-          <Interventions  counties={texasAllCounties} />
-        </div>
-        <div className="saved-parameters-panel">
-          <SavedParameters />
-          <NewSimulationButton />
-        </div>
+    //     <div>
+    //       <div className="left-panel">
+    //         <SetParametersDropdown counties={texasCounties} onSave={handleSave} />
+    //         <div className="interventions-container">
+    //           <Interventions counties={texasAllCounties} />
+    //         </div>
+    //         <div className="saved-parameters-panel">
+    //           <SavedParameters />
+    //           <NewSimulationButton />
+    //         </div>
+    //       </div>
+
+    //       <div className='top-middle-panel'>
+    //         <div className="radio-buttons-container">
+    //         <h3>Show values as:</h3>
+
+    //           <label className={`radio-button ${viewType === 'percent' ? 'active' : ''}`}>
+    //             <input
+    //               type="radio"
+    //               value="percent"
+    //               checked={viewType === 'percent'}
+    //               onChange={handleViewChange}
+    //             />
+    //             Percentage
+    //           </label>
+    //           <label className={`radio-button ${viewType === 'count' ? 'active' : ''}`}>
+    //             <input
+    //               type="radio"
+    //               value="count"
+    //               checked={viewType === 'count'}
+    //               onChange={handleViewChange}
+    //             />
+    //             Count
+    //           </label>
+    //         </div>
+    //       </div>
+
+    //       <div className="middle-panel">
+    //         <div className="map-and-chart-container">
+
+
+    //           {viewType === 'percent' ? (
+    //             <InfectedMapPercent currentIndex={currentIndex} eventData={eventData} className="map-size" />
+    //           ) : (
+    //             <InfectedMap currentIndex={currentIndex} eventData={eventData} className="map-size" />
+    //           )}
+
+    //           <div className="separator"></div>
+    //           <LineChart currentIndex={currentIndex} eventData={eventData} className="chart-size" />
+    //         </div>
+    //       </div>
+
+    //       <div className="right-panel">
+    //           <InfectedDeceasedTableMerged currentIndex={currentIndex} eventData={eventData} />
+    //       </div>
+
+
+
+    //       <div className="footer">
+    //         <div className="play-pause-container">
+    //           <PlayPauseButton isRunning={isRunning} onToggle={handleToggleScenario} />
+    //         </div>
+    //         <div className="timeline-panel">
+    //           <TimelineSlider
+    //             totalDays={eventData.length}
+    //             selectedDay={currentIndex}
+    //             onDayChange={handleDayChange}
+    //             isRunning={isRunning}
+    //           />
+    //         </div>
+    //       </div>
+    // </div >
+
+
+    <div class="row">
+      <div class="col-sm-2" style={{ backgroundColor: 'lavender' }}>
+
       </div>
 
-      <div className='top-middle-panel'>
-        {/* Radio buttons for view selection */}
-        <div className="radio-buttons-container">
-        <h3>Show values as:</h3>
+      <div class="col-sm-7" style={{ backgroundColor: 'lavenderblush' }}>
 
-          <label className={`radio-button ${viewType === 'percent' ? 'active' : ''}`}>
-            <input
-              type="radio"
-              value="percent"
-              checked={viewType === 'percent'}
-              onChange={handleViewChange}
-            />
-            Percentage
-          </label>
-          <label className={`radio-button ${viewType === 'count' ? 'active' : ''}`}>
-            <input
-              type="radio"
-              value="count"
-              checked={viewType === 'count'}
-              onChange={handleViewChange}
-            />
-            Count
-          </label>
-        </div>
-      </div>
-
-      <div className="middle-panel">
         <div className="map-and-chart-container">
 
-
-          {/* Conditionally render the correct map component */}
           {viewType === 'percent' ? (
             <InfectedMapPercent currentIndex={currentIndex} eventData={eventData} className="map-size" />
           ) : (
@@ -268,26 +308,15 @@ const HomeView = () => {
         </div>
       </div>
 
-      <div className="right-panel">
-          <InfectedDeceasedTableMerged currentIndex={currentIndex} eventData={eventData} />
-      </div>
+      <div class="col-sm-3" style={{ backgroundColor: 'lavender' }}>
+        <InfectedDeceasedTableMerged currentIndex={currentIndex} eventData={eventData} />
 
-      <div className="footer">
-        <div className="play-pause-container">
-          <PlayPauseButton isRunning={isRunning} onToggle={handleToggleScenario} />
-        </div>
-        <div className="timeline-panel">
-          <TimelineSlider
-            totalDays={eventData.length}
-            selectedDay={currentIndex}
-            onDayChange={handleDayChange}
-            isRunning={isRunning}
-          />
-        </div>
       </div>
     </div>
-  );
 
+  );
 };
 
 export default HomeView;
+
+

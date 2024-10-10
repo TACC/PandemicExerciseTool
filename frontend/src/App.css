@@ -1,24 +1,5 @@
 .App {
-  display: flex;
-  flex-direction: column; /* Arrange children horizontally */
-  align-items: center;
-}
-
-.content {
-  display: flex;
-  justify-content: center;
-}
-
-header {
-  margin-bottom: 20px;
-}
-
-.parametersContainer {
-  width: 250px; /* Adjust width as needed */
-  padding: 10px;
-  background-color: #ffffff;
-  border: 1px solid #ccc;
-  margin-left: 10px; /* Add space between map and parameters */
+  text-align: center;
 }
 
 .App-logo {
@@ -56,6 +37,23 @@ header {
   }
 }
 
+
+.content {
+  display: flex;
+  justify-content: center;
+}
+
+header {
+  /* margin-bottom: 20px; */
+}
+
+.parametersContainer {
+  width: 250px; /* Adjust width as needed */
+  padding: 10px;
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  margin-left: 10px; /* Add space between map and parameters */
+}
 
 .form-container {
   display: flex;

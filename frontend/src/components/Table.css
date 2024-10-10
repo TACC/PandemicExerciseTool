@@ -1,10 +1,9 @@
 .table-container {
-  flex: auto;
-  /* Remove border if present */
+  /* flex: auto; */
   border: none;
-  margin-top: 2.4em;
+  /* margin-top: 2.4em;
   margin-left: 0.8em;
-  margin-right: 3em;
+  margin-right: 3em; */
 }
 
 .table-scroll {
