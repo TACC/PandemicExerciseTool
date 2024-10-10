@@ -5,7 +5,7 @@ import './AddInitialCases.css'; // Import the CSS file for styling
 
 import { createPortal } from 'react-dom';
 
-const SetParametersDropdown = ({ counties, onSave }) => {
+const SetParametersDropdown = ({ counties, onSave, casesChange }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [isInitialCasesOpen, setIsInitialCasesOpen] = useState(false);
   const [isSetManuallyOpen, setIsSetManuallyOpen] = useState(false);
@@ -47,7 +47,12 @@ const SetParametersDropdown = ({ counties, onSave }) => {
               <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <span className="modal-close" onClick={closeSetManually}>×</span>
                 <h2>Disease Parameters</h2>
-                <SetManually onClose={closeSetManually} onSubmit={(data) => { console.log('Set Manually:', data); handleSave(); }} />
+                <SetManually 
+                  onClose={closeSetManually} 
+                  onSubmit={(data) => { 
+                    console.log('Set Manually:', data); 
+                    handleSave(); }} 
+                />
               </div>
             </div>,
             document.body
@@ -61,7 +66,12 @@ const SetParametersDropdown = ({ counties, onSave }) => {
               <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <span className="modal-close" onClick={closeInitialCases}>×</span>
                 <h2>Add Initial Cases</h2>
-                <AddInitialCases onClose={closeInitialCases} counties={counties} onSubmit={(data) => { console.log('Initial Cases:', data); handleSave(); }} />
+                <AddInitialCases 
+                  onClose={closeInitialCases} 
+                  counties={counties} 
+                  onSubmit={(data) => { console.log('Initial Cases:', data); handleSave(); }} 
+                  casesChange = {casesChange}
+                />
               </div>
             </div>,
             document.body

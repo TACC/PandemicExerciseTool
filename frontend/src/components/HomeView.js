@@ -35,6 +35,16 @@ const HomeView = () => {
 
   const [viewType, setViewType] = useState('percent');
 
+  const [npiCount, setNPICount] = useState(localStorage.getItem('non_pharma_interventions') || 0);
+  const handleNPIChange = (npiList) => {
+    setNPICount(npiList.length);
+  }
+
+  const [initialCasesCount, setInitialCasesCount] = useState(localStorage.getItem("initial_infected") || 0);
+  const handleInitialCasesChange = () => {
+    setInitialCasesCount(localStorage.getItem("initial_infected").length || 0);
+  }
+
   // Handle radio button change
   const handleViewChange = (e) => {
     setViewType(e.target.value);
@@ -216,12 +226,18 @@ const HomeView = () => {
   return (
     <div>
       <div className="left-panel">
-        <SetParametersDropdown counties={texasCounties} onSave={handleSave} />
+        <SetParametersDropdown 
+          counties={texasCounties} 
+          onSave={handleSave} 
+          casesChange={handleInitialCasesChange} 
+        />
         <div className="interventions-container">
-          <Interventions  counties={texasAllCounties} />
+          <Interventions counties={texasAllCounties} npiChange={handleNPIChange}/>
         </div>
         <div className="saved-parameters-panel">
-          <SavedParameters />
+          <SavedParameters 
+            casesChange={handleInitialCasesChange}
+          />
           <NewSimulationButton />
         </div>
       </div>
