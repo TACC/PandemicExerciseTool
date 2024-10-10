@@ -40,9 +40,9 @@ const HomeView = () => {
     setNPICount(npiList.length);
   }
 
-  const [initialCasesCount, setInitialCasesCount] = useState(localStorage.getItem("initial_infected").length || 0);
+  const [initialCasesCount, setInitialCasesCount] = useState(localStorage.getItem("initial_infected") || 0);
   const handleInitialCasesChange = () => {
-    setInitialCasesCount(localStorage.getItem("initial_infected").length);
+    setInitialCasesCount(localStorage.getItem("initial_infected").length || 0);
   }
 
   // Handle radio button change
