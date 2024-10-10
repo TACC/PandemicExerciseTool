@@ -115,13 +115,13 @@ function InfectedDeceasedTableMergedPercent({ eventData, currentIndex }) {
                 </button>
               </th>
               <th>
-                Infected (%)
+                Infected 
                 <button className="sort-button" onClick={() => sortData('infectedPercent')}>
                   {sortDirection.infectedPercent === 'asc' ? '↓' : '↑'}
                 </button>
               </th>
               <th>
-                Deceased (%)
+                Deceased
                 <button className="sort-button" onClick={() => sortData('deceasedPercent')}>
                   {sortDirection.deceasedPercent === 'asc' ? '↓' : '↑'}
                 </button>
@@ -138,20 +138,19 @@ function InfectedDeceasedTableMergedPercent({ eventData, currentIndex }) {
                 <tr key={index} className={index % 2 === 0 ? 'even-row' : 'odd-row'}>
                 <td>{county.county}</td>
                 <td>
-                  <span className="bold-text">{county.infectedPercent}%</span>
+                  <span className="bold-text">{county.infectedPercent}</span>
                   {county.infectedPercent > 0 && (
                     <>
-                      &nbsp;
-                      <span className="light-text">({county.infected})</span>
+                      <span className="light-text">% ({county.infected})</span>
                     </>
                   )}
                 </td>
                 <td>
-                  <span className="bold-text">{county.deceasedPercent}%</span>
+                  <span className="bold-text">{county.deceasedPercent}</span>
                   {county.deceasedPercent > 0 && (
                     <>
                       &nbsp;
-                      <span className="light-text">({county.deceased})</span>
+                      <span className="light-text">% ({county.deceased})</span>
                     </>
                   )}
                 </td>
