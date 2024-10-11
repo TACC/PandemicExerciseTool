@@ -94,7 +94,7 @@
   text-decoration: underline;
 }
 
-img {
+.instructions img {
     display: block;
     margin-left: auto;
     margin-right: auto;
