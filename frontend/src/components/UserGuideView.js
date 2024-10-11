@@ -125,15 +125,15 @@ const UserGuideView = () => {
   const [heightInfo, setHeightInfo] = useState();
   const [heightInstructions, setHeightInstructions] = useState();
 
-  const refHeightInfo = useRef();
-  useEffect(() => {
-    setHeightInfo(`${refHeightInfo.current.scrollHeight}px`)
-  }, [])
-
-  const refHeightInstructions = useRef();
-  useEffect(() => {
-    setHeightInstructions(`${refHeightInstructions.current.scrollHeight}px`)
-  }, [])
+  // const refHeightInfo = useRef();
+  // useEffect(() => {
+  //   setHeightInfo(`${refHeightInfo.current.scrollHeight}px`)
+  // }, [])
+  //
+  // const refHeightInstructions = useRef();
+  // useEffect(() => {
+  //   setHeightInstructions(`${refHeightInstructions.current.scrollHeight}px`)
+  // }, [])
 
   const modelInfoToggler = () => {
     setToggleModelInfo(!toggleModelInfo);
@@ -161,28 +161,30 @@ const UserGuideView = () => {
           <li>A range of example input data and parameters, as well as expected outputs for testing and verification.</li>
         </ul>
       </section>
-      <div className="accordion">
-        <button className="accordion-visible" onClick={instructionsToggler}>
-          <span>Instructions</span>
-        </button>
-        <div
-          className={toggleInstructions ? "accordion-toggle animated" : "accordion-toggle"}
-          ref={refHeightInstructions}
-          style={{ height: toggleInstructions ? `${heightInstructions}` : "0" }}
-        >
-          <Instructions />
-        </div>
-        <button className="accordion-visible" onClick={modelInfoToggler}>
-          <span>About the Model</span>
-        </button>
-        <div 
-          className={toggleModelInfo ? "accordion-toggle animated" : "accordion-toggle"} 
-          ref={refHeightInfo}
-          style={{ height: toggleModelInfo ? `${heightInfo}` : "0" }}
-        >
-          <ModelInfo />
-        </div>
-      </div>
+      <Instructions />
+      <ModelInfo />
+      {/* <div className="accordion"> */}
+      {/*   <button className="accordion-visible" onClick={instructionsToggler}> */}
+      {/*     <span>Instructions</span> */}
+      {/*   </button> */}
+      {/*   <div */}
+      {/*     className={toggleInstructions ? "accordion-toggle animated" : "accordion-toggle"} */}
+      {/*     ref={refHeightInstructions} */}
+      {/*     style={{ height: toggleInstructions ? `${heightInstructions}` : "0" }} */}
+      {/*   > */}
+      {/*     <Instructions /> */}
+      {/*   </div> */}
+      {/*   <button className="accordion-visible" onClick={modelInfoToggler}> */}
+      {/*     <span>About the Model</span> */}
+      {/*   </button> */}
+      {/*   <div  */}
+      {/*     className={toggleModelInfo ? "accordion-toggle animated" : "accordion-toggle"}  */}
+      {/*     ref={refHeightInfo} */}
+      {/*     style={{ height: toggleModelInfo ? `${heightInfo}` : "0" }} */}
+      {/*   > */}
+      {/*     <ModelInfo /> */}
+      {/*   </div> */}
+      {/* </div> */}
     </div>
   )
 };
@@ -219,15 +221,15 @@ const Instructions = () => {
         <p>Saved scenario parameters and initial cases will be summarized in the left-hand panel</p>
         {/* <img src={ require('./images/userGuide-summaryPanel.png') } alt="Summary Panel" /> */}
         <p>Click the 'Play' button in the bottom left corner to run the simulation</p>
-        <img src={ require('./images/userGuide-playScenario.png') } alt="Running the Simulation" />
+        <img src={ require('./images/userGuide-playScenario.png') } alt="Running the Simulation" style={{ width: '50%' }} />
         <p>Hovering over the map will display infection data for a given county</p>
-        <img src={ require('./images/userGuide-onHover.png') } alt="Hovering over Counties" />
+        <img src={ require('./images/userGuide-onHover.png') } alt="Hovering over Counties" style={{ width: '50%' }}/>
         <p>The infection heatmap can be toggled to display the number of infected individuals per county</p>
-        <img src={ require('./images/userGuide-countToggle.png') } alt="Toggling Absolute Counts" />
+        <img src={ require('./images/userGuide-countToggle.png') } alt="Toggling Absolute Counts" style={{ width: '50%' }}/>
         <p>Hover over the line chart at the bottom of the screen to see total compartment counts</p>
-        <img src={ require('./images/userGuide-lineChart.png') } alt="Line Chart" />
+        <img src={ require('./images/userGuide-lineChart.png') } alt="Line Chart" style={{ width: '50%' }} />
         <p>Clicking on a compartment in the legend will toggle that compartment on/off in the line chart</p>
-        <img src={ require('./images/userGuide-toggleCompartments.png') } alt="Toggling Compartments" />
+        <img src={ require('./images/userGuide-toggleCompartments.png') } alt="Toggling Compartments" style={{ width: '50%' }}/>
         <p>
           The table on the right-hand side of the screen can be sorted alphabetically by county or by 
           ascending/descending order by infections or deaths per county
@@ -236,11 +238,11 @@ const Instructions = () => {
           Use the search bar in the top-right corner of the screen to search for specific counties
           in the table
         </p>
-        <img src={ require('./images/userGuide-countySearch.png') } alt="Searching for Counties" />
+        <img src={ require('./images/userGuide-countySearch.png') } alt="Searching for Counties" style={{ width: "50%" }} />
         <p>The 'Pause' button will halt the simulation</p>
-        <img src={ require('./images/pause.png') } alt="Pausing the Simulation" />
+        <img src={ require('./images/userGuide-pause.png') } alt="Pausing the Simulation" style={{ width: '50%' }}/>
         <p>Once the simulation is paused, slide the timeline back and forth to navigate to specific days</p>
-        <img src={ require('./images/userGuide-timelineSlide.png') } alt="Scrubbing the Timeline" />
+        <img src={ require('./images/userGuide-timelineSlide.png') } alt="Scrubbing the Timeline" style={{ width: '50%' }} />
       </section>
     </div>
   )
