@@ -6,6 +6,10 @@
   /* box-sizing: inherit; */
 }
 
+.li {
+    margin-left: 1em;
+}
+
 .accordion {
     background: #f1f1f1;
 }
@@ -34,6 +38,7 @@
     padding: 7px 15px;
     border-top-left-radius: 3px;
     border-top-right-radius: 3px;
+    margin-bottom: 1em;
 }
 
 .accordion-visible span {
@@ -89,8 +94,23 @@
   text-decoration: underline;
 }
 
+img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+    margin-bottom: 1em;
+    border-radius: 4px;
+}
+
 .table-section {
   margin-top: 30px;
+}
+
+.text h3 {
+    font-size: 2em;
+    margin-bottom: 15px;
+    text-align: left;
 }
 
 .table-section h3 {
@@ -138,7 +158,6 @@
     padding-left: 20px; /* Indent the list */
     margin-top: 0; /* Remove top margin if needed */
   }
-
 
 .code-section {
     margin-top: 30px;

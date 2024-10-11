@@ -121,16 +121,27 @@ const appendixData = [
 
 const UserGuideView = () => {
   const [toggleModelInfo, setToggleModelInfo] = useState(false);
-  const [heightEl, setHeightEl] = useState();
+  const [toggleInstructions, setToggleInstructions] = useState(false);
+  const [heightInfo, setHeightInfo] = useState();
+  const [heightInstructions, setHeightInstructions] = useState();
 
-  const refHeight = useRef();
+  const refHeightInfo = useRef();
   useEffect(() => {
-    setHeightEl(`${refHeight.current.scrollHeight}px`)
+    setHeightInfo(`${refHeightInfo.current.scrollHeight}px`)
+  }, [])
+
+  const refHeightInstructions = useRef();
+  useEffect(() => {
+    setHeightInstructions(`${refHeightInstructions.current.scrollHeight}px`)
   }, [])
 
   const modelInfoToggler = () => {
     setToggleModelInfo(!toggleModelInfo);
-  }
+  };
+
+  const instructionsToggler = () => {
+    setToggleInstructions(!toggleInstructions);
+  };
 
   return (
     <div className="user-guide-view">
@@ -151,20 +162,90 @@ const UserGuideView = () => {
         </ul>
       </section>
       <div className="accordion">
+        <button className="accordion-visible" onClick={instructionsToggler}>
+          <span>Instructions</span>
+        </button>
+        <div
+          className={toggleInstructions ? "accordion-toggle animated" : "accordion-toggle"}
+          ref={refHeightInstructions}
+          style={{ height: toggleInstructions ? `${heightInstructions}` : "0" }}
+        >
+          <Instructions />
+        </div>
         <button className="accordion-visible" onClick={modelInfoToggler}>
           <span>About the Model</span>
         </button>
         <div 
           className={toggleModelInfo ? "accordion-toggle animated" : "accordion-toggle"} 
-          ref={refHeight}
-          style={{ height: toggleModelInfo ? `${heightEl}` : "0" }}
+          ref={refHeightInfo}
+          style={{ height: toggleModelInfo ? `${heightInfo}` : "0" }}
         >
           <ModelInfo />
         </div>
       </div>
     </div>
   )
+};
+
+const Instructions = () => {
+  return (
+    <div className="instructions">
+      <section className="text">
+        <h3>Using the Simulator</h3>
+        <p>Set scenario on top-left corner</p>
+        <img src={ require('./images/userGuide-setScenario.png') } alt="Setting the Scenario" />
+        <p>Select Disease Parameters</p>
+        <img src={ require('./images/userGuide-parameters1.png') } alt="Selecting Paramters" />
+        <img src={ require('./images/userGuide-parameters2.png') } alt="Inputting Parameters" />
+        <p>Load a preset scenario from the catalog and hit the 'Save' button</p>
+        <img src={ require('./images/userGuide-presetSave.png') } alt="Saving Parameters" />
+        <p>Add Initial Cases on top-left corner. Click the '+ Add Cases' button to confirm</p>
+        <img src={ require('./images/userGuide-InitialCases1.png') } alt="Saving Parameters" />
+        <img src={ require('./images/userGuide-InitialCases2.png') } alt="Saving Parameters" />
+        <p>For instance, enter the following entries:</p>
+        <ul className="bullet-points">
+          <li>Location: Travis</li>
+          <li>Number of Cases: 100</li>
+          <li>Age Group: 0-4 years</li>
+        </ul>
+        <img src={ require('./images/userGuide-InitialCases3.png') } alt="Adding Initial Cases" />
+        <ul className="bullet-points">
+          <li>Location: Harris</li>
+          <li>Number of Cases: 100</li>
+          <li>Age Group: 0-4 years</li>
+        </ul>
+        <img src={ require('./images/userGuide-InitialCases4.png') } alt="Additional Initial Cases" />
+        <p>After adding cases, click 'Save and Close' to submit initial cases</p>
+        <p>Saved scenario parameters and initial cases will be summarized in the left-hand panel</p>
+        {/* <img src={ require('./images/userGuide-summaryPanel.png') } alt="Summary Panel" /> */}
+        <p>Click the 'Play' button in the bottom left corner to run the simulation</p>
+        <img src={ require('./images/userGuide-playScenario.png') } alt="Running the Simulation" />
+        <p>Hovering over the map will display infection data for a given county</p>
+        <img src={ require('./images/userGuide-onHover.png') } alt="Hovering over Counties" />
+        <p>The infection heatmap can be toggled to display the number of infected individuals per county</p>
+        <img src={ require('./images/userGuide-countToggle.png') } alt="Toggling Absolute Counts" />
+        <p>Hover over the line chart at the bottom of the screen to see total compartment counts</p>
+        <img src={ require('./images/userGuide-lineChart.png') } alt="Line Chart" />
+        <p>Clicking on a compartment in the legend will toggle that compartment on/off in the line chart</p>
+        <img src={ require('./images/userGuide-toggleCompartments.png') } alt="Toggling Compartments" />
+        <p>
+          The table on the right-hand side of the screen can be sorted alphabetically by county or by 
+          ascending/descending order by infections or deaths per county
+        </p>
+        <p>
+          Use the search bar in the top-right corner of the screen to search for specific counties
+          in the table
+        </p>
+        <img src={ require('./images/userGuide-countySearch.png') } alt="Searching for Counties" />
+        <p>The 'Pause' button will halt the simulation</p>
+        <img src={ require('./images/pause.png') } alt="Pausing the Simulation" />
+        <p>Once the simulation is paused, slide the timeline back and forth to navigate to specific days</p>
+        <img src={ require('./images/userGuide-timelineSlide.png') } alt="Scrubbing the Timeline" />
+      </section>
+    </div>
+  )
 }
+
 const ModelInfo = () => {
   return (
     <div className="model-info">
