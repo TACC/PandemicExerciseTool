@@ -224,14 +224,14 @@ const Instructions = () => {
     <div className="instructions">
       <section className="text">
         <h3>Using the Simulator</h3>
-        <p>Set scenario on top-left corner</p>
+        <p>Set the scenario with the 'Set Scenario' button in the top-left corner of the screen</p>
         <img src={ require('./images/userGuide-setScenario.png') } alt="Setting the Scenario" />
-        <p>Select Disease Parameters</p>
+        <p>Select 'Disease Parameters' from the dropdown menu to specify outbreak variables</p>
         <img src={ require('./images/userGuide-parameters1.png') } alt="Selecting Paramters" />
         <img src={ require('./images/userGuide-parameters2.png') } alt="Inputting Parameters" />
         <p>Load a preset scenario from the catalog and hit the 'Save' button</p>
         <img src={ require('./images/userGuide-presetSave.png') } alt="Saving Parameters" />
-        <p>Add Initial Cases on top-left corner. Click the '+ Add Cases' button to confirm</p>
+        <p>Select 'Initial Cases' from the dropdown menu to specify initial infections. Click the '+ Add Cases' button to confirm</p>
         <img src={ require('./images/userGuide-InitialCases1.png') } alt="Saving Parameters" />
         <img src={ require('./images/userGuide-InitialCases2.png') } alt="Saving Parameters" />
         <p>For instance, enter the following entries:</p>
@@ -248,25 +248,24 @@ const Instructions = () => {
         </ul>
         <img src={ require('./images/userGuide-InitialCases4.png') } alt="Additional Initial Cases" />
         <p>After adding cases, click 'Save and Close' to submit initial cases</p>
-        <p>Saved scenario parameters and initial cases will be summarized in the left-hand panel</p>
+        <p>Saved scenario parameters and initial cases are summarized in the left-hand panel</p>
         {/* <img src={ require('./images/userGuide-summaryPanel.png') } alt="Summary Panel" /> */}
-        <p>Click the 'Play' button in the bottom left corner to run the simulation</p>
+        <p>Click the 'Play' button in the bottom-left corner to run the simulation</p>
         <img src={ require('./images/userGuide-playScenario.png') } alt="Running the Simulation" style={{ width: '50%' }} />
         <p>Hovering over the map will display infection data for a given county</p>
         <img src={ require('./images/userGuide-onHover.png') } alt="Hovering over Counties" style={{ width: '50%' }}/>
-        <p>The infection heatmap can be toggled to display the number of infected individuals per county</p>
+        <p>The infection map can be toggled to display the number of infected individuals per county</p>
         <img src={ require('./images/userGuide-countToggle.png') } alt="Toggling Absolute Counts" style={{ width: '50%' }}/>
-        <p>Hover over the line chart at the bottom of the screen to see total compartment counts</p>
+        <p>Hover over the line chart at the bottom of the screen to see total statewide compartment counts</p>
         <img src={ require('./images/userGuide-lineChart.png') } alt="Line Chart" style={{ width: '50%' }} />
-        <p>Clicking on a compartment in the legend will toggle that compartment on/off in the line chart</p>
+        <p>Clicking on a compartment in the legend will toggle that compartment on or off in the line chart</p>
         <img src={ require('./images/userGuide-toggleCompartments.png') } alt="Toggling Compartments" style={{ width: '50%' }}/>
         <p>
           The table on the right-hand side of the screen can be sorted alphabetically by county or by 
           ascending/descending order by infections or deaths per county
         </p>
         <p>
-          Use the search bar in the top-right corner of the screen to search for specific counties
-          in the table
+          Use the search bar above the table to search for specific counties
         </p>
         <img src={ require('./images/userGuide-countySearch.png') } alt="Searching for Counties" style={{ width: "50%" }} />
         <p>The 'Pause' button will halt the simulation</p>
