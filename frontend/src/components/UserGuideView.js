@@ -190,7 +190,7 @@ const UserGuideView = () => {
     <div className="user-guide-view">
       <section className="text">
         <h2>Interactive Outbreak Simulator</h2>
-        <p>Updated as of 10/10/2024</p>
+        <p>Updated as of 10/11/2024</p>
         <a href="https://github.com/TACC/PandemicExerciseSimulator" target="_blank" rel="noopener noreferrer" className="github-link">
         https://github.com/TACC/PandemicExerciseSimulator
         </a>
