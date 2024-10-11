@@ -226,7 +226,15 @@ const Instructions = () => {
         <h3>Using the Simulator</h3>
         <p>Set the scenario with the 'Set Scenario' button in the top-left corner of the screen</p>
         <img src={ require('./images/userGuide-setScenario.png') } alt="Setting the Scenario" />
-        <p>Select 'Disease Parameters' from the dropdown menu to specify outbreak variables</p>
+        <p>Select 'Disease Parameters' from the dropdown menu to specify starting conditions for the outbreak</p>
+        <ul className="bullet-points">
+          <li>R0: average number of secondary infections in a susepctible population</li>
+          <li>Latency period (days): average number of days spent asymptomatic immediately after infection</li>
+          <li>Asymptomatic period (days): average number of days spent infectious, but not yet symptomatic</li>
+          <li>Symptomatic period (days): average number of days spent symptomatic and infections</li>
+          <li>Asymptomatic rate (proportion): proportion of infections that never develop symptoms</li>
+          <li>Infection fatality rate (proportion): proportion of infections that lead to death</li>
+        </ul>
         <img src={ require('./images/userGuide-parameters1.png') } alt="Selecting Parameters" />
         <img src={ require('./images/userGuide-parameters2.png') } alt="Inputting Parameters" />
         <p>Load a preset scenario from the catalog and hit the 'Save' button</p>
@@ -283,6 +291,14 @@ const Instructions = () => {
           Select 'Non-Pharmaceutical' from the dropdown menu to add non-pharmaceutical interventions, or NPIs.
           Click the 'Add New NPI' button to confirm NPI parameters
         </p>
+        <ul className="bullet-points">
+          <li>NPI start (simulation day): day of simulation on which the NPI is initiated</li>
+          <li>NPI duration (days): the number of days the NPI is active</li>
+          <li>
+            NPI effectiveness (proportion): age-specific reduction in susceptibility (
+            0 = no protection; 1 = complete protection)
+          </li>
+        </ul>
         <img src={ require('./images/userGuide-NPIs1.png') } alt="Selecting NPIs" />
         <img src={ require('./images/userGuide-NPIs2.png') } alt="Selecting NPIs" />
         <p>After adding, click 'Save' to submit NPIs to the simulator</p>
