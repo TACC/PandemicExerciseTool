@@ -167,7 +167,7 @@ h3 {
 }
 
 .parameter-item {
-  margin-bottom: 10px;
+  margin-bottom: 0px;
 }
 
 .parameter-label {
@@ -176,13 +176,13 @@ h3 {
 
 .parameter-value {
   font-weight: bold;
-  margin-top: 10px;
+  margin-top: 5px;
 }
 
 .parameter-separator {
-  margin: 10px 0;
+  margin: 5px 0;
   border: none;
-  border-top: 1px solid #ccc;
+  border-top: 1px solid #7e7e7e;
 }
 
 .section-separator {
@@ -194,7 +194,7 @@ h3 {
 
 /* Start of Initial Cases Section -- Left Panel*/
 .initial-cases-section {
-  margin-top: 20px;
+  margin-top: 10px;
   position: relative;
   padding: 10px;
   transition: background-color 0.3s ease;

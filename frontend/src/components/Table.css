@@ -10,6 +10,7 @@
   border: none;
   overflow-y: auto; /* Ensure scrolling if necessary */
   overflow-x: hidden;
+  height: calc(100vh - 14.5em);
 }
 
 .table-scroll thead th {
@@ -27,6 +28,7 @@ table th {
   border: 1px solid #ddd; /* Add borders between cells */
   padding: 0 6px;
 }
+
 
 table td {
   font-size: small;

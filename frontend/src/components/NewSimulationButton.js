@@ -26,7 +26,7 @@ const NewSimulationButton = () => {
         <div>
           {createPortal(
             <div className="modal-overlay" onClick={toggleModal}>
-              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-contents" onClick={(e) => e.stopPropagation()}>
                 <span className="modal-close" onClick={toggleModal}>×</span>
                 <div className='reset-content'>
                   <h2 className="reset-warning">Confirm Reset</h2>
