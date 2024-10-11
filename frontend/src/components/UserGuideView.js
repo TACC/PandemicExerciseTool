@@ -143,6 +143,49 @@ const UserGuideView = () => {
     setToggleInstructions(!toggleInstructions);
   };
 
+  const AccordionItem = ({ title, children }) => {
+    const [isOpen, setIsOpen] = useState(false);
+
+    const toggleAccordion = () => {
+      setIsOpen(!isOpen);
+    };
+
+    return (
+      <div>
+        <button onClick={toggleAccordion} style={styles.accordionButton}>
+          {title}
+        </button>
+        {isOpen && (
+          <div style={styles.accordionContent}>
+            {children}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // styles for accordion and its children
+  const styles = {
+    accordionButton: {
+      width: '100%',
+      padding: '25px 16px',
+      fontSize: 'larger',
+      fontWeight: 'bold',
+      borderRadius: '4px',
+      textAlign: 'left',
+      background: '#f7b13c',
+      border: 'none',
+      cursor: 'pointer',
+      outline: 'none',
+      marginBottom: '1em',
+    },
+    accordionContent: {
+      padding: '10px',
+      background: 'f9f9f9',
+      border: '1px solid #ccc'
+    },
+  };
+
   return (
     <div className="user-guide-view">
       <section className="text">
@@ -161,30 +204,16 @@ const UserGuideView = () => {
           <li>A range of example input data and parameters, as well as expected outputs for testing and verification.</li>
         </ul>
       </section>
-      <Instructions />
-      <ModelInfo />
-      {/* <div className="accordion"> */}
-      {/*   <button className="accordion-visible" onClick={instructionsToggler}> */}
-      {/*     <span>Instructions</span> */}
-      {/*   </button> */}
-      {/*   <div */}
-      {/*     className={toggleInstructions ? "accordion-toggle animated" : "accordion-toggle"} */}
-      {/*     ref={refHeightInstructions} */}
-      {/*     style={{ height: toggleInstructions ? `${heightInstructions}` : "0" }} */}
-      {/*   > */}
-      {/*     <Instructions /> */}
-      {/*   </div> */}
-      {/*   <button className="accordion-visible" onClick={modelInfoToggler}> */}
-      {/*     <span>About the Model</span> */}
-      {/*   </button> */}
-      {/*   <div  */}
-      {/*     className={toggleModelInfo ? "accordion-toggle animated" : "accordion-toggle"}  */}
-      {/*     ref={refHeightInfo} */}
-      {/*     style={{ height: toggleModelInfo ? `${heightInfo}` : "0" }} */}
-      {/*   > */}
-      {/*     <ModelInfo /> */}
-      {/*   </div> */}
-      {/* </div> */}
+      <div className="accordion">
+        <AccordionItem title="Instructions">
+          <Instructions />
+        </AccordionItem>
+        <AccordionItem title="About the Model">
+          <ModelInfo />
+        </AccordionItem>
+      </div>
+      {/* <Instructions /> */}
+      {/* <ModelInfo /> */}
     </div>
   )
 };

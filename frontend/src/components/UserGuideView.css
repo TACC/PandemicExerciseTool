@@ -130,6 +130,7 @@ img {
   padding: 12px;
   text-align: left;
   font-size: 1.2em;
+  text-wrap: balance;
 }
 
 .guide-table th {
