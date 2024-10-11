@@ -227,7 +227,7 @@ const Instructions = () => {
         <p>Set the scenario with the 'Set Scenario' button in the top-left corner of the screen</p>
         <img src={ require('./images/userGuide-setScenario.png') } alt="Setting the Scenario" />
         <p>Select 'Disease Parameters' from the dropdown menu to specify outbreak variables</p>
-        <img src={ require('./images/userGuide-parameters1.png') } alt="Selecting Paramters" />
+        <img src={ require('./images/userGuide-parameters1.png') } alt="Selecting Parameters" />
         <img src={ require('./images/userGuide-parameters2.png') } alt="Inputting Parameters" />
         <p>Load a preset scenario from the catalog and hit the 'Save' button</p>
         <img src={ require('./images/userGuide-presetSave.png') } alt="Saving Parameters" />
@@ -272,6 +272,23 @@ const Instructions = () => {
         <img src={ require('./images/userGuide-pause.png') } alt="Pausing the Simulation" style={{ width: '50%' }}/>
         <p>Once the simulation is paused, slide the timeline back and forth to navigate to specific days</p>
         <img src={ require('./images/userGuide-timelineSlide.png') } alt="Scrubbing the Timeline" style={{ width: '50%' }} />
+        <p>
+          To change disease parameters, edit initial cases, or include non-pharmaceutical interventions, the simulation
+          must first be reset. Clicking the 'Reset Simulation' button in the left-hand pane will reset the simulator
+        </p>
+        <img src={ require('./images/userGuide-resetButton.png') } alt="Reset Button" />
+        <p>Interventions are added using the '+ Add Interventions' button beneath the 'Set Scenario' button</p>
+        <img src={ require('./images/userGuide-setScenario.png') } alt="Setting the Scenario" />
+        <p>
+          Select 'Non-Pharmaceutical' from the dropdown menu to add non-pharmaceutical interventions, or NPIs.
+          Click the 'Add New NPI' button to confirm NPI parameters
+        </p>
+        <img src={ require('./images/userGuide-NPIs1.png') } alt="Selecting NPIs" />
+        <img src={ require('./images/userGuide-NPIs2.png') } alt="Selecting NPIs" />
+        <p>After adding, click 'Save' to submit NPIs to the simulator</p>
+        <img src={ require('./images/userGuide-NPIs3.png') } alt="Saving NPIs" />
+        <p>Clicking 'Interventions' in the left-hand summary pane will display intervention information</p>
+        <img src={ require('./images/userGuide-NPIs4.png') } alt="Summarized NPIs" />
       </section>
     </div>
   )
