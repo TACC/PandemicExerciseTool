@@ -44,7 +44,7 @@ const Header = ({ currentIndex, setCurrentIndex }) => {
           </button>
 
           <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
               <li class="nav-item" >
                 <a class="nav-link" aria-current="page"
                   className={`tab-button ${activeTab === 'home' ? 'active' : ''}`}
@@ -59,10 +59,6 @@ const Header = ({ currentIndex, setCurrentIndex }) => {
             <ul class="nav navbar-nav navbar-right">
               <li><a className='header-right'><span class="glyphicon glyphicon-user"></span> Interactive Outbreak Simulator</a></li>            
             </ul>
-
-            {/* <li class="nav-item">
-              <p class="nav-link" className='header-right'>Interactive Outbreak Simulator</p>
-            </li> */}
           </div>
         </div>
       </nav>
