@@ -177,12 +177,12 @@ const UserGuideView = () => {
       border: 'none',
       cursor: 'pointer',
       outline: 'none',
-      marginBottom: '1em',
     },
     accordionContent: {
       padding: '10px',
       background: 'f9f9f9',
-      border: '1px solid #ccc'
+      border: '1px solid #ccc',
+      borderRadius: '4px',
     },
   };
 
@@ -208,6 +208,7 @@ const UserGuideView = () => {
         <AccordionItem title="Instructions">
           <Instructions />
         </AccordionItem>
+        <p style={{ background: "white", padding: "0.75em" }}></p>
         <AccordionItem title="About the Model">
           <ModelInfo />
         </AccordionItem>
