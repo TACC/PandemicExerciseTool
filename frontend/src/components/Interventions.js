@@ -46,9 +46,10 @@ const Interventions = ( {counties} ) => {
         <div>
           {createPortal(
             <div className="modal-overlay" onClick={closeAntivirals}>
-              <div className="modal-contents" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <span className="modal-close" onClick={closeAntivirals}>&times;</span>
                 <h2>Antiviral Parameters and Stockpiles</h2>
+                <br></br>
                 <Antivirals onSubmit={(eff, wf, avs) => { console.log("Eff: ", eff, " WF: ", wf, " AVS: ", avs); closeAntivirals(); }} />
               </div>
             </div>,
@@ -60,7 +61,7 @@ const Interventions = ( {counties} ) => {
         <div>
           {createPortal(
             <div className="modal-overlay" onClick={closeVaccine}>
-              <div className="modal-contents" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <span className="modal-close" onClick={closeVaccine}>&times;</span>
                 <h2>Vaccine Stockpile</h2>
                 <Vaccine onSubmit={(ve, va, vwf, vs, vsl) => { console.log("Eff:", ve, " Adh: ", va, " WF: ", vwf, " Strat: ", vs, " VS: ", vsl); closeVaccine(); }} />
@@ -74,7 +75,7 @@ const Interventions = ( {counties} ) => {
         <div>
           {createPortal(
             <div className="modal-overlay" onClick={closeNonPharmaceutical}>
-              <div className="modal-contents" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <span className="modal-close" onClick={closeNonPharmaceutical}>&times;</span>
                 <h2>Non-pharmaceutical intervention</h2>
                 <NonPharmaceutical counties={counties} onSubmit={(npil) => { console.log('Non-Pharmaceutical:', npil); closeNonPharmaceutical(); }} />

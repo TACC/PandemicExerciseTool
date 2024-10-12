@@ -259,7 +259,7 @@ const SavedParameters = () => {
         <div>
           {createPortal(
           <div className="modal-overlay" onClick={closeModal}>
-            <div className="modal-contents" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
               <h2>Add Initial Cases</h2>
               <AddInitialCases counties={texasCounties} onClose={closeModal} />
             </div>

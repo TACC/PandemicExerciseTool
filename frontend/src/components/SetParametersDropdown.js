@@ -3,6 +3,7 @@ import AddInitialCases from './AddInitialCases';
 import SetManually from './SetManually';
 import './AddInitialCases.css'; // Import the CSS file for styling
 
+
 import { createPortal } from 'react-dom';
 
 const SetParametersDropdown = ({ counties, onSave }) => {
@@ -44,7 +45,7 @@ const SetParametersDropdown = ({ counties, onSave }) => {
           {/* Appending modal window to document.body prevents a rendering bug on Safari */}
           {createPortal(
             <div className="modal-overlay" onClick={closeSetManually}>
-              <div className="modal-contents"  style={{ backgroundColor: 'white' }} onClick={(e) => e.stopPropagation()}>
+              <div className="modal-content"  style={{ backgroundColor: 'white' }} onClick={(e) => e.stopPropagation()}>
                 <span className="modal-close" onClick={closeSetManually}>×</span>
                 <h2>Disease Parameters</h2>
                 <SetManually onClose={closeSetManually} onSubmit={(data) => { console.log('Set Manually:', data); handleSave(); }} />
@@ -58,7 +59,7 @@ const SetParametersDropdown = ({ counties, onSave }) => {
         <div>
           {createPortal(
             <div className="modal-overlay" onClick={closeInitialCases}>
-              <div className="modal-contents" style={{ backgroundColor: 'white' }} onClick={(e) => e.stopPropagation()}>
+              <div className="modal-content" style={{ backgroundColor: 'white' }} onClick={(e) => e.stopPropagation()}>
                 <span className="modal-close" onClick={closeInitialCases}>×</span>
                 <h2>Add Initial Cases</h2>
                 <AddInitialCases onClose={closeInitialCases} counties={counties} onSubmit={(data) => { console.log('Initial Cases:', data); handleSave(); }} />

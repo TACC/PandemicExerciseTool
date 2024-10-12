@@ -135,7 +135,7 @@ const Antivirals = ({ onSubmit }) => {
         <button type="submit" className="save_button">Add New Antiviral Stockpile</button>
       </form>
 
-      <h3>Added Stockpiles</h3>
+      <h5>Added Stockpiles</h5>
       <table className="avs-table">
         <thead>
           <tr>
