@@ -1,25 +1,6 @@
-.App {
-  display: flex;
-  flex-direction: column; /* Arrange children horizontally */
-  align-items: center;
-}
-
-.content {
-  display: flex;
-  justify-content: center;
-}
-
-header {
-  margin-bottom: 20px;
-}
-
-.parametersContainer {
-  width: 250px; /* Adjust width as needed */
-  padding: 10px;
-  background-color: #ffffff;
-  border: 1px solid #ccc;
-  margin-left: 10px; /* Add space between map and parameters */
-}
+/* .App {
+  text-align: center;
+} */
 
 .App-logo {
   height: 40vmin;
@@ -56,6 +37,23 @@ header {
   }
 }
 
+
+.content {
+  display: flex;
+  justify-content: center;
+}
+
+header {
+  /* margin-bottom: 20px; */
+}
+
+.parametersContainer {
+  width: 250px; /* Adjust width as needed */
+  padding: 10px;
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  margin-left: 10px; /* Add space between map and parameters */
+}
 
 .form-container {
   display: flex;
@@ -101,63 +99,6 @@ header {
   margin-right: 10px; /* Adjust margin as needed */
 }
 
-/* App.css */
-
-.table-container {
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  z-index: 10;
-  height: 100%;
-  width: 100%;
-  margin: 0 auto; /* Center the container */
-  padding: 20px; /* Add padding for better spacing */
-  box-sizing: border-box; /* Ensure padding is included in the width */
-  overflow: auto; /* Allow scrolling if content overflows */
-  border: 2px solid #ccc; /* Add a border around the container */
-  border-radius: 8px; /* Optional: Add rounded corners */
-}
-
-.table-scroll {
-  max-height: 100%; /* Use full height of the container */
-  overflow-y: auto; /* Allow vertical scrolling if needed */
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  border: 1px solid #ccc; /* Add border around the table */
-}
-
-th, td {
-  padding: 8px 12px;
-  border: 1px solid #ddd; /* Add borders between cells */
-  text-align: left;
-  white-space: nowrap; /* Prevent wrapping */
-}
-
-th {
-  position: relative;
-}
-
-.sort-button {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 16px;
-  padding: 0;
-  margin-left: 8px;
-  color: black; /* Inherit color to match text */
-  position: absolute;
-  right: 8px;
-  position: relative;
-  z-index: 10;
-}
-
-.sort-button:focus {
-  outline: none; /* Remove focus outline */
-}
-
 .button-container {
   display: flex;
   gap: 10px; /* Space between buttons */
@@ -192,31 +133,3 @@ th {
 .section {
   width: 100%;
 }
-
-.even-row {
-  background-color: #f2f2f2; /* Set the background color for even rows */
-}
-
-.odd-row {
-  background-color: #ffffff; /* Set the background color for odd rows */
-}
-
-.search-container {
-  display: flex;
-  align-items: center;
-}
-
-.search-icon {
-  width: 20px; /* Adjust size as needed */
-  height: 20px; /* Adjust size as needed */
-  margin-right: 8px; /* Space between icon and input */
-}
-
-.search-input {
-  padding: 8px 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 14px;
-  flex: 1; /* Take remaining space */
-}
-

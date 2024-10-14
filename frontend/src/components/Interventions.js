@@ -36,10 +36,10 @@ const Interventions = ( {counties, npiChange} ) => {
         <span className={`dropdown-arrow ${showDropdown ? 'open' : ''}`}>&#x25BE;</span>
       </button>
       {showDropdown && (
-        <div className="dropdown-menu">
-          <button className="dropdown-item" onClick={openNonPharmaceutical}>Non-Pharmaceutical</button>
-          <button className="dropdown-item" onClick={openAntivirals}>Antivirals</button>
-          <button className="dropdown-item" onClick={openVaccine}>Vaccines</button>
+        <div className="dropdown--menu">
+          <button className="dropdown-items" onClick={openNonPharmaceutical}>Non-Pharmaceutical</button>
+          <button className="dropdown-items" onClick={openAntivirals}>Antivirals</button>
+          <button className="dropdown-items" onClick={openVaccine}>Vaccines</button>
         </div>
       )}
       {isAntiviralsOpen && (
@@ -49,6 +49,7 @@ const Interventions = ( {counties, npiChange} ) => {
               <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <span className="modal-close" onClick={closeAntivirals}>&times;</span>
                 <h2>Antiviral Parameters and Stockpiles</h2>
+                <br></br>
                 <Antivirals onSubmit={(eff, wf, avs) => { console.log("Eff: ", eff, " WF: ", wf, " AVS: ", avs); closeAntivirals(); }} />
               </div>
             </div>,

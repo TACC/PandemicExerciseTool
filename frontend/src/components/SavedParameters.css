@@ -1,22 +1,24 @@
 .saved-parameters-panel {
   width: 100%; /* Ensure panel takes full width of its container */
-  padding: 5px; /* Add some padding inside the panel */
+  height: calc(100vh - 19.75em);
+  padding: 0; /* Add some padding inside the panel */
   box-sizing: border-box; /* Include padding in width calculation */
   overflow-x: auto; /* Allow horizontal scrolling if the table is too wide */
 }
 
 .scenario-section {
   font-size: small;
+  text-align: start;
 }
 
 .interventions-section {
   font-size: small;
+  text-align: start;
 }
 
 .section-label{
   font-size: medium;
 }
-
 
 .initial-cases-section {
   padding: 0px; /* Add some padding inside the panel */ 
@@ -46,8 +48,8 @@
 /* Added for styling the toggle buttons on the left panel */
 .toggle-section {
   display: flex;
-  justify-content: left;
-  margin-bottom: 15px;
+  justify-content: center;
+  margin-bottom: 10px;
   font-size: small;
 }
 
@@ -55,10 +57,10 @@
 .toggle-button {
   background-color: white;
   color: black; /* Button text color */
-  padding: 10px 10px;
-  margin: 0 0px; /* Space between buttons */
+  /* padding: 10px 10px; */
+  /* margin: 0 0px; Space between buttons */
   cursor: pointer;
-  font-size: 17px;
+  font-size: 16px;
   border-radius: 5px;
   transition: background-color 0.3s ease;
   text-decoration: underline;
@@ -66,6 +68,7 @@
   text-decoration-thickness: 2px;
   text-decoration-color: lightgray;
   font-weight: normal;
+
 }
 
 /* Style for the active button */
@@ -80,4 +83,3 @@
   background-color: #FEEFD8;
   text-decoration-color: black;
 }
-
