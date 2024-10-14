@@ -78,7 +78,7 @@ const SetManually = ({ onClose }) => {
     kappa: parseFloat(localStorage.getItem('kappa')) || 1.9,
     gamma: parseFloat(localStorage.getItem('gamma')) || 4.1,
     chi: parseFloat(localStorage.getItem('chi')) || 1.0,
-    rho: parseFloat(localStorage.getItem('rho')),
+    rho: parseFloat(localStorage.getItem('rho')) || 0.39,
     nuText: localStorage.getItem('nu') || "0.000022319,0.000040975,0.000083729,0.000061809,0.000008978",
     nu: nuText.split(",") || [0.000022319,0.000040975,0.000083729,0.000061809,0.000008978]
   });
@@ -127,7 +127,8 @@ const SetManually = ({ onClose }) => {
         nu: scenario.nu,
         nuText: scenario.nu.join()
       });
-      console.log("changed parameters to match scenario:", scenario.disease_name);
+      console.log("changed parameters to match scenario:", paramsObject.diseaseName);
+      console.log(paramsObject);
     }
   };
 
@@ -204,6 +205,8 @@ const SetManually = ({ onClose }) => {
     Object.keys(params).forEach(key => {
       localStorage.setItem(key, params[key]);
     });
+
+    localStorage.setItem("parameters", JSON.stringify(paramsObject));
 
     // Optionally close the form or notify parent component
     if (onClose) {
