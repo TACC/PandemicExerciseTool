@@ -20,11 +20,11 @@ import InfectedDeceasedTableMerged from './InfectedDeceasedTableMerged';
 import InfectedDeceasedTableMergedPercent from './InfectedDeceasedTableMergedPercent.js';
 import LineChart from './LineChart';
 
-import './HomeView.css';
 import PlayPauseButton from './PlayPauseButton';
 import './leaflet-overrides.css';
 import './styles.css';
 import axios from 'axios';
+import './HomeView.css';
 
 const HomeView = () => {
   const [isRunning, setIsRunning] = useState(false);

@@ -5,8 +5,7 @@ import GalleryView from '../GalleryView';
 import UserGuideView from '../UserGuideView';
 import HomeView from '../HomeView';
 import ChartView from '../ChartView';
-import "../../node_modules/bootstrap/dist/css/bootstrap.min.css";
-import "../../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js";
+
 
 const Header = ({ currentIndex, setCurrentIndex }) => {
   const [activeTab, setActiveTab] = useState('home');

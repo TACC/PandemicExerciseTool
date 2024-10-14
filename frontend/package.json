@@ -11,6 +11,7 @@
     "@craco/craco": "^7.1.0",
     "axios": "^1.7.4",
     "braces": "^3.0.3",
+    "bootstrap": "^5.3.3",
     "chart.js": "^4.4.3",
     "d3-fetch": "^3.0.1",
     "debug": "^4.3.6",
