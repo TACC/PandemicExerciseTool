@@ -230,18 +230,18 @@ const HomeView = () => {
       <div class="row">
         <div class="col-lg-2">
           <div className='left-panel'>
-                    <SetParametersDropdown 
-          counties={texasCounties} 
-          onSave={handleSave} 
-          casesChange={handleInitialCasesChange} 
-        />
-        <div className="interventions-container">
-          <Interventions counties={texasAllCounties} npiChange={handleNPIChange}/>
-        </div>
-        <div className="saved-parameters-panel">
-          <SavedParameters 
-            casesChange={handleInitialCasesChange}
-          />
+            <SetParametersDropdown
+              counties={texasCounties}
+              onSave={handleSave}
+              casesChange={handleInitialCasesChange}
+            />
+            <div className="interventions-container">
+              <Interventions counties={texasAllCounties} npiChange={handleNPIChange} />
+            </div>
+            <div className="saved-parameters-panel">
+              <SavedParameters
+                casesChange={handleInitialCasesChange}
+              />
             </div>
           </div>
         </div>
@@ -289,11 +289,11 @@ const HomeView = () => {
         {/* Right Panel - Infected Decease Table */}
         <div class="col-lg-3">
           <div className='right-panel'>
-           {viewType === 'percent' ? (
-            <InfectedDeceasedTableMergedPercent currentIndex={currentIndex} eventData={eventData} />
-          ) : (
-            <InfectedDeceasedTableMerged currentIndex={currentIndex} eventData={eventData} />
-        )}
+            {viewType === 'percent' ? (
+              <InfectedDeceasedTableMergedPercent currentIndex={currentIndex} eventData={eventData} />
+            ) : (
+              <InfectedDeceasedTableMerged currentIndex={currentIndex} eventData={eventData} />
+            )}
           </div>
         </div>
 
