@@ -75,7 +75,7 @@
 }
 
 .county-tooltip {
-  width: 200px;
+  width: max-content;
   font-size: large;
   background-color: white;
   color: black;
