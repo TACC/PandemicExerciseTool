@@ -83,6 +83,15 @@ const SetManually = ({ onClose }) => {
     nu: nuText.split(",") || [0.000022319,0.000040975,0.000083729,0.000061809,0.000008978]
   });
 
+  // change handler used to update paramsObject when input fields are changed
+  const handleChanges = e => {
+    const { name, value } = e.target;
+    setParamsObject(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
+  };
+
   // State to store values for each age group
   const [ageGroupValues, setAgeGroupValues] = useState({
     '0-4': '0.000022319',
@@ -127,8 +136,6 @@ const SetManually = ({ onClose }) => {
         nu: scenario.nu,
         nuText: scenario.nu.join()
       });
-      console.log("changed parameters to match scenario:", paramsObject.diseaseName);
-      console.log(paramsObject);
     }
   };
 
@@ -149,62 +156,79 @@ const SetManually = ({ onClose }) => {
     setNu(updatedNu)
   };
 
+  const handleCFRChange = (event, index) => {
+    const value = event.target.value;
+    const oldNuArray = paramsObject.nu;
+    const newNuArray = oldNuArray.map((item, idx) => {
+      if (idx === index) {
+        return value;
+      } else {
+        return item;
+      }
+    });
+
+    setParamsObject(prevState => ({
+      ...prevState,
+      nu: newNuArray
+    }));
+  }
+
   // Save state to localStorage when it changes
-  useEffect(() => {
-    localStorage.setItem('diseaseName', diseaseName);
-  }, [diseaseName]);
-
-  useEffect(() => {
-    localStorage.setItem('reproductionNumber', reproductionNumber);
-  }, [reproductionNumber]);
-
-  useEffect(() => {
-    localStorage.setItem('beta_scale', beta_scale);
-  }, [beta_scale]);
-
-  useEffect(() => {
-    localStorage.setItem('tau', tau);
-  }, [tau]);
-
-  useEffect(() => {
-    localStorage.setItem('kappa', kappa);
-  }, [kappa]);
-
-  useEffect(() => {
-    localStorage.setItem('gamma', gamma);
-  }, [gamma]);
-
-  useEffect(() => {
-    localStorage.setItem('chi', chi);
-  }, [chi]);
-
-  useEffect(() => {
-    localStorage.setItem('rho', rho);
-  }, [rho]);
-
-  useEffect(() => {
-    localStorage.setItem('nu', nu);
-    console.log('nu = ', nu)
-  }, [nu]);
+  // useEffect(() => {
+  //   localStorage.setItem('diseaseName', diseaseName);
+  // }, [diseaseName]);
+  //
+  // useEffect(() => {
+  //   localStorage.setItem('reproductionNumber', reproductionNumber);
+  // }, [reproductionNumber]);
+  //
+  // useEffect(() => {
+  //   localStorage.setItem('beta_scale', beta_scale);
+  // }, [beta_scale]);
+  //
+  // useEffect(() => {
+  //   localStorage.setItem('tau', tau);
+  // }, [tau]);
+  //
+  // useEffect(() => {
+  //   localStorage.setItem('kappa', kappa);
+  // }, [kappa]);
+  //
+  // useEffect(() => {
+  //   localStorage.setItem('gamma', gamma);
+  // }, [gamma]);
+  //
+  // useEffect(() => {
+  //   localStorage.setItem('chi', chi);
+  // }, [chi]);
+  //
+  // useEffect(() => {
+  //   localStorage.setItem('rho', rho);
+  // }, [rho]);
+  //
+  // useEffect(() => {
+  //   localStorage.setItem('nu', nu);
+  //   console.log('nu = ', nu)
+  // }, [nu]);
 
   const handleSubmit = event => {
     event.preventDefault();
     // Save the parameters to localStorage
-    const params = {
-      disease_name: diseaseName,
-      R0: reproductionNumber.toString(),
-      beta_scale: beta_scale.toString(),
-      tau: tau.toString(),
-      kappa: kappa.toString(),
-      gamma: gamma.toString(),
-      chi: chi.toString(),
-      rho: rho.toString(),
-      nu: nu.toString(),
-    };
+    // const params = {
+    //   disease_name: diseaseName,
+    //   R0: reproductionNumber.toString(),
+    //   beta_scale: beta_scale.toString(),
+    //   tau: tau.toString(),
+    //   kappa: kappa.toString(),
+    //   gamma: gamma.toString(),
+    //   chi: chi.toString(),
+    //   rho: rho.toString(),
+    //   nu: nu.toString(),
+    // };
 
-    Object.keys(params).forEach(key => {
-      localStorage.setItem(key, params[key]);
-    });
+    // Object.keys(params).forEach(key => {
+    //   localStorage.setItem(key, params[key]);
+    // });
 
     localStorage.setItem("parameters", JSON.stringify(paramsObject));
 
@@ -236,8 +260,9 @@ const SetManually = ({ onClose }) => {
           type="text"
           id="diseaseName"
           className="centered-input"
-          value={diseaseName}
-          onChange={e => setDiseaseName(e.target.value)}
+          value={paramsObject.diseaseName}
+          name="diseaseName"
+          onChange={handleChanges}
           required
         />
       </div>
@@ -251,8 +276,10 @@ const SetManually = ({ onClose }) => {
           type="number"
           id="reproductionNumber"
           className="centered-input"
-          value={reproductionNumber}
-          onChange={e => setReproductionNumber(parseFloat(e.target.value))}
+          value={paramsObject.reproductionNumber}
+          name="reproductionNumber"
+          // onChange={e => setReproductionNumber(parseFloat(e.target.value))}
+          onChange={handleChanges}
           step="0.1"
           min="0"
           required
@@ -269,8 +296,10 @@ const SetManually = ({ onClose }) => {
           type="number"
           id="tau"
           className="centered-input"
-          value={tau}
-          onChange={e => setTau(parseFloat(e.target.value))}
+          value={paramsObject.tau}
+          name="tau"
+          // onChange={e => setTau(parseFloat(e.target.value))}
+          onChange={handleChanges}
           step="0.1"
           min="0"
           required
@@ -287,8 +316,10 @@ const SetManually = ({ onClose }) => {
           type="number"
           id="kappa"
           className="centered-input"
-          value={kappa}
-          onChange={e => setKappa(parseFloat(e.target.value, 10))}
+          value={paramsObject.kappa}
+          name="kappa"
+          // onChange={e => setKappa(parseFloat(e.target.value, 10))}
+          onChange={handleChanges}
           step="0.1"
           min="0"
           required
@@ -305,8 +336,10 @@ const SetManually = ({ onClose }) => {
           type="number"
           id="gamma"
           className="centered-input"
-          value={gamma}
-          onChange={e => setGamma(parseFloat(e.target.value, 10))}
+          value={paramsObject.gamma}
+          name="gamma"
+          // onChange={e => setGamma(parseFloat(e.target.value, 10))}
+          onChange={handleChanges}
           step="0.1"
           min="0"
           required
@@ -345,8 +378,10 @@ const SetManually = ({ onClose }) => {
               type="number"
               id="ageGroup0-4"
               name="ageGroup0-4"
-              value={ageGroupValues['0-4']}
-              onChange={e => handleInputChange(e, '0-4', 0)}
+              // value={ageGroupValues['0-4']}
+              value={paramsObject.nu[0]}
+              // onChange={e => handleInputChange(e, '0-4', 0)}
+              onChange={e => handleCFRChange(e, 0)}
               step="0.000000001" // 9 decimal places
               min="0"
               max="100"
@@ -360,8 +395,10 @@ const SetManually = ({ onClose }) => {
               type="number"
               id="ageGroup5-24"
               name="ageGroup5-24"
-              value={ageGroupValues['5-24']}
-              onChange={e => handleInputChange(e, '5-24', 1)}
+              // value={ageGroupValues['5-24']}
+              value={paramsObject.nu[1]}
+              // onChange={e => handleInputChange(e, '5-24', 1)}
+              onChange={e => handleCFRChange(e, 1)}
               step="0.000000001" // 9 decimal places
               min="0"
               max="100"
@@ -375,8 +412,10 @@ const SetManually = ({ onClose }) => {
               type="number"
               id="ageGroup25-49"
               name="ageGroup25-49"
-              value={ageGroupValues['25-49']}
-              onChange={e => handleInputChange(e, '25-49', 2)}
+              // value={ageGroupValues['25-49']}
+              value={paramsObject.nu[2]}
+              // onChange={e => handleInputChange(e, '25-49', 2)}
+              onChange={e => handleCFRChange(e, 2)}
               step="0.000000001" // 9 decimal places
               min="0"
               max="100"
@@ -390,8 +429,10 @@ const SetManually = ({ onClose }) => {
               type="number"
               id="ageGroup50-64"
               name="ageGroup50-64"
-              value={ageGroupValues['50-64']}
-              onChange={e => handleInputChange(e, '50-64', 3)}
+              // value={ageGroupValues['50-64']}
+              value={paramsObject.nu[3]}
+              // onChange={e => handleInputChange(e, '50-64', 3)}
+              onChange={e => handleCFRChange(e, 3)}
               step="0.000000001" // 9 decimal places
               min="0"
               max="100"
@@ -405,8 +446,10 @@ const SetManually = ({ onClose }) => {
               type="number"
               id="ageGroup65Plus"
               name="ageGroup65Plus"
-              value={ageGroupValues['65+']}
-              onChange={e => handleInputChange(e, '65+', 4)}
+              // value={ageGroupValues['65+']}
+              value={paramsObject.nu[4]}
+              // onChange={e => handleInputChange(e, '65+', 4)}
+              onChange={e => handleCFRChange(e, 4)}
               step="0.000000001" // 9 decimal places
               min="0"
               max="100"
