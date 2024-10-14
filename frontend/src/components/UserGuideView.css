@@ -1,3 +1,10 @@
+*,
+*::after,
+*::before {
+  margin: 0;
+  padding: 0;
+  /* box-sizing: inherit; */
+}
 
 .li {
     margin-left: 1em;
@@ -48,7 +55,8 @@
 
 .user-guide-view {
   font-family: Arial, sans-serif;
-  margin: 1em;
+  margin: 5em;
+  max-width: 90vw;
 }
 
 .text {
@@ -150,7 +158,6 @@
     list-style-type: disc; /* Standard bullet points */
     padding-left: 20px; /* Indent the list */
     margin-top: 0; /* Remove top margin if needed */
-    text-align: left;
   }
 
 .code-section {

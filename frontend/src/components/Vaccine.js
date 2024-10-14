@@ -189,7 +189,7 @@ const Vaccine = ({ onSubmit }) => {
         <button type="submit" className="save_button" >Add New Vaccine Stockpile</button>
       </form>
 
-      <h5>Added Stockpiles</h5>
+      <h3>Added Stockpiles</h3>
       <table className="vs-table">
         <thead>
           <tr>
