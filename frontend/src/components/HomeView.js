@@ -217,7 +217,7 @@ const HomeView = () => {
 
     <div >
       <div class="row">
-        <div class="col-sm-2">
+        <div class="col-lg-2">
           <div className='left-panel'>
             <SetParametersDropdown counties={texasCounties} onSave={handleSave} />
             <div className="interventions-container">
@@ -231,7 +231,7 @@ const HomeView = () => {
         </div>
 
         {/* Middlle Panel - Infected Map (Count and Percentage) and Line Chart */}
-        <div class="col-sm-7">
+        <div class="col-lg-7">
 
           <div className='top-middle-panel'>
             <div className="radio-buttons-container">
@@ -270,7 +270,7 @@ const HomeView = () => {
         </div>
 
         {/* Right Panel - Infected Decease Table */}
-        <div class="col-sm-3">
+        <div class="col-lg-3">
           <div className='right-panel'>
             <InfectedDeceasedTableMerged currentIndex={currentIndex} eventData={eventData} />
           </div>
