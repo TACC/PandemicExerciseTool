@@ -78,23 +78,15 @@
   z-index: 3;
 }
 
-.middle-panel {
-  position: fixed;
-  left: 16em;
-  top: 4.25em;
-  padding: 10px;
-  overflow: hidden; /* Prevent scrollbars in the middle panel */
-}
-
 .map-and-chart-container {
   position: relative;
 }
 
 /* Make map and chart have equal height */
 .map-size, .chart-size {
-flex: 1; /* Allows both map and chart to grow equally */
-width: 100%; /* Full width of the container */
-box-sizing: border-box; /* Include padding and border in the element's total width and height */
+  flex: 1; /* Allows both map and chart to grow equally */
+  width: 100%; /* Full width of the container */
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
 }
 
 
@@ -112,11 +104,22 @@ box-sizing: border-box; /* Include padding and border in the element's total wid
 
 .top-middle-panel {
   position: relative;
-  top: 4.25em;
-  z-index: 2;
-  float: right;
+  top: 8.5em;
   overflow: hidden;
+  left: 85%;
+  z-index: 99;
+  width: max-content;
+  margin-top: -4.25em;
 }
+
+/* Small devices (landscape phones, less than 768px) */
+@media (max-width: 767.98px) { 
+  .top-middle-panel {
+    left: 75%;
+    top: 5.5em;
+  }
+}
+
 .radio-buttons-container {
   position: relative;
 }

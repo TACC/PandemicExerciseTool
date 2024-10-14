@@ -271,7 +271,7 @@ const LineChart = ({ eventData, currentIndex }) => {
   });
   
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100%', minHeight: '300px' }}>
+    <div style={{ position: 'relative', width: '100%', height: '100%', minHeight: '340px' }}>
       <Line data={data} options={options} />
     </div>
   );

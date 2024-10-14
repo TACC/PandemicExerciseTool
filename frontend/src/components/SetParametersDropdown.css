@@ -43,7 +43,7 @@
 
 .dropdown-items {
   display: block;
-  padding: 10px 30px;
+  /* padding: 10px 30px; */
   cursor: pointer;
   border-bottom: 1px solid #ccc;
   background: none;

@@ -1,6 +1,6 @@
 .saved-parameters-panel {
   width: 100%; /* Ensure panel takes full width of its container */
-  height: calc(100vh - 20em);
+  height: calc(100vh - 19.75em);
   padding: 0; /* Add some padding inside the panel */
   box-sizing: border-box; /* Include padding in width calculation */
   overflow-x: auto; /* Allow horizontal scrolling if the table is too wide */
@@ -60,7 +60,7 @@
   /* padding: 10px 10px; */
   /* margin: 0 0px; Space between buttons */
   cursor: pointer;
-  font-size: 17px;
+  font-size: 16px;
   border-radius: 5px;
   transition: background-color 0.3s ease;
   text-decoration: underline;
@@ -68,6 +68,7 @@
   text-decoration-thickness: 2px;
   text-decoration-color: lightgray;
   font-weight: normal;
+
 }
 
 /* Style for the active button */
