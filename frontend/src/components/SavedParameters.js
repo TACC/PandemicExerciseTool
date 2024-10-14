@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 // import './Parameters.css'; // Import the CSS file for styling
 import AddInitialCases from './AddInitialCases';
 import texasCounties from './counties';
@@ -18,7 +18,9 @@ const NPIInfo = ({ NPIList }) => {
     "65+"
   ];
 
-  return (
+  const [nonpharmaCount, setNonpharmaCount] = useState(NPIList.length);
+
+    return (
     <>
       {NPIList.map((npi, index) => (
         <div key={index} className="initial-case-item">
@@ -40,7 +42,7 @@ const NPIInfo = ({ NPIList }) => {
             
             <div className="parameter-label"><span className="light-text"> Effectiveness:</span> 
             </div> {npi.effectiveness.split(",").map((effect, index) =>
-                            <div className="parameter-value"><span className="light-text"> {ageGroups[index]}: </span><strong>{effect}</strong></div>)}
+                            <div key={index} className="parameter-value"><span className="light-text"> {ageGroups[index]}: </span><strong>{effect}</strong></div>)}
           </div>
           {index < NPIList.length - 1 && (
             <hr className="section-separator" />
@@ -51,11 +53,11 @@ const NPIInfo = ({ NPIList }) => {
   )
 };
 
-const SavedParameters = () => {
+const SavedParameters = ({ casesChange }) => {
   const [isModalOpen, setModalOpen] = useState(false); // State for modal visibility
   const [hovered, setHovered] = useState(false); // State for hover effect
   const [view, setView] = useState('scenario'); // State to manage toggle between 'scenario' and 'interventions'
-  const [nonpharmaList, setNonpharmaList] = useState(JSON.parse(localStorage.getItem('non_pharma_interventions')) || []);
+  // const [nonpharmaList, setNonpharmaList] = useState(JSON.parse(localStorage.getItem('non_pharma_interventions')) || []);
 
 
   // Retrieve parameters from localStorage
@@ -115,7 +117,7 @@ const SavedParameters = () => {
   
   const vaccineStockpileList = JSON.parse(localStorage.getItem('vaccine_stockpile')) || [];
 
-  // const nonpharmaList = JSON.parse(localStorage.getItem('non_pharma_interventions')) || [];
+  const nonpharmaList = JSON.parse(localStorage.getItem('non_pharma_interventions')) || [];
 
 
   // Function to handle modal opening and closing
@@ -261,7 +263,11 @@ const SavedParameters = () => {
           <div className="modal-overlay" onClick={closeModal}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
               <h2>Add Initial Cases</h2>
-              <AddInitialCases counties={texasCounties} onClose={closeModal} />
+              <AddInitialCases 
+                  counties={texasCounties} 
+                  onClose={closeModal} 
+                  casesChange={casesChange}
+                />
             </div>
           </div>,
           document.body

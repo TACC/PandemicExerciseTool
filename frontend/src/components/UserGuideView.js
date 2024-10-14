@@ -1,4 +1,5 @@
 import React from 'react';
+import { useState, useEffect, useRef } from "react";
 import './UserGuideView.css'; // Ensure this CSS file is updated
 
 
@@ -119,19 +120,79 @@ const appendixData = [
 ];
 
 const UserGuideView = () => {
+  const [toggleModelInfo, setToggleModelInfo] = useState(false);
+  const [toggleInstructions, setToggleInstructions] = useState(false);
+  const [heightInfo, setHeightInfo] = useState();
+  const [heightInstructions, setHeightInstructions] = useState();
+
+  // const refHeightInfo = useRef();
+  // useEffect(() => {
+  //   setHeightInfo(`${refHeightInfo.current.scrollHeight}px`)
+  // }, [])
+  //
+  // const refHeightInstructions = useRef();
+  // useEffect(() => {
+  //   setHeightInstructions(`${refHeightInstructions.current.scrollHeight}px`)
+  // }, [])
+
+  const modelInfoToggler = () => {
+    setToggleModelInfo(!toggleModelInfo);
+  };
+
+  const instructionsToggler = () => {
+    setToggleInstructions(!toggleInstructions);
+  };
+
+  const AccordionItem = ({ title, children }) => {
+    const [isOpen, setIsOpen] = useState(false);
+
+    const toggleAccordion = () => {
+      setIsOpen(!isOpen);
+    };
+
+    return (
+      <div>
+        <button onClick={toggleAccordion} style={styles.accordionButton}>
+          {title}
+        </button>
+        {isOpen && (
+          <div style={styles.accordionContent}>
+            {children}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // styles for accordion and its children
+  const styles = {
+    accordionButton: {
+      width: '100%',
+      padding: '25px 16px',
+      fontSize: 'larger',
+      fontWeight: 'bold',
+      borderRadius: '4px',
+      textAlign: 'left',
+      background: '#f7b13c',
+      border: 'none',
+      cursor: 'pointer',
+      outline: 'none',
+    },
+    accordionContent: {
+      padding: '10px',
+      background: 'f9f9f9',
+      border: '1px solid #ccc',
+      borderRadius: '4px',
+    },
+  };
+
   return (
     <div className="user-guide-view">
       <section className="text">
-        <h2>Pandemic Exercise Simulator</h2>
-        <p>Updated as of 8/6/2024</p>
+        <h2>Interactive Outbreak Simulator</h2>
+        <p>Updated as of 10/11/2024</p>
         <a href="https://github.com/TACC/PandemicExerciseSimulator" target="_blank" rel="noopener noreferrer" className="github-link">
         https://github.com/TACC/PandemicExerciseSimulator
-        </a>
-        <p><strong>Overview:</strong> This is a Python implementation of a Pandemic Exercise Simulator using a SEATIRD compartment model and binomial travel model. The simulator was implemented in such a way that it is modular, and can use alternative disease models, travel models, and eventually interventions (e.g. PHAs, antivirals, vaccines).</p>
-        <p>
-        This simulator can be run using the command line interface. It will also be the main calculation engine behind the graphical web app, hosted here (in development): </p>
-        <a href="https://github.com/TACC/PandemicExerciseTool" target="_blank" rel="noopener noreferrer" className="github-link">
-        https://github.com/TACC/PandemicExerciseTool
         </a>
         <p></p>
         <p className="needed-section">
@@ -142,6 +203,117 @@ const UserGuideView = () => {
           <li>Review of the Binomial Travel Model implementation.</li>
           <li>A range of example input data and parameters, as well as expected outputs for testing and verification.</li>
         </ul>
+      </section>
+      <div className="accordion">
+        <AccordionItem title="Instructions">
+          <Instructions />
+        </AccordionItem>
+        <p style={{ background: "white", padding: "0.75em" }}></p>
+        <AccordionItem title="About the Model">
+          <ModelInfo />
+        </AccordionItem>
+      </div>
+      {/* <Instructions /> */}
+      {/* <ModelInfo /> */}
+    </div>
+  )
+};
+
+const Instructions = () => {
+  return (
+    <div className="instructions">
+      <section className="text">
+        <h3>Using the Simulator</h3>
+        <p>Set the scenario with the 'Set Scenario' button in the top-left corner of the screen</p>
+        <img src={ require('./images/userGuide-setScenario.png') } alt="Setting the Scenario" />
+        <p>Select 'Disease Parameters' from the dropdown menu to specify starting conditions for the outbreak</p>
+        <ul className="bullet-points">
+          <li>R0: average number of secondary infections in a susepctible population</li>
+          <li>Latency period (days): average number of days spent asymptomatic immediately after infection</li>
+          <li>Asymptomatic period (days): average number of days spent infectious, but not yet symptomatic</li>
+          <li>Symptomatic period (days): average number of days spent symptomatic and infections</li>
+          <li>Asymptomatic rate (proportion): proportion of infections that never develop symptoms</li>
+          <li>Infection fatality rate (proportion): proportion of infections that lead to death</li>
+        </ul>
+        <img src={ require('./images/userGuide-parameters1.png') } alt="Selecting Parameters" />
+        <img src={ require('./images/userGuide-parameters2.png') } alt="Inputting Parameters" />
+        <p>Load a preset scenario from the catalog and hit the 'Save' button</p>
+        <img src={ require('./images/userGuide-presetSave.png') } alt="Saving Parameters" />
+        <p>Select 'Initial Cases' from the dropdown menu to specify initial infections. Click the '+ Add Cases' button to confirm</p>
+        <img src={ require('./images/userGuide-InitialCases1.png') } alt="Saving Parameters" />
+        <img src={ require('./images/userGuide-InitialCases2.png') } alt="Saving Parameters" />
+        <p>For instance, enter the following entries:</p>
+        <ul className="bullet-points">
+          <li>Location: Travis</li>
+          <li>Number of Cases: 100</li>
+          <li>Age Group: 0-4 years</li>
+        </ul>
+        <img src={ require('./images/userGuide-InitialCases3.png') } alt="Adding Initial Cases" />
+        <ul className="bullet-points">
+          <li>Location: Harris</li>
+          <li>Number of Cases: 100</li>
+          <li>Age Group: 0-4 years</li>
+        </ul>
+        <img src={ require('./images/userGuide-InitialCases4.png') } alt="Additional Initial Cases" />
+        <p>After adding cases, click 'Save and Close' to submit initial cases</p>
+        <p>Saved scenario parameters and initial cases are summarized in the left-hand panel</p>
+        {/* <img src={ require('./images/userGuide-summaryPanel.png') } alt="Summary Panel" /> */}
+        <p>Click the 'Play' button in the bottom-left corner to run the simulation</p>
+        <img src={ require('./images/userGuide-playScenario.png') } alt="Running the Simulation" style={{ width: '50%' }} />
+        <p>Hovering over the map will display infection data for a given county</p>
+        <img src={ require('./images/userGuide-onHover.png') } alt="Hovering over Counties" style={{ width: '50%' }}/>
+        <p>The infection map can be toggled to display the number of infected individuals per county</p>
+        <img src={ require('./images/userGuide-countToggle.png') } alt="Toggling Absolute Counts" style={{ width: '50%' }}/>
+        <p>Hover over the line chart at the bottom of the screen to see total statewide compartment counts</p>
+        <img src={ require('./images/userGuide-lineChart.png') } alt="Line Chart" style={{ width: '50%' }} />
+        <p>Clicking on a compartment in the legend will toggle that compartment on or off in the line chart</p>
+        <img src={ require('./images/userGuide-toggleCompartments.png') } alt="Toggling Compartments" style={{ width: '50%' }}/>
+        <p>
+          The table on the right-hand side of the screen can be sorted alphabetically by county or by 
+          ascending/descending order by infections or deaths per county
+        </p>
+        <p>
+          Use the search bar above the table to search for specific counties
+        </p>
+        <img src={ require('./images/userGuide-countySearch.png') } alt="Searching for Counties" style={{ width: "50%" }} />
+        <p>The 'Pause' button will halt the simulation</p>
+        <img src={ require('./images/userGuide-pause.png') } alt="Pausing the Simulation" style={{ width: '50%' }}/>
+        <p>Once the simulation is paused, slide the timeline back and forth to navigate to specific days</p>
+        <img src={ require('./images/userGuide-timelineSlide.png') } alt="Scrubbing the Timeline" style={{ width: '50%' }} />
+        <p>
+          To change disease parameters, edit initial cases, or include non-pharmaceutical interventions, the simulation
+          must first be reset. Clicking the 'Reset Simulation' button in the left-hand pane will reset the simulator
+        </p>
+        <img src={ require('./images/userGuide-resetButton.png') } alt="Reset Button" />
+        <p>Interventions are added using the '+ Add Interventions' button beneath the 'Set Scenario' button</p>
+        <img src={ require('./images/userGuide-setScenario.png') } alt="Setting the Scenario" />
+        <p>
+          Select 'Non-Pharmaceutical' from the dropdown menu to add non-pharmaceutical interventions, or NPIs.
+          Click the 'Add New NPI' button to confirm NPI parameters
+        </p>
+        <ul className="bullet-points">
+          <li>NPI start (simulation day): day of simulation on which the NPI is initiated</li>
+          <li>NPI duration (days): the number of days the NPI is active</li>
+          <li>
+            NPI effectiveness (proportion): age-specific reduction in susceptibility (
+            0 = no protection; 1 = complete protection)
+          </li>
+        </ul>
+        <img src={ require('./images/userGuide-NPIs1.png') } alt="Selecting NPIs" />
+        <img src={ require('./images/userGuide-NPIs2.png') } alt="Selecting NPIs" />
+        <p>After adding, click 'Save' to submit NPIs to the simulator</p>
+        <img src={ require('./images/userGuide-NPIs3.png') } alt="Saving NPIs" />
+        <p>Clicking 'Interventions' in the left-hand summary pane will display intervention information</p>
+        <img src={ require('./images/userGuide-NPIs4.png') } alt="Summarized NPIs" />
+      </section>
+    </div>
+  )
+}
+
+const ModelInfo = () => {
+  return (
+    <div className="model-info">
+      <section className="text">
         <p><strong>Data Description</strong></p>
         <p>This simulator expects the following inputs to be present:</p>
       </section>
@@ -340,7 +512,7 @@ const UserGuideView = () => {
       </li>
       <li><strong>Line 3-4:</strong> The next action taken depends on what type of event is pulled off the queue. </li>
       <li><strong>Line 5-6:</strong> If the event type is one of {'{EtoA, AtoT, AtoR, AtoD}'}, then:
-        <ul className="sub-list">
+        <ul className="sub-list">react fold content
           <li>The old compartment is decremented by one and the new compartment is incremented by one. For example, if the event is EtoA, then one individual is moved from the Exposed compartment into the Asymptomatic compartment. Then the event is removed from the queue.</li>
         </ul>
       </li>
@@ -375,7 +547,7 @@ const UserGuideView = () => {
 
       <ul className="bullet-points">
           <li><strong>Ta</strong> is time from exposed to asymptomatic</li>
-          <li><strong>Tt</strong> is time from asymptomatic to treatable</li>
+          <li><strong>Tt</strong> is time from asymptomatic to treatable</li>react fold content
           <li><strong>Ti</strong> is time from treatable to infectious</li>
           <li><strong>T{'d<=a'}</strong> is time from asymptomatic to deceased</li>
           <li><strong>T{'d=t,i'}</strong> is time from treatable/infectious to deceased</li>

@@ -17,6 +17,7 @@ import InfectedMap from './InfectedMap';
 import InfectedMapPercent from './InfectedMapPercent';
 import InfectedDeceasedTable from './InfectedDeceasedTable';
 import InfectedDeceasedTableMerged from './InfectedDeceasedTableMerged';
+import InfectedDeceasedTableMergedPercent from './InfectedDeceasedTableMergedPercent.js';
 import LineChart from './LineChart';
 
 import './HomeView.css';
@@ -34,6 +35,16 @@ const HomeView = () => {
   const [eventData, setEventData] = useState([]);
 
   const [viewType, setViewType] = useState('percent');
+
+  const [npiCount, setNPICount] = useState(localStorage.getItem('non_pharma_interventions') || 0);
+  const handleNPIChange = (npiList) => {
+    setNPICount(npiList.length);
+  }
+
+  const [initialCasesCount, setInitialCasesCount] = useState(localStorage.getItem("initial_infected") || 0);
+  const handleInitialCasesChange = () => {
+    setInitialCasesCount(localStorage.getItem("initial_infected").length || 0);
+  }
 
   // Handle radio button change
   const handleViewChange = (e) => {
@@ -219,13 +230,18 @@ const HomeView = () => {
       <div class="row">
         <div class="col-lg-2">
           <div className='left-panel'>
-            <SetParametersDropdown counties={texasCounties} onSave={handleSave} />
-            <div className="interventions-container">
-              <Interventions counties={texasAllCounties} />
-            </div>
-            <div className="saved-parameters-panel">
-              <SavedParameters />
-              {/* <NewSimulationButton /> */}
+                    <SetParametersDropdown 
+          counties={texasCounties} 
+          onSave={handleSave} 
+          casesChange={handleInitialCasesChange} 
+        />
+        <div className="interventions-container">
+          <Interventions counties={texasAllCounties} npiChange={handleNPIChange}/>
+        </div>
+        <div className="saved-parameters-panel">
+          <SavedParameters 
+            casesChange={handleInitialCasesChange}
+          />
             </div>
           </div>
         </div>
@@ -269,10 +285,15 @@ const HomeView = () => {
           </div>
         </div>
 
+
         {/* Right Panel - Infected Decease Table */}
         <div class="col-lg-3">
           <div className='right-panel'>
+           {viewType === 'percent' ? (
+            <InfectedDeceasedTableMergedPercent currentIndex={currentIndex} eventData={eventData} />
+          ) : (
             <InfectedDeceasedTableMerged currentIndex={currentIndex} eventData={eventData} />
+        )}
           </div>
         </div>
 

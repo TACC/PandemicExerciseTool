@@ -1,10 +1,58 @@
+
+.li {
+    margin-left: 1em;
+}
+
+.accordion {
+    background: #f1f1f1;
+}
+
+.accordion-toggle {
+    height: 0px;
+    font-size: 18px;
+    opacity: 0;
+    transition:
+    opacity 0.3s ease-in-out,
+    height 0.3s 0.3s ease-in-out;
+    color: #333;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+.accordion-visible {
+    background: #dfa53d;
+    width: 100%;
+    color: #fff;
+    cursor: pointer;
+    border: 1px solid #dfa53d;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7px 15px;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    margin-bottom: 1em;
+}
+
+.accordion-visible span {
+    padding: 15px 0;
+    font-size: 20px;
+}
+
+.animated {
+    opacity: 1;
+    transition:
+    height 0.3s ease-in-out,
+    opacity 0.3s 0.3s ease-in-out;
+}
+
 .user-guide-view {
   font-family: Arial, sans-serif;
   margin: 1em;
 }
 
 .text {
-  margin-top: 3em;
+  /*margin-top: 3em;*/
   margin-bottom: 30px;
 }
 
@@ -38,8 +86,23 @@
   text-decoration: underline;
 }
 
+.instructions img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 30%;
+    margin-bottom: 1em;
+    border-radius: 4px;
+}
+
 .table-section {
   margin-top: 30px;
+}
+
+.text h3 {
+    font-size: 2em;
+    margin-bottom: 15px;
+    text-align: left;
 }
 
 .table-section h3 {
@@ -59,6 +122,7 @@
   padding: 12px;
   text-align: left;
   font-size: 1.2em;
+  text-wrap: balance;
 }
 
 .guide-table th {
@@ -88,7 +152,6 @@
     margin-top: 0; /* Remove top margin if needed */
     text-align: left;
   }
-
 
 .code-section {
     margin-top: 30px;
