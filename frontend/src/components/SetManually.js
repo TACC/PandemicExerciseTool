@@ -169,7 +169,8 @@ const SetManually = ({ onClose }) => {
 
     setParamsObject(prevState => ({
       ...prevState,
-      nu: newNuArray
+      nu: newNuArray,
+      nuText: newNuArray.join()
     }));
   }
 
@@ -231,6 +232,7 @@ const SetManually = ({ onClose }) => {
     // });
 
     localStorage.setItem("parameters", JSON.stringify(paramsObject));
+    console.log("disease name:", paramsObject.diseaseName);
 
     // Optionally close the form or notify parent component
     if (onClose) {
