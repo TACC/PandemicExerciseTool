@@ -3,16 +3,19 @@
   color: white;
   text-decoration: none;
   font-size: 2em;
+  font-weight: 700;
 }
 
 .header-right {
   font-size: 1.55em;
+  font-weight: bolder;
   color: white;
   text-decoration: none;
 }
 
 .tab-button {
   font-size: 1.25em;
+  font-weight: bold;
   cursor: pointer;
   transition: background-color 0.3s;
   color: white;

@@ -57,7 +57,7 @@ const Header = ({ currentIndex, setCurrentIndex }) => {
               </li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-              <li><a className='header-right'><span class="glyphicon glyphicon-user"></span> Interactive Outbreak Simulator</a></li>            
+              <li><a className='header-right'><span></span> Interactive Outbreak Simulator</a></li>            
             </ul>
           </div>
         </div>

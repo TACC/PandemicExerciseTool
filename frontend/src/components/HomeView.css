@@ -18,9 +18,9 @@
 }
 
 .right-panel {
+  top: auto;
   background-color: transparent; /* Background color */
   position: relative; /* Fixes the panel to the right side */
-  top: auto;    /* Adjust this value slightly if needed */
   display: flex;
   flex-direction: column;
   justify-content: flex-start; /* Align items to the top */
@@ -28,6 +28,7 @@
 }
 
 .left-panel {
+  top: auto;
   width: 100%;
   background-color: #fff;
   padding: 10px;
@@ -104,7 +105,7 @@
 
 .top-middle-panel {
   position: relative;
-  top: 8.5em;
+  top: 4.95em;
   overflow: hidden;
   left: 85%;
   z-index: 99;
