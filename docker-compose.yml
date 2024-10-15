@@ -1,6 +1,4 @@
 ---
-version: "3"
-
 services:
     mongo-db:
         image: mongo:8.0-rc
