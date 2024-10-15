@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './AddInitialCases.css'; // Import the CSS file for styling
 import toggletip from  './images/toggletip.svg';
 
-const SetManually = ({ onClose }) => {
+const SetManually = ({ onClose, scenarioChange }) => {
 
   // Define scenarios with their corresponding values
   const scenarios = {
@@ -238,6 +238,7 @@ const SetManually = ({ onClose }) => {
     if (onClose) {
       onClose(); // Call the onClose function to close the form
     }
+    scenarioChange();    // trigger HomeView to rerender
   };
 
   return (

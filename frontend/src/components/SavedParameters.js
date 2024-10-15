@@ -55,22 +55,41 @@ const SavedParameters = ({ casesChange }) => {
   const [isModalOpen, setModalOpen] = useState(false); // State for modal visibility
   const [hovered, setHovered] = useState(false); // State for hover effect
   const [view, setView] = useState('scenario'); // State to manage toggle between 'scenario' and 'interventions'
-  // const [nonpharmaList, setNonpharmaList] = useState(JSON.parse(localStorage.getItem('non_pharma_interventions')) || []);
+  const [parameters, setParameters] = useState({
+    DiseaseName: "N/A",
+    ReproductionNumber: "N/A",
+    BetaScale: "N/A",
+    Tau: "N/A",
+    Kappa: "N/A",
+    Gamma: "N/A",
+    Chi: "N/A",
+  });
+  const [nuArray, setNuArray] = useState(["N/A", "N/A", "N/A", "N/A", "N/A"]);
 
+  useEffect(() => {
+    const params = localStorage.getItem('parameters');
 
-  // Retrieve parameters from localStorage
-  const parameters = {
-    DiseaseName: localStorage.getItem('diseaseName') || 'N/A',
-    ReproductionNumber: localStorage.getItem('reproductionNumber') || 'N/A',
-    Tau: localStorage.getItem('tau') || 'N/A',
-    Kappa: localStorage.getItem('kappa') || 'N/A',
-    Gamma: localStorage.getItem('gamma') || 'N/A',
-    Chi: localStorage.getItem('chi') || 'N/A',
-    //Nu: localStorage.getItem('nu') || 'N/A',
-  };
-
-  const paramNu = localStorage.getItem('nu') || 'N/A';
-  const paramNuList = paramNu.match(/[^,]+/g);
+    if (params) {
+      try {
+        const paramsObject = JSON.parse(params);
+        setParameters({
+          DiseaseName: paramsObject.diseaseName,
+          ReproductionNumber: paramsObject.ReproductionNumber,
+          BetaScale: paramsObject.beta_scale,
+          Tau: paramsObject.tau,
+          Kappa: paramsObject.kappa,
+          Gamma: paramsObject.gamma,
+          Chi: paramsObject.chi,
+        })
+        setNuArray(paramsObject.nu);
+      } catch (error) {
+        console.error("error parsing JSON", error);
+      }
+    }
+  }, []);
+ 
+  // const paramNu = localStorage.getItem('nu') || 'N/A';
+  // const paramNuList = paramNu.match(/[^,]+/g);
 
   // Map of user-friendly labels
   const labels = {
@@ -156,11 +175,11 @@ const SavedParameters = ({ casesChange }) => {
           <hr className="parameter-separator" />
           <div className="parameter-item">
               <div className="parameter-label">Case Fatality Rate</div>
-              <div className="parameter-value"><span className="light-text"> 0-4:</span>   {paramNuList[0]?.toString()}</div>
-              <div className="parameter-value"><span className="light-text"> 5-24:</span>  {paramNuList[1]?.toString()}</div>
-              <div className="parameter-value"><span className="light-text"> 25-49:</span> {paramNuList[2]?.toString()}</div>
-              <div className="parameter-value"><span className="light-text"> 50-64:</span> {paramNuList[3]?.toString()}</div>
-              <div className="parameter-value"><span className="light-text"> 65+: </span>  {paramNuList[4]?.toString()}</div>
+              <div className="parameter-value"><span className="light-text"> 0-4:</span>   {nuArray[0]?.toString()}</div>
+              <div className="parameter-value"><span className="light-text"> 5-24:</span>  {nuArray[1]?.toString()}</div>
+              <div className="parameter-value"><span className="light-text"> 25-49:</span> {nuArray[2]?.toString()}</div>
+              <div className="parameter-value"><span className="light-text"> 50-64:</span> {nuArray[3]?.toString()}</div>
+              <div className="parameter-value"><span className="light-text"> 65+: </span>  {nuArray[4]?.toString()}</div>
           </div>
           <hr className="section-separator" />
           <div

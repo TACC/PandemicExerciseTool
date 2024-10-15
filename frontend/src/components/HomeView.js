@@ -46,6 +46,13 @@ const HomeView = () => {
     setInitialCasesCount(localStorage.getItem("initial_infected").length || 0);
   }
 
+  const [scenarioCounter, setScenarioCounter] = useState(0);
+  const handleScenarioChange = () => {
+    console.log("scenario counter was", scenarioCounter);
+    setScenarioCounter(scenarioCounter + 1);
+    console.log("scenario counter now", scenarioCounter);
+  }
+
   // Handle radio button change
   const handleViewChange = (e) => {
     setViewType(e.target.value);
@@ -244,6 +251,7 @@ const HomeView = () => {
         <SetParametersDropdown 
           counties={texasCounties} 
           onSave={handleSave} 
+          scenarioChange={handleScenarioChange}
           casesChange={handleInitialCasesChange} 
         />
         <div className="interventions-container">
