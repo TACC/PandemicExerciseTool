@@ -59,8 +59,8 @@ const Antivirals = ({ onSubmit }) => {
       <form className="intervention-form" onSubmit={handleSetParams}>
         <div className="form-group">
           <label htmlFor="antiviralEffectiveness">Antiviral Effectiveness
-            <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-              <span className="tooltip-text">The probability that an individual treated within the treatment window will recover.</span>
+            <span className="tooltips"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
+              <span className="tooltips-text">The probability that an individual treated within the treatment window will recover.</span>
             </span>
           </label>
           <input
@@ -77,8 +77,8 @@ const Antivirals = ({ onSubmit }) => {
 
         <div className="form-group">
           <label htmlFor="antiviralWastageFactor">Antiviral Wastage Factor (days)
-            <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-              <span className="tooltip-text">Half of the antiviral stockpile will be wasted after N days.</span>
+            <span className="tooltips"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
+              <span className="tooltips-text">Half of the antiviral stockpile will be wasted after N days.</span>
             </span>
           </label>
           <input
@@ -99,8 +99,8 @@ const Antivirals = ({ onSubmit }) => {
       <form className="intervention-form" onSubmit={handleAddStockpile}>
         <div className="form-group">
         <label htmlFor="antiviralStockpileDay">New Stockpile Day
-        <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-            <span className="tooltip-text">Specify day that new antiviral stockpile becomes available.</span>
+        <span className="tooltips"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
+            <span className="tooltips-text">Specify day that new antiviral stockpile becomes available.</span>
           </span>
         </label>
         <input
@@ -117,8 +117,8 @@ const Antivirals = ({ onSubmit }) => {
 
         <div className="form-group">
         <label htmlFor="antiviralStockpileAmount">New Stockpile Amount
-        <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-            <span className="tooltip-text">Specify number of antivirals in new stockpile.</span>
+        <span className="tooltips"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
+            <span className="tooltips-text">Specify number of antivirals in new stockpile.</span>
           </span>
         </label>
         <input

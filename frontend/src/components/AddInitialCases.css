@@ -44,7 +44,7 @@ button {
 }
 
 /* Tooltip Section -- In the Modal */
-.tooltip {
+.tooltips {
   display: inline-block;
   position: relative;
   cursor: pointer;
@@ -52,7 +52,7 @@ button {
   font-weight: bold;
 }
 
-.tooltip-text {
+.tooltips-text {
   visibility: hidden;
   background-color: white;
   color: black;
@@ -71,7 +71,7 @@ button {
   width: 18em;
 }
 
-.tooltip:hover .tooltip-text {
+.tooltips:hover .tooltips-text {
   visibility: visible;
   opacity: 1;
 }
