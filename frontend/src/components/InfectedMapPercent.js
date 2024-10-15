@@ -158,7 +158,7 @@ const onEachCounty = (feature, layer) => {
         center={[31.0, -100.0]}
         zoomSnap={0.2}
         zoom={5.4}
-        style={{ height: '34em', backgroundColor: 'transparent'}}
+        style={{ height: '35em', backgroundColor: 'transparent'}}
         whenCreated={mapInstance => {mapRef.current=mapInstance; }}
       >
         <GeoJSON
