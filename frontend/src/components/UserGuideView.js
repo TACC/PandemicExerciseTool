@@ -194,7 +194,7 @@ const UserGuideView = () => {
         <a href="https://github.com/TACC/PandemicExerciseSimulator" target="_blank" rel="noopener noreferrer" className="github-link">
         https://github.com/TACC/PandemicExerciseSimulator
         </a>
-        <p></p>
+        <p id="ptag-separator"></p>
         <p className="needed-section">
           <strong>Needed: </strong>This tool is still in development and will benefit from testing and expert review. In particular, we need:
         </p>
@@ -208,7 +208,7 @@ const UserGuideView = () => {
         <AccordionItem title="Instructions">
           <Instructions />
         </AccordionItem>
-        <p style={{ background: "white", padding: "0.75em" }}></p>
+        <p style={{ background: "white", padding: "0.75em", marginBottom: "0" }}></p>
         <AccordionItem title="About the Model">
           <ModelInfo />
         </AccordionItem>

@@ -1,13 +1,9 @@
-*,
-*::after,
-*::before {
-  margin: 0;
-  padding: 0;
-  /* box-sizing: inherit; */
-}
-
 .li {
     margin-left: 1em;
+}
+
+#ptag-separator {
+  margin-bottom: 0;
 }
 
 .accordion {
@@ -56,7 +52,7 @@
 .user-guide-view {
   font-family: Arial, sans-serif;
   margin: 5em;
-  max-width: 70vw;
+  max-width: 80vw;
 }
 
 .text {
@@ -160,6 +156,7 @@
     padding-left: 2em; /* Indent the list */
     margin-top: 0; /* Remove top margin if needed */
     margin-bottom: 1.6;
+    text-align: left;
   }
 
 .code-section {
