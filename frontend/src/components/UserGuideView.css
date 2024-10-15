@@ -136,6 +136,7 @@
 .guide-table th {
     background-color: #f4f4f4;
     font-weight: bold;
+    z-index: auto;
   }
   
   .guide-table tbody tr:nth-child(even) {
