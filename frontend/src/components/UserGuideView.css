@@ -48,7 +48,8 @@
 
 .user-guide-view {
   font-family: Arial, sans-serif;
-  margin: 1em;
+  margin: 5em;
+  /* width: 80vw; */
 }
 
 .text {
@@ -128,6 +129,7 @@
 .guide-table th {
     background-color: #f4f4f4;
     font-weight: bold;
+    z-index: auto;
   }
   
   .guide-table tbody tr:nth-child(even) {
