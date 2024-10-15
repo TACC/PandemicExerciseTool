@@ -62,8 +62,8 @@ const Vaccine = ({ onSubmit }) => {
       <form className="intervention-form" onSubmit={handleSetParams}>
         <div className="form-group">
           <label htmlFor="vaccineEffectiveness">Vaccine Effectiveness
-            <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-              <span className="tooltip-text">Fraction of vaccinated population protected from infection (0 = no protection, 1 = complete protection).</span>
+            <span className="tooltips"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
+              <span className="tooltips-text">Fraction of vaccinated population protected from infection (0 = no protection, 1 = complete protection).</span>
             </span>
           </label>
           <input
@@ -79,8 +79,8 @@ const Vaccine = ({ onSubmit }) => {
         </div>
         <div className="form-group">
           <label htmlFor="vaccineAdherence">Vaccine Adherence
-            <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-              <span className="tooltip-text">Fraction of population that adhere to the vaccine schedule (0 = none, 1 = all)</span>
+            <span className="tooltips"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
+              <span className="tooltips-text">Fraction of population that adhere to the vaccine schedule (0 = none, 1 = all)</span>
             </span>
           </label>
           <input
@@ -96,8 +96,8 @@ const Vaccine = ({ onSubmit }) => {
         </div>
         <div className="form-group">
           <label htmlFor="vaccineWastageFactor">Vaccine Wastage Factor (days)
-            <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-              <span className="tooltip-text">Half of the vaccine stockpile will be wasted after N days.</span>
+            <span className="tooltips"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
+              <span className="tooltips-text">Half of the vaccine stockpile will be wasted after N days.</span>
             </span>
           </label>
           <input
@@ -113,8 +113,8 @@ const Vaccine = ({ onSubmit }) => {
         </div>
         <div className="form-group" style ={{alignItems: "center"}}>
           <label htmlFor="nu">Vaccine Strategy
-          <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-              <span className="tooltip-text">"Pro rata" distributes vaccine stockpiles to all age groups equally, "Children" distributes vaccine stockpiles to youngest age groups first.</span>
+          <span className="tooltips"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
+              <span className="tooltips-text">"Pro rata" distributes vaccine stockpiles to all age groups equally, "Children" distributes vaccine stockpiles to youngest age groups first.</span>
             </span>
           </label>
           <div> 
@@ -153,8 +153,8 @@ const Vaccine = ({ onSubmit }) => {
       <form className="intervention-form" onSubmit={handleAddStockpile}>
         <div className="form-group">
         <label htmlFor="vaccineStockpileDay">New Stockpile Day
-        <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-            <span className="tooltip-text">Specify day that new vaccine stockpile becomes available.</span>
+        <span className="tooltips"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
+            <span className="tooltips-text">Specify day that new vaccine stockpile becomes available.</span>
           </span>
         </label>
         <input
@@ -171,8 +171,8 @@ const Vaccine = ({ onSubmit }) => {
 
         <div className="form-group">
         <label htmlFor="vaccineStockpileAmount">New Stockpile Amount
-        <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-            <span className="tooltip-text">Specify number of vaccine doses in new stockpile.</span>
+        <span className="tooltips"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
+            <span className="tooltips-text">Specify number of vaccine doses in new stockpile.</span>
           </span>
         </label>
         <input
@@ -189,7 +189,7 @@ const Vaccine = ({ onSubmit }) => {
         <button type="submit" className="save_button" >Add New Vaccine Stockpile</button>
       </form>
 
-      <h3>Added Stockpiles</h3>
+      <h5>Added Stockpiles</h5>
       <table className="vs-table">
         <thead>
           <tr>

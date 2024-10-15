@@ -5,6 +5,8 @@ import texasCounties from './counties';
 import editIcon from './images/edit.svg'
 import './SavedParameters.css';
 import { createPortal } from 'react-dom';
+import NewSimulationButton from './NewSimulationButton'
+
 
 
 const NPIInfo = ({ NPIList }) => {
@@ -168,7 +170,7 @@ const SavedParameters = ({ casesChange }) => {
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
           >
-           <div><h3>Initial Cases</h3></div>
+           <div><h6>Initial Cases</h6></div>
             {initialCases.map((caseItem, index) => (
               <div key={index} className="initial-case-item">
                 <div className="initial-case-info">
@@ -191,7 +193,7 @@ const SavedParameters = ({ casesChange }) => {
       ) : (
         <div className="interventions-section">
 
-        <div><h3>NPIs</h3></div>
+        <div><h6>NPIs</h6></div>
           <div className="section-label"></div>
           {/* {nonpharmaList.map((item, index) => ( */}
           {/*   <div key={index} className="initial-case-item"> */}
@@ -206,7 +208,7 @@ const SavedParameters = ({ casesChange }) => {
 
           <hr className="section-separator" />
 
-          <div><h3>Antivirals</h3></div>
+          <div><h6>Antivirals</h6></div>
           {Object.keys(antiviralParams).map((key, index) => (
             <div key={key} className="parameter-item">
               <div className="parameter-label">{antiviralLabels[key]}</div>
@@ -230,7 +232,7 @@ const SavedParameters = ({ casesChange }) => {
           <hr className="section-separator" />
 
 
-          <div><h3>Vaccines</h3></div>
+          <div><h6>Vaccines</h6></div>
           {Object.keys(vaccineParams).map((key, index) => (
             <div key={key} className="parameter-item">
               <div className="parameter-label">{vaccineLabels[key]}</div>
@@ -259,7 +261,7 @@ const SavedParameters = ({ casesChange }) => {
         <div>
           {createPortal(
           <div className="modal-overlay" onClick={closeModal}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-contents" onClick={(e) => e.stopPropagation()}>
               <h2>Add Initial Cases</h2>
               <AddInitialCases 
                   counties={texasCounties} 
@@ -272,6 +274,8 @@ const SavedParameters = ({ casesChange }) => {
           )}
         </div>
       )}
+                    <NewSimulationButton />
+
     </div>
   );
 };
