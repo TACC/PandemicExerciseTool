@@ -45,7 +45,7 @@ const SetParametersDropdown = ({ counties, onSave, casesChange }) => {
           {/* Appending modal window to document.body prevents a rendering bug on Safari */}
           {createPortal(
             <div className="modal-overlay" onClick={closeSetManually}>
-              <div className="modal-content"  style={{ backgroundColor: 'white' }} onClick={(e) => e.stopPropagation()}>
+              <div className="modal-contents"  style={{ backgroundColor: 'white' }} onClick={(e) => e.stopPropagation()}>
                 <span className="modal-close" onClick={closeSetManually}>×</span>
                 <h2>Disease Parameters</h2>
                 <SetManually 
@@ -64,7 +64,7 @@ const SetParametersDropdown = ({ counties, onSave, casesChange }) => {
         <div>
           {createPortal(
             <div className="modal-overlay" onClick={closeInitialCases}>
-              <div className="modal-content" style={{ backgroundColor: 'white' }} onClick={(e) => e.stopPropagation()}>
+              <div className="modal-contents" style={{ backgroundColor: 'white' }} onClick={(e) => e.stopPropagation()}>
                 <span className="modal-close" onClick={closeInitialCases}>×</span>
                 <h2>Add Initial Cases</h2>
                 <AddInitialCases 
