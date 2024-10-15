@@ -32,7 +32,7 @@ const Header = ({ currentIndex, setCurrentIndex }) => {
   return (
     <div>
       <Navbar expand="lg" fixed="top" style={{ backgroundColor: "#102c41" }}>
-        <Container >
+        <Container fluid>
           <img
             src={require('./epiengage_logo_darkblue.jpg')}
             width="60"
@@ -40,27 +40,34 @@ const Header = ({ currentIndex, setCurrentIndex }) => {
             className="align-top header-logo"
             alt="EpiEngage Logo"
           />
-          <a class="navbar-brand" className='header-name'>epiENGAGE</a>
-
-          <Navbar.Toggle aria-controls="basic-navbar-nav" className="custom-toggler" />
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="navbar-nav mx-auto mb-2 mb-lg-0">
-              <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
-                <li class="nav-item" >
-                  <a class="nav-link" aria-current="page"
-                    className={`tab-button ${activeTab === 'home' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('home')}>Home</a>
-                </li>
-                <li class="nav-item" >
-                  <a class="nav-link"
-                    className={`tab-button ${activeTab === 'userguide' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('userguide')}>User Guide</a>
-                </li>
+          <Navbar className='header-name'>epiENGAGE</Navbar>
+          <Navbar.Toggle aria-controls="navbarScroll" className="custom-toggler" />
+          <Navbar.Collapse id="navbarScroll">
+            <Nav
+              className="mx-auto my-2 my-lg-0"
+              style={{ maxHeight: '100px' }}
+              navbarScrollx
+            >
+              <Nav>
+                <ul className="navbar-nav mx-auto mb-2 mb-lg-0">
+                  <li >
+                    <a aria-current="page"
+                      className={`tab-button ${activeTab === 'home' ? 'active' : ''}`}
+                      onClick={() => setActiveTab('home')}>Home</a>
+                  </li>
+                  <li>
+                    <a
+                      className={`tab-button ${activeTab === 'userguide' ? 'active' : ''}`}
+                      onClick={() => setActiveTab('userguide')}>User Guide</a>
+                  </li>
+                </ul>
+              </Nav>
+            </Nav>
+            <Nav>
+              <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li><a className='header-right'> Interactive Outbreak Simulator</a></li>
               </ul>
             </Nav>
-            <ul class="nav navbar-nav navbar-right">
-              <li><a className='header-right'> Interactive Outbreak Simulator</a></li>
-            </ul>
           </Navbar.Collapse>
         </Container>
       </Navbar>
@@ -71,6 +78,5 @@ const Header = ({ currentIndex, setCurrentIndex }) => {
   );
 };
 export default Header;
-
 
 
