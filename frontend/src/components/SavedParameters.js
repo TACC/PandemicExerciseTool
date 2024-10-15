@@ -66,6 +66,9 @@ const SavedParameters = ({ casesChange }) => {
   });
   const [nuArray, setNuArray] = useState(["N/A", "N/A", "N/A", "N/A", "N/A"]);
 
+  // this hook only runs once, that's why params don't show up until the page is refreshed
+  // ask chatgpt how to make this hook run whenever an event is sent or whatever
+  // wildcard in deps array? idk we ball tho
   useEffect(() => {
     const params = localStorage.getItem('parameters');
 
