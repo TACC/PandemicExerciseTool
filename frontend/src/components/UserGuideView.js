@@ -501,7 +501,7 @@ const ModelInfo = () => {
       <section className="text">
         <p><strong>Disease Model</strong></p>
         <p>The current implementation, Stochastic SEATIRD, was adapted from a previous code base. The main entrypoint to this disease model is a method called <strong>simulate()</strong>, which is called for each day, for each node, from <strong>src/simulator.py</strong>. This method models the progression of individuals through different stages of disease, including susceptible, exposed, asymptomatic, treatable, infectious, recovered, and deceased. The output of the method is the updated state of the population, including the number of individuals in each disease stage for each age group, risk group, and vaccination status, at the end of the simulation period.</p>
-        <p>The main logic of the method is to work through an <i>“event queue” </i> associated with each node. Events are either <i>transitions</i> from one compartment to another (e.g. I => R), or contacts. The event queue is initialized by the user-input initial infected, then it continues to take on new events through the course of simulation.</p>
+        <p>The main logic of the method is to work through an <i>“event queue” </i> associated with each node. Events are either <i>transitions</i> from one compartment to another (e.g. I =&gt; R), or contacts. The event queue is initialized by the user-input initial infected, then it continues to take on new events through the course of simulation.</p>
         <p>A plain text description of the workflow is as follows:</p>
       </section>
       <ul className="bullet-points">
@@ -611,7 +611,7 @@ const ModelInfo = () => {
           <li><strong>Line 14: </strong>Use a binomial expression given the total number of susceptible individuals on the sink node and the probability of exposure to calculate the number of individuals in the sink node that were exposed.</li>
           <li><strong>Line 15: </strong>Use the disease_model to expose that number of individuals on the SINK node.</li>
        </ul>
-       <p>The main objective of this model is to compute the number of individuals that were infected from travel in each age group in each node. Then, it calls the disease model to transition those individuals from Susceptible => Exposed. In the first step, it calculates the number of infectious contacts that occur for each age group as:</p>
+       <p>The main objective of this model is to compute the number of individuals that were infected from travel in each age group in each node. Then, it calls the disease model to transition those individuals from Susceptible =&gt; Exposed. In the first step, it calculates the number of infectious contacts that occur for each age group as:</p>
        <p>NIC{'sink=>source'} = (Transmitting * beta * rho * contact_rate * sigma) / flow_reduction</p>
        <p>NIC{'source=>sink'} = (Asymptomatic * beta * rho * contact_rate * sigma) / flow_reduction</p>
        <p>Where:</p>
@@ -627,8 +627,8 @@ const ModelInfo = () => {
             <li><strong>flow_reduction</strong> is a parameter representing reduced travel for different age groups</li>
         </ul>
         <p>The model assumes that infectious contacts that occur to sink node individuals travelling to other nodes can occur from contact with any of the transmitting population in source nodes (asymptomatic, treatable, or infectious). On the other hand, the model assumes that treatable and infectious individuals from the source nodes are not themselves travelling. Only asymptomatic individuals from the source nodes can travel to the sink node and create infectious contacts. After enumerating all of the infectious contacts that occur for each age group on the sink node, the probability of transmission for each age group is computed as:</p>
-        <p>Prob = ((Flowsink=>source * NICsink=>source) / TotalPopulationsink) + 
-                         ((Flowsource=>sink * NICsource=>sink) / TotalPopulationsource)</p>
+        <p>Prob = ((Flowsink=&gt;source * NICsink=&gt;source) / TotalPopulationsink) + 
+                         ((Flowsource=&gt;sink * NICsource=&gt;sink) / TotalPopulationsource)</p>
         <p>Where:</p>
 
       <ul className="bullet-points">
