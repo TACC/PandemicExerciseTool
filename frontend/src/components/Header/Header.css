@@ -2,13 +2,17 @@
 .header-name {
   color: white;
   text-decoration: none;
-  font-size: 2em;
+  font-size: 1.5em;
   font-weight: 700;
+}
+
+.header-logo {
+  align-items: flex-start;
 }
 
 .header-right {
   font-size: 1.55em;
-  font-weight: bolder;
+  font-weight: bold;
   color: white;
   text-decoration: none;
 }
@@ -50,4 +54,11 @@
 
 ul {
   text-align: center;
+}
+
+.fixed-top {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
 }
