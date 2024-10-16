@@ -26,9 +26,9 @@ const NewSimulationButton = () => {
         <div>
           {createPortal(
             <div className="modal-overlay" onClick={toggleModal}>
-              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-contents" onClick={(e) => e.stopPropagation()}>
                 <span className="modal-close" onClick={toggleModal}>×</span>
-                <div className='reset-content'>
+                <div className='reset-contents'>
                   <h2 className="reset-warning">Confirm Reset</h2>
                   <p>Resetting will remove all disase and interventions parameters. Are you sure you want to continue?</p>
                   <div className="confirmation-buttons">
