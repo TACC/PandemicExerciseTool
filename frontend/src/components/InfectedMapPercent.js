@@ -7,18 +7,7 @@ import './Legend.css'; // Ensure you have a CSS file for styling
 import '../fonts/fonts.css'
 
 // Function to determine color based on infected count
-// TODO: is it weird to have different number of buckets between count/percent?
 const getColor = (infectedPercent) => {
-  // return infectedPercent > 90 ? "#3B1253" :
-  //        infectedPercent > 80 ? "#6D1F6F" :
-  //        infectedPercent > 70 ? "#8F286A" :
-  //        infectedPercent > 60 ? "#AA3760" :
-  //        infectedPercent > 50 ? "#C1444B" :
-  //        infectedPercent > 40 ? "#D4624D" :
-  //        infectedPercent > 30 ? "#E1865C" :
-  //        infectedPercent > 20 ? "#EAAE70" :
-  //        infectedPercent > 10 ? "#F2D789" :
-  //                               "#FFEDA0"
   return infectedPercent >= 40 ? "#BD0026" :
          infectedPercent >= 30 ? "#E31A1B" :
          infectedPercent >= 20 ? "#FC4F2A" :
@@ -93,6 +82,8 @@ const Legend = () => {
 const InfectedMapPercent = ({ eventData, currentIndex }) => {
   const [countyData, setCountyData] = useState([]);
   const mapRef = useRef();
+
+  L.control.attribution.remove();
 
   useEffect(() => {
     const texasCounties = parseTexasOutline(texasOutline);
