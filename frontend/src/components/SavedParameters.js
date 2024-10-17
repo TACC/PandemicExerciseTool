@@ -58,7 +58,7 @@ const SavedParameters = ({ scenarioChange, casesChange }) => {
   const [parameters, setParameters] = useState({
     DiseaseName: "N/A",
     ReproductionNumber: "N/A",
-    BetaScale: "N/A",
+    // BetaScale: "N/A",
     Tau: "N/A",
     Kappa: "N/A",
     Gamma: "N/A",
@@ -78,10 +78,11 @@ const SavedParameters = ({ scenarioChange, casesChange }) => {
         setParameters({
           DiseaseName: paramsObject.diseaseName,
           ReproductionNumber: paramsObject.reproductionNumber,
-          BetaScale: paramsObject.beta_scale,
+          // BetaScale: paramsObject.beta_scale,
           Tau: paramsObject.tau,
           Kappa: paramsObject.kappa,
           Gamma: paramsObject.gamma,
+          // do we want to include chi in the summary? we currently don't allow users to edit this
           Chi: paramsObject.chi,
         })
         setNuArray(paramsObject.nu);
