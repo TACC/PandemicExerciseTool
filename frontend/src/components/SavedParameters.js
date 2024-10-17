@@ -51,7 +51,7 @@ const NPIInfo = ({ NPIList }) => {
   )
 };
 
-const SavedParameters = ({ casesChange }) => {
+const SavedParameters = ({ scenarioChange, casesChange }) => {
   const [isModalOpen, setModalOpen] = useState(false); // State for modal visibility
   const [hovered, setHovered] = useState(false); // State for hover effect
   const [view, setView] = useState('scenario'); // State to manage toggle between 'scenario' and 'interventions'
@@ -66,9 +66,6 @@ const SavedParameters = ({ casesChange }) => {
   });
   const [nuArray, setNuArray] = useState(["N/A", "N/A", "N/A", "N/A", "N/A"]);
 
-  // this hook only runs once, that's why params don't show up until the page is refreshed
-  // ask chatgpt how to make this hook run whenever an event is sent or whatever
-  // wildcard in deps array? idk we ball tho
   useEffect(() => {
     const params = localStorage.getItem('parameters');
 
@@ -89,7 +86,7 @@ const SavedParameters = ({ casesChange }) => {
         console.error("error parsing JSON", error);
       }
     }
-  }, []);
+  }, [scenarioChange]);
  
   // const paramNu = localStorage.getItem('nu') || 'N/A';
   // const paramNuList = paramNu.match(/[^,]+/g);

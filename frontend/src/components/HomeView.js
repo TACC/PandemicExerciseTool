@@ -259,6 +259,7 @@ const HomeView = () => {
         </div>
         <div className="saved-parameters-panel">
           <SavedParameters 
+            scenarioChange={handleScenarioChange}
             casesChange={handleInitialCasesChange}
           />
           <NewSimulationButton />
