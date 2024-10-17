@@ -87,23 +87,14 @@ const HomeView = () => {
     console.log("loaded params object from local storage");
 
     axios.post('http://localhost:8000/api/pet/', {
-      // disease_name: localStorage.getItem('diseaseName'),
       disease_name: paramsObject.diseaseName,
-      // R0: localStorage.getItem('reproductionNumber'),
       R0: paramsObject.reproductionNumber,
-      // beta_scale: localStorage.getItem('beta_scale'),
       beta_scale: paramsObject.beta_scale,
-      // tau: localStorage.getItem('tau'),
       tau: paramsObject.tau,
-      // kappa: localStorage.getItem('kappa'),
       kappa: paramsObject.kappa,
-      // gamma: localStorage.getItem('gamma'),
       gamma: paramsObject.gamma,
-      // chi: localStorage.getItem('chi'),
       chi: paramsObject.chi,
-      // rho: localStorage.getItem('rho'),
       rho: paramsObject.rho,
-      // nu: localStorage.getItem('nu'),
       nu: paramsObject.nuText,
       initial_infected: localStorage.getItem('initial_infected'),
       npis: localStorage.getItem('non_pharma_interventions'),
