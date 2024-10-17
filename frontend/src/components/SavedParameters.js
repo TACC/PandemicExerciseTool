@@ -66,6 +66,9 @@ const SavedParameters = ({ scenarioChange, casesChange }) => {
   });
   const [nuArray, setNuArray] = useState(["N/A", "N/A", "N/A", "N/A", "N/A"]);
 
+  // we have to use a useEffect hook rather than mirror the logic for showing initial cases/NPI data
+  // parsing the params object causes a crash if 'parameters' doesn't yet exist in local storage
+  // we wrap the try-catch block in a hook to prevent the crash
   useEffect(() => {
     const params = localStorage.getItem('parameters');
 
@@ -74,7 +77,7 @@ const SavedParameters = ({ scenarioChange, casesChange }) => {
         const paramsObject = JSON.parse(params);
         setParameters({
           DiseaseName: paramsObject.diseaseName,
-          ReproductionNumber: paramsObject.ReproductionNumber,
+          ReproductionNumber: paramsObject.reproductionNumber,
           BetaScale: paramsObject.beta_scale,
           Tau: paramsObject.tau,
           Kappa: paramsObject.kappa,
