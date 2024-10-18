@@ -64,7 +64,7 @@ const HomeView = () => {
 
 
   const handleDayChange = (index) => {
-    debugger;
+    // debugger;
     console.log(`Day changed to: ${index}`);
     setCurrentIndex(index);
   };
@@ -131,13 +131,13 @@ const HomeView = () => {
 
 
   useEffect(() => {
-    debugger;
+    // debugger;
     const nextAvailable = eventData.length;
     console.log("Length test", eventData.length);
     console.log("next available", nextAvailable)
 
     const fetchData = async (requestedIndex) => {
-      debugger;
+      // debugger;
       try {
         const response = await axios.get(`http://localhost:8000/api/output/${requestedIndex}`);
 
@@ -207,7 +207,7 @@ const HomeView = () => {
       }
     };
 
-    debugger;
+    // debugger;
 
     if (isRunning) {
       setTimeout(() => {
@@ -227,8 +227,8 @@ const HomeView = () => {
   return (
 
     <div >
-      <div class="row">
-        <div class="col-lg-2">
+      <div className="row">
+        <div className="col-lg-2">
           <div className='left-panel'>
             <SetParametersDropdown
               counties={texasCounties}
@@ -247,7 +247,7 @@ const HomeView = () => {
         </div>
 
         {/* Middlle Panel - Infected Map (Count and Percentage) and Line Chart */}
-        <div class="col-lg-7">
+        <div className="col-lg-7">
 
           <div className='top-middle-panel'>
             <div className="radio-buttons-container">
@@ -287,7 +287,7 @@ const HomeView = () => {
 
 
         {/* Right Panel - Infected Decease Table */}
-        <div class="col-lg-3">
+        <div className="col-lg-3">
           <div className='right-panel'>
             {viewType === 'percent' ? (
               <InfectedDeceasedTableMergedPercent currentIndex={currentIndex} eventData={eventData} />

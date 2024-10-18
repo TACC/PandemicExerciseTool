@@ -83,8 +83,6 @@ const InfectedMapPercent = ({ eventData, currentIndex }) => {
   const [countyData, setCountyData] = useState([]);
   const mapRef = useRef();
 
-  L.control.attribution.remove();
-
   useEffect(() => {
     const texasCounties = parseTexasOutline(texasOutline);
     if (eventData && eventData.length > 0 && typeof currentIndex !== "undefined") {
