@@ -15,17 +15,17 @@ const loadCountyNames = async () => {
   return lookup;
 };
 
-function InfectedDeceasedTableMergedPercent({ eventData, currentIndex }) {
+function InfectedDeceasedTableMergedPercent({ eventData, currentIndex, sortInfo, handleSortDirectionChange }) {
   const [mergedData, setMergedData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortDirection, setSortDirection] = useState({
-    county: 'asc',
-    infected: 'desc',
-    deceased: 'desc',
-    infectedPercent: 'desc',
-    deceasedPercent: 'desc',
-  });
+  // const [sortDirection, setSortDirection] = useState({
+  //   county: 'asc',
+  //   infected: 'desc',
+  //   deceased: 'desc',
+  //   infectedPercent: 'desc',
+  //   deceasedPercent: 'desc',
+  // });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,36 +49,43 @@ function InfectedDeceasedTableMergedPercent({ eventData, currentIndex }) {
       }));
 
       console.log(`Day Data (index ${currentIndex}):`, dayData); // Debugging output
+      debugger;
 
       setMergedData(dayData);
       setFilteredData(dayData); // Initialize filtered data to current day's data
+      sortData(sortInfo.lastSorted);
+      debugger;
     };
 
     fetchData();
+    console.log("sorting table by:", sortInfo.lastSorted);
+    debugger;
   }, [eventData, currentIndex]); // Rerun the effect when eventData changes
 
 
   // Function to handle sorting
   const sortData = (key) => {
+    handleSortDirectionChange(key);
+    debugger;
     const sorted = [...filteredData];
     sorted.sort((a, b) => {
       const valueA = key === 'county' ? a[key].toLowerCase() : parseFloat(a[key]);
       const valueB = key === 'county' ? b[key].toLowerCase() : parseFloat(b[key]);
 
       if (valueA < valueB) {
-        return sortDirection[key] === 'asc' ? -1 : 1;
+        return sortInfo[key] === 'asc' ? -1 : 1;
       }
       if (valueA > valueB) {
-        return sortDirection[key] === 'asc' ? 1 : -1;
+        return sortInfo[key] === 'asc' ? 1 : -1;
       }
       return 0;
     });
 
     setFilteredData(sorted);
-    setSortDirection({
-      ...sortDirection,
-      [key]: sortDirection[key] === 'asc' ? 'desc' : 'asc',
-    });
+    // setSortDirection({
+    //   ...sortDirection,
+    //   [key]: sortDirection[key] === 'asc' ? 'desc' : 'asc',
+    // });
   };
 
   // Function to filter data based on search term
@@ -111,19 +118,19 @@ function InfectedDeceasedTableMergedPercent({ eventData, currentIndex }) {
               <th>
                 County
                 <button className="sort-button" onClick={() => sortData('county')}>
-                  {sortDirection.county === 'asc' ? '↓' : '↑'}
+                  {sortInfo.county === 'asc' ? '↓' : '↑'}
                 </button>
               </th>
               <th>
                 Infected 
                 <button className="sort-button" onClick={() => sortData('infectedPercent')}>
-                  {sortDirection.infectedPercent === 'asc' ? '↓' : '↑'}
+                  {sortInfo.infectedPercent === 'asc' ? '↓' : '↑'}
                 </button>
               </th>
               <th>
                 Deceased
                 <button className="sort-button" onClick={() => sortData('deceasedPercent')}>
-                  {sortDirection.deceasedPercent === 'asc' ? '↓' : '↑'}
+                  {sortInfo.deceasedPercent === 'asc' ? '↓' : '↑'}
                 </button>
               </th>
             </tr>

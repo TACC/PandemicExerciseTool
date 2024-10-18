@@ -46,6 +46,23 @@ const HomeView = () => {
     setInitialCasesCount(localStorage.getItem("initial_infected").length || 0);
   }
 
+  // remember how table is sorted between re-renders
+  const [sortDirection, setSortDirection] = useState({
+    county: 'asc',
+    infected: 'desc',
+    deceased: 'desc',
+    infectedPercent: 'desc',
+    deceasedPercent: 'desc',
+    lastSorted: 'county',
+  });
+  const handleSortDirectionChange = (key) => {
+    setSortDirection({
+      ...sortDirection,
+      [key]: sortDirection[key] === 'asc' ? 'desc' : 'asc',
+      lastSorted: key,
+    });
+  };
+
   // Handle radio button change
   const handleViewChange = (e) => {
     setViewType(e.target.value);
@@ -64,7 +81,7 @@ const HomeView = () => {
 
 
   const handleDayChange = (index) => {
-    debugger;
+    // debugger;
     console.log(`Day changed to: ${index}`);
     setCurrentIndex(index);
   };
@@ -131,13 +148,13 @@ const HomeView = () => {
 
 
   useEffect(() => {
-    debugger;
+    // debugger;
     const nextAvailable = eventData.length;
     console.log("Length test", eventData.length);
     console.log("next available", nextAvailable)
 
     const fetchData = async (requestedIndex) => {
-      debugger;
+      // debugger;
       try {
         const response = await axios.get(`http://localhost:8000/api/output/${requestedIndex}`);
 
@@ -200,14 +217,14 @@ const HomeView = () => {
         }
 
       } catch (error) {
-        console.log('Data not here yet:', error);
+        // console.log('Data not here yet:', error);
         setTimeout(() => {
           fetchData(nextAvailable);
         }, 1000);
       }
     };
 
-    debugger;
+    // debugger;
 
     if (isRunning) {
       setTimeout(() => {
@@ -227,8 +244,8 @@ const HomeView = () => {
   return (
 
     <div >
-      <div class="row">
-        <div class="col-lg-2">
+      <div className="row">
+        <div className="col-lg-2">
           <div className='left-panel'>
             <SetParametersDropdown
               counties={texasCounties}
@@ -247,7 +264,7 @@ const HomeView = () => {
         </div>
 
         {/* Middlle Panel - Infected Map (Count and Percentage) and Line Chart */}
-        <div class="col-lg-7">
+        <div className="col-lg-7">
 
           <div className='top-middle-panel'>
             <div className="radio-buttons-container">
@@ -287,12 +304,22 @@ const HomeView = () => {
 
 
         {/* Right Panel - Infected Decease Table */}
-        <div class="col-lg-3">
+        <div className="col-lg-3">
           <div className='right-panel'>
             {viewType === 'percent' ? (
-              <InfectedDeceasedTableMergedPercent currentIndex={currentIndex} eventData={eventData} />
+              <InfectedDeceasedTableMergedPercent 
+                currentIndex={currentIndex} 
+                eventData={eventData} 
+                sortInfo={sortDirection} 
+                handleSortDirectionChange={handleSortDirectionChange}
+              />
             ) : (
-              <InfectedDeceasedTableMerged currentIndex={currentIndex} eventData={eventData} />
+              <InfectedDeceasedTableMerged 
+                  currentIndex={currentIndex} 
+                  eventData={eventData} 
+                  sortInfo={sortDirection}
+                  handleSortDirectionChange={handleSortDirectionChange}
+              />
             )}
           </div>
         </div>
