@@ -54,28 +54,35 @@ function InfectedDeceasedTableMergedPercent({ eventData, currentIndex, sortInfo,
       setMergedData(dayData);
       setFilteredData(dayData); // Initialize filtered data to current day's data
       sortData(sortInfo.lastSorted);
+      // we map over filteredData to populate the table
+      // sortInfo should update filteredData with sorted data, but maybe that isn't happening
+      // before the table is populated in the return() statement
+      // check here if the filteredData being printed is actually sorted or not
+      console.log(`Day data after sorting by ${sortInfo.lastSorted}:`, filteredData);
       debugger;
     };
 
     fetchData();
-    console.log("sorting table by:", sortInfo.lastSorted);
     debugger;
   }, [eventData, currentIndex]); // Rerun the effect when eventData changes
 
 
   // Function to handle sorting
   const sortData = (key) => {
+    console.log(sortInfo);
     handleSortDirectionChange(key);
-    debugger;
+    console.log("sorting data by", key);
     const sorted = [...filteredData];
     sorted.sort((a, b) => {
       const valueA = key === 'county' ? a[key].toLowerCase() : parseFloat(a[key]);
       const valueB = key === 'county' ? b[key].toLowerCase() : parseFloat(b[key]);
 
       if (valueA < valueB) {
+        console.log("me when I'm sorting");
         return sortInfo[key] === 'asc' ? -1 : 1;
       }
       if (valueA > valueB) {
+        console.log("sortmaxxing rn");
         return sortInfo[key] === 'asc' ? 1 : -1;
       }
       return 0;
