@@ -5,7 +5,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { MapContainer, TileLayer, GeoJSON, useMap } from 'react-leaflet';
 import L, { transformation } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import texasOutline from './texasOutline.json';
+import texasOutline from '../data/texasOutline.json';
 import './Legend.css'; // Ensure you have a CSS file for styling
 import '../fonts/fonts.css'
 import { IoHomeSharp } from "react-icons/io5";
