@@ -118,7 +118,7 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
           id="nonpharmaDay"
           value={nonpharmaDay}
           onChange={e => setNonpharmaDay(e.target.value)}
-          min="1"
+          min="0"
           max="1000"
           step="1"
           required
