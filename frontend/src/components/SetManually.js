@@ -58,14 +58,14 @@ const SetManually = ({ onClose, scenarioChange }) => {
 
   // Load initial state from localStorage or set default values
   const [selectedScenario, setSelectedScenario] = useState('');
-  const [diseaseName, setDiseaseName] = useState(localStorage.getItem('diseaseName') || '');
-  const [reproductionNumber, setReproductionNumber] = useState(parseFloat(localStorage.getItem('reproductionNumber')) || 1.2);
-  const [beta_scale, setBetaScale] = useState(parseFloat(localStorage.getItem('beta_scale'), 10) || 10);
-  const [tau, setTau] = useState(parseFloat(localStorage.getItem('tau')) || 1.2);
-  const [kappa, setKappa] = useState(parseFloat(localStorage.getItem('kappa')) || 1.9);
-  const [gamma, setGamma] = useState(parseFloat(localStorage.getItem('gamma')) || 4.1);
-  const [chi, setChi] = useState(parseFloat(localStorage.getItem('chi')) || 1.0);
-  const [rho, setRho] = useState(parseFloat(localStorage.getItem('rho')) || 0.39);
+  // const [diseaseName, setDiseaseName] = useState(localStorage.getItem('diseaseName') || '');
+  // const [reproductionNumber, setReproductionNumber] = useState(parseFloat(localStorage.getItem('reproductionNumber')) || 1.2);
+  // const [beta_scale, setBetaScale] = useState(parseFloat(localStorage.getItem('beta_scale'), 10) || 10);
+  // const [tau, setTau] = useState(parseFloat(localStorage.getItem('tau')) || 1.2);
+  // const [kappa, setKappa] = useState(parseFloat(localStorage.getItem('kappa')) || 1.9);
+  // const [gamma, setGamma] = useState(parseFloat(localStorage.getItem('gamma')) || 4.1);
+  // const [chi, setChi] = useState(parseFloat(localStorage.getItem('chi')) || 1.0);
+  // const [rho, setRho] = useState(parseFloat(localStorage.getItem('rho')) || 0.39);
   //const [nu, setNu] = useState(localStorage.getItem('nu') || [0.000022319,0.000040975,0.000083729,0.000061809,0.000008978]);
   const [nuText, setNuText] = useState(localStorage.getItem('nu') || "0.000022319,0.000040975,0.000083729,0.000061809,0.000008978");
   const [nu, setNu] = useState(nuText.split(',') || [0.000022319,0.000040975,0.000083729,0.000061809,0.000008978]);
