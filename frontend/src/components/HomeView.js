@@ -46,6 +46,13 @@ const HomeView = () => {
     setInitialCasesCount(localStorage.getItem("initial_infected").length || 0);
   }
 
+  const [scenarioCounter, setScenarioCounter] = useState(0);
+  const handleScenarioChange = () => {
+    console.log("scenario counter was", scenarioCounter);
+    setScenarioCounter(scenarioCounter + 1);
+    console.log("scenario counter now", scenarioCounter);
+  }
+
   // Handle radio button change
   const handleViewChange = (e) => {
     setViewType(e.target.value);
@@ -74,16 +81,21 @@ const HomeView = () => {
     setEventData([]);
     setCurrentIndex(0);
 
+    // load parameters object from local storage and POST each property individually
+    console.log(JSON.parse(localStorage.getItem('parameters')));
+    const paramsObject = JSON.parse(localStorage.getItem('parameters'));
+    console.log("loaded params object from local storage");
+
     axios.post('http://localhost:8000/api/pet/', {
-      disease_name: localStorage.getItem('diseaseName'),
-      R0: localStorage.getItem('reproductionNumber'),
-      beta_scale: localStorage.getItem('beta_scale'),
-      tau: localStorage.getItem('tau'),
-      kappa: localStorage.getItem('kappa'),
-      gamma: localStorage.getItem('gamma'),
-      chi: localStorage.getItem('chi'),
-      rho: localStorage.getItem('rho'),
-      nu: localStorage.getItem('nu'),
+      disease_name: paramsObject.diseaseName,
+      R0: paramsObject.reproductionNumber,
+      beta_scale: paramsObject.beta_scale,
+      tau: paramsObject.tau,
+      kappa: paramsObject.kappa,
+      gamma: paramsObject.gamma,
+      chi: paramsObject.chi,
+      rho: paramsObject.rho,
+      nu: paramsObject.nuText,
       initial_infected: localStorage.getItem('initial_infected'),
       npis: localStorage.getItem('non_pharma_interventions'),
       antiviral_effectiveness: localStorage.getItem('antiviral_effectiveness'),
@@ -225,7 +237,6 @@ const HomeView = () => {
   };
 
   return (
-
     <div >
       <div className="row">
         <div className="col-lg-2">
@@ -240,6 +251,7 @@ const HomeView = () => {
             </div>
             <div className="saved-parameters-panel">
               <SavedParameters
+                scenarioChange={handleScenarioChange}
                 casesChange={handleInitialCasesChange}
               />
             </div>
