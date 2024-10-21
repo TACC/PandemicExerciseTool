@@ -1,28 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
-import texasCounties from './counties';
-import texasAllCounties from './countiesAndAll.js';
+import texasCounties from '../data/texasCounties.js';
+import texasAllCounties from '../data/texasCountiesStatewide.js';
 import TimelineSlider from './TimelineSlider';
-import DeceasedLineChart from './DeceasedLineChart';
-import StateCountyDropdowns from './StateCountyDropdown';
-import CountyPercentageTable from './CountyPercentageTable';
-import InitialMapPercent from './InitialMapPercent';
-import NewSimulationButton from './NewSimulationButton';
 import SetParametersDropdown from './SetParametersDropdown';
 import Interventions from './Interventions';
 import SavedParameters from './SavedParameters';
-import AddInitialCases from './AddInitialCases';
-import CountyInfectedDeceasedTable from './CountyInfectedDeceasedTable';
-import InfectedDeceasedTablePercent from './InfectedDeceasedTablePercent';
 import InfectedMap from './InfectedMap';
 import InfectedMapPercent from './InfectedMapPercent';
-import InfectedDeceasedTable from './InfectedDeceasedTable';
 import InfectedDeceasedTableMerged from './InfectedDeceasedTableMerged';
 import InfectedDeceasedTableMergedPercent from './InfectedDeceasedTableMergedPercent.js';
 import LineChart from './LineChart';
 
 import PlayPauseButton from './PlayPauseButton';
 import './leaflet-overrides.css';
-import './styles.css';
 import axios from 'axios';
 import './HomeView.css';
 

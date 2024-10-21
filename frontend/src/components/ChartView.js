@@ -1,10 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import texasCounties from './counties';
+import texasCounties from '../data/texasCounties';
 import TimelineSlider from './TimelineSlider';
-import DeceasedLineChart from './DeceasedLineChart';
-import StateCountyDropdowns from './StateCountyDropdown';
-import CountyPercentageTable from './CountyPercentageTable';
-import InitialMapPercent from './InitialMapPercent';
 import SetParametersDropdown from './SetParametersDropdown';
 import Interventions from './Interventions';
 import './ChartView.css';
@@ -13,10 +9,8 @@ import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 import PlayPauseButton from './PlayPauseButton';
 import './leaflet-overrides.css';
-import './styles.css';
 // import './left-panel.css';
 
-import OUTPUT_0 from './OUTPUT_0.json';
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 const layout = [
@@ -148,13 +142,8 @@ const ChartView = () => {
           />}
         </div>  
         <div key="chart">
-        {<DeceasedLineChart eventData={eventData} />}
         </div>
         <div key="map">
-          {<InitialMapPercent outputData={outputFiles[currentIndex]} />}
-        </div>
-        <div key="table" className="table-container">
-          {<CountyPercentageTable className="percentage-table" outputData={outputFiles[currentIndex]} />}
         </div>
       </ResponsiveGridLayout>
     </div>

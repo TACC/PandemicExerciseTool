@@ -125,16 +125,6 @@ const UserGuideView = () => {
   const [heightInfo, setHeightInfo] = useState();
   const [heightInstructions, setHeightInstructions] = useState();
 
-  // const refHeightInfo = useRef();
-  // useEffect(() => {
-  //   setHeightInfo(`${refHeightInfo.current.scrollHeight}px`)
-  // }, [])
-  //
-  // const refHeightInstructions = useRef();
-  // useEffect(() => {
-  //   setHeightInstructions(`${refHeightInstructions.current.scrollHeight}px`)
-  // }, [])
-
   const modelInfoToggler = () => {
     setToggleModelInfo(!toggleModelInfo);
   };

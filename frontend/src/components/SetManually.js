@@ -66,7 +66,7 @@ const SetManually = ({ onClose, scenarioChange }) => {
   const [gamma, setGamma] = useState(parseFloat(localStorage.getItem('gamma')) || 4.1);
   const [chi, setChi] = useState(parseFloat(localStorage.getItem('chi')) || 1.0);
   const [rho, setRho] = useState(parseFloat(localStorage.getItem('rho')) || 0.39);
-  //const [nu, setNu] = useState(localStorage.getItem('nu') || [0.000022319,0.000040975,0.000083729,0.000061809,0.000008978]);
+  // const [nu, setNu] = useState(localStorage.getItem('nu') || [0.000022319,0.000040975,0.000083729,0.000061809,0.000008978]);
   const [nuText, setNuText] = useState(localStorage.getItem('nu') || "0.000022319,0.000040975,0.000083729,0.000061809,0.000008978");
   const [nu, setNu] = useState(nuText.split(',') || [0.000022319,0.000040975,0.000083729,0.000061809,0.000008978]);
 

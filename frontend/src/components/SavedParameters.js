@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from 'react';
-// import './Parameters.css'; // Import the CSS file for styling
 import AddInitialCases from './AddInitialCases';
-import texasCounties from './counties';
+import texasCounties from '../data/texasCounties';
 import editIcon from './images/edit.svg'
 import './SavedParameters.css';
 import { createPortal } from 'react-dom';
 import NewSimulationButton from './NewSimulationButton'
-
-
 
 const NPIInfo = ({ NPIList }) => {
   let ageGroups = [
