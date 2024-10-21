@@ -47,12 +47,13 @@ const HomeView = () => {
   }
 
   // remember how table is sorted between re-renders
+  // default sort is flipped when user clicks to sort
   const [sortDirection, setSortDirection] = useState({
     county: 'asc',
-    infected: 'desc',
-    deceased: 'desc',
-    infectedPercent: 'desc',
-    deceasedPercent: 'desc',
+    infected: 'asc',
+    deceased: 'asc',
+    infectedPercent: 'asc',
+    deceasedPercent: 'asc',
     lastSorted: 'county',
   });
   const handleSortDirectionChange = (key) => {
