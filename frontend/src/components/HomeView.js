@@ -245,6 +245,7 @@ const HomeView = () => {
               counties={texasCounties}
               onSave={handleSave}
               casesChange={handleInitialCasesChange}
+              scenarioChange={handleScenarioChange}
             />
             <div className="interventions-container">
               <Interventions counties={texasAllCounties} npiChange={handleNPIChange} />
