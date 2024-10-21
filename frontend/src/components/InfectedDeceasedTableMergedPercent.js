@@ -27,6 +27,11 @@ function InfectedDeceasedTableMergedPercent({ eventData, currentIndex, sortInfo,
   //   deceasedPercent: 'desc',
   // });
 
+  const sortManually = (key) => {
+    handleSortDirectionChange(key);
+    sortData();
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       const countyNameLookup = await loadCountyNames();
@@ -53,7 +58,7 @@ function InfectedDeceasedTableMergedPercent({ eventData, currentIndex, sortInfo,
 
       setMergedData(dayData);
       setFilteredData(dayData); // Initialize filtered data to current day's data
-      sortData(sortInfo.lastSorted);
+      // sortData();
       // we map over filteredData to populate the table
       // sortInfo should update filteredData with sorted data, but maybe that isn't happening
       // before the table is populated in the return() statement
@@ -63,14 +68,15 @@ function InfectedDeceasedTableMergedPercent({ eventData, currentIndex, sortInfo,
     };
 
     fetchData();
+    sortData();
     debugger;
-  }, [eventData, currentIndex]); // Rerun the effect when eventData changes
+  }, [eventData, currentIndex]); // Rerun the effect when eventData changes or timeline is scrubbed
 
 
   // Function to handle sorting
-  const sortData = (key) => {
+  const sortData = () => {
+    const key = sortInfo.lastSorted;
     console.log(sortInfo);
-    handleSortDirectionChange(key);
     console.log("sorting data by", key);
     const sorted = [...filteredData];
     sorted.sort((a, b) => {
@@ -88,7 +94,9 @@ function InfectedDeceasedTableMergedPercent({ eventData, currentIndex, sortInfo,
       return 0;
     });
 
+    console.log("after sorting by", key, "within sortData scope:", sorted);
     setFilteredData(sorted);
+    setMergedData(sorted);
     // setSortDirection({
     //   ...sortDirection,
     //   [key]: sortDirection[key] === 'asc' ? 'desc' : 'asc',
@@ -124,19 +132,19 @@ function InfectedDeceasedTableMergedPercent({ eventData, currentIndex, sortInfo,
             <tr>
               <th>
                 County
-                <button className="sort-button" onClick={() => sortData('county')}>
+                <button className="sort-button" onClick={() => sortManually('county')}>
                   {sortInfo.county === 'asc' ? '↓' : '↑'}
                 </button>
               </th>
               <th>
                 Infected 
-                <button className="sort-button" onClick={() => sortData('infectedPercent')}>
+                <button className="sort-button" onClick={() => sortManually('infectedPercent')}>
                   {sortInfo.infectedPercent === 'asc' ? '↓' : '↑'}
                 </button>
               </th>
               <th>
                 Deceased
-                <button className="sort-button" onClick={() => sortData('deceasedPercent')}>
+                <button className="sort-button" onClick={() => sortManually('deceasedPercent')}>
                   {sortInfo.deceasedPercent === 'asc' ? '↓' : '↑'}
                 </button>
               </th>

@@ -64,14 +64,14 @@ const Header = ({ currentIndex, setCurrentIndex }) => {
               </Nav>
             </Nav>
             <Nav>
-              <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                 <li><a className='header-right'> Interactive Outbreak Simulator</a></li>
               </ul>
             </Nav>
           </Navbar.Collapse>
         </Container>
       </Navbar>
-      <div class="container-fluid" className="tab-content">
+      <div className="container-fluid" className="tab-content">
         {renderTabContent()}
       </div>
     </div>
