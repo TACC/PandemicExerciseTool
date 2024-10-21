@@ -3,6 +3,7 @@ import AddInitialCases from './AddInitialCases';
 import SetManually from './SetManually';
 import './AddInitialCases.css'; // Import the CSS file for styling
 
+
 import { createPortal } from 'react-dom';
 
 const SetParametersDropdown = ({ counties, onSave, scenarioChange, casesChange }) => {
@@ -35,9 +36,9 @@ const SetParametersDropdown = ({ counties, onSave, scenarioChange, casesChange }
         <span className={`dropdown-arrow ${showDropdown ? 'open' : ''}`}>▾</span>
       </button>
       {showDropdown && (
-        <div className="dropdown-menu">
-          <button className="dropdown-item" onClick={openSetManually}>Disease Parameters</button>
-          <button className="dropdown-item" onClick={openInitialCases}>Initial Cases</button>
+        <div className="dropdown--menu">
+          <button className="dropdown-items" onClick={openSetManually}>Disease Parameters</button>
+          <button className="dropdown-items" onClick={openInitialCases}>Initial Cases</button>
         </div>
       )}
       {isSetManuallyOpen && (
@@ -45,7 +46,7 @@ const SetParametersDropdown = ({ counties, onSave, scenarioChange, casesChange }
           {/* Appending modal window to document.body prevents a rendering bug on Safari */}
           {createPortal(
             <div className="modal-overlay" onClick={closeSetManually}>
-              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-contents"  style={{ backgroundColor: 'white' }} onClick={(e) => e.stopPropagation()}>
                 <span className="modal-close" onClick={closeSetManually}>×</span>
                 <h2>Disease Parameters</h2>
                 <SetManually 
@@ -65,7 +66,7 @@ const SetParametersDropdown = ({ counties, onSave, scenarioChange, casesChange }
         <div>
           {createPortal(
             <div className="modal-overlay" onClick={closeInitialCases}>
-              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-contents" style={{ backgroundColor: 'white' }} onClick={(e) => e.stopPropagation()}>
                 <span className="modal-close" onClick={closeInitialCases}>×</span>
                 <h2>Add Initial Cases</h2>
                 <AddInitialCases 

@@ -218,8 +218,8 @@ const SetManually = ({ onClose, scenarioChange }) => {
       </div>
       <div className="form-group">
         <label htmlFor="reproductionNumber">Reproduction Number (R0)
-          <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-            <span className="tooltip-text">Average number of secondary infections in a susceptible population</span>
+          <span className="tooltips"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
+            <span className="tooltips-text">Average number of secondary infections in a susceptible population</span>
           </span>
         </label>
         <input
@@ -237,8 +237,8 @@ const SetManually = ({ onClose, scenarioChange }) => {
       <div className="form-group">
         <label htmlFor="tau">
           Latency period (days)
-          <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-            <span className="tooltip-text">Average number of days spent asymptomatic immediately after infection</span>
+          <span className="tooltips"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
+            <span className="tooltips-text">Average number of days spent asymptomatic immediately after infection</span>
           </span>
         </label>
         <input
@@ -256,8 +256,8 @@ const SetManually = ({ onClose, scenarioChange }) => {
       <div className="form-group">
         <label htmlFor="kappa">
           Asymptomatic period (days)
-          <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-            <span className="tooltip-text">Average number of days spent infectious, but not yet symptomatic</span>
+          <span className="tooltips"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
+            <span className="tooltips-text">Average number of days spent infectious, but not yet symptomatic</span>
           </span>
         </label>
         <input
@@ -274,8 +274,8 @@ const SetManually = ({ onClose, scenarioChange }) => {
       </div>
       <div className="form-group">
         <label htmlFor="gamma">Symptomatic period (days)
-          <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-            <span className="tooltip-text">Average number of days spent symptomatic and infectious
+          <span className="tooltips"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
+            <span className="tooltips-text">Average number of days spent symptomatic and infectious
             </span>
           </span>
         </label>
@@ -294,8 +294,8 @@ const SetManually = ({ onClose, scenarioChange }) => {
 {/*}
       <div className="form-group">
         <label htmlFor="chi">Therapeutic Window (days)
-          <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-            <span className="tooltip-text">Period in which treatment can be dispensed</span>
+          <span className="tooltips"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
+            <span className="tooltips-text">Period in which treatment can be dispensed</span>
           </span>
         </label>
         <input
@@ -312,8 +312,8 @@ const SetManually = ({ onClose, scenarioChange }) => {
 */}
       <div className="form-group" style ={{alignItems: 'center'}}>
         <label htmlFor="nu">Infection fatality rate (proportion)
-          <span className="tooltip"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
-            <span className="tooltip-text">Proportion of infections that lead to death</span>
+          <span className="tooltips"><img src={toggletip} alt="Tooltip" className="toggletip-icon"/>
+            <span className="tooltips-text">Proportion of infections that lead to death</span>
           </span>
         </label>
     {/* Age group inputs */}
