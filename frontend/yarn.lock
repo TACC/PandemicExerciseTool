@@ -9975,6 +9975,7 @@ __metadata:
     react-chartjs-2: "npm:^5.2.0"
     react-dom: "npm:^18.3.1"
     react-grid-layout: "npm:^1.4.4"
+    react-icons: "npm:^5.3.0"
     react-leaflet: "npm:^4.2.1"
     react-resizable: "npm:^3.0.5"
     react-resizeable: "npm:^0.2.6"
@@ -11398,6 +11399,15 @@ __metadata:
     react: ">= 16.3.0"
     react-dom: ">= 16.3.0"
   checksum: 10c0/7944c80167c5eea5b057a0915104d3736005541bb2847e8d41f18ad7f835de2f44cac8f8ae2cbabe12c2c03358be0d0670c540722671cfebd53737a2518b222a
+  languageName: node
+  linkType: hard
+
+"react-icons@npm:^5.3.0":
+  version: 5.3.0
+  resolution: "react-icons@npm:5.3.0"
+  peerDependencies:
+    react: "*"
+  checksum: 10c0/a53af0de558f0e2bacfbafc973aa8ca1e6a429006a2f83d70becad5be431726a691e096336c95949bb0d967587b145264c5046d2bc1518969dbae731855d0712
   languageName: node
   linkType: hard
 

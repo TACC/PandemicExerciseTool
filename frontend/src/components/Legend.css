@@ -89,3 +89,14 @@
 .leaflet-container path.leaflet-interactive:focus {
   outline: none;
 }
+/* Rest Button Icon */
+.map-reset-button {
+  position: absolute;
+  top: 6.5em;
+  left: 0.8em;
+  background-color: white;
+  border: 2px solid rgb(190, 188, 188);
+  border-radius: 4px;
+  padding: 4px;
+  z-index: 1000;
+}
