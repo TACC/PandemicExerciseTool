@@ -12,7 +12,7 @@ const ageGroupMapping = {
   '65+ years': '5'
 };
 
-const AddInitialCases = ({ counties, onClose }) => {
+const AddInitialCases = ({ counties, onClose, casesChange }) => {
   const [numberOfCases, setNumberOfCases] = useState(100);
   const [selectedCounty, setSelectedCounty] = useState(null);
   const [selectedAgeGroup, setSelectedAgeGroup] = useState(null);
@@ -92,12 +92,13 @@ const AddInitialCases = ({ counties, onClose }) => {
     // Explicitly save the cases and close the dialog
     localStorage.setItem('initial_infected', JSON.stringify(casesList));
     console.log('Explicitly saved cases before closing:', casesList); // Log the save
+    casesChange();    // show changes in left-hand summary pane
     onClose();
   };
 
   return (
     <div>
-      <h3>You can add multiple initial cases.</h3>
+      <h6>You can add multiple initial cases.</h6>
       <form className="add-initial-cases-form" onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="county">Location</label>

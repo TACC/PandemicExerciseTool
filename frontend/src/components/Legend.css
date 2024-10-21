@@ -7,8 +7,7 @@
   padding: 0.8em;
   font-size: 14px;
   font-family: Arial, sans-serif;
-  width: 9em; /* Adjust width as needed */
-  margin-right: 7em;
+  width: 10em; /* Adjust width as needed */
 }
 
 .info.legend .legend-header {
@@ -25,8 +24,8 @@
 }
 
 .info.legend .color-box {
-  width: 20px; /* Width of color box */
-  height: 20px; /* Height of color box */
+  width: 16px; /* Width of color box */
+  height: 16px; /* Height of color box */
   margin-right: 10px; /* Spacing between color box and label */
 }
 
@@ -75,7 +74,7 @@
 }
 
 .county-tooltip {
-  width: 200px;
+  width: max-content;
   font-size: large;
   background-color: white;
   color: black;

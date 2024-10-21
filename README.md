@@ -3,16 +3,24 @@
 
 ## Getting Started
 
-#### Build the development environment
+#### Build the production environment
 
 ```bash
 make build
 ```
 
-#### Start the development environment
+#### Start the production environment
 
 ```bash
 make start
 ```
 
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+
+
+#### Stop the production environment
+
+```bash
+make stop
+```
+

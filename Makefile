@@ -5,12 +5,12 @@ help:  ## Display this help screen
 
 .PHONY: build
 build: ## build dev
-	docker compose -f docker-compose-dev.yml build
+	docker compose -f docker-compose.yml build
 
 .PHONY: start
 start: ## start dev environment where client code changes will be automatically updated on running client
-	docker compose -f docker-compose-dev.yml up
+	docker compose -f docker-compose.yml up -d --build
 
 .PHONY: stop
 stop: ## stop dev
-	docker compose -f docker-compose-dev.yml down
+	docker compose -f docker-compose.yml down

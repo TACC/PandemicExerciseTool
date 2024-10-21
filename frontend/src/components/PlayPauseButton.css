@@ -10,6 +10,7 @@
   transition: background-color 0.3s;
   height: 2.5em;
   width: 12.5em;
+  border-radius: 4px;
 }
 
 .scenario-button {
