@@ -36,6 +36,35 @@ const HomeView = () => {
     setInitialCasesCount(localStorage.getItem("initial_infected").length || 0);
   }
 
+  // remember how table is sorted between re-renders
+  // default sort is flipped when user clicks to sort
+  const [sortDirection, setSortDirection] = useState({
+    county: 'asc',
+    infected: 'asc',
+    deceased: 'asc',
+    infectedPercent: 'asc',
+    deceasedPercent: 'asc',
+    lastSorted: 'county',
+  });
+
+  const [lastSorted, setLastSorted] = useState({
+    category: "county",
+    order: "asc",
+  });
+  const handleSortDirectionChange = (category) => {
+    if (category === lastSorted.category) {    // flip sort order
+      setLastSorted({
+        ...lastSorted,
+        order: lastSorted.order === 'asc' ? 'desc' : 'asc'
+      });
+    } else {
+      // county defaults to ascending (alphabetical) order, others default to descending
+      setLastSorted({
+        category: category,
+        order: category === "county" ? "asc" : "desc",
+      });
+    }
+
   const [scenarioCounter, setScenarioCounter] = useState(0);
   const handleScenarioChange = () => {
     console.log("scenario counter was", scenarioCounter);
@@ -293,9 +322,19 @@ const HomeView = () => {
         <div className="col-lg-3">
           <div className='right-panel'>
             {viewType === 'percent' ? (
-              <InfectedDeceasedTableMergedPercent currentIndex={currentIndex} eventData={eventData} />
+              <InfectedDeceasedTableMergedPercent 
+                currentIndex={currentIndex} 
+                eventData={eventData} 
+                lastSorted={lastSorted} 
+                handleSortDirectionChange={handleSortDirectionChange}
+              />
             ) : (
-              <InfectedDeceasedTableMerged currentIndex={currentIndex} eventData={eventData} />
+              <InfectedDeceasedTableMerged 
+                  currentIndex={currentIndex} 
+                  eventData={eventData} 
+                  lastSorted={lastSorted}
+                  handleSortDirectionChange={handleSortDirectionChange}
+              />
             )}
           </div>
         </div>

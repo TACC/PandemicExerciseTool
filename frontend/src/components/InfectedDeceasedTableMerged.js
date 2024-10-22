@@ -15,18 +15,19 @@ const loadCountyNames = async () => {
   return lookup;
 };
 
-function InfectedDeceasedTableMerged({ eventData, currentIndex }) {
+function InfectedDeceasedTableMerged({ eventData, currentIndex, lastSorted, handleSortDirectionChange }) {
   const [mergedData, setMergedData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortDirection, setSortDirection] = useState({
-    county: 'asc',
-    infected: 'desc',
-    deceased: 'desc',
-    infectedPercent: 'desc',
-    deceasedPercent: 'desc',
-  });
+  
+  // invoked when the user clicks on table heading to change sort config
+  const sortManually = (data, key) => {
+    handleSortDirectionChange(key);
+    const sortedData = sortData(data);
+    setFilteredData(sortedData);
+  }
 
+  // update dayData when new day is simulated or when user scrubs the timeline
   useEffect(() => {
     const fetchData = async () => {
       const countyNameLookup = await loadCountyNames();
@@ -50,8 +51,10 @@ function InfectedDeceasedTableMerged({ eventData, currentIndex }) {
 
       console.log(`Day Data (index ${currentIndex}):`, dayData); // Debugging output
 
-      setMergedData(dayData);
-      setFilteredData(dayData); // Initialize filtered data to current day's data
+      const sortedData = sortData(dayData);
+
+      setMergedData(sortedData);
+      setFilteredData(sortedData); // Initialize filtered data to current day's data
     };
 
     fetchData();
@@ -59,26 +62,24 @@ function InfectedDeceasedTableMerged({ eventData, currentIndex }) {
 
 
   // Function to handle sorting
-  const sortData = (key) => {
-    const sorted = [...filteredData];
+  const sortData = (sorted) => {
+    // state isn't updated until (after?) we sort, we're off by one
+    const key = lastSorted.category;
+    const order = lastSorted.order;
     sorted.sort((a, b) => {
       const valueA = key === 'county' ? a[key].toLowerCase() : parseFloat(a[key]);
       const valueB = key === 'county' ? b[key].toLowerCase() : parseFloat(b[key]);
 
       if (valueA < valueB) {
-        return sortDirection[key] === 'asc' ? -1 : 1;
+        return order === 'asc' ? -1 : 1;
       }
       if (valueA > valueB) {
-        return sortDirection[key] === 'asc' ? 1 : -1;
+        return order === 'asc' ? 1 : -1;
       }
       return 0;
     });
 
-    setFilteredData(sorted);
-    setSortDirection({
-      ...sortDirection,
-      [key]: sortDirection[key] === 'asc' ? 'desc' : 'asc',
-    });
+    return sorted;
   };
 
   // Function to filter data based on search term
@@ -110,20 +111,23 @@ function InfectedDeceasedTableMerged({ eventData, currentIndex }) {
             <tr>
               <th>
                 County
-                <button className="sort-button" onClick={() => sortData('county')}>
-                  {sortDirection.county === 'asc' ? '↓' : '↑'}
+                <button className="sort-button" onClick={() => sortManually(filteredData, 'county')}>
+                  {lastSorted.category === 'county' ? (
+                    lastSorted.order === 'asc' ? '↑' : '↓') : ''}
                 </button>
               </th>
               <th>
                 Infected
-                <button className="sort-button" onClick={() => sortData('infected')}>
-                  {sortDirection.infected === 'asc' ? '↓' : '↑'}
+                <button className="sort-button" onClick={() => sortManually(filteredData, 'infected')}>
+                  {lastSorted.category === 'infected' ? (
+                    lastSorted.order === 'asc' ? '↑' : '↓') : ''}
                 </button>
               </th>
               <th>
                 Deceased
-                <button className="sort-button" onClick={() => sortData('deceased')}>
-                  {sortDirection.deceased === 'asc' ? '↓' : '↑'}
+                <button className="sort-button" onClick={() => sortManually(filteredData, 'deceased')}>
+                  {lastSorted.category === 'deceased' ? (
+                    lastSorted.order === 'asc' ? '↑' : '↓') : ''}
                 </button>
               </th>
             </tr>
