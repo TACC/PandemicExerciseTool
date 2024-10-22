@@ -62,9 +62,6 @@ function InfectedDeceasedTableMergedPercent({ eventData, currentIndex, sortInfo,
 
       setMergedData(sortedData);
       setFilteredData(sortedData); // Initialize filtered data to current day's data
-      // we map over filteredData to populate the table
-      console.log(`Day data after sorting by ${sortInfo.lastSorted}:`, filteredData);
-      debugger;
     };
 
     fetchData();
@@ -74,31 +71,20 @@ function InfectedDeceasedTableMergedPercent({ eventData, currentIndex, sortInfo,
   // Function to handle sorting
   const sortData = (sorted) => {
     const key = sortInfo.lastSorted;
-    // const sorted = [...filteredData];
     sorted.sort((a, b) => {
       const valueA = key === 'county' ? a[key].toLowerCase() : parseFloat(a[key]);
       const valueB = key === 'county' ? b[key].toLowerCase() : parseFloat(b[key]);
 
       if (valueA < valueB) {
-        console.log("me when I'm sorting");
         return sortInfo[key] === 'asc' ? -1 : 1;
       }
       if (valueA > valueB) {
-        console.log("sortmaxxing rn");
         return sortInfo[key] === 'asc' ? 1 : -1;
       }
       return 0;
     });
 
-    console.log("after sorting by", key, "within sortData scope:", sorted);
     return sorted;
-    // like ChatGPT said we'll assign a variable to sortData() and set state to that variable directly
-    // setFilteredData(sorted);
-    // setMergedData(sorted);
-    // setSortDirection({
-    //   ...sortDirection,
-    //   [key]: sortDirection[key] === 'asc' ? 'desc' : 'asc',
-    // });
   };
 
   // Function to filter data based on search term
