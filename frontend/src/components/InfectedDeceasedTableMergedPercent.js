@@ -27,11 +27,13 @@ function InfectedDeceasedTableMergedPercent({ eventData, currentIndex, sortInfo,
   //   deceasedPercent: 'desc',
   // });
 
-  const sortManually = (key) => {
+  // invoked when the user clicks on table heading to change sort config
+  const sortManually = (data, key) => {
     handleSortDirectionChange(key);
-    sortData();
+    sortData(data);
   }
 
+  // update dayData when new day is simulated or when user scrubs the timeline
   useEffect(() => {
     const fetchData = async () => {
       const countyNameLookup = await loadCountyNames();
@@ -53,32 +55,26 @@ function InfectedDeceasedTableMergedPercent({ eventData, currentIndex, sortInfo,
         deceasedPercent: county.deceasedPercent,
       }));
 
-      console.log(`Day Data (index ${currentIndex}):`, dayData); // Debugging output
+      console.log(`Day Data (index ${currentIndex}):`, dayData);
       debugger;
 
-      setMergedData(dayData);
-      setFilteredData(dayData); // Initialize filtered data to current day's data
-      // sortData();
+      const sortedData = sortData(dayData);
+
+      setMergedData(sortedData);
+      setFilteredData(sortedData); // Initialize filtered data to current day's data
       // we map over filteredData to populate the table
-      // sortInfo should update filteredData with sorted data, but maybe that isn't happening
-      // before the table is populated in the return() statement
-      // check here if the filteredData being printed is actually sorted or not
       console.log(`Day data after sorting by ${sortInfo.lastSorted}:`, filteredData);
       debugger;
     };
 
     fetchData();
-    sortData();
-    debugger;
   }, [eventData, currentIndex]); // Rerun the effect when eventData changes or timeline is scrubbed
 
 
   // Function to handle sorting
-  const sortData = () => {
+  const sortData = (sorted) => {
     const key = sortInfo.lastSorted;
-    console.log(sortInfo);
-    console.log("sorting data by", key);
-    const sorted = [...filteredData];
+    // const sorted = [...filteredData];
     sorted.sort((a, b) => {
       const valueA = key === 'county' ? a[key].toLowerCase() : parseFloat(a[key]);
       const valueB = key === 'county' ? b[key].toLowerCase() : parseFloat(b[key]);
@@ -95,8 +91,10 @@ function InfectedDeceasedTableMergedPercent({ eventData, currentIndex, sortInfo,
     });
 
     console.log("after sorting by", key, "within sortData scope:", sorted);
-    setFilteredData(sorted);
-    setMergedData(sorted);
+    return sorted;
+    // like ChatGPT said we'll assign a variable to sortData() and set state to that variable directly
+    // setFilteredData(sorted);
+    // setMergedData(sorted);
     // setSortDirection({
     //   ...sortDirection,
     //   [key]: sortDirection[key] === 'asc' ? 'desc' : 'asc',
@@ -132,19 +130,19 @@ function InfectedDeceasedTableMergedPercent({ eventData, currentIndex, sortInfo,
             <tr>
               <th>
                 County
-                <button className="sort-button" onClick={() => sortManually('county')}>
+                <button className="sort-button" onClick={() => sortManually(filteredData, 'county')}>
                   {sortInfo.county === 'asc' ? '↓' : '↑'}
                 </button>
               </th>
               <th>
                 Infected 
-                <button className="sort-button" onClick={() => sortManually('infectedPercent')}>
+                <button className="sort-button" onClick={() => sortManually(filteredData, 'infectedPercent')}>
                   {sortInfo.infectedPercent === 'asc' ? '↓' : '↑'}
                 </button>
               </th>
               <th>
                 Deceased
-                <button className="sort-button" onClick={() => sortManually('deceasedPercent')}>
+                <button className="sort-button" onClick={() => sortManually(filteredData, 'deceasedPercent')}>
                   {sortInfo.deceasedPercent === 'asc' ? '↓' : '↑'}
                 </button>
               </th>
