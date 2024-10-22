@@ -19,13 +19,6 @@ function InfectedDeceasedTableMergedPercent({ eventData, currentIndex, sortInfo,
   const [mergedData, setMergedData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  // const [sortDirection, setSortDirection] = useState({
-  //   county: 'asc',
-  //   infected: 'desc',
-  //   deceased: 'desc',
-  //   infectedPercent: 'desc',
-  //   deceasedPercent: 'desc',
-  // });
 
   // invoked when the user clicks on table heading to change sort config
   const sortManually = (data, key) => {
