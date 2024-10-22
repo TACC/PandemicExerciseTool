@@ -23,7 +23,8 @@ function InfectedDeceasedTableMergedPercent({ eventData, currentIndex, lastSorte
   // invoked when the user clicks on table heading to change sort config
   const sortManually = (data, key) => {
     handleSortDirectionChange(key);
-    sortData(data);
+    const sortedData = sortData(data);
+    setFilteredData(sortedData);
   }
 
   // update dayData when new day is simulated or when user scrubs the timeline
@@ -49,7 +50,6 @@ function InfectedDeceasedTableMergedPercent({ eventData, currentIndex, lastSorte
       }));
 
       console.log(`Day Data (index ${currentIndex}):`, dayData);
-      debugger;
 
       const sortedData = sortData(dayData);
 
@@ -63,6 +63,7 @@ function InfectedDeceasedTableMergedPercent({ eventData, currentIndex, lastSorte
 
   // Function to handle sorting
   const sortData = (sorted) => {
+    // state isn't updating until (after?) we sort, we're off by one
     const key = lastSorted.category;
     const order = lastSorted.order;
     sorted.sort((a, b) => {
@@ -111,7 +112,6 @@ function InfectedDeceasedTableMergedPercent({ eventData, currentIndex, lastSorte
               <th>
                 County
                 <button className="sort-button" onClick={() => sortManually(filteredData, 'county')}>
-                  {/* {sortInfo.county === 'asc' ? '↓' : '↑'} */}
                   {lastSorted.category === 'county' ? (
                     lastSorted.order === 'asc' ? '↑' : '↓') : ''}
                 </button>
@@ -119,7 +119,6 @@ function InfectedDeceasedTableMergedPercent({ eventData, currentIndex, lastSorte
               <th>
                 Infected 
                 <button className="sort-button" onClick={() => sortManually(filteredData, 'infectedPercent')}>
-                  {/* {sortInfo.infectedPercent === 'asc' ? '↓' : '↑'} */}
                   {lastSorted.category === 'infectedPercent' ? (
                     lastSorted.order === 'asc' ? '↑' : '↓') : ''}
                 </button>
@@ -127,7 +126,6 @@ function InfectedDeceasedTableMergedPercent({ eventData, currentIndex, lastSorte
               <th>
                 Deceased
                 <button className="sort-button" onClick={() => sortManually(filteredData, 'deceasedPercent')}>
-                  {/* {sortInfo.deceasedPercent === 'asc' ? '↓' : '↑'} */}
                   {lastSorted.category === 'deceasedPercent' ? (
                     lastSorted.order === 'asc' ? '↑' : '↓') : ''}
                 </button>

@@ -15,7 +15,7 @@ const loadCountyNames = async () => {
   return lookup;
 };
 
-function InfectedDeceasedTableMerged({ eventData, currentIndex, sortInfo, handleSortDirectionChange }) {
+function InfectedDeceasedTableMerged({ eventData, currentIndex, lastSorted, handleSortDirectionChange }) {
   const [mergedData, setMergedData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -23,7 +23,8 @@ function InfectedDeceasedTableMerged({ eventData, currentIndex, sortInfo, handle
   // invoked when the user clicks on table heading to change sort config
   const sortManually = (data, key) => {
     handleSortDirectionChange(key);
-    sortData(data);
+    const sortedData = sortData(data);
+    setFilteredData(sortedData);
   }
 
   // update dayData when new day is simulated or when user scrubs the timeline
@@ -62,16 +63,18 @@ function InfectedDeceasedTableMerged({ eventData, currentIndex, sortInfo, handle
 
   // Function to handle sorting
   const sortData = (sorted) => {
-    const key = sortInfo.lastSorted;
+    // state isn't updated until (after?) we sort, we're off by one
+    const key = lastSorted.category;
+    const order = lastSorted.order;
     sorted.sort((a, b) => {
       const valueA = key === 'county' ? a[key].toLowerCase() : parseFloat(a[key]);
       const valueB = key === 'county' ? b[key].toLowerCase() : parseFloat(b[key]);
 
       if (valueA < valueB) {
-        return sortInfo[key] === 'asc' ? -1 : 1;
+        return order === 'asc' ? -1 : 1;
       }
       if (valueA > valueB) {
-        return sortInfo[key] === 'asc' ? 1 : -1;
+        return order === 'asc' ? 1 : -1;
       }
       return 0;
     });
@@ -109,19 +112,22 @@ function InfectedDeceasedTableMerged({ eventData, currentIndex, sortInfo, handle
               <th>
                 County
                 <button className="sort-button" onClick={() => sortManually(filteredData, 'county')}>
-                  {sortInfo.county === 'asc' ? '↓' : '↑'}
+                  {lastSorted.category === 'county' ? (
+                    lastSorted.order === 'asc' ? '↑' : '↓') : ''}
                 </button>
               </th>
               <th>
                 Infected
                 <button className="sort-button" onClick={() => sortManually(filteredData, 'infected')}>
-                  {sortInfo.infected === 'asc' ? '↓' : '↑'}
+                  {lastSorted.category === 'infected' ? (
+                    lastSorted.order === 'asc' ? '↑' : '↓') : ''}
                 </button>
               </th>
               <th>
                 Deceased
                 <button className="sort-button" onClick={() => sortManually(filteredData, 'deceased')}>
-                  {sortInfo.deceased === 'asc' ? '↓' : '↑'}
+                  {lastSorted.category === 'deceased' ? (
+                    lastSorted.order === 'asc' ? '↑' : '↓') : ''}
                 </button>
               </th>
             </tr>

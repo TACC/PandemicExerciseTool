@@ -62,12 +62,13 @@ const HomeView = () => {
     order: "asc",
   });
   const handleSortDirectionChange = (category) => {
-    if (category === lastSorted.category) {
+    if (category === lastSorted.category) {    // flip sort order
       setLastSorted({
         ...lastSorted,
         order: lastSorted.order === 'asc' ? 'desc' : 'asc'
       });
     } else {
+      // county defaults to ascending (alphabetical) order, others default to descending
       setLastSorted({
         category: category,
         order: category === "county" ? "asc" : "desc",
@@ -229,7 +230,7 @@ const HomeView = () => {
         }
 
       } catch (error) {
-        // console.log('Data not here yet:', error);
+        console.log('Data not here yet:', error);
         setTimeout(() => {
           fetchData(nextAvailable);
         }, 1000);
@@ -329,7 +330,7 @@ const HomeView = () => {
               <InfectedDeceasedTableMerged 
                   currentIndex={currentIndex} 
                   eventData={eventData} 
-                  sortInfo={sortDirection}
+                  lastSorted={lastSorted}
                   handleSortDirectionChange={handleSortDirectionChange}
               />
             )}
