@@ -56,13 +56,24 @@ const HomeView = () => {
     deceasedPercent: 'asc',
     lastSorted: 'county',
   });
-  const handleSortDirectionChange = (key) => {
-    setSortDirection({
-      ...sortDirection,
-      [key]: sortDirection[key] === 'asc' ? 'desc' : 'asc',
-      lastSorted: key,
-    });
-  };
+
+  const [lastSorted, setLastSorted] = useState({
+    category: "county",
+    order: "asc",
+  });
+  const handleSortDirectionChange = (category) => {
+    if (category === lastSorted.category) {
+      setLastSorted({
+        ...lastSorted,
+        order: lastSorted.order === 'asc' ? 'desc' : 'asc'
+      });
+    } else {
+      setLastSorted({
+        category: category,
+        order: category === "county" ? "asc" : "desc",
+      });
+    }
+  }
 
   // Handle radio button change
   const handleViewChange = (e) => {
@@ -311,7 +322,7 @@ const HomeView = () => {
               <InfectedDeceasedTableMergedPercent 
                 currentIndex={currentIndex} 
                 eventData={eventData} 
-                sortInfo={sortDirection} 
+                lastSorted={lastSorted} 
                 handleSortDirectionChange={handleSortDirectionChange}
               />
             ) : (
