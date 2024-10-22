@@ -64,6 +64,7 @@ const HomeView = () => {
         order: category === "county" ? "asc" : "desc",
       });
     }
+  };
 
   const [scenarioCounter, setScenarioCounter] = useState(0);
   const handleScenarioChange = () => {
@@ -361,6 +362,3 @@ const HomeView = () => {
 };
 
 export default HomeView;
-
-
-
