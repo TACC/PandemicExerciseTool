@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 import './AddInitialCases.css'; // Import the CSS file for styling
 
-const texasMapping = require('./texasMapping.json'); // Import the Texas mapping JSON
+const texasMapping = require('../data/texasMapping.json'); // Import the Texas mapping JSON
 
 const ageGroupMapping = {
-  '0-4 years': '1',
-  '5-24 years': '2',
-  '25-49 years': '3',
-  '50-64 years': '4',
-  '65+ years': '5'
+  '0-4 years': '0',
+  '5-24 years': '1',
+  '25-49 years': '2',
+  '50-64 years': '3',
+  '65+ years': '4'
 };
 
 const AddInitialCases = ({ counties, onClose, casesChange }) => {

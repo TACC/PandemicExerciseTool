@@ -1,28 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
-import texasCounties from './counties';
-import texasAllCounties from './countiesAndAll.js';
+import texasCounties from '../data/texasCounties.js';
+import texasAllCounties from '../data/texasCountiesStatewide.js';
 import TimelineSlider from './TimelineSlider';
-import DeceasedLineChart from './DeceasedLineChart';
-import StateCountyDropdowns from './StateCountyDropdown';
-import CountyPercentageTable from './CountyPercentageTable';
-import InitialMapPercent from './InitialMapPercent';
-import NewSimulationButton from './NewSimulationButton';
 import SetParametersDropdown from './SetParametersDropdown';
 import Interventions from './Interventions';
 import SavedParameters from './SavedParameters';
-import AddInitialCases from './AddInitialCases';
-import CountyInfectedDeceasedTable from './CountyInfectedDeceasedTable';
-import InfectedDeceasedTablePercent from './InfectedDeceasedTablePercent';
 import InfectedMap from './InfectedMap';
 import InfectedMapPercent from './InfectedMapPercent';
-import InfectedDeceasedTable from './InfectedDeceasedTable';
 import InfectedDeceasedTableMerged from './InfectedDeceasedTableMerged';
 import InfectedDeceasedTableMergedPercent from './InfectedDeceasedTableMergedPercent.js';
 import LineChart from './LineChart';
 
 import PlayPauseButton from './PlayPauseButton';
 import './leaflet-overrides.css';
-import './styles.css';
 import axios from 'axios';
 import './HomeView.css';
 
@@ -74,6 +64,12 @@ const HomeView = () => {
         order: category === "county" ? "asc" : "desc",
       });
     }
+
+  const [scenarioCounter, setScenarioCounter] = useState(0);
+  const handleScenarioChange = () => {
+    console.log("scenario counter was", scenarioCounter);
+    setScenarioCounter(scenarioCounter + 1);
+    console.log("scenario counter now", scenarioCounter);
   }
 
   // Handle radio button change
@@ -104,16 +100,21 @@ const HomeView = () => {
     setEventData([]);
     setCurrentIndex(0);
 
+    // load parameters object from local storage and POST each property individually
+    console.log(JSON.parse(localStorage.getItem('parameters')));
+    const paramsObject = JSON.parse(localStorage.getItem('parameters'));
+    console.log("loaded params object from local storage");
+
     axios.post('http://localhost:8000/api/pet/', {
-      disease_name: localStorage.getItem('diseaseName'),
-      R0: localStorage.getItem('reproductionNumber'),
-      beta_scale: localStorage.getItem('beta_scale'),
-      tau: localStorage.getItem('tau'),
-      kappa: localStorage.getItem('kappa'),
-      gamma: localStorage.getItem('gamma'),
-      chi: localStorage.getItem('chi'),
-      rho: localStorage.getItem('rho'),
-      nu: localStorage.getItem('nu'),
+      disease_name: paramsObject.diseaseName,
+      R0: paramsObject.reproductionNumber,
+      beta_scale: paramsObject.beta_scale,
+      tau: paramsObject.tau,
+      kappa: paramsObject.kappa,
+      gamma: paramsObject.gamma,
+      chi: paramsObject.chi,
+      rho: paramsObject.rho,
+      nu: paramsObject.nuText,
       initial_infected: localStorage.getItem('initial_infected'),
       npis: localStorage.getItem('non_pharma_interventions'),
       antiviral_effectiveness: localStorage.getItem('antiviral_effectiveness'),
@@ -255,7 +256,6 @@ const HomeView = () => {
   };
 
   return (
-
     <div >
       <div className="row">
         <div className="col-lg-2">
@@ -264,12 +264,14 @@ const HomeView = () => {
               counties={texasCounties}
               onSave={handleSave}
               casesChange={handleInitialCasesChange}
+              scenarioChange={handleScenarioChange}
             />
             <div className="interventions-container">
               <Interventions counties={texasAllCounties} npiChange={handleNPIChange} />
             </div>
             <div className="saved-parameters-panel">
               <SavedParameters
+                scenarioChange={handleScenarioChange}
                 casesChange={handleInitialCasesChange}
               />
             </div>

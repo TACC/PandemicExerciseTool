@@ -4,16 +4,19 @@ import 'rc-slider/assets/index.css';
 import './TimelineSlider.css';
 
 const TimelineSlider = ({ totalDays, selectedDay, onDayChange, isRunning }) => {
-  
   const handleChange = (value) => {
     onDayChange(value);
   };
 
+  const stepForLabels = totalDays > 50 ? 5 : 1;
+
   return (
     <div className="timeline-container">
+      {/* Slider with a step of 1 for precise dragging */}
       <Slider
         min={0}
         max={totalDays}
+        step={1} 
         value={selectedDay}
         onChange={handleChange}
         railStyle={{ backgroundColor: '#ccc' }}
@@ -22,16 +25,20 @@ const TimelineSlider = ({ totalDays, selectedDay, onDayChange, isRunning }) => {
         disabled={isRunning}
       />
       <div className="timeline-slider">
-        {Array.from({ length: totalDays + 1}).map((_, index) => (
-          <div
-            key={index}
-            className={`timeline-item ${index === selectedDay ? 'active' : ''}`}
-            onClick={() => handleChange(index)}
-          >
-            <span className="timeline-date">{index}</span>
-          </div>
-        ))}
+        {Array.from({ length: Math.floor(totalDays / stepForLabels) + 1 }).map((_, index) => {
+          const day = index * stepForLabels;
+          return (
+            <div
+              key={day}
+              className={`timeline-item ${day === selectedDay ? 'active' : ''}`}
+              onClick={() => handleChange(day)}
+            >
+              <span className="timeline-date">{day}</span>
+            </div>
+          );
+        })}
       </div>
+      <h6 className='timeline-title'>Days</h6>
     </div>
   );
 };

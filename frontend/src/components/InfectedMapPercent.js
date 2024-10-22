@@ -2,23 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, GeoJSON, useMap } from 'react-leaflet';
 import L, { transformation } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import texasOutline from './texasOutline.json';
+import texasOutline from '../data/texasOutline.json';
 import './Legend.css'; // Ensure you have a CSS file for styling
 import '../fonts/fonts.css'
+import { IoHomeSharp } from "react-icons/io5";
 
 // Function to determine color based on infected count
-// TODO: is it weird to have different number of buckets between count/percent?
 const getColor = (infectedPercent) => {
-  // return infectedPercent > 90 ? "#3B1253" :
-  //        infectedPercent > 80 ? "#6D1F6F" :
-  //        infectedPercent > 70 ? "#8F286A" :
-  //        infectedPercent > 60 ? "#AA3760" :
-  //        infectedPercent > 50 ? "#C1444B" :
-  //        infectedPercent > 40 ? "#D4624D" :
-  //        infectedPercent > 30 ? "#E1865C" :
-  //        infectedPercent > 20 ? "#EAAE70" :
-  //        infectedPercent > 10 ? "#F2D789" :
-  //                               "#FFEDA0"
   return infectedPercent >= 40 ? "#BD0026" :
          infectedPercent >= 30 ? "#E31A1B" :
          infectedPercent >= 20 ? "#FC4F2A" :
@@ -35,6 +25,20 @@ const parseTexasOutline = (texasOutline) => {
     name: feature.properties.name,
     geoid: feature.properties.geoid
   }));
+};
+
+// Reset button component
+const ResetButton = () => {
+  const map = useMap();
+  const handleReset = () => {
+    map.setView([31.0, -100.0], 5.4); // Reset to original center and zoom
+  };
+
+  return (
+    <button onClick={handleReset} className="map-reset-button">
+      <IoHomeSharp size={23} />
+    </button>
+  );
 };
 
 const Legend = () => {
@@ -159,6 +163,7 @@ const onEachCounty = (feature, layer) => {
         zoomSnap={0.2}
         zoom={5.4}
         style={{ height: '35em', backgroundColor: 'transparent'}}
+        attributionControl={false}
         whenCreated={mapInstance => {mapRef.current=mapInstance; }}
       >
         <GeoJSON
@@ -168,6 +173,7 @@ const onEachCounty = (feature, layer) => {
           onEachFeature={onEachCounty}
         />
         <Legend />
+        <ResetButton/>
       </MapContainer>
     </div>
   );

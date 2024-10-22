@@ -45,6 +45,7 @@ const RAW_RUNTIME_STATE =
           ["react-chartjs-2", "virtual:d5972f36093dede95f1277ffb47b58587812330e96e8c4d846a8d98d6211988a986a7fe6b4080fc0589581055f7c5856d2b9719b4a62106b62642bd0785a9de7#npm:5.2.0"],\
           ["react-dom", "virtual:d5972f36093dede95f1277ffb47b58587812330e96e8c4d846a8d98d6211988a986a7fe6b4080fc0589581055f7c5856d2b9719b4a62106b62642bd0785a9de7#npm:18.3.1"],\
           ["react-grid-layout", "virtual:d5972f36093dede95f1277ffb47b58587812330e96e8c4d846a8d98d6211988a986a7fe6b4080fc0589581055f7c5856d2b9719b4a62106b62642bd0785a9de7#npm:1.5.0"],\
+          ["react-icons", "virtual:d5972f36093dede95f1277ffb47b58587812330e96e8c4d846a8d98d6211988a986a7fe6b4080fc0589581055f7c5856d2b9719b4a62106b62642bd0785a9de7#npm:5.3.0"],\
           ["react-leaflet", "virtual:d5972f36093dede95f1277ffb47b58587812330e96e8c4d846a8d98d6211988a986a7fe6b4080fc0589581055f7c5856d2b9719b4a62106b62642bd0785a9de7#npm:4.2.1"],\
           ["react-resizable", "virtual:d5972f36093dede95f1277ffb47b58587812330e96e8c4d846a8d98d6211988a986a7fe6b4080fc0589581055f7c5856d2b9719b4a62106b62642bd0785a9de7#npm:3.0.5"],\
           ["react-resizeable", "virtual:d5972f36093dede95f1277ffb47b58587812330e96e8c4d846a8d98d6211988a986a7fe6b4080fc0589581055f7c5856d2b9719b4a62106b62642bd0785a9de7#npm:0.2.6"],\
@@ -13435,6 +13436,7 @@ const RAW_RUNTIME_STATE =
           ["react-chartjs-2", "virtual:d5972f36093dede95f1277ffb47b58587812330e96e8c4d846a8d98d6211988a986a7fe6b4080fc0589581055f7c5856d2b9719b4a62106b62642bd0785a9de7#npm:5.2.0"],\
           ["react-dom", "virtual:d5972f36093dede95f1277ffb47b58587812330e96e8c4d846a8d98d6211988a986a7fe6b4080fc0589581055f7c5856d2b9719b4a62106b62642bd0785a9de7#npm:18.3.1"],\
           ["react-grid-layout", "virtual:d5972f36093dede95f1277ffb47b58587812330e96e8c4d846a8d98d6211988a986a7fe6b4080fc0589581055f7c5856d2b9719b4a62106b62642bd0785a9de7#npm:1.5.0"],\
+          ["react-icons", "virtual:d5972f36093dede95f1277ffb47b58587812330e96e8c4d846a8d98d6211988a986a7fe6b4080fc0589581055f7c5856d2b9719b4a62106b62642bd0785a9de7#npm:5.3.0"],\
           ["react-leaflet", "virtual:d5972f36093dede95f1277ffb47b58587812330e96e8c4d846a8d98d6211988a986a7fe6b4080fc0589581055f7c5856d2b9719b4a62106b62642bd0785a9de7#npm:4.2.1"],\
           ["react-resizable", "virtual:d5972f36093dede95f1277ffb47b58587812330e96e8c4d846a8d98d6211988a986a7fe6b4080fc0589581055f7c5856d2b9719b4a62106b62642bd0785a9de7#npm:3.0.5"],\
           ["react-resizeable", "virtual:d5972f36093dede95f1277ffb47b58587812330e96e8c4d846a8d98d6211988a986a7fe6b4080fc0589581055f7c5856d2b9719b4a62106b62642bd0785a9de7#npm:0.2.6"],\
@@ -15931,6 +15933,28 @@ const RAW_RUNTIME_STATE =
           "@types/react-dom",\
           "@types/react",\
           "react-dom",\
+          "react"\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["react-icons", [\
+      ["npm:5.3.0", {\
+        "packageLocation": "../../.yarn/berry/cache/react-icons-npm-5.3.0-3814684035-10c0.zip/node_modules/react-icons/",\
+        "packageDependencies": [\
+          ["react-icons", "npm:5.3.0"]\
+        ],\
+        "linkType": "SOFT"\
+      }],\
+      ["virtual:d5972f36093dede95f1277ffb47b58587812330e96e8c4d846a8d98d6211988a986a7fe6b4080fc0589581055f7c5856d2b9719b4a62106b62642bd0785a9de7#npm:5.3.0", {\
+        "packageLocation": "./.yarn/__virtual__/react-icons-virtual-9fbaa113a2/3/.yarn/berry/cache/react-icons-npm-5.3.0-3814684035-10c0.zip/node_modules/react-icons/",\
+        "packageDependencies": [\
+          ["react-icons", "virtual:d5972f36093dede95f1277ffb47b58587812330e96e8c4d846a8d98d6211988a986a7fe6b4080fc0589581055f7c5856d2b9719b4a62106b62642bd0785a9de7#npm:5.3.0"],\
+          ["@types/react", null],\
+          ["react", "npm:18.3.1"]\
+        ],\
+        "packagePeers": [\
+          "@types/react",\
           "react"\
         ],\
         "linkType": "HARD"\

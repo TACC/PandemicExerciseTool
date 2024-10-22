@@ -3,7 +3,7 @@ import Select from 'react-select';
 import toggletip from  './images/toggletip.svg';
 import './AddInitialCases.css'; // Import the CSS file for styling
 
-const texasMapping = require('./texasMapping.json'); // Import the Texas mapping JSON
+const texasMapping = require('../data/texasMapping.json'); // Import the Texas mapping JSON
 
 const NonPharmaceutical = ({ counties, onSubmit }) => {
   const [nonpharmaName, setNonpharmaName] = useState(localStorage.getItem('nonpharma_name') || 'School Closures');
@@ -118,7 +118,7 @@ const NonPharmaceutical = ({ counties, onSubmit }) => {
           id="nonpharmaDay"
           value={nonpharmaDay}
           onChange={e => setNonpharmaDay(e.target.value)}
-          min="1"
+          min="0"
           max="1000"
           step="1"
           required

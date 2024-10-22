@@ -1,5 +1,4 @@
 import React from 'react';
-import NewSimulationModal from './NewSimulationModal.js';
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import axios from 'axios';

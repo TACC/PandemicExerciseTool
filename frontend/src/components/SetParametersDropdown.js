@@ -2,11 +2,9 @@ import React, { useState } from 'react';
 import AddInitialCases from './AddInitialCases';
 import SetManually from './SetManually';
 import './AddInitialCases.css'; // Import the CSS file for styling
-
-
 import { createPortal } from 'react-dom';
 
-const SetParametersDropdown = ({ counties, onSave, casesChange }) => {
+const SetParametersDropdown = ({ counties, onSave, scenarioChange, casesChange }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [isInitialCasesOpen, setIsInitialCasesOpen] = useState(false);
   const [isSetManuallyOpen, setIsSetManuallyOpen] = useState(false);
@@ -24,6 +22,7 @@ const SetParametersDropdown = ({ counties, onSave, casesChange }) => {
   const closeSetManually = () => setIsSetManuallyOpen(false);
 
   const handleSave = () => {
+    scenarioChange();    // trigger HomeView.js to rerender with updated scenario info
     onSave(); // Trigger the save action in the parent component
     setShowDropdown(false); // Close the dropdown after saving
   };
@@ -53,6 +52,7 @@ const SetParametersDropdown = ({ counties, onSave, casesChange }) => {
                   onSubmit={(data) => { 
                     console.log('Set Manually:', data); 
                     handleSave(); }} 
+                  scenarioChange={scenarioChange}
                 />
               </div>
             </div>,
@@ -71,7 +71,7 @@ const SetParametersDropdown = ({ counties, onSave, casesChange }) => {
                   onClose={closeInitialCases} 
                   counties={counties} 
                   onSubmit={(data) => { console.log('Initial Cases:', data); handleSave(); }} 
-                  casesChange = {casesChange}
+                  casesChange={casesChange}
                 />
               </div>
             </div>,

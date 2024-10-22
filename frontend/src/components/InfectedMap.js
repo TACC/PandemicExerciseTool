@@ -5,9 +5,10 @@ import React, { useEffect, useState, useRef } from 'react';
 import { MapContainer, TileLayer, GeoJSON, useMap } from 'react-leaflet';
 import L, { transformation } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import texasOutline from './texasOutline.json';
+import texasOutline from '../data/texasOutline.json';
 import './Legend.css'; // Ensure you have a CSS file for styling
 import '../fonts/fonts.css'
+import { IoHomeSharp } from "react-icons/io5";
 
 // Function to determine color based on infected count
 const getColor = (infectedCount) => {
@@ -27,6 +28,20 @@ const parseTexasOutline = (texasOutline) => {
     name: feature.properties.name,
     geoid: feature.properties.geoid
   }));
+};
+
+// Reset button component
+const ResetButton = () => {
+  const map = useMap();
+  const handleReset = () => {
+    map.setView([31.0, -100.0], 5.4); // Reset to original center and zoom
+  };
+
+  return (
+    <button onClick={handleReset} className="map-reset-button">
+      <IoHomeSharp size={23} />
+    </button>
+  );
 };
 
 // Component to create a legend for the map
@@ -164,6 +179,7 @@ const InfectedMap = ({ eventData, currentIndex}) => {
         zoomSnap={0.2}
         zoom={5.4}
         style={{ height: '35em', backgroundColor: 'transparent'}}
+        attributionControl={false}
         whenCreated={mapInstance => { mapRef.current = mapInstance; }}
       >
         <GeoJSON
@@ -173,6 +189,7 @@ const InfectedMap = ({ eventData, currentIndex}) => {
           onEachFeature={onEachCounty}
         />
         <Legend />
+        <ResetButton/>
       </MapContainer>
     </div>
   );
