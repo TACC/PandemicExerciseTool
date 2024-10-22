@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Header.css';
 import epiengage_logo_darkblue from './epiengage_logo_darkblue.jpg';
 import GalleryView from '../GalleryView';
@@ -13,6 +13,19 @@ import Navbar from 'react-bootstrap/Navbar';
 
 const Header = ({ currentIndex, setCurrentIndex }) => {
   const [activeTab, setActiveTab] = useState('home');
+
+  // add an EventListener that warns the user before leaving the page and wiping parameters/simulation
+  useEffect(() => {
+    window.addEventListener('beforeunload', alertUser);
+    return () => {
+      window.removeEventListener('beforeunload', alertUser);
+    }
+  }, [])
+
+  const alertUser = e => {
+    e.preventDefault();
+    e.returnValue = '';
+  }
 
   const renderTabContent = () => {
     switch (activeTab) {
