@@ -12,7 +12,7 @@ import toggletip from  '../images/toggletip.svg';
 import './InitialCases.css';
 
 
-const Antivirals = ({ onSubmit }) => {
+const AntiviralsForm = ({ onSubmit }) => {
   const [antiviralEffectiveness, setAntiviralEffectiveness] = useState(localStorage.getItem('antiviral_effectiveness') || 0.15);
   const [antiviralWastageFactor, setAntiviralWastageFactor] = useState(localStorage.getItem('antiviral_wastage_factor') || 60);
   const [antiviralStockpileDay, setAntiviralStockpileDay] = useState(50);
@@ -171,4 +171,4 @@ const Antivirals = ({ onSubmit }) => {
   );
 };
 
-export default Antivirals;
+export default AntiviralsForm;

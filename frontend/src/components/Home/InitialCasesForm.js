@@ -16,7 +16,7 @@ const ageGroupMapping = {
   '65+ years': '4'
 };
 
-const InitialCases = ({ counties, onClose, casesChange }) => {
+const InitialCasesForm = ({ counties, onClose, casesChange }) => {
   const [numberOfCases, setNumberOfCases] = useState(100);
   const [selectedCounty, setSelectedCounty] = useState(null);
   const [selectedAgeGroup, setSelectedAgeGroup] = useState(null);
@@ -177,4 +177,4 @@ const InitialCases = ({ counties, onClose, casesChange }) => {
   );
 };
 
-export default InitialCases;
+export default InitialCasesForm;

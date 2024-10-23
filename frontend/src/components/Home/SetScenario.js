@@ -1,7 +1,7 @@
 // renders the Set Scenario dropdown menu on the left panel of Home view
 import React, { useState } from 'react';
-import InitialCases from './InitialCases';
-import SetManually from './DiseaseParameters';
+import InitialCasesForm from './InitialCasesForm';
+import DiseaseParametersForm from './DiseaseParametersForm';
 import './InitialCases.css'; // Import the CSS file for styling
 import { createPortal } from 'react-dom';
 
@@ -48,7 +48,7 @@ const SetScenario = ({ counties, onSave, scenarioChange, casesChange }) => {
               <div className="modal-contents"  style={{ backgroundColor: 'white' }} onClick={(e) => e.stopPropagation()}>
                 <span className="modal-close" onClick={closeSetManually}>×</span>
                 <h2>Disease Parameters</h2>
-                <SetManually 
+                <DiseaseParametersForm
                   onClose={closeSetManually} 
                   onSubmit={(data) => { 
                     console.log('Set Manually:', data); 
@@ -68,7 +68,7 @@ const SetScenario = ({ counties, onSave, scenarioChange, casesChange }) => {
               <div className="modal-contents" style={{ backgroundColor: 'white' }} onClick={(e) => e.stopPropagation()}>
                 <span className="modal-close" onClick={closeInitialCases}>×</span>
                 <h2>Add Initial Cases</h2>
-                <InitialCases 
+                <InitialCasesForm 
                   onClose={closeInitialCases} 
                   counties={counties} 
                   onSubmit={(data) => { console.log('Initial Cases:', data); handleSave(); }} 

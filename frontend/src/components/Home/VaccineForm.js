@@ -10,7 +10,7 @@ import React, { useState, useEffect } from "react";
 import toggletip from  "../images/toggletip.svg";
 import './InitialCases.css';
 
-const Vaccine = ({ onSubmit }) => {
+const VaccineForm = ({ onSubmit }) => {
   const [vaccineEffectiveness, setVaccineEffectiveness] = useState(localStorage.getItem('vaccine_effectiveness') || 0.50);
   const [vaccineAdherence, setVaccineAdherence] = useState(localStorage.getItem('vaccine_adherence') || 0.50);
   const [vaccineWastageFactor, setVaccineWastageFactor] = useState(localStorage.getItem('vaccine_wastage_factor') || 60);
@@ -224,4 +224,4 @@ const Vaccine = ({ onSubmit }) => {
   );
 };
 
-export default Vaccine;
+export default VaccineForm;

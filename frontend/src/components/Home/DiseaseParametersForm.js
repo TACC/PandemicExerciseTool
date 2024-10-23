@@ -6,7 +6,7 @@ import './InitialCases.css'; // Import the CSS file for styling
 import toggletip from  '../images/toggletip.svg';
 import scenarios from '../../data/scenarios.js';
 
-const SetManually = ({ onClose, scenarioChange }) => {
+const DiseaseParametersForm = ({ onClose, scenarioChange }) => {
   // Load initial state from localStorage or set default values
   const [selectedScenario, setSelectedScenario] = useState('');
   const [diseaseName, setDiseaseName] = useState(localStorage.getItem('diseaseName') || '');
@@ -351,7 +351,7 @@ const SetManually = ({ onClose, scenarioChange }) => {
     </form>
   );
 };
-export default SetManually;
+export default DiseaseParametersForm;
 
 
 
