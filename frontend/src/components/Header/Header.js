@@ -3,7 +3,7 @@ import './Header.css';
 import epiengage_logo_darkblue from './epiengage_logo_darkblue.jpg';
 import GalleryView from '../Gallery/Gallery';
 import UserGuideView from '../UserGuide/UserGuide';
-import HomeView from '../Home/Home';
+import Home from '../Home/Home';
 import ChartView from '../discontinued/ChartView';
 import axios from 'axios';
 
@@ -39,7 +39,7 @@ const Header = ({ currentIndex, setCurrentIndex }) => {
   const renderTabContent = () => {
     switch (activeTab) {
       case 'home':
-        return <HomeView currentIndex={currentIndex} setCurrentIndex={setCurrentIndex} />;
+        return <Home currentIndex={currentIndex} setCurrentIndex={setCurrentIndex} />;
       /* case 'chart':
          return <ChartView />;
        case 'gallery':
@@ -47,7 +47,7 @@ const Header = ({ currentIndex, setCurrentIndex }) => {
       case 'userguide':
         return <UserGuideView />;
       default:
-        return <HomeView currentIndex={currentIndex} setCurrentIndex={setCurrentIndex} />;
+        return <Home currentIndex={currentIndex} setCurrentIndex={setCurrentIndex} />;
     }
   };
 

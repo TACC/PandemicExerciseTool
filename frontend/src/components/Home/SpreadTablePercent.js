@@ -1,3 +1,8 @@
+// one of two table components that displays the infection and death statistics for each county
+// the table starts out empty and is sorted and populated every time a new day comes from the backend
+// this component is rendered first by default, toggling from Percent to Count will change both Map and Table
+// components to their Count counterparts
+// TODO: sorting on each timestep has dramatically reduced performance. sort faster or sort in the backend
 import React, { useState, useEffect } from 'react';
 import searchIcon from '../images/search.svg'; // Updated to use search.svg
 import { csv } from 'd3-fetch'; // Assuming you use d3-fetch for CSV parsing
@@ -15,7 +20,7 @@ const loadCountyNames = async () => {
   return lookup;
 };
 
-function InfectedDeceasedTableMergedPercent({ eventData, currentIndex, lastSorted, handleSortDirectionChange }) {
+function SpreadTablePercent({ eventData, currentIndex, lastSorted, handleSortDirectionChange }) {
   const [mergedData, setMergedData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -169,4 +174,4 @@ function InfectedDeceasedTableMergedPercent({ eventData, currentIndex, lastSorte
   );
 }
 
-export default InfectedDeceasedTableMergedPercent;
+export default SpreadTablePercent;

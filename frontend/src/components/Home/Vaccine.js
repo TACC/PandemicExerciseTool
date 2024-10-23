@@ -1,3 +1,11 @@
+// FIXME: vaccines do not appear in the left-hand summary pane (<DisplayedParameters />) until the component
+// rerenders! there's a workaround implemented for NPIs by changing a state variable in the parent component
+// (<Home />) when an intervention is added.
+// changing state re-renders <Home /> and <DisplayedParameters /> updates dynamically
+
+// a form for gathering user specifications for vaccine interventions, which are saved to state and localStorage
+// clicking the "Vaccines" button in the <Interventions /> dropdown will render this component
+// NOTE: specifying antiviral interventions does not currently affect the simulation!
 import React, { useState, useEffect } from "react";
 import toggletip from  "../images/toggletip.svg";
 import './InitialCases.css';

@@ -136,7 +136,7 @@ const SetManually = ({ onClose, scenarioChange }) => {
     if (onClose) {
       onClose(); // Call the onClose function to close the form
     }
-    scenarioChange();    // trigger HomeView to rerender
+    scenarioChange();    // trigger Home to rerender
   };
 
   return (

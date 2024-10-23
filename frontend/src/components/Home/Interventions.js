@@ -1,7 +1,8 @@
+// renders the Interventions dropdown menu in the left panel of Home view
 import React, { useState } from 'react';
 import Antivirals from './Antivirals';
 import Vaccine from './Vaccine';
-import NonPharmaceutical from './NPI';
+import NPIForm from './NPI';
 import { createPortal } from 'react-dom';
 import './SetScenario.css';
 
@@ -78,7 +79,7 @@ const Interventions = ( {counties, npiChange} ) => {
               <div className="modal-contents" onClick={(e) => e.stopPropagation()}>
                 <span className="modal-close" onClick={closeNonPharmaceutical}>&times;</span>
                 <h2>Non-pharmaceutical intervention</h2>
-                <NonPharmaceutical 
+                <NPIForm
                   counties={counties} 
                   onSubmit={(npil) => { console.log('Non-Pharmaceutical:', npil); 
                     npiChange(npil); closeNonPharmaceutical(); }} 

@@ -1,3 +1,7 @@
+// <Home /> acts as a "root" for the default home view of the web interface
+// most of our axios requests and state management happen here
+// we define change handler functions and pass them as props to components we want to update dynamically,
+// but it might be smarter to switch to React Contexts (and avoid prop drilling) as the project gets bigger
 import React, { useState, useEffect, useRef } from 'react';
 import texasCounties from '../../data/texasCounties.js';
 import texasAllCounties from '../../data/texasCountiesStatewide.js';
@@ -5,10 +9,10 @@ import TimelineSlider from './TimelineSlider.js';
 import SetScenario from './SetScenario.js';
 import Interventions from './Interventions.js';
 import DisplayedParameters from './DisplayedParameters.js';
-import InfectedMap from '../discontinued/SpreadMapCount.js';
-import InfectedMapPercent from './SpreadMapPercent.js';
-import InfectedDeceasedTableMerged from './SpreadTableCount.js';
-import InfectedDeceasedTableMergedPercent from './SpreadTablePercent.js';
+import SpreadMapCount from './SpreadMapCount.js';
+import SpreadMapPercent from './SpreadMapPercent.js';
+import SpreadTableCount from './SpreadTableCount.js';
+import SpreadTablePercent from './SpreadTablePercent.js';
 import LineChart from './LineChart.js';
 
 import PlayPauseButton from './PlayPauseButton.js';
@@ -16,7 +20,7 @@ import './leaflet-overrides.css';
 import axios from 'axios';
 import './Home.css';
 
-const HomeView = () => {
+const Home = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const intervalRef = useRef(null);
@@ -309,9 +313,9 @@ const HomeView = () => {
 
           <div className="map-and-chart-container">
             {viewType === 'percent' ? (
-              <InfectedMapPercent currentIndex={currentIndex} eventData={eventData} className="map-size" />
+              <SpreadMapPercent currentIndex={currentIndex} eventData={eventData} className="map-size" />
             ) : (
-              <InfectedMap currentIndex={currentIndex} eventData={eventData} className="map-size" />
+              <SpreadMapCount currentIndex={currentIndex} eventData={eventData} className="map-size" />
             )}
             <div className="separator"></div>
             <LineChart currentIndex={currentIndex} eventData={eventData} className="chart-size" />
@@ -323,14 +327,14 @@ const HomeView = () => {
         <div className="col-lg-3">
           <div className='right-panel'>
             {viewType === 'percent' ? (
-              <InfectedDeceasedTableMergedPercent 
+              <SpreadTablePercent
                 currentIndex={currentIndex} 
                 eventData={eventData} 
                 lastSorted={lastSorted} 
                 handleSortDirectionChange={handleSortDirectionChange}
               />
             ) : (
-              <InfectedDeceasedTableMerged 
+              <SpreadTableCount
                   currentIndex={currentIndex} 
                   eventData={eventData} 
                   lastSorted={lastSorted}
@@ -361,4 +365,4 @@ const HomeView = () => {
   );
 };
 
-export default HomeView;
+export default Home;

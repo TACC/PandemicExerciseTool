@@ -1,3 +1,7 @@
+// a form for collecting location and age group data for starting cases. The simulation will not
+// run if the user doesn't specify initial cases
+// clicking the "Initial Cases" button in the <SetScenario /> dropdown or the Edit button when
+// hovering over initial cases in <DisplayedParameters /> will render this component
 import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 import './InitialCases.css'; // Import the CSS file for styling
@@ -12,7 +16,7 @@ const ageGroupMapping = {
   '65+ years': '4'
 };
 
-const AddInitialCases = ({ counties, onClose, casesChange }) => {
+const InitialCases = ({ counties, onClose, casesChange }) => {
   const [numberOfCases, setNumberOfCases] = useState(100);
   const [selectedCounty, setSelectedCounty] = useState(null);
   const [selectedAgeGroup, setSelectedAgeGroup] = useState(null);
@@ -173,4 +177,4 @@ const AddInitialCases = ({ counties, onClose, casesChange }) => {
   );
 };
 
-export default AddInitialCases;
+export default InitialCases;

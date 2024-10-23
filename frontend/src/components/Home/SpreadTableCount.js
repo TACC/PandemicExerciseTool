@@ -1,3 +1,6 @@
+// one of the two table components that displays infection and death statistics for each county
+// the table starts out empty and is sorted and populated every time a new day comes from the backend
+// TODO: sorting on each timestep has dramatically reduced performance. sort faster or sort in the backend
 import React, { useState, useEffect } from 'react';
 import searchIcon from '../images/search.svg'; // Updated to use search.svg
 import { csv } from 'd3-fetch'; // Assuming you use d3-fetch for CSV parsing
@@ -15,7 +18,7 @@ const loadCountyNames = async () => {
   return lookup;
 };
 
-function InfectedDeceasedTableMerged({ eventData, currentIndex, lastSorted, handleSortDirectionChange }) {
+function SpreadTableCount({ eventData, currentIndex, lastSorted, handleSortDirectionChange }) {
   const [mergedData, setMergedData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -170,4 +173,4 @@ function InfectedDeceasedTableMerged({ eventData, currentIndex, lastSorted, hand
   );
 }
 
-export default InfectedDeceasedTableMerged;
+export default SpreadTableCount;

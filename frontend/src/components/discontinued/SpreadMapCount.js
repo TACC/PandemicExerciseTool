@@ -1,11 +1,11 @@
+// InfectedDeceasedMap.js
 import React, { useEffect, useState, useRef } from 'react';
-import { MapContainer, TileLayer, GeoJSON, useMap } from 'react-leaflet';
-import L, { transformation } from 'leaflet';
+import { MapContainer, TileLayer, GeoJSON, LayersControl, useMap } from 'react-leaflet';
+import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import texasOutline from '../../data/texasOutline.json';
-import '../Home/Legend.css'; // Ensure you have a CSS file for styling
-import '../../fonts/fonts.css'
-import { IoHomeSharp } from "react-icons/io5";
+import texasOutline from './texasOutline.json';
+import './Legend.css'; // Ensure you have a CSS file for styling
+import '../fonts/fonts.css';
 
 // Function to determine color based on infected count
 const getColor = (infectedCount) => {
@@ -25,20 +25,6 @@ const parseTexasOutline = (texasOutline) => {
     name: feature.properties.name,
     geoid: feature.properties.geoid
   }));
-};
-
-// Reset button component
-const ResetButton = () => {
-  const map = useMap();
-  const handleReset = () => {
-    map.setView([31.0, -100.0], 5.4); // Reset to original center and zoom
-  };
-
-  return (
-    <button onClick={handleReset} className="map-reset-button">
-      <IoHomeSharp size={23} />
-    </button>
-  );
 };
 
 // Component to create a legend for the map
@@ -86,8 +72,61 @@ const Legend = () => {
   return null;
 };
 
+
+const LegendPercentage = () => {
+  const map = useMap();
+
+  useEffect(() => {
+    const legend = L.control({ position: 'bottomright' });
+
+    legend.onAdd = function () {
+      const div = L.DomUtil.create('div', 'info legend');
+      // the spacing of percent buckets looks uneven, but closely matches our counts (assuming max of 5000)
+      const ranges = [
+        { min: 40, max: Infinity },
+        { min: 30, max: 40 },
+        { min: 20, max: 30 },
+        { min: 10, max: 20 },
+        { min: 5, max: 10 },
+        { min: 2.5, max: 5 },
+        { min: 1, max: 2.5 },
+        { min: 0, max: 1 },
+      ];
+      const labels = [];
+
+      ranges.forEach((range, index) => {
+        const color = getColor(range.min);
+        labels.push(
+          `<div class="legend-item">
+            <div class="color-box" style="background:${color};"></div>
+            <span>
+                ${range.min === 0 ? `< ${range.max}%` :
+                  range.min === 40 ? `> ${range.min}%` :
+                 `${range.min} -`}
+                ${range.max === 1 ? '' :
+                  range.max === Infinity ? '' :
+                 `${range.max}%`}
+            </span>
+          </div>`
+        );
+      });
+
+      div.innerHTML = `<strong>Infected (Percent)</strong>${labels.join('')}`;
+      return div;
+    };
+
+    legend.addTo(map);
+
+    return () => {
+      legend.remove();
+    };
+  }, [map]);
+
+  return null;
+};
+
 // Main component to render the map
-const InfectedMap = ({ eventData, currentIndex}) => {
+const SpreadMapCount = ({ eventData, currentIndex }) => {
   const [countyData, setCountyData] = useState([]);
   const mapRef = useRef();
 
@@ -102,11 +141,11 @@ const InfectedMap = ({ eventData, currentIndex}) => {
         return {
           county: county.name,
           fips: county.geoid,
-          infected: countyEvent ? countyEvent.infected : 0
+          infected: countyEvent ? countyEvent.infected : 0,
+          deceased: countyEvent ? countyEvent.deceased : 0
         };
       });
       setCountyData(data);
-      // console.log(`County data loaded for day ${currentIndex}:`, data); // Debug log
     }
   }, [eventData, currentIndex]);
 
@@ -116,6 +155,33 @@ const InfectedMap = ({ eventData, currentIndex}) => {
 
     if (countyInfo) {
       const tooltipContent = `${countyInfo.county}: ${countyInfo.infected} infected`;
+      layer.bindTooltip(tooltipContent, {
+        permanent: false,
+        direction: 'auto',
+        className: 'county-tooltip'
+      });
+    } else {
+      const tooltipContent = `${feature.properties.name}: No data`;
+      layer.bindTooltip(tooltipContent, {
+        permanent: false,
+        direction: 'auto',
+        className: 'county-tooltip'
+      });
+    }
+    layer.on('mouseover', function () {
+      this.openTooltip();
+    });
+    layer.on('mouseout', function () {
+      this.closeTooltip();
+    });
+  };
+
+  const onEachCountyDeceased = (feature, layer) => {
+    const geoid = feature.properties.geoid;
+    const countyInfo = countyData.find(item => item.fips === geoid);
+
+    if (countyInfo) {
+      const tooltipContent = `${countyInfo.county}: ${countyInfo.deceased} deceased`;
       layer.bindTooltip(tooltipContent, {
         permanent: false,
         direction: 'auto',
@@ -148,25 +214,16 @@ const InfectedMap = ({ eventData, currentIndex}) => {
     };
   };
 
-  /*
-  useEffect(() => {
-    if (mapRef.current) {
-      mapRef.current.eachLayer(layer => {
-        if (layer instanceof L.GeoJSON) {
-          layer.clearLayers();
-        }
-      });
-    }
-  }, [eventData]);
-*/
-  /*
-
-  useEffect(() => {
-    if (mapRef.current && outlineLayerRef.current) {
-      outlineLayerRef.current.bringToFront(); // Keep the black outline on top
-    }
-  }, []); // Ensure this only runs once when the map is created
-  */
+  const geoJsonStyleDeceased = (feature) => {
+    const countyInfo = countyData.find(item => item.fips === feature.properties.geoid);
+    const deceasedCount = countyInfo ? countyInfo.deceased : 0;
+    return {
+      fillColor: getColor(deceasedCount),
+      weight: 1,
+      color: 'black',
+      fillOpacity: 0.7
+    };
+  };
 
   return (
     <div>
@@ -175,21 +232,57 @@ const InfectedMap = ({ eventData, currentIndex}) => {
         center={[31.0, -100.0]}
         zoomSnap={0.2}
         zoom={5.4}
-        style={{ height: '35em', backgroundColor: 'transparent'}}
-        attributionControl={false}
+        style={{ height: '38em', width: '95em', backgroundColor: 'white' }}
         whenCreated={mapInstance => { mapRef.current = mapInstance; }}
       >
-        <GeoJSON
-          key={JSON.stringify(countyData)}
-          data={texasOutline}
-          style={geoJsonStyle}
-          onEachFeature={onEachCounty}
-        />
-        <Legend />
-        <ResetButton/>
+        <LayersControl position="topright">
+          {/* Base Layers */}
+          <LayersControl.BaseLayer checked name="By Infected">
+            <GeoJSON
+              key={JSON.stringify(countyData)}
+              data={texasOutline}
+              style={geoJsonStyle}
+              onEachFeature={onEachCounty}
+            />
+            <Legend />
+          </LayersControl.BaseLayer>
+
+          <LayersControl.BaseLayer name="By Deceased">
+            <GeoJSON
+              key={JSON.stringify(countyData)}
+              data={texasOutline}
+              style={geoJsonStyleDeceased}
+              onEachFeature={onEachCountyDeceased}
+            />
+            {/* <LegendPercentage/> */}
+          </LayersControl.BaseLayer>
+
+
+          {/* Overlay for the GeoJSON Infected Counties */}
+          {/* <LayersControl.Overlay checked name="By Count">
+            <GeoJSON
+              key={JSON.stringify(countyData)}
+              data={texasOutline}
+              style={geoJsonStyle}
+              onEachFeature={onEachCounty}
+            />
+            <Legend/>
+          </LayersControl.Overlay> */}
+
+          {/* <LayersControl.Overlay name="By Deceased">
+            <GeoJSON
+              key={JSON.stringify(countyData)}
+              data={texasOutline}
+              style={geoJsonStyleDeceased}
+              onEachFeature={onEachCounty}
+            />
+          </LayersControl.Overlay> */}
+
+        </LayersControl>
+
       </MapContainer>
     </div>
   );
 };
 
-export default InfectedMap;
+export default SpreadMapCount;

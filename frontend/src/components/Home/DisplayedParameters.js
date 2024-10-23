@@ -3,7 +3,7 @@
 // and pass change handlers as props to <DisplayedParameters /> to provoke re-renders
 // this component is rendered on the left-hand information pane of Home view, below the Interventions dropdown
 import React, { useState, useEffect } from 'react';
-import AddInitialCases from './InitialCases';
+import InitialCases from './InitialCases';
 import texasCounties from '../../data/texasCounties';
 import editIcon from '../images/edit.svg'
 import './DisplayedParameters.css';
@@ -287,7 +287,7 @@ const DisplayedParameters = ({ scenarioChange, casesChange }) => {
           <div className="modal-overlay" onClick={closeModal}>
             <div className="modal-contents" onClick={(e) => e.stopPropagation()}>
               <h2>Add Initial Cases</h2>
-              <AddInitialCases 
+              <InitialCases 
                   counties={texasCounties} 
                   onClose={closeModal} 
                   casesChange={casesChange}
