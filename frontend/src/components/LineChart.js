@@ -84,16 +84,12 @@ const LineChart = ({ eventData, currentIndex }) => {
     },
   ];
 
-  const handleLegendToggle = (visibleTraces) => {
-    const updatedData = data.map((trace) => ({
-      ...trace,
-      visible: visibleTraces.includes(trace.name) ? 'legendonly' : true,
-    }));
-    setData(updatedData);
-  };
-
   const layout = {
     autosize: true, // Adjusts the plot to fit the container
+    hovermode: 'closest',
+    margin: {
+      pad: 4
+    },
     title: {
       text: 'Statewide Trends',
       font: { size: 25, family: 'GilroyBold', color: 'black' },
@@ -103,7 +99,8 @@ const LineChart = ({ eventData, currentIndex }) => {
         text: 'Day',
         font: { size: 20, family: 'GilroyRegular', color: 'black' },
       },
-      tickfont: { size: 20, family: 'GilroyRegular', color: 'black' },
+      tickfont: { size: 16, family: 'GilroyRegular', color: 'black' },
+      rangemode: 'nonnegative',
     },
     yaxis: {
       title: {
@@ -111,6 +108,7 @@ const LineChart = ({ eventData, currentIndex }) => {
         font: { size: 20, family: 'GilroyRegular', color: 'black' },
       },
       tickfont: { size: 16, family: 'GilroyRegular', color: 'black' },
+      rangemode: 'nonnegative',
     },
 
     // Center the legend horizontally and place the legend slightly above the plot area
@@ -120,14 +118,13 @@ const LineChart = ({ eventData, currentIndex }) => {
       bgcolor: 'rgba(0, 0, 0, 0)', // Set background color to transparent
       orientation: 'h',
       x: 0.5,
-      y: 1.18,
+      y: 1.3,
       xanchor: 'center',
     },
-    hovermode: 'closest',
   };
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+    <div style={{ position: 'relative', width: '100%', height: 'auto' }}>
       <Plot id='Line-Chart' data={traces} layout={layout} style={{width: '105%', height: '100%'}} useResizeHandler={true} />
     </div>
   );
