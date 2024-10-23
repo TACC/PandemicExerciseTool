@@ -1,3 +1,6 @@
+// a form for gathering user specifications for disease parameters with the option to use preset scenarios
+// clicking the "Disease Parameters" button in the <SetScenario /> dropdown will render this component
+
 import React, { useState, useEffect } from 'react';
 import './InitialCases.css'; // Import the CSS file for styling
 import toggletip from  '../images/toggletip.svg';

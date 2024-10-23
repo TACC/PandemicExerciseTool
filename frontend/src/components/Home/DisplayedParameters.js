@@ -1,3 +1,7 @@
+// an information panel summarizing disease parameters, initial cases, and interventions the user has inputted
+// <DisplayedParameters /> should update dynamically as user input is added/changed; we use state variables in <Home />
+// and pass change handlers as props to <DisplayedParameters /> to provoke re-renders
+// this component is rendered on the left-hand information pane of Home view, below the Interventions dropdown
 import React, { useState, useEffect } from 'react';
 import AddInitialCases from './InitialCases';
 import texasCounties from '../../data/texasCounties';
@@ -50,7 +54,7 @@ const NPIInfo = ({ NPIList }) => {
   )
 };
 
-const SavedParameters = ({ scenarioChange, casesChange }) => {
+const DisplayedParameters = ({ scenarioChange, casesChange }) => {
   const [isModalOpen, setModalOpen] = useState(false); // State for modal visibility
   const [hovered, setHovered] = useState(false); // State for hover effect
   const [view, setView] = useState('scenario'); // State to manage toggle between 'scenario' and 'interventions'
@@ -300,4 +304,4 @@ const SavedParameters = ({ scenarioChange, casesChange }) => {
   );
 };
 
-export default SavedParameters;
+export default DisplayedParameters;

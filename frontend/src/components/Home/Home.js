@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import texasCounties from '../../data/texasCounties.js';
 import texasAllCounties from '../../data/texasCountiesStatewide.js';
 import TimelineSlider from './TimelineSlider.js';
-import SetParametersDropdown from './SetScenario.js';
+import SetScenario from './SetScenario.js';
 import Interventions from './Interventions.js';
-import SavedParameters from './DisplayedParameters.js';
+import DisplayedParameters from './DisplayedParameters.js';
 import InfectedMap from '../discontinued/SpreadMapCount.js';
 import InfectedMapPercent from './SpreadMapPercent.js';
 import InfectedDeceasedTableMerged from './SpreadTableCount.js';
@@ -261,7 +261,7 @@ const HomeView = () => {
       <div className="row">
         <div className="col-lg-2">
           <div className='left-panel'>
-            <SetParametersDropdown
+            <SetScenario
               counties={texasCounties}
               onSave={handleSave}
               casesChange={handleInitialCasesChange}
@@ -271,7 +271,7 @@ const HomeView = () => {
               <Interventions counties={texasAllCounties} npiChange={handleNPIChange} />
             </div>
             <div className="saved-parameters-panel">
-              <SavedParameters
+              <DisplayedParameters
                 scenarioChange={handleScenarioChange}
                 casesChange={handleInitialCasesChange}
               />

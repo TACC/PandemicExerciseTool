@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import texasCounties from '../../data/texasCounties';
 import TimelineSlider from '../Home/TimelineSlider';
-import SetParametersDropdown from '../Home/SetScenario';
+import SetScenario from '../Home/SetScenario';
 import Interventions from '../Home/Interventions';
 import './ChartView.css';
 import { Responsive, WidthProvider } from 'react-grid-layout';
@@ -114,7 +114,7 @@ const ChartView = () => {
   return (
     <div className="chart-view">
       <div className="left-panel">
-        <SetParametersDropdown counties={texasCounties} />
+        <SetScenario counties={texasCounties} />
         <div className="interventions-container">
         <Interventions />
       </div>

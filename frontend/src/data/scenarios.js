@@ -1,4 +1,5 @@
 // export an object storing disease parameter presets
+// these presets were taken from the old C++ desktop app
 // used in DiseaseParameters.js (in Home View) to display and load preset diseases
 const scenarios = {
     "Slow Transmission, Mild Severity (2009 H1N1)": {

@@ -4,7 +4,7 @@ import SetManually from './DiseaseParameters';
 import './InitialCases.css'; // Import the CSS file for styling
 import { createPortal } from 'react-dom';
 
-const SetParametersDropdown = ({ counties, onSave, scenarioChange, casesChange }) => {
+const SetScenario = ({ counties, onSave, scenarioChange, casesChange }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [isInitialCasesOpen, setIsInitialCasesOpen] = useState(false);
   const [isSetManuallyOpen, setIsSetManuallyOpen] = useState(false);
@@ -83,4 +83,4 @@ const SetParametersDropdown = ({ counties, onSave, scenarioChange, casesChange }
   );
 };
 
-export default SetParametersDropdown;
+export default SetScenario;
