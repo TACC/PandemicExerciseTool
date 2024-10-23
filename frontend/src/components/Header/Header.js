@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Header.css';
 import epiengage_logo_darkblue from './epiengage_logo_darkblue.jpg';
 import GalleryView from '../GalleryView';
 import UserGuideView from '../UserGuideView';
 import HomeView from '../HomeView';
 import ChartView from '../ChartView';
+import axios from 'axios';
 
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
@@ -13,6 +14,27 @@ import Navbar from 'react-bootstrap/Navbar';
 
 const Header = ({ currentIndex, setCurrentIndex }) => {
   const [activeTab, setActiveTab] = useState('home');
+
+  // add an EventListener that warns the user before leaving the page and wiping parameters/simulation
+  useEffect(() => {
+    window.addEventListener('beforeunload', alertUser);
+    window.addEventListener('unload', handlePageLeave);
+    return () => {
+      window.removeEventListener('beforeunload', alertUser);
+      window.removeEventListener('unload', handlePageLeave);
+      handlePageLeave();
+    }
+  }, [])
+
+  const alertUser = e => {
+    e.preventDefault();
+    e.returnValue = '';
+  }
+
+  const handlePageLeave = async () => {
+    localStorage.clear();
+    await axios.get('http://localhost:8000/api/reset');
+  }
 
   const renderTabContent = () => {
     switch (activeTab) {
