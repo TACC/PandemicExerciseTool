@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import AddInitialCases from './AddInitialCases';
-import texasCounties from '../data/texasCounties';
-import editIcon from './images/edit.svg'
-import './SavedParameters.css';
+import AddInitialCases from './InitialCases';
+import texasCounties from '../../data/texasCounties';
+import editIcon from '../images/edit.svg'
+import './DisplayedParameters.css';
 import { createPortal } from 'react-dom';
 import NewSimulationButton from './NewSimulationButton'
 

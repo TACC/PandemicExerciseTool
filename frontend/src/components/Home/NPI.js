@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
-import toggletip from  './images/toggletip.svg';
-import './AddInitialCases.css'; // Import the CSS file for styling
+import toggletip from  '../images/toggletip.svg';
+import './InitialCases.css'; // Import the CSS file for styling
 
-const texasMapping = require('../data/texasMapping.json'); // Import the Texas mapping JSON
+const texasMapping = require('../../data/texasMapping.json'); // Import the Texas mapping JSON
 
 const NonPharmaceutical = ({ counties, onSubmit }) => {
   const [nonpharmaName, setNonpharmaName] = useState(localStorage.getItem('nonpharma_name') || 'School Closures');

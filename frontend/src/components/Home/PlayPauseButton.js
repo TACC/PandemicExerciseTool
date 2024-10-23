@@ -1,7 +1,7 @@
 import React from 'react';
 import './PlayPauseButton.css';
-import play_button from './images/play_button.png';
-import pause from './images/pause.png';
+import play_button from '../images/play_button.png';
+import pause from '../images/pause.png';
 
 const PlayPauseButton = ({ isRunning, onToggle }) => {
     return (

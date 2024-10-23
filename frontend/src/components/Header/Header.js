@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import './Header.css';
 import epiengage_logo_darkblue from './epiengage_logo_darkblue.jpg';
-import GalleryView from '../GalleryView';
-import UserGuideView from '../UserGuideView';
-import HomeView from '../HomeView';
-import ChartView from '../ChartView';
+import GalleryView from '../Gallery/Gallery';
+import UserGuideView from '../UserGuide/UserGuide';
+import HomeView from '../Home/Home';
+import ChartView from '../discontinued/ChartView';
 import axios from 'axios';
 
 import Container from 'react-bootstrap/Container';

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
-import './AddInitialCases.css'; // Import the CSS file for styling
+import './InitialCases.css'; // Import the CSS file for styling
 
-const texasMapping = require('../data/texasMapping.json'); // Import the Texas mapping JSON
+const texasMapping = require('../../data/texasMapping.json'); // Import the Texas mapping JSON
 
 const ageGroupMapping = {
   '0-4 years': '0',

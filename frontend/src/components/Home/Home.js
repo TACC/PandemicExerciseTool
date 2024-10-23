@@ -1,20 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
-import texasCounties from '../data/texasCounties.js';
-import texasAllCounties from '../data/texasCountiesStatewide.js';
-import TimelineSlider from './TimelineSlider';
-import SetParametersDropdown from './SetParametersDropdown';
-import Interventions from './Interventions';
-import SavedParameters from './SavedParameters';
-import InfectedMap from './InfectedMap';
-import InfectedMapPercent from './InfectedMapPercent';
-import InfectedDeceasedTableMerged from './InfectedDeceasedTableMerged';
-import InfectedDeceasedTableMergedPercent from './InfectedDeceasedTableMergedPercent.js';
-import LineChart from './LineChart';
+import texasCounties from '../../data/texasCounties.js';
+import texasAllCounties from '../../data/texasCountiesStatewide.js';
+import TimelineSlider from './TimelineSlider.js';
+import SetParametersDropdown from './SetScenario.js';
+import Interventions from './Interventions.js';
+import SavedParameters from './DisplayedParameters.js';
+import InfectedMap from '../discontinued/SpreadMapCount.js';
+import InfectedMapPercent from './SpreadMapPercent.js';
+import InfectedDeceasedTableMerged from './SpreadTableCount.js';
+import InfectedDeceasedTableMergedPercent from './SpreadTablePercent.js';
+import LineChart from './LineChart.js';
 
-import PlayPauseButton from './PlayPauseButton';
+import PlayPauseButton from './PlayPauseButton.js';
 import './leaflet-overrides.css';
 import axios from 'axios';
-import './HomeView.css';
+import './Home.css';
 
 const HomeView = () => {
   const [isRunning, setIsRunning] = useState(false);
@@ -279,7 +279,7 @@ const HomeView = () => {
           </div>
         </div>
 
-        {/* Middlle Panel - Infected Map (Count and Percentage) and Line Chart */}
+        {/* Middle Panel - Infected Map (Count and Percentage) and Line Chart */}
         <div className="col-lg-7">
 
           <div className='top-middle-panel'>

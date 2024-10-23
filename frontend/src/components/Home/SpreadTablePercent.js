@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import searchIcon from './images/search.svg'; // Updated to use search.svg
+import searchIcon from '../images/search.svg'; // Updated to use search.svg
 import { csv } from 'd3-fetch'; // Assuming you use d3-fetch for CSV parsing
-import './Table.css';
+import './SpreadTable.css';
 
 // Function to load county names from CSV
 const loadCountyNames = async () => {

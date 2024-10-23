@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
-import texasCounties from '../data/texasCounties';
-import TimelineSlider from './TimelineSlider';
-import SetParametersDropdown from './SetParametersDropdown';
-import Interventions from './Interventions';
+import texasCounties from '../../data/texasCounties';
+import TimelineSlider from '../Home/TimelineSlider';
+import SetParametersDropdown from '../Home/SetScenario';
+import Interventions from '../Home/Interventions';
 import './ChartView.css';
 import { Responsive, WidthProvider } from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
-import PlayPauseButton from './PlayPauseButton';
-import './leaflet-overrides.css';
+import PlayPauseButton from '../Home/PlayPauseButton';
+import '../Home/leaflet-overrides.css';
 // import './left-panel.css';
 
 

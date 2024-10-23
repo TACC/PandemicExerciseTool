@@ -1,5 +1,5 @@
 import React from 'react';
-import './GalleryView.css';
+import './Gallery.css';
 
 // Retrieve saved images from local storage
 const getSavedImages = () => {

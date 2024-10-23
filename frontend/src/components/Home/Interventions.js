@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import Antivirals from './Antivirals';
 import Vaccine from './Vaccine';
-import NonPharmaceutical from './NonPharmaceutical';
+import NonPharmaceutical from './NPI';
 import { createPortal } from 'react-dom';
-import './SetParametersDropdown.css';
+import './SetScenario.css';
 
 const Interventions = ( {counties, npiChange} ) => {
   const [showDropdown, setShowDropdown] = useState(false);

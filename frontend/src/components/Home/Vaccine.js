@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import toggletip from  "./images/toggletip.svg";
-import './AddInitialCases.css';
+import toggletip from  "../images/toggletip.svg";
+import './InitialCases.css';
 
 const Vaccine = ({ onSubmit }) => {
   const [vaccineEffectiveness, setVaccineEffectiveness] = useState(localStorage.getItem('vaccine_effectiveness') || 0.50);

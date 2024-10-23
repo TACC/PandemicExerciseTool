@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import AddInitialCases from './AddInitialCases';
-import SetManually from './SetManually';
-import './AddInitialCases.css'; // Import the CSS file for styling
+import AddInitialCases from './InitialCases';
+import SetManually from './DiseaseParameters';
+import './InitialCases.css'; // Import the CSS file for styling
 import { createPortal } from 'react-dom';
 
 const SetParametersDropdown = ({ counties, onSave, scenarioChange, casesChange }) => {
