@@ -84,6 +84,14 @@ const LineChart = ({ eventData, currentIndex }) => {
     },
   ];
 
+  const handleLegendToggle = (visibleTraces) => {
+    const updatedData = data.map((trace) => ({
+      ...trace,
+      visible: visibleTraces.includes(trace.name) ? 'legendonly' : true,
+    }));
+    setData(updatedData);
+  };
+
   const layout = {
     autosize: true, // Adjusts the plot to fit the container
     title: {
@@ -109,9 +117,10 @@ const LineChart = ({ eventData, currentIndex }) => {
     showlegend: true,
     legend: {
       font: { size: 16, family: 'GilroyRegular', color: 'black' },
+      bgcolor: 'rgba(0, 0, 0, 0)', // Set background color to transparent
       orientation: 'h',
       x: 0.5,
-      y: 1.1,
+      y: 1.18,
       xanchor: 'center',
     },
     hovermode: 'closest',
