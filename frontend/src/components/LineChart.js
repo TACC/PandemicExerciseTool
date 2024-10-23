@@ -87,6 +87,7 @@ const LineChart = ({ eventData, currentIndex }) => {
   const layout = {
     autosize: true, // Adjusts the plot to fit the container
     hovermode: 'closest',
+    height: 370,
     margin: {
       pad: 4
     },
@@ -118,14 +119,14 @@ const LineChart = ({ eventData, currentIndex }) => {
       bgcolor: 'rgba(0, 0, 0, 0)', // Set background color to transparent
       orientation: 'h',
       x: 0.5,
-      y: 1.3,
+      y: 1.25,
       xanchor: 'center',
     },
   };
 
   return (
     <div style={{ position: 'relative', width: '100%', height: 'auto' }}>
-      <Plot id='Line-Chart' data={traces} layout={layout} style={{width: '105%', height: '100%'}} useResizeHandler={true} />
+      <Plot id='Line-Chart' data={traces} layout={layout} style={{width: '105%', height: '100%', marginTop: '-1em'}} useResizeHandler={true} />
     </div>
   );
 };
