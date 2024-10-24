@@ -19,15 +19,25 @@
 
 .scenario-button-disabled {
     padding: 10px 20px;
+    background-color: #f7ce88;
     font-size: large;
     cursor: not-allowed !important;
     border: none;
     font-weight: bold;
-    color: black;
+    color: #756446;
     height: 2.5em;
     width: 12.5em;
     border-radius: 4px;
-    opacity: 0.6;
+}
+
+.tooltips-text {
+    left: 24.5%;
+    bottom: 90%;
+}
+
+.scenario-button-disabled:hover .tooltips-text {
+    visibility: visible;
+    opacity: 1;
 }
 
 .pause-button {
@@ -48,4 +58,8 @@
   height: 20px;
   margin-right: 8px;
   vertical-align: middle;
+}
+
+.scenario-button-disabled .icon {
+    opacity: 0.6;
 }

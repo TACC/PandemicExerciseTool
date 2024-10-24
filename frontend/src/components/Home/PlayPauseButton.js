@@ -35,10 +35,14 @@ const PlayPauseButton = ({ isRunning, onToggle }) => {
     );
   } else {
     return (
+      <>
+      {/* <span className="tooltips-text">Scenario parameters and initial cases are required to run a simulation</span> */}
       <button className="scenario-button-disabled">
+        <span className="tooltips-text">Scenario parameters and initial cases are required to run a simulation</span>
         <img src={play_button} alt="Play button disabled, missing parameters" className="icon" />
         Play
       </button>
+      </>
     )
   }
 };
