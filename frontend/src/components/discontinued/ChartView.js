@@ -1,3 +1,5 @@
+// Provides a resizable grid layout that allows users to resize components
+// NOTE: still in development
 import React, { useState, useEffect, useRef } from 'react';
 import texasCounties from '../../data/texasCounties';
 import TimelineSlider from '../Home/TimelineSlider';

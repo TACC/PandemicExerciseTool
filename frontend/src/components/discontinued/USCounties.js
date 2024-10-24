@@ -1,3 +1,7 @@
+// provides a dropdown list with states, counties for all 50 states
+// when user selects a state, the counties dropdown list will auto-populate
+// with the counties from that particular state
+// this will be useful when we expand functionality beyond Texas
 import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 import './StateCountyDropdown.css'; // Import the CSS file for styling
