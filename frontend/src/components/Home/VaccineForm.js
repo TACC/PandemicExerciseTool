@@ -1,8 +1,16 @@
-import React, { useState, useEffect } from "react";
-import toggletip from  "./images/toggletip.svg";
-import './AddInitialCases.css';
+// FIXME: vaccines do not appear in the left-hand summary pane (<DisplayedParameters />) until the component
+// rerenders! there's a workaround implemented for NPIs by changing a state variable in the parent component
+// (<Home />) when an intervention is added.
+// changing state re-renders <Home /> and <DisplayedParameters /> updates dynamically
 
-const Vaccine = ({ onSubmit }) => {
+// a form for gathering user specifications for vaccine interventions, which are saved to state and localStorage
+// clicking the "Vaccines" button in the <Interventions /> dropdown will render this component
+// NOTE: specifying antiviral interventions does not currently affect the simulation!
+import React, { useState, useEffect } from "react";
+import toggletip from  "../images/toggletip.svg";
+import './InitialCases.css';
+
+const VaccineForm = ({ onSubmit }) => {
   const [vaccineEffectiveness, setVaccineEffectiveness] = useState(localStorage.getItem('vaccine_effectiveness') || 0.50);
   const [vaccineAdherence, setVaccineAdherence] = useState(localStorage.getItem('vaccine_adherence') || 0.50);
   const [vaccineWastageFactor, setVaccineWastageFactor] = useState(localStorage.getItem('vaccine_wastage_factor') || 60);
@@ -216,4 +224,4 @@ const Vaccine = ({ onSubmit }) => {
   );
 };
 
-export default Vaccine;
+export default VaccineForm;

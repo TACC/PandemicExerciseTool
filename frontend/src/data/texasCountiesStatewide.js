@@ -1,3 +1,6 @@
+// export an array of Texas counties with "Statewide" prepended
+// currently used in <NPIForm /> to allow users to select multiple
+// counties for applying interventions
 const texasCountiesAll = [
     'Statewide',
     'Anderson',

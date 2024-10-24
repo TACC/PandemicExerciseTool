@@ -1,10 +1,11 @@
+// renders the Set Scenario dropdown menu on the left panel of Home view
 import React, { useState } from 'react';
-import AddInitialCases from './AddInitialCases';
-import SetManually from './SetManually';
-import './AddInitialCases.css'; // Import the CSS file for styling
+import InitialCasesForm from './InitialCasesForm';
+import DiseaseParametersForm from './DiseaseParametersForm';
+import './InitialCases.css'; // Import the CSS file for styling
 import { createPortal } from 'react-dom';
 
-const SetParametersDropdown = ({ counties, onSave, scenarioChange, casesChange }) => {
+const SetScenario = ({ counties, onSave, scenarioChange, casesChange }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [isInitialCasesOpen, setIsInitialCasesOpen] = useState(false);
   const [isSetManuallyOpen, setIsSetManuallyOpen] = useState(false);
@@ -22,7 +23,7 @@ const SetParametersDropdown = ({ counties, onSave, scenarioChange, casesChange }
   const closeSetManually = () => setIsSetManuallyOpen(false);
 
   const handleSave = () => {
-    scenarioChange();    // trigger HomeView.js to rerender with updated scenario info
+    scenarioChange();    // trigger Home.js to rerender with updated scenario info
     onSave(); // Trigger the save action in the parent component
     setShowDropdown(false); // Close the dropdown after saving
   };
@@ -47,7 +48,7 @@ const SetParametersDropdown = ({ counties, onSave, scenarioChange, casesChange }
               <div className="modal-contents"  style={{ backgroundColor: 'white' }} onClick={(e) => e.stopPropagation()}>
                 <span className="modal-close" onClick={closeSetManually}>×</span>
                 <h2>Disease Parameters</h2>
-                <SetManually 
+                <DiseaseParametersForm
                   onClose={closeSetManually} 
                   onSubmit={(data) => { 
                     console.log('Set Manually:', data); 
@@ -67,7 +68,7 @@ const SetParametersDropdown = ({ counties, onSave, scenarioChange, casesChange }
               <div className="modal-contents" style={{ backgroundColor: 'white' }} onClick={(e) => e.stopPropagation()}>
                 <span className="modal-close" onClick={closeInitialCases}>×</span>
                 <h2>Add Initial Cases</h2>
-                <AddInitialCases 
+                <InitialCasesForm 
                   onClose={closeInitialCases} 
                   counties={counties} 
                   onSubmit={(data) => { console.log('Initial Cases:', data); handleSave(); }} 
@@ -83,4 +84,4 @@ const SetParametersDropdown = ({ counties, onSave, scenarioChange, casesChange }
   );
 };
 
-export default SetParametersDropdown;
+export default SetScenario;

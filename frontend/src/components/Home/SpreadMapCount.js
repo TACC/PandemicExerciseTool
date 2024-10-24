@@ -1,13 +1,12 @@
-
-
-// InfectedMap.js
+// one of two main map components that tracks the number of infections per county 
+// this component is invoked in <Home /> and renders in the top-middle of Home view
 import React, { useEffect, useState, useRef } from 'react';
 import { MapContainer, TileLayer, GeoJSON, useMap } from 'react-leaflet';
 import L, { transformation } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import texasOutline from '../data/texasOutline.json';
-import './Legend.css'; // Ensure you have a CSS file for styling
-import '../fonts/fonts.css'
+import texasOutline from '../../data/texasOutline.json';
+import '../Home/Legend.css'; // Ensure you have a CSS file for styling
+import '../../fonts/fonts.css'
 import { IoHomeSharp } from "react-icons/io5";
 
 // Function to determine color based on infected count
@@ -90,7 +89,7 @@ const Legend = () => {
 };
 
 // Main component to render the map
-const InfectedMap = ({ eventData, currentIndex}) => {
+const SpreadMapCount = ({ eventData, currentIndex}) => {
   const [countyData, setCountyData] = useState([]);
   const mapRef = useRef();
 
@@ -195,4 +194,4 @@ const InfectedMap = ({ eventData, currentIndex}) => {
   );
 };
 
-export default InfectedMap;
+export default SpreadMapCount;

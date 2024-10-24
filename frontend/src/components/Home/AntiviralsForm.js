@@ -1,9 +1,18 @@
+// FIXME: antivirals do not appear in the left-hand summary pane (<DisplayedParameters />) until the component
+// rerenders! there's a workaround implemented for NPIs by changing a state variable in the parent component
+// (<Home />) when an intervention is added.
+// changing state re-renders <Home /> and <DisplayedParameters /> updates dynamically
+
+// a form for gathering user specification for antiviral interventions, which are saved to state and localStorage
+// clicking the "Antivirals" button in the <Interventions /> dropdown will render this component
+// NOTE: specifying antiviral interventions does not currently affect the simulation!
+
 import React, { useState, useEffect } from 'react';
-import toggletip from  './images/toggletip.svg';
-import './AddInitialCases.css';
+import toggletip from  '../images/toggletip.svg';
+import './InitialCases.css';
 
 
-const Antivirals = ({ onSubmit }) => {
+const AntiviralsForm = ({ onSubmit }) => {
   const [antiviralEffectiveness, setAntiviralEffectiveness] = useState(localStorage.getItem('antiviral_effectiveness') || 0.15);
   const [antiviralWastageFactor, setAntiviralWastageFactor] = useState(localStorage.getItem('antiviral_wastage_factor') || 60);
   const [antiviralStockpileDay, setAntiviralStockpileDay] = useState(50);
@@ -162,4 +171,4 @@ const Antivirals = ({ onSubmit }) => {
   );
 };
 
-export default Antivirals;
+export default AntiviralsForm;

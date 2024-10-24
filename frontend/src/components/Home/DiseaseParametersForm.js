@@ -1,61 +1,12 @@
+// a form for gathering user specifications for disease parameters with the option to use preset scenarios
+// clicking the "Disease Parameters" button in the <SetScenario /> dropdown will render this component
+
 import React, { useState, useEffect } from 'react';
-import './AddInitialCases.css'; // Import the CSS file for styling
-import toggletip from  './images/toggletip.svg';
+import './InitialCases.css'; // Import the CSS file for styling
+import toggletip from  '../images/toggletip.svg';
+import scenarios from '../../data/scenarios.js';
 
-const SetManually = ({ onClose, scenarioChange }) => {
-
-  // Define scenarios with their corresponding values
-  const scenarios = {
-    "Slow Transmission, Mild Severity (2009 H1N1)": {
-      id: 1,
-      disease_name: "2009 H1N1",
-      R0: 1.2,
-      beta_scale: 10.0,
-      tau: 1.2,
-      kappa: 1.9,
-      gamma: 4.1,
-      chi: 1.0,
-      rho: 0.39,
-      nu: [0.000022319,0.000040975,0.000083729,0.000061809,0.000008978]
-    },
-    "Slow Transmission, High Severity (1918 Influenza)": {
-      id: 2,
-      disease_name: "1918 Influenza",
-      R0: 1.2,
-      beta_scale: 10.0,
-      tau: 1.2,
-      kappa: 1.9,
-      gamma: 4.1,
-      chi: 1.0,
-      rho: 0.39,
-      nu: [0.002013710,0.000766899,0.001312944,0.000481093,0.000127993]
-    },
-    "Fast Transmission, Mild Severity (2009 H1N1)": {
-      id: 3,
-      disease_name: "2009 H1N1",
-      R0: 1.8,
-      beta_scale: 10.0,
-      tau: 1.2,
-      kappa: 1.9,
-      gamma: 4.1,
-      chi: 1.0,
-      rho: 0.39,
-      nu: [0.000022319,0.000040975,0.000083729,0.000061809,0.000008978]
-    },
-    "Fast Transmission, High Severity (1918 Influenza)": {
-      id: 4,
-      disease_name: "1918 Influenza",
-      R0: 1.8,
-      beta_scale: 10.0,
-      tau: 1.2,
-      kappa: 1.9,
-      gamma: 4.1,
-      chi: 1.0,
-      rho: 0.39,
-      nu: [0.002013710,0.000766899,0.001312944,0.000481093,0.000127993]
-    }
-  };
-
+const DiseaseParametersForm = ({ onClose, scenarioChange }) => {
   // Load initial state from localStorage or set default values
   const [selectedScenario, setSelectedScenario] = useState('');
   const [diseaseName, setDiseaseName] = useState(localStorage.getItem('diseaseName') || '');
@@ -185,7 +136,7 @@ const SetManually = ({ onClose, scenarioChange }) => {
     if (onClose) {
       onClose(); // Call the onClose function to close the form
     }
-    scenarioChange();    // trigger HomeView to rerender
+    scenarioChange();    // trigger Home to rerender
   };
 
   return (
@@ -400,7 +351,7 @@ const SetManually = ({ onClose, scenarioChange }) => {
     </form>
   );
 };
-export default SetManually;
+export default DiseaseParametersForm;
 
 
 

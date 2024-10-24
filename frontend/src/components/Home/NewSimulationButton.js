@@ -1,3 +1,6 @@
+// a button for resetting the simulation and starting afresh
+// ideally, this functions similarly (if not identically) to cycling docker containers
+// rendered at the bottom of the left-hand Home view pane above <PlayPauseButton />
 import React from 'react';
 import { useState } from 'react';
 import { createPortal } from 'react-dom';

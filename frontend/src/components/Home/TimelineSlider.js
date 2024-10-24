@@ -1,3 +1,5 @@
+// the timeline slider automatically updates with each new simulation day from the backend
+// rendered at the middle-bottom of Home view below <LineChart />
 import React, { useState, useEffect } from 'react';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
