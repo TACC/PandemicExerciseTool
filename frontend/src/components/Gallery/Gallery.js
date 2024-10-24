@@ -1,3 +1,4 @@
+// currently unused, the Gallery view allows users to view saved images
 import React from 'react';
 import './Gallery.css';
 

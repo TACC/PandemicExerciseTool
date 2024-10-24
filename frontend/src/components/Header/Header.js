@@ -1,3 +1,4 @@
+// <Header /> is invoked in App.js, all other views are rendered here
 import React, { useState, useEffect } from 'react';
 import './Header.css';
 import epiengage_logo_darkblue from './epiengage_logo_darkblue.jpg';
@@ -82,6 +83,11 @@ const Header = ({ currentIndex, setCurrentIndex }) => {
                       className={`tab-button ${activeTab === 'userguide' ? 'active' : ''}`}
                       onClick={() => setActiveTab('userguide')}>User Guide</a>
                   </li>
+                  {/* <li> */}
+                  {/*   <a aria-current="page" */}
+                  {/*     className={`tab-button ${activeTab === 'gallery' ? 'active' : ''}`} */}
+                  {/*     onClick={() => setActiveTab('gallery')}>Gallery</a> */}
+                  {/* </li> */}
                 </ul>
               </Nav>
             </Nav>
