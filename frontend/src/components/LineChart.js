@@ -1,3 +1,5 @@
+// LineChart.js visualizes SEATIRD data for a given scenario and/or interventions
+// Used in Homeview.js
 import React from 'react';
 import Plot from 'react-plotly.js';
 import '../index.css';
