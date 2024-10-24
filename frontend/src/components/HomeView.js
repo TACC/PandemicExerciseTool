@@ -256,6 +256,9 @@ const HomeView = () => {
     window.location.reload(); // Refresh the page
   };
 
+  // Needs to make sure its picking up data correctly
+  const npiData = JSON.parse(localStorage.getItem('non_pharma_interventions'));
+
   return (
     <div >
       <div className="row">
@@ -314,7 +317,9 @@ const HomeView = () => {
               <InfectedMap currentIndex={currentIndex} eventData={eventData} className="map-size" />
             )}
             <div className="separator"></div>
-            <LineChart currentIndex={currentIndex} eventData={eventData} className="chart-size" />
+            {/* <LineChart currentIndex={currentIndex} eventData={eventData} className="chart-size" /> */}
+            <LineChart eventData={eventData} currentIndex={currentIndex} npiData={npiData} />
+
           </div>
         </div>
 
