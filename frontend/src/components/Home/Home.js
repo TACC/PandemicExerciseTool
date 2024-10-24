@@ -37,24 +37,16 @@ const Home = () => {
 
   const [initialCasesCount, setInitialCasesCount] = useState(localStorage.getItem("initial_infected") || 0);
   const handleInitialCasesChange = () => {
-    setInitialCasesCount(localStorage.getItem("initial_infected").length || 0);
+    setInitialCasesCount(localStorage.getItem("initial_infected").length);
+    setHasSetCases(localStorage.getItem("initial_infected").length > 0 || false);
+    console.log(JSON.parse(localStorage.getItem("initial_infected")).length);
   }
-
-  // remember how table is sorted between re-renders
-  // default sort is flipped when user clicks to sort
-  const [sortDirection, setSortDirection] = useState({
-    county: 'asc',
-    infected: 'asc',
-    deceased: 'asc',
-    infectedPercent: 'asc',
-    deceasedPercent: 'asc',
-    lastSorted: 'county',
-  });
 
   const [lastSorted, setLastSorted] = useState({
     category: "county",
     order: "asc",
   });
+
   const handleSortDirectionChange = (category) => {
     if (category === lastSorted.category) {    // flip sort order
       setLastSorted({
@@ -76,6 +68,10 @@ const Home = () => {
     setScenarioCounter(scenarioCounter + 1);
     console.log("scenario counter now", scenarioCounter);
   }
+
+  // used to enable/disable Play button
+  const [hasSetScenario, setHasSetScenario] = useState(false);
+  const [hasSetCases, setHasSetCases] = useState(false);
 
   // Handle radio button change
   const handleViewChange = (e) => {
@@ -347,7 +343,12 @@ const Home = () => {
         {/* Footer - Play & Pause Timeline */}
         <div className="footer">
           <div className="play-pause-container">
-            <PlayPauseButton isRunning={isRunning} onToggle={handleToggleScenario} />
+            <PlayPauseButton 
+              isRunning={isRunning} 
+              onToggle={handleToggleScenario}
+              hasSetScenario={hasSetScenario}
+              hasSetCases={hasSetCases}
+            />
           </div>
           <div className="timeline-panel">
             <TimelineSlider

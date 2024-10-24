@@ -17,6 +17,19 @@
   background-color: #f7b13c;
 }
 
+.scenario-button-disabled {
+    padding: 10px 20px;
+    font-size: large;
+    cursor: not-allowed !important;
+    border: none;
+    font-weight: bold;
+    color: black;
+    height: 2.5em;
+    width: 12.5em;
+    border-radius: 4px;
+    opacity: 0.6;
+}
+
 .pause-button {
   background-color: #f1f1f1;
   border: 2px solid black; /* Add a black border */
@@ -29,6 +42,7 @@
 }
 
 .scenario-button .icon,
+.scenario-button-disabled .icon,
 .pause-button .icon {
   width: 20px;
   height: 20px;
