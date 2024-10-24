@@ -108,6 +108,7 @@ const LineChart = ({ eventData, currentIndex }) => {
   const layout = {
     autosize: true, // Adjusts the plot to fit the container
     hovermode: 'closest',
+    height: 350,
     margin: {
       l: 70, // Left margin
       r: 0, // Right margin
@@ -133,7 +134,7 @@ const LineChart = ({ eventData, currentIndex }) => {
         font: { size: 20, family: 'GilroyRegular', color: 'black' },
       },
       tickfont: { size: 16, family: 'GilroyRegular', color: 'black' },
-      rangemode: 'normal',
+      rangemode: 'noraml',
     },
 
     // Center the legend horizontally and place the legend slightly above the plot area
@@ -143,7 +144,7 @@ const LineChart = ({ eventData, currentIndex }) => {
       bgcolor: 'rgba(0, 0, 0, 0)', // Set background color to transparent
       orientation: 'h',
       x: 0.5,
-      y: 1.15,
+      y: 1.16,
       xanchor: 'center',
     },
   };
