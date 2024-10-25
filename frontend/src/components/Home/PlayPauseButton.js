@@ -8,7 +8,7 @@ import pause from '../images/pause.png';
 import StartNotification from './StartNotification';
 
 const checkForScenario = () => {
-  if (localStorage.length > 2) {
+  if (localStorage.length < 2) {
     return [false, false];
   }
   let parametersSet = false;
