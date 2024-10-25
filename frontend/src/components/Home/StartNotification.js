@@ -1,4 +1,8 @@
 // displays a notification (a bootstrap Toast to be specific) when the user starts a simulation
+// FIXME: since shouldNotify isn't directly tied to the POST request in Home.js, there are some
+// instances where starting a simulation will not display the notification, e.g. pausing and
+// resuming a simulation without changing the scenario. it would be smarter to pass shouldNotify
+// as a prop from Home.js and set it to true every time a simulation is paused
 import React, { useState, useEffect } from 'react';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';

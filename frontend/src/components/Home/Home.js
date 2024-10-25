@@ -232,7 +232,7 @@ const Home = () => {
         }
 
       } catch (error) {
-        console.log('Data not here yet:', error);
+        // console.log('Data not here yet:', error);
         setTimeout(() => {
           fetchData(nextAvailable);
         }, 1000);
