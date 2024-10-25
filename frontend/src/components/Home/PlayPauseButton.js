@@ -24,9 +24,9 @@ const checkForScenario = () => {
 };
 
 const PlayPauseButton = ({ isRunning, onToggle }) => {
-  const hasSetParameters = checkForScenario();
+  const [parametersSet, initialCasesSet]= checkForScenario();
 
-  if (hasSetParameters[0] && hasSetParameters[1]) {
+  if (parametersSet && initialCasesSet) {
     return (
       <div>
         <StartNotification isRunning={isRunning} />
