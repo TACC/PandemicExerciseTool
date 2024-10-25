@@ -204,7 +204,7 @@ const LineChart = ({ eventData, currentIndex, npiData }) => {
   const layout = {
     autosize: true,
     hovermode: 'closest',
-    height: 350,
+    height: 365,
     margin: {
       l: 70,
       r: 0,
