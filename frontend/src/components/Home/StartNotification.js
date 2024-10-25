@@ -1,15 +1,14 @@
 // displays a notification when the user starts a simulation
 // TODO: more docstrings here
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Toast from 'react-bootstrap/Toast';
-import Overlay from 'react-bootstrap/Overlay';
+import ToastContainer from 'react-bootstrap/ToastContainer';
 
-const StartNotification = (isRunning, target) => {
-  const [show, setShow] = useState(true);
-  console.log("ref.current:", target.current);
+const StartNotification = (isRunning) => {
+  const [show, setShow] = useState(false);
 
   useEffect(() => {
     console.log("isRunning?", isRunning.isRunning);
@@ -17,33 +16,18 @@ const StartNotification = (isRunning, target) => {
   }, [isRunning])
 
   return (
-    <>
-      <Overlay target={target.current} show={show} placement="right">
-        {({
-          placement: _placement,
-          arrowProps: _arrowProps,
-          show: _show,
-          popper: _popper,
-          hasDoneInitialMeasure: _hasDoneInitialMeasure,
-          ...props
-        }) => (
-          <div
-            {...props}
-            style={{
-              position: 'absolute',
-                backgroundColor: 'white',
-                padding: '2px 10px',
-                color: 'black',
-                borderRadius: 4,
-                ...props.style,
-              }}
-          >
-            Starting simulation...
-          </div>
-        )}
-      </Overlay>
-    </>
-  );
+      <Col xs={6}>
+        <ToastContainer 
+          className="notification-container" 
+          // position={'bottom-center'}
+          style = {{zIndex: '4', left: '11.6em !important', bottom: '85%', width: '14.2em'}}
+        >
+          <Toast onClose={() => setShow(false)} show={show} delay={3000} autohide>
+            <Toast.Body>Starting simulation...</Toast.Body>
+          </Toast>
+        </ToastContainer>
+      </Col>
+  )
 }
 
 export default StartNotification;
