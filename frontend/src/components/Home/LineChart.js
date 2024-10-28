@@ -5,17 +5,22 @@ import Plot from 'react-plotly.js';
 import '../../index.css';
 
 const LineChart = ({ eventData, currentIndex, npiData }) => {
-  const createTrace = (name, yData, lineColor) => ({
-    x: eventData.map(event => event.day),
-    y: yData,
-    mode: 'lines+markers',
-    name,
-    line: { color: lineColor, shape: 'spline' },
-    marker: {
-      color: eventData.map((_, index) => (index === currentIndex ? 'red' : lineColor)),
-      size: eventData.map((_, index) => (index === currentIndex ? 10 : 5)),
-    },
-  });
+  const createTrace = (name, yData, lineColor) => {
+    const markerSizes = new Array(eventData.length).fill(0); // Initialize all markers to size 0
+    markerSizes[eventData.length - 1] = 10; // Only show marker for the last data point
+
+    return {
+      x: eventData.map(event => event.day),
+      y: yData,
+      mode: 'lines+markers',
+      name,
+      line: { color: lineColor, shape: 'spline' },
+      marker: {
+        color: eventData.map((_, index) => (index === currentIndex ? 'red' : lineColor)),
+        size: markerSizes, // Set the marker sizes for each point
+      },
+    };
+  };
 
   const traces = [
     createTrace('Susceptible', eventData.map(event => event.totalSusceptible), 'rgba(75,192,192,1)'),
@@ -30,9 +35,8 @@ const LineChart = ({ eventData, currentIndex, npiData }) => {
   const maxPopulationCount = Math.max(
     ...eventData.flatMap(event =>
       [
-        event.totalSusceptible, event.totalExposed, event.totalAsymptomaticCount,
-        event.totalTreatableCount, event.totalInfectedCount, event.totalRecoveredCount,
-        event.totalDeceased,
+        event.totalSusceptible, event.totalExposed, event.totalAsymptomaticCount, event.totalTreatableCount, 
+        event.totalInfectedCount, event.totalRecoveredCount, event.totalDeceased,
       ]
     )
   );
