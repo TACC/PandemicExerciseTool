@@ -73,6 +73,12 @@ const Home = () => {
   const [hasSetScenario, setHasSetScenario] = useState(false);
   const [hasSetCases, setHasSetCases] = useState(false);
 
+  // determine if a notification should be displayed when simulation is ran
+  const [shouldNotifyStart, setShouldNotifyStart] = useState(false);
+  const handleNotifyChange = (bool) => {
+    setShouldNotifyStart(bool);
+  }
+
   // Handle radio button change
   const handleViewChange = (e) => {
     setViewType(e.target.value);
@@ -144,6 +150,8 @@ const Home = () => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
     }
+
+    handleNotifyChange(true);
   };
 
   const handlePauseScenario = () => {
@@ -232,7 +240,7 @@ const Home = () => {
         }
 
       } catch (error) {
-        console.log('Data not here yet:', error);
+        // console.log('Data not here yet:', error);
         setTimeout(() => {
           fetchData(nextAvailable);
         }, 1000);
@@ -346,8 +354,8 @@ const Home = () => {
             <PlayPauseButton 
               isRunning={isRunning} 
               onToggle={handleToggleScenario}
-              hasSetScenario={hasSetScenario}
-              hasSetCases={hasSetCases}
+              shouldNotify={shouldNotifyStart}
+              changeNotify={handleNotifyChange}
             />
           </div>
           <div className="timeline-panel">
