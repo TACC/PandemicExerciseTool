@@ -101,26 +101,27 @@ const LineChart = ({ eventData, currentIndex, npiData }) => {
       );
     });
   }
-
+  
+  const commonFont = { family: 'GilroyRegular', color: 'black' };
   const layout = {
     autosize: true,
     hovermode: 'closest',
     height: 365,
     margin: { l: 70, r: 0, t: 80, b: 50, pad: 4 },
-    title: { text: 'Statewide Trends', font: { size: 25, family: 'GilroyBold', color: 'black' } },
+    title: { text: 'Statewide Trends', font: { ...commonFont, size: 25, family: 'GilroyBold' } },
     xaxis: {
-      title: { text: 'Day', font: { size: 20, family: 'GilroyRegular', color: 'black' } },
-      tickfont: { size: 16, family: 'GilroyRegular', color: 'black' },
+      title: { text: 'Day', font: { ...commonFont, size: 20 } },
+      tickfont: { ...commonFont, size: 16 },
       rangemode: 'nonnegative',
     },
     yaxis: {
-      title: { text: 'Population Count', font: { size: 20, family: 'GilroyRegular', color: 'black' } },
-      tickfont: { size: 16, family: 'GilroyRegular', color: 'black' },
+      title: { text: 'Population Count', font: { ...commonFont, size: 20 } },
+      tickfont: { ...commonFont, size: 16 },
       rangemode: 'normal',
     },
     showlegend: true,
     legend: {
-      font: { size: 16, family: 'GilroyRegular', color: 'black' },
+      font: { ...commonFont, size: 16 },
       bgcolor: 'rgba(0, 0, 0, 0)',
       orientation: 'h',
       x: 0.5,
