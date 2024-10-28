@@ -5,22 +5,35 @@ import Plot from 'react-plotly.js';
 import '../../index.css';
 
 const LineChart = ({ eventData, currentIndex, npiData }) => {
-  const createTrace = (name, yData, lineColor) => {
-    const markerSizes = new Array(eventData.length).fill(0); // Initialize all markers to size 0
-    markerSizes[eventData.length - 1] = 10; // Only show marker for the last data point
+const createTrace = (name, yData, lineColor) => {
+    const markerSizes = new Array(eventData.length).fill(0);
+    markerSizes[eventData.length - 1] = 10;
+
+    const customHoverText = eventData.map((event, index) => {
+      return `<b>Day ${event.day}</b><br>${name}: ${yData[index].toLocaleString()}`;
+    });
 
     return {
       x: eventData.map(event => event.day),
       y: yData,
       mode: 'lines+markers',
       name,
-      line: { color: lineColor, shape: 'spline' },
+      line: { color: lineColor, shape: 'spline', width: 2.5 },
       marker: {
         color: eventData.map((_, index) => (index === currentIndex ? 'red' : lineColor)),
-        size: markerSizes, // Set the marker sizes for each point
+        size: markerSizes,
       },
+      text: customHoverText,
+      hoverinfo: 'text',
+      hoverlabel: {
+        font: { 
+          family: 'GilroyRegular',
+          size: 14,
+          color: 'white'
+        },
+      }
     };
-  };
+};
 
   const traces = [
     createTrace('Susceptible', eventData.map(event => event.totalSusceptible), 'rgba(75,192,192,1)'),
