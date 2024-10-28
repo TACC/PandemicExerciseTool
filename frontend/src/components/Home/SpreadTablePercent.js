@@ -48,6 +48,7 @@ function SpreadTablePercent({ eventData, currentIndex, lastSorted, handleSortDir
       // Map and transform data for display
       const dayData = specificDayEventData.map(county => ({
         county: countyNameLookup[county.fips] || 'Unknown',
+        fips: county.fips,
         infected: county.infected,
         deceased: county.deceased,
         infectedPercent: county.infectedPercent,
@@ -144,7 +145,7 @@ function SpreadTablePercent({ eventData, currentIndex, lastSorted, handleSortDir
               </tr>
             ) : (
               filteredData.map((county, index) => (
-                <tr key={index} className={index % 2 === 0 ? 'even-row' : 'odd-row'}>
+                <tr key={county.fips} className={index % 2 === 0 ? 'even-row' : 'odd-row'}>
                 <td>{county.county}</td>
                 <td>
                   <span className="bold-text">{county.infectedPercent}</span>
