@@ -58,8 +58,8 @@ const LineChart = ({ eventData, currentIndex, npiData }) => {
       );
 
       annotationList.push(
-        { x: startDay, y: -10, xref: 'x', yref: 'y', text: `Start: ${npi.name}`, showarrow: true, arrowhead: 2, ax: 0, ay: -40, font: { size: 12, color: 'rgba(255,0,0,1)' } },
-        { x: endDay, y: -10, xref: 'x', yref: 'y', text: `End: ${npi.name}`, showarrow: true, arrowhead: 2, ax: 0, ay: -40, font: { size: 12, color: 'rgba(0,0,255,1)' } }
+        { x: startDay, y: -10, xref: 'x', yref: 'y', text: `Start: ${npi.name}`, showarrow: true, arrowhead: 2, ax: 0, ay: -100, font: { size: 12, color: 'rgba(255,0,0,1)' } },
+        { x: endDay, y: -10, xref: 'x', yref: 'y', text: `End: ${npi.name}`, showarrow: true, arrowhead: 2, ax: 0, ay: -50, font: { size: 12, color: 'rgba(0,0,255,1)' } }
       );
     });
 
