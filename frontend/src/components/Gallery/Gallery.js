@@ -1,5 +1,6 @@
+// currently unused, the Gallery view allows users to view saved images
 import React from 'react';
-import './GalleryView.css';
+import './Gallery.css';
 
 // Retrieve saved images from local storage
 const getSavedImages = () => {

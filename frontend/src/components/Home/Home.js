@@ -1,22 +1,26 @@
+// <Home /> acts as a "root" for the default home view of the web interface
+// most of our axios requests and state management happen here
+// we define change handler functions and pass them as props to components we want to update dynamically,
+// but it might be smarter to switch to React Contexts (and avoid prop drilling) as the project gets bigger
 import React, { useState, useEffect, useRef } from 'react';
-import texasCounties from '../data/texasCounties.js';
-import texasAllCounties from '../data/texasCountiesStatewide.js';
-import TimelineSlider from './TimelineSlider';
-import SetParametersDropdown from './SetParametersDropdown';
-import Interventions from './Interventions';
-import SavedParameters from './SavedParameters';
-import InfectedMap from './InfectedMap';
-import InfectedMapPercent from './InfectedMapPercent';
-import InfectedDeceasedTableMerged from './InfectedDeceasedTableMerged';
-import InfectedDeceasedTableMergedPercent from './InfectedDeceasedTableMergedPercent.js';
-import LineChart from './LineChart';
+import texasCounties from '../../data/texasCounties.js';
+import texasAllCounties from '../../data/texasCountiesStatewide.js';
+import TimelineSlider from './TimelineSlider.js';
+import SetScenario from './SetScenario.js';
+import Interventions from './Interventions.js';
+import DisplayedParameters from './DisplayedParameters.js';
+import SpreadMapCount from './SpreadMapCount.js';
+import SpreadMapPercent from './SpreadMapPercent.js';
+import SpreadTableCount from './SpreadTableCount.js';
+import SpreadTablePercent from './SpreadTablePercent.js';
+import LineChart from './LineChart.js';
 
-import PlayPauseButton from './PlayPauseButton';
+import PlayPauseButton from './PlayPauseButton.js';
 import './leaflet-overrides.css';
 import axios from 'axios';
-import './HomeView.css';
+import './Home.css';
 
-const HomeView = () => {
+const Home = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const intervalRef = useRef(null);
@@ -33,24 +37,16 @@ const HomeView = () => {
 
   const [initialCasesCount, setInitialCasesCount] = useState(localStorage.getItem("initial_infected") || 0);
   const handleInitialCasesChange = () => {
-    setInitialCasesCount(localStorage.getItem("initial_infected").length || 0);
+    setInitialCasesCount(localStorage.getItem("initial_infected").length);
+    setHasSetCases(localStorage.getItem("initial_infected").length > 0 || false);
+    console.log(JSON.parse(localStorage.getItem("initial_infected")).length);
   }
-
-  // remember how table is sorted between re-renders
-  // default sort is flipped when user clicks to sort
-  const [sortDirection, setSortDirection] = useState({
-    county: 'asc',
-    infected: 'asc',
-    deceased: 'asc',
-    infectedPercent: 'asc',
-    deceasedPercent: 'asc',
-    lastSorted: 'county',
-  });
 
   const [lastSorted, setLastSorted] = useState({
     category: "county",
     order: "asc",
   });
+
   const handleSortDirectionChange = (category) => {
     if (category === lastSorted.category) {    // flip sort order
       setLastSorted({
@@ -71,6 +67,16 @@ const HomeView = () => {
     console.log("scenario counter was", scenarioCounter);
     setScenarioCounter(scenarioCounter + 1);
     console.log("scenario counter now", scenarioCounter);
+  }
+
+  // used to enable/disable Play button
+  const [hasSetScenario, setHasSetScenario] = useState(false);
+  const [hasSetCases, setHasSetCases] = useState(false);
+
+  // determine if a notification should be displayed when simulation is ran
+  const [shouldNotifyStart, setShouldNotifyStart] = useState(false);
+  const handleNotifyChange = (bool) => {
+    setShouldNotifyStart(bool);
   }
 
   // Handle radio button change
@@ -144,6 +150,8 @@ const HomeView = () => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
     }
+
+    handleNotifyChange(true);
   };
 
   const handlePauseScenario = () => {
@@ -232,7 +240,7 @@ const HomeView = () => {
         }
 
       } catch (error) {
-        console.log('Data not here yet:', error);
+        // console.log('Data not here yet:', error);
         setTimeout(() => {
           fetchData(nextAvailable);
         }, 1000);
@@ -264,7 +272,7 @@ const HomeView = () => {
       <div className="row">
         <div className="col-lg-2">
           <div className='left-panel'>
-            <SetParametersDropdown
+            <SetScenario
               counties={texasCounties}
               onSave={handleSave}
               casesChange={handleInitialCasesChange}
@@ -274,7 +282,7 @@ const HomeView = () => {
               <Interventions counties={texasAllCounties} npiChange={handleNPIChange} />
             </div>
             <div className="saved-parameters-panel">
-              <SavedParameters
+              <DisplayedParameters
                 scenarioChange={handleScenarioChange}
                 casesChange={handleInitialCasesChange}
               />
@@ -282,7 +290,7 @@ const HomeView = () => {
           </div>
         </div>
 
-        {/* Middlle Panel - Infected Map (Count and Percentage) and Line Chart */}
+        {/* Middle Panel - Infected Map (Count and Percentage) and Line Chart */}
         <div className="col-lg-7">
 
           <div className='top-middle-panel'>
@@ -312,9 +320,9 @@ const HomeView = () => {
 
           <div className="map-and-chart-container">
             {viewType === 'percent' ? (
-              <InfectedMapPercent currentIndex={currentIndex} eventData={eventData} className="map-size" />
+              <SpreadMapPercent currentIndex={currentIndex} eventData={eventData} className="map-size" />
             ) : (
-              <InfectedMap currentIndex={currentIndex} eventData={eventData} className="map-size" />
+              <SpreadMapCount currentIndex={currentIndex} eventData={eventData} className="map-size" />
             )}
             <div className="separator"></div>
             {/* <LineChart currentIndex={currentIndex} eventData={eventData} className="chart-size" /> */}
@@ -328,14 +336,14 @@ const HomeView = () => {
         <div className="col-lg-3">
           <div className='right-panel'>
             {viewType === 'percent' ? (
-              <InfectedDeceasedTableMergedPercent 
+              <SpreadTablePercent
                 currentIndex={currentIndex} 
                 eventData={eventData} 
                 lastSorted={lastSorted} 
                 handleSortDirectionChange={handleSortDirectionChange}
               />
             ) : (
-              <InfectedDeceasedTableMerged 
+              <SpreadTableCount
                   currentIndex={currentIndex} 
                   eventData={eventData} 
                   lastSorted={lastSorted}
@@ -348,7 +356,12 @@ const HomeView = () => {
         {/* Footer - Play & Pause Timeline */}
         <div className="footer">
           <div className="play-pause-container">
-            <PlayPauseButton isRunning={isRunning} onToggle={handleToggleScenario} />
+            <PlayPauseButton 
+              isRunning={isRunning} 
+              onToggle={handleToggleScenario}
+              shouldNotify={shouldNotifyStart}
+              changeNotify={handleNotifyChange}
+            />
           </div>
           <div className="timeline-panel">
             <TimelineSlider
@@ -366,4 +379,4 @@ const HomeView = () => {
   );
 };
 
-export default HomeView;
+export default Home;

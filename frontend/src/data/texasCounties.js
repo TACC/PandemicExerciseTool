@@ -1,3 +1,4 @@
+// list Texas counties for form select fields
 const texasCounties = [
     'Anderson',
     'Andrews',

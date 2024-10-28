@@ -1,10 +1,11 @@
+// <Header /> is invoked in App.js, all other views are rendered here
 import React, { useState, useEffect } from 'react';
 import './Header.css';
 import epiengage_logo_darkblue from './epiengage_logo_darkblue.jpg';
-import GalleryView from '../GalleryView';
-import UserGuideView from '../UserGuideView';
-import HomeView from '../HomeView';
-import ChartView from '../ChartView';
+import GalleryView from '../Gallery/Gallery';
+import UserGuideView from '../UserGuide/UserGuide';
+import Home from '../Home/Home';
+import ChartView from '../discontinued/ChartView';
 import axios from 'axios';
 
 import Container from 'react-bootstrap/Container';
@@ -39,7 +40,7 @@ const Header = ({ currentIndex, setCurrentIndex }) => {
   const renderTabContent = () => {
     switch (activeTab) {
       case 'home':
-        return <HomeView currentIndex={currentIndex} setCurrentIndex={setCurrentIndex} />;
+        return <Home currentIndex={currentIndex} setCurrentIndex={setCurrentIndex} />;
       /* case 'chart':
          return <ChartView />;
        case 'gallery':
@@ -47,7 +48,7 @@ const Header = ({ currentIndex, setCurrentIndex }) => {
       case 'userguide':
         return <UserGuideView />;
       default:
-        return <HomeView currentIndex={currentIndex} setCurrentIndex={setCurrentIndex} />;
+        return <Home currentIndex={currentIndex} setCurrentIndex={setCurrentIndex} />;
     }
   };
 
@@ -82,6 +83,11 @@ const Header = ({ currentIndex, setCurrentIndex }) => {
                       className={`tab-button ${activeTab === 'userguide' ? 'active' : ''}`}
                       onClick={() => setActiveTab('userguide')}>User Guide</a>
                   </li>
+                  {/* <li> */}
+                  {/*   <a aria-current="page" */}
+                  {/*     className={`tab-button ${activeTab === 'gallery' ? 'active' : ''}`} */}
+                  {/*     onClick={() => setActiveTab('gallery')}>Gallery</a> */}
+                  {/* </li> */}
                 </ul>
               </Nav>
             </Nav>

@@ -2,7 +2,7 @@
 // Used in Homeview.js
 import React from 'react';
 import Plot from 'react-plotly.js';
-import '../index.css';
+import '../../index.css';
 
 const LineChart = ({ eventData, currentIndex, npiData }) => {
   // Prepare data for the chart

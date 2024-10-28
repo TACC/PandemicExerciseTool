@@ -1,12 +1,18 @@
 # PandemicExerciseTool
 
+## Requirements
+
+* [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+* [Docker](https://www.docker.com/products/docker-desktop/)
+
 
 ## Getting Started
 
-#### Build the production environment
+
+#### Clone the repository
 
 ```bash
-make build
+git clone https://github.com/TACC/PandemicExerciseTool
 ```
 
 #### Start the production environment
