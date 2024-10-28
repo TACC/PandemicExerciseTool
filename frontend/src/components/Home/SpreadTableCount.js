@@ -22,6 +22,12 @@ function SpreadTableCount({ eventData, currentIndex, lastSorted, handleSortDirec
   const [mergedData, setMergedData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [statewideInfo, setStatewideInfo] = useState({
+    statewideInfected: 0,
+    statewideDeceased: 0,
+    statewideInfectedPercent: 0,
+    statewideDeceasedPercent: 0,
+  });
   
   // invoked when the user clicks on table heading to change sort config
   const sortManually = (data, key) => {
@@ -56,6 +62,16 @@ function SpreadTableCount({ eventData, currentIndex, lastSorted, handleSortDirec
       console.log(`Day Data (index ${currentIndex}):`, dayData); // Debugging output
 
       const sortedData = sortData(dayData);
+
+      // set statewie infected ad deceased
+      const rawStateInfectedPercent = eventData[currentIndex].totalInfectedCount / 2405.37;
+      const rawStateDeceasedPercent = eventData[currentIndex].totalDeceased / 2405.37;
+      setStatewideInfo({
+        statewideInfected: eventData[currentIndex].totalInfectedCount || 0,
+        statewideDeceased: eventData[currentIndex].totalDeceased || 0,
+        statewideInfectedPercent: rawStateInfectedPercent.toFixed(2) || 0,    // FIXME: this calculation should be performed in the backend!
+        statewideDeceasedPercent: rawStateDeceasedPercent.toFixed(2) || 0,    // FIXME: this calculation should be performed in the backend!
+      });
 
       setMergedData(sortedData);
       setFilteredData(sortedData); // Initialize filtered data to current day's data
@@ -142,29 +158,52 @@ function SpreadTableCount({ eventData, currentIndex, lastSorted, handleSortDirec
                 <td colSpan="3">No data available for the selected day.</td>
               </tr>
             ) : (
-              filteredData.map((county, index) => (
-                <tr key={county.fips} className={index % 2 === 0 ? 'even-row' : 'odd-row'}>
-                <td>{county.county}</td>
-                <td>
-                  <span className="bold-text">{county.infected}</span>
-                  {county.infectedPercent > 0 && (
-                    <>
-                      &nbsp;
-                      <span className="light-text">({county.infectedPercent}%)</span>
-                    </>
-                  )}
-                </td>
-                <td>
-                  <span className="bold-text">{county.deceased}</span>
-                  {county.deceasedPercent > 0 && (
-                    <>
-                      &nbsp;
-                      <span className="light-text">({county.deceasedPercent}%)</span>
-                    </>
-                  )}
-                </td>
-              </tr>
-              ))
+              <>
+                <tr>
+                  <td>Statewide</td>
+                  <td>
+                    <span className="bold-text">{statewideInfo.statewideInfected}</span>
+                    {statewideInfo.statewideInfected > 0 && (
+                      <>
+                        &nbsp;
+                        <span className="light-text">({statewideInfo.statewideInfectedPercent}%)</span>
+                      </>
+                    )}
+                  </td>
+                  <td>
+                    <span className="bold-text">{statewideInfo.statewideDeceased}</span>
+                    {statewideInfo.statewideDeceased > 0 && (
+                      <>
+                        &nbsp;
+                        <span className="light-text">({statewideInfo.statewideDeceasedPercent}%)</span>
+                      </>
+                    )}
+                  </td>
+                </tr>
+                {filteredData.map((county, index) => (
+                  <tr key={county.fips} className={index % 2 === 0 ? 'even-row' : 'odd-row'}>
+                  <td>{county.county}</td>
+                  <td>
+                    <span className="bold-text">{county.infected}</span>
+                    {county.infectedPercent > 0 && (
+                      <>
+                        &nbsp;
+                        <span className="light-text">({county.infectedPercent}%)</span>
+                      </>
+                    )}
+                  </td>
+                  <td>
+                    <span className="bold-text">{county.deceased}</span>
+                    {county.deceasedPercent > 0 && (
+                      <>
+                        &nbsp;
+                        <span className="light-text">({county.deceasedPercent}%)</span>
+                      </>
+                    )}
+                  </td>
+                </tr>
+                ))}
+              </>
             )}
 
           </tbody>
