@@ -8,8 +8,15 @@ const ModelInfo = () => {
   return (
     <div className="model-info">
       <section className="text">
+        <p><strong>Model Overview</strong></p>
+        <p>The backend is a Python implementation of a Pandemic Exercise Simulator using a SEATIRD compartment model and binomial travel model. 
+        The simulator was implemented in such a way that it is modular, and can use alternative disease models, travel models, and eventually 
+        interventions (e.g. NPIs, antivirals, vaccines). The backend can also be run directly on the command line. More information can be
+        found on the <a href="https://github.com/TACC/PandemicExerciseSimulator">GitHub Page</a>.</p>
+      </section>
+      <section className="text">
         <p><strong>Data Description</strong></p>
-        <p>This simulator expects the following inputs to be present:</p>
+        <p>This simulator uses the following inputs in the backend:</p>
       </section>
 
       <section className="table-section">
@@ -26,36 +33,24 @@ const ModelInfo = () => {
               <td>Simulation properties file</td>
             </tr>
             <tr>
-              <td>contact_matrix.5</td>
+              <td>contact_matrix.csv</td>
               <td>NxN matrix (N=num of age groups) of contact ratios between age groups</td>
             </tr>
             <tr>
-              <td>county_age_matrix.5</td>
+              <td>county_age_matrix.csv</td>
               <td>Populations for each county divided into age groups</td>
             </tr>
             <tr>
-              <td>flow_reduction.5</td>
+              <td>flow_reduction.csv</td>
               <td>List of flow reduction values for each age group</td>
             </tr>
             <tr>
-              <td>high_risk_ratios.5</td>
+              <td>high_risk_ratios.csv</td>
               <td>List of risk ratio for each age group</td>
             </tr>
             <tr>
-              <td>nu_value_matrix.5</td>
-              <td>Nx4 columns (N=num of age groups) low/high death rate x low/high risk. Nu is the transmitting (asymptomatic/treatable/infectious) to deceased rate</td>
-            </tr>
-            <tr>
-              <td>relative_susceptibility.5</td>
+              <td>relative_susceptibility.csv</td>
               <td>List of relative susceptibility for each age group</td>
-            </tr>
-            <tr>
-              <td>vaccine_adherence.5</td>
-              <td>List of vaccine adherences for each age group</td>
-            </tr>
-            <tr>
-              <td>vaccine_effectiveness.5</td>
-              <td>List of vaccine effectiveness for each age group</td>
             </tr>
             <tr>
               <td>work_matrix_rel.csv</td>
@@ -117,24 +112,9 @@ const ModelInfo = () => {
               <td>Multiplier to reduce the age-specific mixing rate pattern to account for reduced rate of contact when traveling</td>
             </tr>
             <tr>
-              <td>nu_high</td>
-              <td>yes</td>
-              <td>Use high mortality rates (yes) or low mortality rates (no)</td>
-            </tr>
-            <tr>
-              <td>vaccine_wastage_factor</td>
-              <td>60</td>
-              <td>Half the vaccine stockpile will be wasted every N days</td>
-            </tr>
-            <tr>
-              <td>antiviral_effectiveness</td>
-              <td>0.15</td>
-              <td>Antiviral effectiveness is the probability that an individual treated within the treatment window will recover</td>
-            </tr>
-            <tr>
-              <td>antiviral_wastage_factor</td>
-              <td>60</td>
-              <td>Half the antiviral stockpile will be wasted every N days</td>
+              <td>nu</td>
+              <td>0.0000223193, 0.0000409747, 0.0000837293, 0.0000618089, 0.0000089781</td>
+              <td>Mortality rates per age group (rate in units of 1/days)</td>
             </tr>
           </tbody>
         </table>

@@ -15,7 +15,6 @@ const Instructions = () => {
           <li>Latency period (days): average number of days spent asymptomatic immediately after infection</li>
           <li>Asymptomatic period (days): average number of days spent infectious, but not yet symptomatic</li>
           <li>Symptomatic period (days): average number of days spent symptomatic and infectious</li>
-          <li>Asymptomatic rate (proportion): proportion of infections that never developed symptoms</li>
           <li>Infection fatality rate (proportion): proportion of infections that lead to death</li>
         </ul>
         <img src={ require('../images/userGuide-parameters1.png') } alt="Selecting Parameters" />
