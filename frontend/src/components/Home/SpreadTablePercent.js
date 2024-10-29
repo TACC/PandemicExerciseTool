@@ -3,6 +3,12 @@
 // this component is rendered first by default, toggling from Percent to Count will change both Map and Table
 // components to their Count counterparts
 // TODO: sorting on each timestep has dramatically reduced performance. sort faster or sort in the backend
+// FIXME: statewide info and lastSorted info (stored in Home.js state and passed here) are wrong. Both objects
+// are 'behind' by one render
+// i.e., statewide info doesn't update until day 2;
+// user sorts by:     infected descending -> deceased descending -> alphabetically
+// table sort change: no change           -> infected descending -> deceased descending
+// it's hard to describe but pause the simulation and try changing the sort order to see the bug
 import React, { useState, useEffect } from 'react';
 import searchIcon from '../images/search.svg'; // Updated to use search.svg
 import { csv } from 'd3-fetch'; // Assuming you use d3-fetch for CSV parsing
@@ -172,7 +178,7 @@ function SpreadTablePercent({ eventData, currentIndex, lastSorted, handleSortDir
                     )}
                   </td>
                   <td>
-                    <span className="bold-text">{statewideInfo.statewideDeceasedPercent == 0 ? '0' : statewideInfo.statewideDeceasedPercent + '%'}</span>
+                    <span className="bold-text">{statewideInfo.statewideDeceasedPercent == 0 ? '0' : statewideInfo.statewideDeceasedPercent}</span>
                       <span className="light-text">% ({statewideInfo.statewideDeceased})</span>
                   </td>
                 </tr>
