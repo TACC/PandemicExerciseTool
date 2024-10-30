@@ -17,8 +17,9 @@ import LineChart from './LineChart.js';
 
 import PlayPauseButton from './PlayPauseButton.js';
 import './leaflet-overrides.css';
-import axios from 'axios';
 import './Home.css';
+import axios from 'axios';
+axios.defaults.baseURL = "http://localhost:8000";
 
 const Home = () => {
   const [isRunning, setIsRunning] = useState(false);
@@ -112,7 +113,7 @@ const Home = () => {
     const paramsObject = JSON.parse(localStorage.getItem('parameters'));
     console.log("loaded params object from local storage");
 
-    axios.post('http://localhost:8000/api/pet/', {
+    axios.post('api/pet/', {
       disease_name: paramsObject.diseaseName,
       R0: paramsObject.reproductionNumber,
       beta_scale: paramsObject.beta_scale,
@@ -137,7 +138,7 @@ const Home = () => {
         console.log('Disease parameters updated successfully:', response.data['id']);
         const newId = response.data['id'];
         setId(newId);
-        return axios.get('http://localhost:8000/api/pet/' + newId + '/run');
+        return axios.get('api/pet/' + newId + '/run');
       })
       .then(response => {
         console.log('Job runs successfully:', response.data['task_id']);
@@ -155,7 +156,7 @@ const Home = () => {
   };
 
   const handlePauseScenario = () => {
-    axios.get('http://localhost:8000/api/delete/' + taskId)
+    axios.get('api/delete/' + taskId)
       .then(response => {
         console.log('Simulation stopped successfully:', response.data['task_id']);
       })
@@ -179,7 +180,7 @@ const Home = () => {
     const fetchData = async (requestedIndex) => {
       // debugger;
       try {
-        const response = await axios.get(`http://localhost:8000/api/output/${requestedIndex}`);
+        const response = await axios.get(`api/output/${requestedIndex}`);
 
         if (response.status === 200) {
           console.log('Requested Index:', requestedIndex);

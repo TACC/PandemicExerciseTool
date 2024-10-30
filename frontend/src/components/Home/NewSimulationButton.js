@@ -5,6 +5,7 @@ import React from 'react';
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import axios from 'axios';
+axios.defaults.baseURL = "http://localhost:8000";
 
 // create a button that spawns a modal window
 const NewSimulationButton = () => {
@@ -17,7 +18,7 @@ const NewSimulationButton = () => {
     localStorage.clear();
     console.log("GETting reset request to Django server")
     // TODO: it might be prudent to wait for a 200 before refreshing the page
-    const response = await axios.get(`http://localhost:8000/api/reset`);
+    const response = await axios.get(`api/reset`);
     location.reload();
   }
 
