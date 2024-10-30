@@ -3,6 +3,12 @@
 // this component is rendered first by default, toggling from Percent to Count will change both Map and Table
 // components to their Count counterparts
 // TODO: sorting on each timestep has dramatically reduced performance. sort faster or sort in the backend
+// FIXME: statewide info and lastSorted info (stored in Home.js state and passed here) are wrong. Both objects
+// are 'behind' by one render
+// i.e., statewide info doesn't update until day 2;
+// user sorts by:     infected descending -> deceased descending -> alphabetically
+// table sort change: no change           -> infected descending -> deceased descending
+// it's hard to describe but pause the simulation and try changing the sort order to see the bug
 import React, { useState, useEffect } from 'react';
 import searchIcon from '../images/search.svg'; // Updated to use search.svg
 import { csv } from 'd3-fetch'; // Assuming you use d3-fetch for CSV parsing
@@ -24,6 +30,12 @@ function SpreadTablePercent({ eventData, currentIndex, lastSorted, handleSortDir
   const [mergedData, setMergedData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [statewideInfo, setStatewideInfo] = useState({
+    statewideInfected: 0,
+    statewideDeceased: 0,
+    statewideInfectedPercent: 0,
+    statewideDeceasedPercent: 0,
+  });
 
   // invoked when the user clicks on table heading to change sort config
   const sortManually = (data, key) => {
@@ -48,6 +60,7 @@ function SpreadTablePercent({ eventData, currentIndex, lastSorted, handleSortDir
       // Map and transform data for display
       const dayData = specificDayEventData.map(county => ({
         county: countyNameLookup[county.fips] || 'Unknown',
+        fips: county.fips,
         infected: county.infected,
         deceased: county.deceased,
         infectedPercent: county.infectedPercent,
@@ -58,7 +71,17 @@ function SpreadTablePercent({ eventData, currentIndex, lastSorted, handleSortDir
 
       const sortedData = sortData(dayData);
 
-      setMergedData(sortedData);
+      // set statewide infected and deceased
+      const rawStateInfectedPercent = eventData[currentIndex].totalInfectedCount / 2405.37;
+      const rawStateDeceasedPercent = eventData[currentIndex].totalDeceased / 2405.37;
+      setStatewideInfo({
+        statewideInfected: eventData[currentIndex].totalInfectedCount || 0,
+        statewideDeceased: eventData[currentIndex].totalDeceased || 0,
+        statewideInfectedPercent: rawStateInfectedPercent.toFixed(2) || 0,    // FIXME: this calculation should be performed in the backend!
+        statewideDeceasedPercent: rawStateDeceasedPercent.toFixed(2) || 0,    // FIXME: this calculation should be performed in the backend!
+      });
+
+     setMergedData(sortedData);
       setFilteredData(sortedData); // Initialize filtered data to current day's data
     };
 
@@ -143,28 +166,45 @@ function SpreadTablePercent({ eventData, currentIndex, lastSorted, handleSortDir
                 <td colSpan="3">No data available for the selected day.</td>
               </tr>
             ) : (
-              filteredData.map((county, index) => (
-                <tr key={index} className={index % 2 === 0 ? 'even-row' : 'odd-row'}>
-                <td>{county.county}</td>
-                <td>
-                  <span className="bold-text">{county.infectedPercent}</span>
-                  {county.infectedPercent > 0 && (
-                    <>
-                      <span className="light-text">% ({county.infected})</span>
-                    </>
-                  )}
-                </td>
-                <td>
-                  <span className="bold-text">{county.deceasedPercent}</span>
-                  {county.deceasedPercent > 0 && (
-                    <>
-                      &nbsp;
-                      <span className="light-text">% ({county.deceased})</span>
-                    </>
-                  )}
-                </td>
-              </tr>
-              ))
+              <>
+                <tr>
+                  <td>Statewide</td>
+                  <td>
+                    <span className="bold-text">{statewideInfo.statewideInfectedPercent == 0 ? '0' : statewideInfo.statewideInfectedPercent}</span>
+                    {statewideInfo.statewideInfectedPercent > 0 && (
+                      <>
+                        <span className="light-text">% ({statewideInfo.statewideInfected})</span>
+                      </>
+                    )}
+                  </td>
+                  <td>
+                    <span className="bold-text">{statewideInfo.statewideDeceasedPercent == 0 ? '0' : statewideInfo.statewideDeceasedPercent}</span>
+                      <span className="light-text">% ({statewideInfo.statewideDeceased})</span>
+                  </td>
+                </tr>
+                {filteredData.map((county, index) => (
+                  <tr key={county.fips} className={index % 2 === 0 ? 'even-row' : 'odd-row'}>
+                  <td>{county.county}</td>
+                  <td>
+                    <span className="bold-text">{county.infectedPercent}</span>
+                    {county.infectedPercent > 0 && (
+                      <>
+                        <span className="light-text">% ({county.infected})</span>
+                      </>
+                    )}
+                  </td>
+                  <td>
+                    <span className="bold-text">{county.deceasedPercent}</span>
+                    {county.deceasedPercent > 0 && (
+                      <>
+                        &nbsp;
+                        <span className="light-text">% ({county.deceased})</span>
+                      </>
+                    )}
+                  </td>
+                </tr>
+                ))}
+              </>
             )}
 
           </tbody>
