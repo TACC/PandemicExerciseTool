@@ -1,0 +1,11 @@
+{
+  "disease_name": "Fast Transmission, Mild Severity (2009 H1N1)",
+  "R0": 1.8,
+  "beta_scale": 10.0,
+  "tau": 1.2,
+  "kappa": 1.9,
+  "gamma": 4.1,
+  "chi": 1.0,
+  "rho": 0.39,
+  "nu": "0.000022319,0.000040975,0.000083729,0.000061809,0.000008978"
+}

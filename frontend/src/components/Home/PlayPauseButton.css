@@ -1,0 +1,65 @@
+/* PlayPauseButton.css */
+.scenario-button,
+.pause-button {
+  padding: 10px 20px;
+  font-size: large;
+  cursor: pointer;
+  border: none;
+  font-weight: bold;
+  color: black;
+  transition: background-color 0.3s;
+  height: 2.5em;
+  width: 12.5em;
+  border-radius: 4px;
+}
+
+.scenario-button {
+  background-color: #f7b13c;
+}
+
+.scenario-button-disabled {
+    padding: 10px 20px;
+    background-color: #f7ce88;
+    font-size: large;
+    cursor: not-allowed !important;
+    border: none;
+    font-weight: bold;
+    color: #756446;
+    height: 2.5em;
+    width: 12.5em;
+    border-radius: 4px;
+}
+
+.tooltips-text {
+    left: 17.4em;
+    bottom: 90%;
+}
+
+.scenario-button-disabled:hover .tooltips-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+.pause-button {
+  background-color: #f1f1f1;
+  border: 2px solid black; /* Add a black border */
+  border-radius: 4px;
+}
+
+.scenario-button:hover,
+.pause-button:hover {
+  background-color: #0056b3;
+}
+
+.scenario-button .icon,
+.scenario-button-disabled .icon,
+.pause-button .icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+.scenario-button-disabled .icon {
+    opacity: 0.6;
+}

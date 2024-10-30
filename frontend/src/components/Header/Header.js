@@ -1,23 +1,47 @@
-import React, { useState } from 'react';
+// <Header /> is invoked in App.js, all other views are rendered here
+import React, { useState, useEffect } from 'react';
 import './Header.css';
 import epiengage_logo_darkblue from './epiengage_logo_darkblue.jpg';
-import GalleryView from '../GalleryView';
-import UserGuideView from '../UserGuideView';
-import HomeView from '../HomeView';
-import ChartView from '../ChartView';
+import GalleryView from '../Gallery/Gallery';
+import UserGuideView from '../UserGuide/UserGuide';
+import Home from '../Home/Home';
+import ChartView from '../discontinued/ChartView';
+import axios from 'axios';
 
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 
+axios.defaults.baseURL = "http://localhost:8000";
 
 const Header = ({ currentIndex, setCurrentIndex }) => {
   const [activeTab, setActiveTab] = useState('home');
 
+  // add an EventListener that warns the user before leaving the page and wiping parameters/simulation
+  useEffect(() => {
+    window.addEventListener('beforeunload', alertUser);
+    window.addEventListener('unload', handlePageLeave);
+    return () => {
+      window.removeEventListener('beforeunload', alertUser);
+      window.removeEventListener('unload', handlePageLeave);
+      handlePageLeave();
+    }
+  }, [])
+
+  const alertUser = e => {
+    e.preventDefault();
+    e.returnValue = '';
+  }
+
+  const handlePageLeave = async () => {
+    localStorage.clear();
+    await axios.get('api/reset');
+  }
+
   const renderTabContent = () => {
     switch (activeTab) {
       case 'home':
-        return <HomeView currentIndex={currentIndex} setCurrentIndex={setCurrentIndex} />;
+        return <Home currentIndex={currentIndex} setCurrentIndex={setCurrentIndex} />;
       /* case 'chart':
          return <ChartView />;
        case 'gallery':
@@ -25,7 +49,7 @@ const Header = ({ currentIndex, setCurrentIndex }) => {
       case 'userguide':
         return <UserGuideView />;
       default:
-        return <HomeView currentIndex={currentIndex} setCurrentIndex={setCurrentIndex} />;
+        return <Home currentIndex={currentIndex} setCurrentIndex={setCurrentIndex} />;
     }
   };
 
@@ -60,18 +84,23 @@ const Header = ({ currentIndex, setCurrentIndex }) => {
                       className={`tab-button ${activeTab === 'userguide' ? 'active' : ''}`}
                       onClick={() => setActiveTab('userguide')}>User Guide</a>
                   </li>
+                  {/* <li> */}
+                  {/*   <a aria-current="page" */}
+                  {/*     className={`tab-button ${activeTab === 'gallery' ? 'active' : ''}`} */}
+                  {/*     onClick={() => setActiveTab('gallery')}>Gallery</a> */}
+                  {/* </li> */}
                 </ul>
               </Nav>
             </Nav>
             <Nav>
-              <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                 <li><a className='header-right'> Interactive Outbreak Simulator</a></li>
               </ul>
             </Nav>
           </Navbar.Collapse>
         </Container>
       </Navbar>
-      <div class="container-fluid" className="tab-content">
+      <div className="container-fluid" className="tab-content">
         {renderTabContent()}
       </div>
     </div>

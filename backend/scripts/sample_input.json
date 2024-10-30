@@ -1,0 +1,65 @@
+{
+  "output": "OUTPUT.json",
+  "number_of_realizations": "1",
+  "data": {
+    "population": "/PES/data/texas/county_age_matrix_small.csv",
+    "contact": "/PES/data/texas/contact_matrix.csv",
+    "flow": "/PES/data/texas/work_matrix_rel.csv",
+    "high_risk_ratios": "/PES/data/texas/high_risk_ratios.csv",
+    "flow_reduction": "/PES/data/texas/flow_reduction.csv",
+    "relative_susceptibility": "/PES/data/texas/relative_susceptibility.csv",
+    "nu_value_matrix": "/PES/data/texas/nu_value_matrix.csv"
+  },
+  "parameters": {
+    "R0": 1.2,
+    "beta_scale": 10.0,
+    "tau": 1.2,
+    "kappa": 1.9,
+    "gamma": 4.1,
+    "chi": 1.0,
+    "rho": 0.39,
+    "nu": [
+      "0.00201371",
+      "0.000766899",
+      "0.001312944",
+      "0.000481093",
+      "0.000127993"
+    ]
+  },
+  "initial_infected": [
+    {
+      "county": "453",
+      "infected": 100,
+      "age_group": "1",
+      "county_display": "Travis",
+      "age_group_display": "5-24 years"
+    }
+  ],
+  "non_pharma_interventions": [
+    {
+      "name": "School Closures",
+      "day": "10",
+      "duration": 10,
+      "location": "453",
+      "effectiveness": [
+        "0.4",
+        "0.35",
+        "0.2",
+        "0.25",
+        "0.1"
+      ]
+    }
+  ],
+  "antivirals": {
+    "antiviral_effectiveness": null,
+    "antiviral_wastage_factor": null,
+    "antiviral_stockpile": []
+  },
+  "vaccines": {
+    "vaccine_wastage_factor": null,
+    "vaccine_pro_rata": null,
+    "vaccine_adherence": null,
+    "vaccine_effectiveness": null,
+    "vaccine_stockpile": []
+  }
+}
