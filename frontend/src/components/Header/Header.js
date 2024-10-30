@@ -12,6 +12,7 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 
+axios.defaults.baseURL = "http://localhost:8000";
 
 const Header = ({ currentIndex, setCurrentIndex }) => {
   const [activeTab, setActiveTab] = useState('home');
@@ -34,7 +35,7 @@ const Header = ({ currentIndex, setCurrentIndex }) => {
 
   const handlePageLeave = async () => {
     localStorage.clear();
-    await axios.get('http://localhost:8000/api/reset');
+    await axios.get('api/reset');
   }
 
   const renderTabContent = () => {
