@@ -5704,7 +5704,7 @@ __metadata:
     boolbase: "npm:^1.0.0"
     css-what: "npm:^3.2.1"
     domutils: "npm:^1.7.0"
-    nth-check: "npm:^1.0.2"
+    nth-check: "npm:^2.1.1"
   checksum: 10c0/47832492c8218ffd92ed18eaa325397bd0bd8e4bcf3bc71767c5e1ed8b4f39b672ba157b0b5e693ef50006017d78c19e46791a75b43bb192c4db3680a331afc7
   languageName: node
   linkType: hard
@@ -5717,7 +5717,7 @@ __metadata:
     css-what: "npm:^6.0.1"
     domhandler: "npm:^4.3.1"
     domutils: "npm:^2.8.0"
-    nth-check: "npm:^2.0.1"
+    nth-check: "npm:^2.1.1"
   checksum: 10c0/a489d8e5628e61063d5a8fe0fa1cc7ae2478cb334a388a354e91cf2908154be97eac9fa7ed4dffe87a3e06cf6fcaa6016553115335c4fd3377e13dac7bd5a8e1
   languageName: node
   linkType: hard
@@ -11163,16 +11163,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nth-check@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "nth-check@npm:1.0.2"
+"nth-check@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "nth-check@npm:2.1.1"
   dependencies:
     boolbase: "npm:~1.0.0"
   checksum: 10c0/1a67ce53a99e276eea672f892d712b29f3e6802bbbef7285ffab72ecea4f972e8244defac1ebded0daffabf459def31355bb9c64e5657ac2ab032c13f185d0fd
   languageName: node
   linkType: hard
 
-"nth-check@npm:^2.0.1, nth-check@npm:^2.1.1":
+"nth-check@npm:^2.1.1, nth-check@npm:^2.1.1":
   version: 2.1.1
   resolution: "nth-check@npm:2.1.1"
   dependencies:
@@ -12643,8 +12643,8 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^7.0.35":
-  version: 7.0.39
+"postcss@npm:^8.4.31":
+  version: 8.4.31
   resolution: "postcss@npm:7.0.39"
   dependencies:
     picocolors: "npm:^0.2.1"
