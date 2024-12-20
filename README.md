@@ -9,8 +9,8 @@ of an outbreak simulator to serve as the backend engine.
 
 ### Requirements
 
-Clone this repository using Git, launch the services using Docker, then interact
-with the tool from a web browser.
+The only requirements are Git (to clone the repository), Docker (to launch all
+of the services), and a web browser.
 
 * [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 * [Docker](https://www.docker.com/products/docker-desktop/)
@@ -21,14 +21,19 @@ with the tool from a web browser.
 #### Clone the repository
 
 ```bash
-git clone https://github.com/TACC/PandemicExerciseTool
+$ git clone https://github.com/TACC/PandemicExerciseTool
 ```
 
 #### Start the production environment
 
 ```bash
-make start
+$ make start
+
+-or-
+
+$ docker compose -f docker-compose.yml up -d --build
 ```
+
 
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
@@ -36,7 +41,11 @@ Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 #### Stop the production environment
 
 ```bash
-make stop
+$ make stop
+
+-or-
+
+$ docker compose -f docker-compose.yml down
 ```
 
 #### Using the Tool
