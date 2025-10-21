@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 
 from rest_framework import viewsets
 from .serializers import PETSerializer
@@ -15,7 +15,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-myclient = pymongo.MongoClient("mongodb://mongo-db:27017/")
+myclient = pymongo.MongoClient("mongodb://mongo-db-dash:27017/")
 mydb = myclient["PES"]
 mycol = mydb["days"]
 
@@ -53,3 +53,19 @@ def reset_state(request):
         mycol.delete_many({})
         app.control.purge()
         return JsonResponse({'result': 'State Reset'}, status=200)
+
+def home(request):
+    return HttpResponse("""
+    <h1>Pandemic Exercise Tool API</h1>
+    <p>Backend is running successfully!</p>
+    <h2>Available Endpoints:</h2>
+    <ul>
+        <li><a href="/api/">/api/</a> - API Root</li>
+        <li><a href="/api/pet/">/api/pet/</a> - List simulations</li>
+        <li>/api/pet/&lt;id&gt;/run - Run simulation</li>
+        <li>/api/output/&lt;day&gt; - Get simulation output</li>
+        <li><a href="/api/reset">/api/reset</a> - Reset simulation state</li>
+        <li><a href="/admin/">/admin/</a> - Admin interface</li>
+    </ul>
+    <p>Dash Frontend: <a href="http://localhost:8050">http://localhost:8050</a></p>
+    """)

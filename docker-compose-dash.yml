@@ -1,0 +1,79 @@
+
+version: '3.8'
+
+services:
+  mongo-db:
+    image: mongo:latest
+    container_name: mongo-db-dash
+    volumes:
+      - ./mongo-data:/data/db
+    ports:
+      - "27017:27017"
+    networks:
+      - pandemic-network
+
+  redis:
+    image: redis:alpine
+    container_name: redis-dash
+    ports:
+      - "6379:6379"
+    networks:
+      - pandemic-network
+
+  django-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile-django
+    container_name: django-backend-dash
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mongo-db
+      - redis
+    environment:
+      - DEBUG=1
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    networks:
+      - pandemic-network
+
+  celery-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile-worker
+    container_name: celery-worker-dash
+    command: celery -A pet.pes_task worker --loglevel=INFO
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - mongo-db
+      - redis
+      - django-backend
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    networks:
+      - pandemic-network
+
+  dash-frontend:
+    build:
+      context: ./dash_frontend
+      dockerfile: Dockerfile
+    container_name: dash-frontend
+    ports:
+      - "8050:8050"
+    depends_on:
+      - django-backend
+    environment:
+      - API_BASE_URL=http://django-backend-dash:8000
+    networks:
+      - pandemic-network
+
+networks:
+  pandemic-network:
+    driver: bridge
+
+volumes:
+  mongo-data:
