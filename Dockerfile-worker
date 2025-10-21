@@ -19,4 +19,4 @@ COPY ./backend/db.sqlite3 /django-app/
 COPY ./backend/manage.py /django-app/
 COPY ./backend/pet /django-app/pet
 
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["celery", "-A", "pet.pes_task", "worker", "--loglevel=INFO"]

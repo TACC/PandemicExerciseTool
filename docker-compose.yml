@@ -7,9 +7,13 @@ services:
         ports:
             - 27017:27017
     rabbitmq:
-        image: rabbitmq:3.13
+        image: rabbitmq:3.13-management
         ports:
             - 5672:5672
+            - 15672:15672
+        environment:
+            - RABBITMQ_DEFAULT_USER=guest
+            - RABBITMQ_DEFAULT_PASS=guest
     react-frontend:
         build:
             context: ./

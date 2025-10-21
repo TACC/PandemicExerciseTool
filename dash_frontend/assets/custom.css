@@ -1,0 +1,453 @@
+/* Custom CSS to match React styling */
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+        sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    margin: 0;
+    padding: 0;
+}
+
+/* Header styles */
+.header-name {
+    color: white !important;
+    font-size: 24px !important;
+    font-weight: bold !important;
+    margin-left: 10px !important;
+}
+
+.tab-button {
+    cursor: pointer !important;
+    color: white !important;
+    text-decoration: none !important;
+    padding: 10px 20px !important;
+    transition: background-color 0.3s ease;
+}
+
+.tab-button:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border-radius: 4px;
+}
+
+.tab-button.active {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    border-radius: 4px;
+}
+
+/* Layout styles */
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -15px;
+}
+
+.col-lg-2 {
+    flex: 0 0 16.666667%;
+    max-width: 16.666667%;
+    padding: 0 15px;
+}
+
+.col-lg-7 {
+    flex: 0 0 58.333333%;
+    max-width: 58.333333%;
+    padding: 0 15px;
+}
+
+.col-lg-3 {
+    flex: 0 0 25%;
+    max-width: 25%;
+    padding: 0 15px;
+}
+
+/* Left panel styles */
+.left-panel {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    height: fit-content;
+}
+
+.parameters-button {
+    width: 100% !important;
+    padding: 10px !important;
+    background-color: #f8f9fa !important;
+    border: 1px solid #dee2e6 !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    font-size: 14px;
+    text-align: left;
+}
+
+.parameters-button:hover {
+    background-color: #e9ecef !important;
+}
+
+.dropdown-items {
+    width: 100% !important;
+    padding: 8px 12px !important;
+    border: none !important;
+    background-color: white !important;
+    text-align: left !important;
+    cursor: pointer !important;
+    font-size: 14px;
+}
+
+.dropdown-items:hover {
+    background-color: #f8f9fa !important;
+}
+
+/* Right panel styles */
+.right-panel {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    height: fit-content;
+}
+
+/* Map and chart container */
+.map-and-chart-container {
+    background-color: white;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.top-middle-panel {
+    background-color: white;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Input styles */
+input[type="number"], input[type="text"] {
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 14px;
+}
+
+input[type="number"]:focus, input[type="text"]:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+/* Label styles */
+label {
+    font-weight: 500;
+    margin-bottom: 5px;
+    display: block;
+    font-size: 14px;
+}
+
+/* Button styles */
+button {
+    font-size: 14px;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    padding: 6px 12px;
+    cursor: pointer;
+}
+
+/* Checklist styles */
+.dash-checklist {
+    margin-bottom: 15px;
+}
+
+.dash-checklist label {
+    font-weight: normal;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+/* Radio items styles */
+.dash-radioitems {
+    margin-bottom: 15px;
+}
+
+.dash-radioitems label {
+    font-weight: normal;
+    font-size: 14px;
+    margin-right: 15px;
+}
+
+/* Dropdown styles */
+.Select-control {
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+}
+
+/* Timeline slider styles */
+.rc-slider {
+    margin: 10px 0;
+}
+
+/* Table styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+table th, table td {
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 1px solid #dee2e6;
+}
+
+table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+/* Modal styles */
+.modal-content {
+    border-radius: 8px;
+}
+
+.modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+/* Responsive design */
+@media (max-width: 992px) {
+    .col-lg-2, .col-lg-3, .col-lg-7 {
+        flex: 0 0 100%;
+        max-width: 100%;
+        margin-bottom: 20px;
+    }
+}
+
+/* Graph container styles */
+.js-plotly-plot, .plotly {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Footer styles */
+.footer {
+    background-color: white;
+    border-top: 1px solid #dee2e6;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 8px;
+}
+
+/* Play/Pause button specific styles */
+.play-pause-button {
+    padding: 10px 30px !important;
+    font-size: 16px !important;
+    background-color: #28a745 !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+    margin-right: 20px !important;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.play-pause-button:disabled {
+    opacity: 0.6 !important;
+    cursor: not-allowed !important;
+    background-color: #6c757d !important;
+}
+
+.play-pause-button:hover:not(:disabled) {
+    background-color: #218838 !important;
+}
+
+/* Footer controls */
+.footer-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Tab buttons */
+.tab-btn {
+    padding: 8px 16px !important;
+    margin-right: 5px !important;
+    border: 1px solid #dee2e6 !important;
+    background-color: #f8f9fa !important;
+    color: #495057 !important;
+    border-radius: 4px 4px 0 0 !important;
+    cursor: pointer !important;
+    font-size: 14px !important;
+}
+
+.tab-btn.active-tab {
+    background-color: white !important;
+    border-bottom: 1px solid white !important;
+    color: #495057 !important;
+    font-weight: 600 !important;
+}
+
+.tab-btn:hover {
+    background-color: #e9ecef !important;
+}
+
+/* Displayed parameters panel */
+.displayed-parameters-panel {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 15px;
+    background-color: white;
+    min-height: 200px;
+}
+
+/* Modal improvements */
+.modal-lg {
+    max-width: 800px !important;
+}
+
+/* Form styling improvements */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-label {
+    font-weight: 500;
+    margin-bottom: 5px;
+    display: block;
+    color: #495057;
+}
+
+.form-control {
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 14px;
+    width: 100%;
+}
+
+.form-control:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+/* Age group specific styling */
+.age-group-inputs {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+
+.age-group-inputs .form-group {
+    margin-bottom: 10px;
+}
+
+/* Initial cases table */
+.initial-cases-table {
+    margin-top: 15px;
+}
+
+.initial-cases-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.initial-cases-table th,
+.initial-cases-table td {
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.initial-cases-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+/* Preset scenario styling */
+.preset-section {
+    background-color: #e3f2fd;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    border-left: 4px solid #2196f3;
+}
+
+.preset-section h6 {
+    color: #1976d2;
+    margin-bottom: 10px;
+}
+
+/* Small text styling */
+small {
+    font-size: 12px;
+    color: #6c757d;
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* Intervention forms */
+.intervention-form {
+    padding: 15px;
+}
+
+.intervention-form .form-group {
+    margin-bottom: 15px;
+}
+
+/* Success/warning states */
+.text-success {
+    color: #28a745 !important;
+}
+
+.text-warning {
+    color: #ffc107 !important;
+}
+
+.text-danger {
+    color: #dc3545 !important;
+}
+
+/* Responsive dropdown positioning */
+.dropdown-container {
+    position: relative;
+}
+
+.dropdown-menu-custom {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: white;
+    border: 1px solid #dee2e6;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Loading states */
+.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+/* Error states */
+.error {
+    color: #dc3545;
+    font-style: italic;
+}

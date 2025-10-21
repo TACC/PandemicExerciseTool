@@ -24,6 +24,7 @@ router.register(r'pet', views.PETView, 'pet')
 
 
 urlpatterns = [
+    path('', views.home, name='home'),  # Root URL pattern
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
     path('api/pet/<pet_id>/run', views.run_job),
