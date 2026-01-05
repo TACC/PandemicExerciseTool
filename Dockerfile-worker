@@ -3,7 +3,7 @@ FROM python:3.10
 RUN pip install "poetry==1.8.3"
 
 ADD https://api.github.com/repos/TACC/PandemicExerciseSimulator/git/refs/heads/main /version.json
-RUN git clone https://github.com/TACC/PandemicExerciseSimulator /PES
+RUN git clone --branch 0.1.1 https://github.com/TACC/PandemicExerciseSimulator /PES
 WORKDIR /PES
 
 RUN poetry config virtualenvs.create false && \
