@@ -663,7 +663,6 @@ disease_params_modal = dbc.Modal([
             dcc.Input(id='symptomatic-period', type='number', value=4.1, step=0.1, min=0,
                 style={'width': '100%', 'marginBottom': '15px'})
         ]),
-        
         # Age-specific CFR section
         html.Div([
             html.Label('Infection fatality rate (proportion)', style={'fontWeight': 'bold'}),
@@ -699,6 +698,44 @@ disease_params_modal = dbc.Modal([
                 html.Label('65+ years', style={'fontSize': '14px'}),
                 dcc.Input(id='cfr-65-plus', type='number', value=0.000008978,
                     step=0.000000001, min=0, max=100,
+                    style={'width': '100%'})
+            ])
+        ]),
+        # Age-specific relative susceptibility section
+        html.Div([
+            html.Label('Relative susceptibility (ratio)', style={'fontWeight': 'bold'}),
+            html.Small(' - How susceptible each age group is relative to others', 
+                style={'color': '#6c757d', 'display': 'block', 'marginBottom': '10px'}),
+            
+            # inputs for each age group
+            html.Div([
+                html.Label('0-4 years', style={'fontSize': '14px'}),
+                dcc.Input(id='sigma-0-4', type='number', value=1.0, 
+                    step=0.000000001, min=0, max=10,
+                    style={'width': '100%', 'marginBottom': '5px'})
+            ]),
+            html.Div([
+                html.Label('5-24 years', style={'fontSize': '14px'}),
+                dcc.Input(id='sigma-5-24', type='number', value=1.0,
+                    step=0.000000001, min=0, max=10,
+                    style={'width': '100%', 'marginBottom': '5px'})
+            ]),
+            html.Div([
+                html.Label('25-49 years', style={'fontSize': '14px'}),
+                dcc.Input(id='sigma-25-49', type='number', value=1.0,
+                    step=0.000000001, min=0, max=10,
+                    style={'width': '100%', 'marginBottom': '5px'})
+            ]),
+            html.Div([
+                html.Label('50-64 years', style={'fontSize': '14px'}),
+                dcc.Input(id='sigma-50-64', type='number', value=1.0,
+                    step=0.000000001, min=0, max=10,
+                    style={'width': '100%', 'marginBottom': '5px'})
+            ]),
+            html.Div([
+                html.Label('65+ years', style={'fontSize': '14px'}),
+                dcc.Input(id='sigma-65-plus', type='number', value=1.0,
+                    step=0.000000001, min=0, max=10,
                     style={'width': '100%'})
             ])
         ])
@@ -1277,12 +1314,18 @@ def manage_initial_cases(add_clicks, remove_clicks, location, cases_count, age_g
      State('cfr-25-49', 'value'),
      State('cfr-50-64', 'value'),
      State('cfr-65-plus', 'value'),
+     State('sigma-0-4', 'value'),
+     State('sigma-5-24', 'value'),
+     State('sigma-25-49', 'value'),
+     State('sigma-50-64', 'value'),
+     State('sigma-65-plus', 'value'),
      State('initial-cases-data', 'data'),
      State('displayed-tab', 'data')],
     prevent_initial_call=True
 )
 def save_disease_parameters(n_clicks, scenario_name, r0, tau, kappa, gamma, 
                           cfr_0_4, cfr_5_24, cfr_25_49, cfr_50_64, cfr_65_plus,
+                          sigma_0_4, sigma_5_24, sigma_25_49, sigma_50_64, sigma_65_plus,
                           initial_cases, displayed_tab):
     if n_clicks:
         # Save disease parameters
@@ -1294,7 +1337,8 @@ def save_disease_parameters(n_clicks, scenario_name, r0, tau, kappa, gamma,
             'gamma': gamma or 4.1,
             'chi': 1.0,  # Default therapeutic window
             'rho': 0.39,  # Default treatment seeking rate
-            'nu': [cfr_0_4 or 0, cfr_5_24 or 0, cfr_25_49 or 0, cfr_50_64 or 0, cfr_65_plus or 0]
+            'nu': [cfr_0_4 or 0, cfr_5_24 or 0, cfr_25_49 or 0, cfr_50_64 or 0, cfr_65_plus or 0],
+            'sigma': [sigma_0_4 or 1, sigma_5_24 or 1, sigma_25_49 or 1, sigma_50_64 or 1, sigma_65_plus or 1],
         }
         
         # Update displayed parameters
@@ -1581,7 +1625,8 @@ def toggle_simulation(n_clicks, sim_state, disease_params, initial_cases, npi_da
                     'gamma': disease_params.get('gamma', 4.1),
                     'chi': disease_params.get('chi', 1.0),
                     'rho': disease_params.get('rho', 0.39),
-                    'nu': ','.join(map(str, disease_params.get('nu', [0,0,0,0,0])))
+                    'nu': ','.join(map(str, disease_params.get('nu', [0,0,0,0,0]))),
+                    'sigma': ','.join(map(str, disease_params.get('sigma', [1,1,1,1,1]))),
                 }
                 
                 # Add default empty values for required fields
@@ -1622,7 +1667,7 @@ def toggle_simulation(n_clicks, sim_state, disease_params, initial_cases, npi_da
                     for npi in npi_data:
                         npis.append({
                             'type': npi['name'],
-                            'start_day': npi['start'],
+                            'day': npi['start'],
                             'duration': npi['duration'],
                             'effectiveness': npi['effectiveness'],
                             'location': npi['location']
