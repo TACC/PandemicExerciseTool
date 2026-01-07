@@ -22,6 +22,105 @@ app.config.suppress_callback_exceptions = True
 # API Configuration
 API_BASE_URL = os.getenv('API_BASE_URL', 'http://django-backend-dash:8000')
 
+# ============================================================================
+# NEW: MODEL OPTIONS (Feature 1)
+# These correspond to disease models in PandemicExerciseSimulator
+# ============================================================================
+MODEL_OPTIONS = [
+    {
+        "label": "SEIR Deterministic",
+        "value": "SEIR-DET",
+        "description": "Basic Susceptible-Exposed-Infectious-Recovered model. Fixed parameters, deterministic outcome."
+    },
+    {
+        "label": "SEIRS Deterministic", 
+        "value": "SEIRS-DET",
+        "description": "SEIR with waning immunity. Recovered individuals can become susceptible again."
+    },
+    {
+        "label": "SEIR Stochastic",
+        "value": "SEIR-STOCH",
+        "description": "SEIR with random variation. Each simulation run produces slightly different results."
+    },
+    {
+        "label": "SEIRS Stochastic",
+        "value": "SEIRS-STOCH",
+        "description": "Combines waning immunity with random variation for realistic simulations."
+    },
+    {
+        "label": "SEATIRD Deterministic",
+        "value": "SEATIRD-DET",
+        "description": "Advanced model with Asymptomatic and Treatment compartments."
+    },
+    {
+        "label": "SEATIRD Stochastic",
+        "value": "SEATIRD-STOCH",
+        "description": "SEATIRD with random variation for realistic population-level simulations."
+    },
+    {
+        "label": "SEIHRD Stochastic",
+        "value": "SEIHRD-STOCH",
+        "description": "Includes Hospitalization compartment. Tracks hospital capacity."
+    },
+]
+
+# ============================================================================
+# NEW: STATE OPTIONS (Feature 2)
+# US States for simulation selection
+# ============================================================================
+STATE_OPTIONS = [
+    {"label": "Alabama", "value": "AL"},
+    {"label": "Alaska", "value": "AK"},
+    {"label": "Arizona", "value": "AZ"},
+    {"label": "Arkansas", "value": "AR"},
+    {"label": "California", "value": "CA"},
+    {"label": "Colorado", "value": "CO"},
+    {"label": "Connecticut", "value": "CT"},
+    {"label": "Delaware", "value": "DE"},
+    {"label": "Florida", "value": "FL"},
+    {"label": "Georgia", "value": "GA"},
+    {"label": "Hawaii", "value": "HI"},
+    {"label": "Idaho", "value": "ID"},
+    {"label": "Illinois", "value": "IL"},
+    {"label": "Indiana", "value": "IN"},
+    {"label": "Iowa", "value": "IA"},
+    {"label": "Kansas", "value": "KS"},
+    {"label": "Kentucky", "value": "KY"},
+    {"label": "Louisiana", "value": "LA"},
+    {"label": "Maine", "value": "ME"},
+    {"label": "Maryland", "value": "MD"},
+    {"label": "Massachusetts", "value": "MA"},
+    {"label": "Michigan", "value": "MI"},
+    {"label": "Minnesota", "value": "MN"},
+    {"label": "Mississippi", "value": "MS"},
+    {"label": "Missouri", "value": "MO"},
+    {"label": "Montana", "value": "MT"},
+    {"label": "Nebraska", "value": "NE"},
+    {"label": "Nevada", "value": "NV"},
+    {"label": "New Hampshire", "value": "NH"},
+    {"label": "New Jersey", "value": "NJ"},
+    {"label": "New Mexico", "value": "NM"},
+    {"label": "New York", "value": "NY"},
+    {"label": "North Carolina", "value": "NC"},
+    {"label": "North Dakota", "value": "ND"},
+    {"label": "Ohio", "value": "OH"},
+    {"label": "Oklahoma", "value": "OK"},
+    {"label": "Oregon", "value": "OR"},
+    {"label": "Pennsylvania", "value": "PA"},
+    {"label": "Rhode Island", "value": "RI"},
+    {"label": "South Carolina", "value": "SC"},
+    {"label": "South Dakota", "value": "SD"},
+    {"label": "Tennessee", "value": "TN"},
+    {"label": "Texas", "value": "TX"},
+    {"label": "Utah", "value": "UT"},
+    {"label": "Vermont", "value": "VT"},
+    {"label": "Virginia", "value": "VA"},
+    {"label": "Washington", "value": "WA"},
+    {"label": "West Virginia", "value": "WV"},
+    {"label": "Wisconsin", "value": "WI"},
+    {"label": "Wyoming", "value": "WY"},
+]
+
 # Load Texas counties and mapping
 def load_texas_data():
     """Load Texas counties and county-to-FIPS mapping"""
@@ -369,6 +468,10 @@ app.layout = html.Div([
     dcc.Store(id='displayed-tab', data='scenario'),
     dcc.Interval(id='simulation-interval', interval=1000, disabled=True),
     
+    # NEW: Stores for Model and State Selection (Features 1 & 2)
+    dcc.Store(id='selected-model-store', data='SEIR-DET'),
+    dcc.Store(id='selected-state-store', data='TX'),
+    
     # Header - Exact match to React Header component
     html.Nav([
         html.Div([
@@ -428,13 +531,115 @@ app.layout = html.Div([
     html.Div(id='main-content', style={'marginTop': '80px'})
 ])
 
-# Home page layout - Exact match to React Home component
+# ============================================================================
+# NEW: Helper function to create Model and State Selection Panel
+# ============================================================================
+def create_model_state_selection_panel():
+    """
+    Creates the Model and State selection dropdowns.
+    This is the core UI for Features 1 and 2.
+    """
+    return html.Div([
+        # Panel Header
+        html.Div([
+            html.H6('⚙️ Simulation Setup', style={
+                'marginBottom': '15px',
+                'paddingBottom': '10px',
+                'borderBottom': '2px solid #102c41',
+                'color': '#102c41',
+                'fontWeight': 'bold'
+            })
+        ]),
+        
+        # FEATURE 1: Model Selection Dropdown
+        html.Div([
+            html.Label('🔬 Disease Model', style={
+                'fontWeight': 'bold',
+                'marginBottom': '5px',
+                'display': 'block',
+                'color': '#333'
+            }),
+            dcc.Dropdown(
+                id='model-selector-dropdown',
+                options=[{"label": m["label"], "value": m["value"]} for m in MODEL_OPTIONS],
+                value='SEIR-DET',
+                clearable=False,
+                placeholder="Select a disease model...",
+                style={'marginBottom': '8px'}
+            ),
+            # Model description display
+            html.Div(
+                id='model-description-display',
+                style={
+                    'fontSize': '12px',
+                    'color': '#666',
+                    'padding': '8px',
+                    'backgroundColor': '#f8f9fa',
+                    'borderRadius': '4px',
+                    'marginBottom': '15px'
+                }
+            )
+        ]),
+        
+        # FEATURE 2: State Selection Dropdown
+        html.Div([
+            html.Label('📍 State', style={
+                'fontWeight': 'bold',
+                'marginBottom': '5px',
+                'display': 'block',
+                'color': '#333'
+            }),
+            dcc.Dropdown(
+                id='state-selector-dropdown',
+                options=[{"label": s["label"], "value": s["value"]} for s in STATE_OPTIONS],
+                value='TX',
+                clearable=False,
+                searchable=True,
+                placeholder="Select a state...",
+                style={'marginBottom': '15px'}
+            ),
+        ]),
+        
+        # Apply Button
+        html.Button(
+            '✓ Apply Selection',
+            id='apply-model-state-btn',
+            n_clicks=0,
+            style={
+                'width': '100%',
+                'padding': '10px',
+                'backgroundColor': '#102c41',
+                'color': 'white',
+                'border': 'none',
+                'borderRadius': '5px',
+                'cursor': 'pointer',
+                'fontWeight': 'bold',
+                'marginBottom': '10px'
+            }
+        ),
+        
+        # Status message area
+        html.Div(id='model-state-status-message', style={'marginBottom': '15px'})
+        
+    ], style={
+        'padding': '15px',
+        'backgroundColor': 'white',
+        'borderRadius': '8px',
+        'boxShadow': '0 2px 4px rgba(0,0,0,0.1)',
+        'marginBottom': '15px'
+    })
+
+
+# Home page layout - Updated with Model and State Selection
 def create_home_layout():
     return html.Div([
         html.Div([
-            # Left Panel - SetScenario, Interventions, DisplayedParameters
+            # Left Panel - NEW: Model/State Selection + SetScenario, Interventions, DisplayedParameters
             html.Div([
                 html.Div([
+                    # NEW: Model and State Selection Panel (Features 1 & 2)
+                    create_model_state_selection_panel(),
+                    
                     # Set Scenario dropdown (like React SetScenario component)
                     html.Div([
                         html.Button([
@@ -587,11 +792,22 @@ def create_userguide_layout():
             html.Div([
                 html.H4('How to Use the Pandemic Simulator'),
                 html.Ol([
+                    html.Li([html.B('Select Disease Model: '), 'Choose which epidemiological model to use (SEIR, SEIRS, SEATIRD, etc.).']),
+                    html.Li([html.B('Select State: '), 'Choose which US state to simulate.']),
                     html.Li([html.B('Set Disease Parameters: '), 'Configure the disease characteristics including reproduction number, incubation period, and other epidemiological parameters.']),
-                    html.Li([html.B('Select Initial Cases: '), 'Choose which Texas counties will have initial cases and specify the number of cases per county and age group.']),
+                    html.Li([html.B('Select Initial Cases: '), 'Choose which counties will have initial cases and specify the number of cases per county and age group.']),
                     html.Li([html.B('Configure Interventions: '), 'Set up non-pharmaceutical interventions, antivirals, and vaccines.']),
                     html.Li([html.B('Run Simulation: '), 'Click the "Play" button to start the simulation. You can pause it at any time.']),
                     html.Li([html.B('View Results: '), 'Monitor the outbreak progression through the map, epidemic curve, and county data table.'])
+                ]),
+                html.Hr(),
+                html.H5('Disease Models Available'),
+                html.Ul([
+                    html.Li([html.B('SEIR: '), 'Susceptible-Exposed-Infectious-Recovered - Basic compartmental model']),
+                    html.Li([html.B('SEIRS: '), 'SEIR with waning immunity - Recovered can become susceptible again']),
+                    html.Li([html.B('SEATIRD: '), 'Adds Asymptomatic and Treatment compartments for more detail']),
+                    html.Li([html.B('SEIHRD: '), 'Includes Hospitalization tracking']),
+                    html.Li([html.B('Deterministic vs Stochastic: '), 'Deterministic gives same result each run; Stochastic includes randomness'])
                 ]),
                 html.Hr(),
                 html.H5('SEATIRD Model'),
@@ -965,6 +1181,99 @@ vaccines_modal = dbc.Modal([
 
 # Add modals to layout
 app.layout.children.extend([disease_params_modal, initial_cases_modal, npi_modal, antivirals_modal, vaccines_modal])
+
+
+# ============================================================================
+# NEW CALLBACKS FOR FEATURES 1 & 2: Model and State Selection
+# ============================================================================
+
+@callback(
+    Output('model-description-display', 'children'),
+    Input('model-selector-dropdown', 'value')
+)
+def update_model_description(selected_model):
+    """
+    FEATURE 1 CALLBACK: Updates the model description when user selects a model.
+    """
+    if not selected_model:
+        return "Select a model to see its description."
+    
+    # Find the selected model's description
+    for model in MODEL_OPTIONS:
+        if model["value"] == selected_model:
+            return html.Div([
+                html.Span("ℹ️ ", style={'marginRight': '5px'}),
+                html.Span(model["description"])
+            ])
+    
+    return "Description not available."
+
+
+@callback(
+    [Output('model-state-status-message', 'children'),
+     Output('selected-model-store', 'data'),
+     Output('selected-state-store', 'data')],
+    Input('apply-model-state-btn', 'n_clicks'),
+    [State('model-selector-dropdown', 'value'),
+     State('state-selector-dropdown', 'value')],
+    prevent_initial_call=True
+)
+def apply_model_state_selection(n_clicks, selected_model, selected_state):
+    """
+    FEATURES 1 & 2 CALLBACK: Handles the Apply button click.
+    Saves the selected model and state to the stores.
+    """
+    if not n_clicks:
+        return dash.no_update, dash.no_update, dash.no_update
+    
+    # Validate selections
+    if not selected_model or not selected_state:
+        error_msg = html.Div([
+            html.Span("⚠️ ", style={'color': '#dc3545'}),
+            "Please select both a model and a state."
+        ], style={
+            'padding': '10px',
+            'backgroundColor': '#f8d7da',
+            'color': '#721c24',
+            'borderRadius': '5px',
+            'fontSize': '13px'
+        })
+        return error_msg, dash.no_update, dash.no_update
+    
+    # Get display names
+    model_name = next((m['label'] for m in MODEL_OPTIONS if m['value'] == selected_model), selected_model)
+    state_name = next((s['label'] for s in STATE_OPTIONS if s['value'] == selected_state), selected_state)
+    
+    # Create success message
+    success_msg = html.Div([
+        html.Div([
+            html.Span("✓ ", style={'color': '#28a745', 'fontWeight': 'bold'}),
+            html.Span("Selection Applied!", style={'fontWeight': 'bold'})
+        ]),
+        html.Div([
+            html.Span("Model: ", style={'fontWeight': 'bold'}),
+            html.Span(model_name)
+        ], style={'fontSize': '12px', 'marginTop': '5px'}),
+        html.Div([
+            html.Span("State: ", style={'fontWeight': 'bold'}),
+            html.Span(state_name)
+        ], style={'fontSize': '12px'})
+    ], style={
+        'padding': '10px',
+        'backgroundColor': '#d4edda',
+        'color': '#155724',
+        'borderRadius': '5px',
+        'border': '1px solid #c3e6cb'
+    })
+    
+    logger.info(f"Model and State selection applied: Model={selected_model}, State={selected_state}")
+    
+    return success_msg, selected_model, selected_state
+
+
+# ============================================================================
+# EXISTING CALLBACKS (unchanged from original code)
+# ============================================================================
 
 # Navigation callback
 @callback(
@@ -1604,10 +1913,12 @@ def create_interventions_display(npi_data, antiviral_data, vaccine_data):
      State('initial-cases-data', 'data'),
      State('npi-data', 'data'),
      State('antiviral-data', 'data'),
-     State('vaccine-data', 'data')],
+     State('vaccine-data', 'data'),
+     State('selected-model-store', 'data'),      # NEW: Get selected model
+     State('selected-state-store', 'data')],     # NEW: Get selected state
     prevent_initial_call=True
 )
-def toggle_simulation(n_clicks, sim_state, disease_params, initial_cases, npi_data, antiviral_data, vaccine_data):
+def toggle_simulation(n_clicks, sim_state, disease_params, initial_cases, npi_data, antiviral_data, vaccine_data, selected_model, selected_state):
     if n_clicks and disease_params:
         is_running = sim_state.get('isRunning', False)
         
@@ -1615,6 +1926,8 @@ def toggle_simulation(n_clicks, sim_state, disease_params, initial_cases, npi_da
             # Start simulation - call Django backend exactly like React
             try:
                 logger.info("Starting new simulation...")
+                logger.info(f"Using Model: {selected_model}, State: {selected_state}")  # NEW: Log selection
+                
                 # Format parameters for Django API exactly like React
                 payload = {
                     'disease_name': disease_params.get('scenario_name', 'Custom'),
@@ -1627,6 +1940,9 @@ def toggle_simulation(n_clicks, sim_state, disease_params, initial_cases, npi_da
                     'rho': disease_params.get('rho', 0.39),
                     'nu': ','.join(map(str, disease_params.get('nu', [0,0,0,0,0]))),
                     'sigma': ','.join(map(str, disease_params.get('sigma', [1,1,1,1,1]))),
+                    # NEW: Include model and state selection in payload
+                    'model_type': selected_model or 'SEIR-DET',
+                    'state': selected_state or 'TX',
                 }
                 
                 # Add default empty values for required fields
@@ -2043,5 +2359,5 @@ def update_table(event_data, timeline_value, view_type):
 server = app.server
 
 if __name__ == '__main__':
-    app.run_server(debug=True, host='0.0.0.0', port=8051)
+    app.run(debug=True, host='0.0.0.0', port=8051)
                    
