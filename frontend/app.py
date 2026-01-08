@@ -7,6 +7,7 @@ import pandas as pd
 import json
 import requests
 import logging
+import glob
 from datetime import datetime
 import os
 
@@ -22,43 +23,161 @@ app.config.suppress_callback_exceptions = True
 # API Configuration
 API_BASE_URL = os.getenv('API_BASE_URL', 'http://django-backend-dash:8000')
 
-# Load Texas counties and mapping
-def load_texas_data():
-    """Load Texas counties and county-to-FIPS mapping"""
-    try:
-        # Load county names
-        with open('texasCounties.js', 'r') as f:
-            content = f.read()
-        
-        lines = content.split('\n')
-        counties = []
-        for line in lines:
-            line = line.strip()
-            if line.startswith("'") and (line.endswith("',") or line.endswith("'")):
-                county = line[1:-2] if line.endswith("',") else line[1:-1]
-                counties.append(county)
-        
-        # Load county mapping
-        with open('texasMapping.json', 'r') as f:
-            county_mapping = json.load(f)
-        
-        return counties, county_mapping
-    except Exception as e:
-        logger.warning(f"Could not load Texas data: {e}")
-        return ['Harris', 'Dallas', 'Tarrant', 'Bexar'], {'Harris': '201', 'Dallas': '113'}
+# Dirs with spatial data (names and polygons)
+ASSETS_DIR = "assets"
+NAME_DIR = os.path.join(ASSETS_DIR, "fips_to_names")
+GEO_DIR  = os.path.join(ASSETS_DIR, "map_boundaries")
 
-def load_texas_geojson():
-    """Load Texas counties GeoJSON data"""
-    try:
-        with open('texasOutline.json', 'r') as f:
-            texas_geojson = json.load(f)
-        return texas_geojson
-    except Exception as e:
-        logger.warning(f"Could not load Texas GeoJSON: {e}")
-        return None
+# ============================================================================
+# NEW: MODEL OPTIONS
+# These correspond to disease models in PandemicExerciseSimulator
+# ============================================================================
+MODEL_OPTIONS = [
+    {
+        "label": "SEIR Deterministic",
+        "value": "SEIR-DET",
+        "description": "SEIR with Euler updates; fractional flows; stochastic binomial travel (between nodes)."
+    },
+    {
+        "label": "SEIRS Deterministic",
+        "value": "SEIRS-DET",
+        "description": "SEIR with waning immunity; Euler updates; fractional flows; stochastic binomial travel."
+    },
+    {
+        "label": "SEIR Stochastic",
+        "value": "SEIR-STOCH",
+        "description": "SEIR with Poisson transitions (within node stochasticity); stochastic binomial travel."
+    },
+    {
+        "label": "SEIRS Stochastic",
+        "value": "SEIRS-STOCH",
+        "description": "SEIR with waning immunity; Poisson transitions; stochastic binomial travel."
+    },
+    {
+        "label": "SEIHRD Stochastic",
+        "value": "SEIHRD-STOCH",
+        "description": "Adds hospitalization and death; Poisson transitions; stochastic binomial travel."
+    },
+    {
+        "label": "SEATIRD Deterministic",
+        "value": "SEATIRD-DET",
+        "description": "Adds treatable compartment; Euler updates (fractional flows); stochastic binomial travel."
+    },
+    {
+        "label": "SEATIRD Stochastic",
+        "value": "SEATIRD-STOCH",
+        "description": "SEATIRD with exponential transitions (Gillespie, individual-level stochasticity); stochastic binomial travel."
+    },
+]
 
-texas_counties, texas_mapping = load_texas_data()
-texas_geojson = load_texas_geojson()
+# ============================================================================
+# NEW: STATE OPTIONS
+# US States for simulation selection
+# ============================================================================
+# Label lookup for standard US state jurisdictions
+US_JURISDICTION_LABELS = {
+    "AL": "Alabama",  "AK": "Alaska", "AZ": "Arizona", "AR": "Arkansas", "CA": "California",
+    "CO": "Colorado", "CT": "Connecticut", "DE": "Delaware", "DC": "District of Columbia",
+    "FL": "Florida", "GA": "Georgia", "HI": "Hawaii", "ID": "Idaho", "IL": "Illinois", "IN": "Indiana",
+    "IA": "Iowa", "KS": "Kansas", "KY": "Kentucky", "LA": "Louisiana", "ME": "Maine", "MD": "Maryland",
+    "MA": "Massachusetts", "MI": "Michigan", "MN": "Minnesota", "MS": "Mississippi", "MO": "Missouri",
+    "MT": "Montana", "NE": "Nebraska", "NV": "Nevada", "NH": "New Hampshire", "NJ": "New Jersey",
+    "NM": "New Mexico", "NY": "New York", "NC": "North Carolina", "ND": "North Dakota", "OH": "Ohio",
+    "OK": "Oklahoma", "OR": "Oregon", "PA": "Pennsylvania", "RI": "Rhode Island", "SC": "South Carolina",
+    "SD": "South Dakota", "TN": "Tennessee", "TX": "Texas", "UT": "Utah", "VT": "Vermont",
+    "VA": "Virginia", "WA": "Washington", "WV": "West Virginia", "WI": "Wisconsin", "WY": "Wyoming",
+}
+
+def _prefix_before_underscore(filename: str) -> str:
+    stem = os.path.splitext(os.path.basename(filename))[0]
+    return stem.split("_", 1)[0]
+
+def build_jurisdiction_options(
+    mapping_dir: str = NAME_DIR,
+    boundaries_dir: str = GEO_DIR,
+    require_both: bool = True,
+):
+    """
+    Returns options like [{"label": "...", "value": "..."}] for jurisdictions
+    that have the required assets.
+    - value: prefix before first "_" in the filename
+    - label: known mapping else hyphens -> spaces
+    """
+    # Collect prefixes from each directory
+    def prefix(fn):
+        return os.path.splitext(fn)[0].split("_", 1)[0]
+
+    mapping_prefixes = {
+        prefix(f) for f in os.listdir(mapping_dir)
+        if f.endswith(".json")
+    }
+
+    boundary_prefixes = {
+        prefix(f) for f in os.listdir(boundaries_dir)
+        if f.endswith((".geojson", ".json"))
+    }
+
+    prefixes = (
+        mapping_prefixes & boundary_prefixes
+        if require_both else
+        mapping_prefixes | boundary_prefixes
+    )
+
+    options = []
+    for value in sorted(prefixes):
+        label = US_JURISDICTION_LABELS.get(value, value.replace("-", " "))
+        options.append({"label": label, "value": value})
+
+    return options
+
+STATE_OPTIONS = build_jurisdiction_options(require_both=True)
+
+# Load location jurisdiction node names and boundaries from subdirs
+def _first_match(pattern: str):
+    matches = sorted(glob.glob(pattern))
+    return matches[0] if matches else None
+
+def load_location_assets(location_value: str):
+    """
+    Load all assets needed to plot a location.
+
+    Required:
+      - assets/county_fips_to_names/{value}_*.json
+      - assets/map_boundaries/{value}_*.geojson (or .json)
+
+    Returns:
+      names   : list[str]   (derived from mapping keys, excluding "All")
+      mapping : dict[str,str]
+      geojson : dict
+    """
+    # ---- name -> id mapping (required)
+    name_path = _first_match(os.path.join(NAME_DIR, f"{location_value}_*.json"))
+    if not name_path:
+        raise FileNotFoundError(
+            f"Missing name mapping for '{location_value}'. "
+            f"Expected {NAME_DIR}/{location_value}_*.json"
+        )
+
+    with open(name_path, "r") as f:
+        mapping = json.load(f)
+
+    names = [k for k in mapping.keys() if k.lower() != "all"]
+
+    # ---- geometry (required)
+    geo_path = (
+        _first_match(os.path.join(GEO_DIR, f"{location_value}_*.geojson"))
+        or _first_match(os.path.join(GEO_DIR, f"{location_value}_*.json"))
+    )
+    if not geo_path:
+        raise FileNotFoundError(
+            f"Missing geometry for '{location_value}'. "
+            f"Expected {GEO_DIR}/{location_value}_*.geojson (or .json)"
+        )
+
+    with open(geo_path, "r") as f:
+        geojson = json.load(f)
+
+    return names, mapping, geojson
 
 def get_county_color(infected_value, view_type='count'):
     """Get color for county based on infection data"""
@@ -99,8 +218,8 @@ def get_county_color(infected_value, view_type='count'):
         else:
             return '#FFEDA0'
 
-def create_county_choropleth(event_data, timeline_value, view_type):
-    """Create county-level map using individual county polygons to match React UI exactly"""
+def create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojson):
+    """Create map using boundary file provided in geojson"""
     
     if not event_data or timeline_value is None or timeline_value >= len(event_data):
         return create_empty_map()
@@ -110,7 +229,7 @@ def create_county_choropleth(event_data, timeline_value, view_type):
     
     logger.info(f"Creating county map for day {current_data.get('day', 0)} with {len(counties_data)} counties")
     
-    if not counties_data or not texas_geojson:
+    if not counties_data or not geojson:
         return create_empty_map()
     
     # Create data mapping from FIPS to values
@@ -123,12 +242,11 @@ def create_county_choropleth(event_data, timeline_value, view_type):
             continue
             
         # Ensure FIPS format matches GeoJSON geoid (48XXX format)
+        # Older versions of code allowed 3 char fips of county only
         if len(fips) == 3:
             full_fips = f"48{fips}"
-        elif len(fips) == 5 and fips.startswith('48'):
-            full_fips = fips
         else:
-            full_fips = f"48{fips.zfill(3)}"
+            full_fips = fips
         
         if view_type == 'percent':
             value = county.get('infectedPercent', 0)
@@ -182,9 +300,9 @@ def create_county_choropleth(event_data, timeline_value, view_type):
     fig = go.Figure()
     
     # Add each county as a separate trace
-    for feature in texas_geojson['features']:
-        geoid = feature['properties']['geoid']
-        county_name = feature['properties']['name']
+    for feature in geojson['features']:
+        geoid = feature['properties']['GEOID']
+        county_name = feature['properties']['NAME']
         
         value = county_values.get(geoid, 0)
         color = get_color_from_value(value, max_value)
@@ -238,27 +356,18 @@ def create_county_choropleth(event_data, timeline_value, view_type):
     
     # Configure layout to match React version exactly
     fig.update_layout(
-        title=f"Day {current_data.get('day', 0)} - Texas Counties ({'Percentage' if view_type == 'percent' else 'Count'} View)",
+        title=f"Day {current_data.get('day', 0)} ({'Percentage' if view_type == 'percent' else 'Count'} View)",
         height=400,
         margin=dict(l=0, r=0, t=40, b=0),
         paper_bgcolor='white',
         plot_bgcolor='white',
-        xaxis=dict(
-            showgrid=False,
-            showticklabels=False,
-            zeroline=False,
-            range=[-106.0, -93.0]
-        ),
-        yaxis=dict(
-            showgrid=False,
-            showticklabels=False,
-            zeroline=False,
-            range=[25.0, 37.0],
-            scaleanchor="x",
-            scaleratio=1
-        ),
+        xaxis=dict(showgrid=False, showticklabels=False, zeroline=False),
+        yaxis=dict(showgrid=False, showticklabels=False, zeroline=False, scaleanchor="x", scaleratio=1),
         hovermode='closest'
     )
+
+    fig.update_xaxes(autorange=True)
+    fig.update_yaxes(autorange=True)
     
     logger.info("Successfully created county map with individual polygons")
     return fig
@@ -267,22 +376,13 @@ def create_empty_map():
     """Create empty map when no data is available"""
     fig = go.Figure()
     fig.update_layout(
-        title="Texas Counties - No Data Available",
-        geo=dict(
-            scope='usa',
-            projection=go.layout.geo.Projection(type='albers usa'),
-            showframe=False,
-            showcoastlines=False,
-            showlakes=False,
-            bgcolor='white',
-            center=dict(lat=31.0, lon=-99.0),
-            lonaxis_range=[-106.0, -93.0],
-            lataxis_range=[25.0, 37.0]
-        ),
         height=400,
         margin=dict(l=0, r=0, t=40, b=0),
-        paper_bgcolor='white',
-        plot_bgcolor='white'
+        xaxis=dict(visible=False),
+        yaxis=dict(visible=False),
+        paper_bgcolor="white",
+        plot_bgcolor="white",
+        title="Map - No Data Available"
     )
     return fig
 
@@ -369,6 +469,11 @@ app.layout = html.Div([
     dcc.Store(id='displayed-tab', data='scenario'),
     dcc.Interval(id='simulation-interval', interval=1000, disabled=True),
     
+    # NEW: Stores for Model and State Selection
+    dcc.Store(id='selected-model-store', data='SEIR-DET'),
+    dcc.Store(id='selected-state-store', data='TX'),
+    dcc.Store(id='location-assets-store', data={}),
+    
     # Header - Exact match to React Header component
     html.Nav([
         html.Div([
@@ -428,13 +533,115 @@ app.layout = html.Div([
     html.Div(id='main-content', style={'marginTop': '80px'})
 ])
 
-# Home page layout - Exact match to React Home component
+# ============================================================================
+# NEW: Helper function to create Model and State Selection Panel
+# ============================================================================
+def create_model_state_selection_panel():
+    """
+    Creates the Model and State selection dropdowns.
+    This is the core UI for Features 1 and 2.
+    """
+    return html.Div([
+        # Panel Header
+        html.Div([
+            html.H6('⚙️ Simulation Setup', style={
+                'marginBottom': '15px',
+                'paddingBottom': '10px',
+                'borderBottom': '2px solid #102c41',
+                'color': '#102c41',
+                'fontWeight': 'bold'
+            })
+        ]),
+        
+        # FEATURE 1: Model Selection Dropdown
+        html.Div([
+            html.Label('Disease Model', style={
+                'fontWeight': 'bold',
+                'marginBottom': '5px',
+                'display': 'block',
+                'color': '#333'
+            }),
+            dcc.Dropdown(
+                id='model-selector-dropdown',
+                options=[{"label": m["label"], "value": m["value"]} for m in MODEL_OPTIONS],
+                value='SEIR-DET',
+                clearable=False,
+                placeholder="Select a disease model...",
+                style={'marginBottom': '8px'}
+            ),
+            # Model description display
+            html.Div(
+                id='model-description-display',
+                style={
+                    'fontSize': '12px',
+                    'color': '#666',
+                    'padding': '8px',
+                    'backgroundColor': '#f8f9fa',
+                    'borderRadius': '4px',
+                    'marginBottom': '15px'
+                }
+            )
+        ]),
+        
+        # FEATURE 2: State Selection Dropdown
+        html.Div([
+            html.Label('State', style={
+                'fontWeight': 'bold',
+                'marginBottom': '5px',
+                'display': 'block',
+                'color': '#333'
+            }),
+            dcc.Dropdown(
+                id='state-selector-dropdown',
+                options=[{"label": s["label"], "value": s["value"]} for s in STATE_OPTIONS],
+                value='TX',
+                clearable=False,
+                searchable=True,
+                placeholder="Select a state...",
+                style={'marginBottom': '15px'}
+            ),
+        ]),
+        
+        # Apply Button
+        html.Button(
+            '✓ Apply Selection',
+            id='apply-model-state-btn',
+            n_clicks=0,
+            style={
+                'width': '100%',
+                'padding': '10px',
+                'backgroundColor': '#102c41',
+                'color': 'white',
+                'border': 'none',
+                'borderRadius': '5px',
+                'cursor': 'pointer',
+                'fontWeight': 'bold',
+                'marginBottom': '10px'
+            }
+        ),
+        
+        # Status message area
+        html.Div(id='model-state-status-message', style={'marginBottom': '15px'})
+        
+    ], style={
+        'padding': '15px',
+        'backgroundColor': 'white',
+        'borderRadius': '8px',
+        'boxShadow': '0 2px 4px rgba(0,0,0,0.1)',
+        'marginBottom': '15px'
+    })
+
+
+# Home page layout - Updated with Model and State Selection
 def create_home_layout():
     return html.Div([
         html.Div([
-            # Left Panel - SetScenario, Interventions, DisplayedParameters
+            # Left Panel - NEW: Model/State Selection + SetScenario, Interventions, DisplayedParameters
             html.Div([
                 html.Div([
+                    # NEW: Model and State Selection Panel (Features 1 & 2)
+                    create_model_state_selection_panel(),
+                    
                     # Set Scenario dropdown (like React SetScenario component)
                     html.Div([
                         html.Button([
@@ -587,11 +794,22 @@ def create_userguide_layout():
             html.Div([
                 html.H4('How to Use the Pandemic Simulator'),
                 html.Ol([
+                    html.Li([html.B('Select Disease Model: '), 'Choose which epidemiological model to use (SEIR, SEIRS, SEATIRD, etc.).']),
+                    html.Li([html.B('Select State: '), 'Choose which US state to simulate.']),
                     html.Li([html.B('Set Disease Parameters: '), 'Configure the disease characteristics including reproduction number, incubation period, and other epidemiological parameters.']),
-                    html.Li([html.B('Select Initial Cases: '), 'Choose which Texas counties will have initial cases and specify the number of cases per county and age group.']),
+                    html.Li([html.B('Select Initial Cases: '), 'Choose which counties will have initial cases and specify the number of cases per county and age group.']),
                     html.Li([html.B('Configure Interventions: '), 'Set up non-pharmaceutical interventions, antivirals, and vaccines.']),
                     html.Li([html.B('Run Simulation: '), 'Click the "Play" button to start the simulation. You can pause it at any time.']),
                     html.Li([html.B('View Results: '), 'Monitor the outbreak progression through the map, epidemic curve, and county data table.'])
+                ]),
+                html.Hr(),
+                html.H5('Disease Models Available'),
+                html.Ul([
+                    html.Li([html.B('SEIR: '), 'Susceptible-Exposed-Infectious-Recovered - Basic compartmental model']),
+                    html.Li([html.B('SEIRS: '), 'SEIR with waning immunity - Recovered can become susceptible again']),
+                    html.Li([html.B('SEATIRD: '), 'Adds Asymptomatic and Treatment compartments for more detail']),
+                    html.Li([html.B('SEIHRD: '), 'Includes Hospitalization tracking']),
+                    html.Li([html.B('Deterministic vs Stochastic: '), 'Deterministic gives same result each run; Stochastic includes randomness'])
                 ]),
                 html.Hr(),
                 html.H5('SEATIRD Model'),
@@ -754,8 +972,8 @@ initial_cases_modal = dbc.Modal([
             html.Label('Location'),
             dcc.Dropdown(
                 id='initial-location',
-                options=[{'label': county, 'value': county} for county in texas_counties],
-                placeholder='Search for a county...',
+                options=[],
+                placeholder='Search for a location...',
                 style={'marginBottom': '10px'}
             )
         ]),
@@ -849,9 +1067,8 @@ npi_modal = dbc.Modal([
             html.Label('Location'),
             dcc.Dropdown(
                 id='npi-location',
-                options=[{'label': 'Statewide', 'value': 'Statewide'}] + 
-                        [{'label': county, 'value': county} for county in texas_counties],
-                value='Statewide',
+                options=[],
+                value=['Statewide'],
                 multi=True,
                 style={'marginBottom': '15px'}
             )
@@ -965,6 +1182,153 @@ vaccines_modal = dbc.Modal([
 
 # Add modals to layout
 app.layout.children.extend([disease_params_modal, initial_cases_modal, npi_modal, antivirals_modal, vaccines_modal])
+
+
+# ============================================================================
+# Callbacks for Model and State Selection
+# ============================================================================
+
+@callback(
+    Output('model-description-display', 'children'),
+    Input('model-selector-dropdown', 'value')
+)
+def update_model_description(selected_model):
+    """
+    Updates the model description when user selects a model.
+    """
+    if not selected_model:
+        return "Select a model to see its description."
+    
+    # Find the selected model's description
+    for model in MODEL_OPTIONS:
+        if model["value"] == selected_model:
+            return html.Div([
+                html.Span("ℹ️ ", style={'marginRight': '5px'}),
+                html.Span(model["description"])
+            ])
+    
+    return "Description not available."
+
+
+@callback(
+    [Output('model-state-status-message', 'children'),
+     Output('selected-model-store', 'data'),
+     Output('selected-state-store', 'data')],
+    Input('apply-model-state-btn', 'n_clicks'),
+    [State('model-selector-dropdown', 'value'),
+     State('state-selector-dropdown', 'value')],
+    prevent_initial_call=True
+)
+def apply_model_state_selection(n_clicks, selected_model, selected_state):
+    """
+    Handles the Apply button click.
+    Saves the selected model and state to the stores.
+    """
+    if not n_clicks:
+        return dash.no_update, dash.no_update, dash.no_update
+    
+    # Validate selections
+    if not selected_model or not selected_state:
+        error_msg = html.Div([
+            html.Span("⚠️ ", style={'color': '#dc3545'}),
+            "Please select both a model and a state."
+        ], style={
+            'padding': '10px',
+            'backgroundColor': '#f8d7da',
+            'color': '#721c24',
+            'borderRadius': '5px',
+            'fontSize': '13px'
+        })
+        return error_msg, dash.no_update, dash.no_update
+    
+    # Get display names
+    model_name = next((m['label'] for m in MODEL_OPTIONS if m['value'] == selected_model), selected_model)
+    state_name = next((s['label'] for s in STATE_OPTIONS if s['value'] == selected_state), selected_state)
+    
+    # Create success message
+    success_msg = html.Div([
+        html.Div([
+            html.Span("✓ ", style={'color': '#28a745', 'fontWeight': 'bold'}),
+            html.Span("Selection Applied!", style={'fontWeight': 'bold'})
+        ]),
+        html.Div([
+            html.Span("Model: ", style={'fontWeight': 'bold'}),
+            html.Span(model_name)
+        ], style={'fontSize': '12px', 'marginTop': '5px'}),
+        html.Div([
+            html.Span("State: ", style={'fontWeight': 'bold'}),
+            html.Span(state_name)
+        ], style={'fontSize': '12px'})
+    ], style={
+        'padding': '10px',
+        'backgroundColor': '#d4edda',
+        'color': '#155724',
+        'borderRadius': '5px',
+        'border': '1px solid #c3e6cb'
+    })
+    
+    logger.info(f"Model and State selection applied: Model={selected_model}, State={selected_state}")
+    
+    return success_msg, selected_model, selected_state
+
+@callback(
+    Output('location-assets-store', 'data'),
+    Input('apply-model-state-btn', 'n_clicks'),
+    State('selected-state-store', 'data'),
+    prevent_initial_call=True
+)
+def load_assets_for_selected_location(n_clicks, selected_state):
+    if not n_clicks or not selected_state:
+        return dash.no_update
+
+    try:
+        names, mapping, geojson = load_location_assets(selected_state)
+        logger.info(f"Loaded assets for {selected_state}: {len(names)} regions")
+
+        return {
+            "names": names,
+            "mapping": mapping,
+            "geojson": geojson
+        }
+
+    except Exception as e:
+        logger.error(f"Failed to load assets for {selected_state}: {e}")
+        return {
+            "names": [],
+            "mapping": {},
+            "geojson": None
+        }
+
+@callback(
+    Output('initial-location', 'options'),
+    Input('location-assets-store', 'data')
+)
+def update_initial_location_options(location_assets):
+    if not location_assets:
+        return []
+
+    return [
+        {"label": name, "value": name}
+        for name in location_assets.get("names", [])
+    ]
+
+@callback(
+    Output('npi-location', 'options'),
+    Input('location-assets-store', 'data'),
+)
+def update_npi_location_options(location_assets):
+    if not location_assets:
+        return [{"label": "Statewide", "value": "Statewide"}]
+
+    names = location_assets.get("names", [])
+    return (
+        [{"label": "Statewide", "value": "Statewide"}] +
+        [{"label": n, "value": n} for n in names]
+    )
+
+# ============================================================================
+# EXISTING CALLBACKS
+# ============================================================================
 
 # Navigation callback
 @callback(
@@ -1238,15 +1602,18 @@ def load_preset_scenario(preset_key):
     [State('initial-location', 'value'),
      State('initial-cases-count', 'value'),
      State('initial-age-group', 'value'),
-     State('initial-cases-data', 'data')],
+     State('initial-cases-data', 'data'),
+     State('location-assets-store', 'data')],
     prevent_initial_call=True
 )
-def manage_initial_cases(add_clicks, remove_clicks, location, cases_count, age_group, current_data):
+def manage_initial_cases(add_clicks, remove_clicks, location, cases_count, age_group, current_data, location_assets):
     triggered_id = ctx.triggered[0]['prop_id'] if ctx.triggered else None
-    
+
+    mapping = (location_assets or {}).get("mapping", {})
+
     if 'add-initial-case-btn' in triggered_id and location and cases_count:
         # Add new case
-        fips_id = texas_mapping.get(location, '0')
+        fips_id = mapping.get(location, '0')
         age_group_id = AGE_GROUP_MAPPING.get(age_group, '0')
         
         new_case = {
@@ -1604,10 +1971,12 @@ def create_interventions_display(npi_data, antiviral_data, vaccine_data):
      State('initial-cases-data', 'data'),
      State('npi-data', 'data'),
      State('antiviral-data', 'data'),
-     State('vaccine-data', 'data')],
+     State('vaccine-data', 'data'),
+     State('selected-model-store', 'data'),      # NEW: Get selected model
+     State('selected-state-store', 'data')],     # NEW: Get selected state
     prevent_initial_call=True
 )
-def toggle_simulation(n_clicks, sim_state, disease_params, initial_cases, npi_data, antiviral_data, vaccine_data):
+def toggle_simulation(n_clicks, sim_state, disease_params, initial_cases, npi_data, antiviral_data, vaccine_data, selected_model, selected_state):
     if n_clicks and disease_params:
         is_running = sim_state.get('isRunning', False)
         
@@ -1615,6 +1984,8 @@ def toggle_simulation(n_clicks, sim_state, disease_params, initial_cases, npi_da
             # Start simulation - call Django backend exactly like React
             try:
                 logger.info("Starting new simulation...")
+                logger.info(f"Using Model: {selected_model}, State: {selected_state}")  # NEW: Log selection
+                
                 # Format parameters for Django API exactly like React
                 payload = {
                     'disease_name': disease_params.get('scenario_name', 'Custom'),
@@ -1627,6 +1998,9 @@ def toggle_simulation(n_clicks, sim_state, disease_params, initial_cases, npi_da
                     'rho': disease_params.get('rho', 0.39),
                     'nu': ','.join(map(str, disease_params.get('nu', [0,0,0,0,0]))),
                     'sigma': ','.join(map(str, disease_params.get('sigma', [1,1,1,1,1]))),
+                    # NEW: Include model and state selection in payload
+                    'model_type': selected_model or 'SEIR-DET',
+                    'state': selected_state or 'TX',
                 }
                 
                 # Add default empty values for required fields
@@ -1642,16 +2016,29 @@ def toggle_simulation(n_clicks, sim_state, disease_params, initial_cases, npi_da
                     'vaccine_wastage_factor': 0.1,
                     'vaccine_pro_rata': 1
                 })
+
+                def geoid_to_county_code(geoid: str) -> str:
+                    """
+                    Convert a 5-digit county FIPS GEOID (e.g., '48141') to the 3-digit county code ('141').
+                    If already 3 digits, return as-is. If it’s not a county FIPS, return as-is.
+                    """
+                    s = str(geoid).strip()
+                    if len(s) == 5 and s.isdigit():
+                        return s[2:]  # drop state FIPS
+                    if len(s) == 3 and s.isdigit():
+                        return s
+                    return s
                 
                 # Add initial cases - use provided cases or default to Harris County
                 initial_infected = []
                 if initial_cases:
                     for case in initial_cases:
                         initial_infected.append({
-                            'county': case['fips_id'],
+                            'county': geoid_to_county_code(case['fips_id']),
                             'infected': case['cases'],
                             'age_group': case['age_group_id']
                         })
+                '''
                 else:
                     # Provide default initial case if none specified
                     initial_infected.append({
@@ -1659,6 +2046,7 @@ def toggle_simulation(n_clicks, sim_state, disease_params, initial_cases, npi_da
                         'infected': 100,
                         'age_group': '0'  # 0-4 years age group
                     })
+                '''
                 payload['initial_infected'] = json.dumps(initial_infected)
                 
                 # Add interventions if any
@@ -1864,11 +2252,22 @@ def fetch_simulation_data(n_intervals, sim_state, event_data):
     Output('spread-map', 'figure'),
     [Input('event-data', 'data'),
      Input('timeline-slider', 'value'),
-     Input('view-toggle', 'value')]
+     Input('view-toggle', 'value'),
+     Input('location-assets-store', 'data')]
 )
-def update_map(event_data, timeline_value, view_type):
+def update_map(event_data, timeline_value, view_type, location_assets):
     """Update map with county-level choropleth visualization"""
-    return create_county_choropleth(event_data, timeline_value, view_type)
+
+    # DEBUG LOGGING
+    logger.info(
+        f"map debug → "
+        f"event_days={len(event_data) if event_data else 0}, "
+        f"timeline={timeline_value}, "
+        f"geojson_loaded={bool((location_assets or {}).get('geojson'))}"
+    )
+
+    geojson = location_assets.get("geojson") if location_assets else None
+    return create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojson)
 
 @callback(
     Output('line-chart', 'figure'),
@@ -1930,112 +2329,61 @@ def update_chart(event_data, timeline_value):
     Output('spread-table', 'children'),
     [Input('event-data', 'data'),
      Input('timeline-slider', 'value'),
-     Input('view-toggle', 'value')]
+     Input('view-toggle', 'value'),
+     Input('location-assets-store', 'data')]
 )
-def update_table(event_data, timeline_value, view_type):
+def update_table(event_data, timeline_value, view_type, location_assets):
     if not event_data or timeline_value is None or timeline_value >= len(event_data):
         return html.P('No data available', style={'color': '#6c757d', 'fontStyle': 'italic'})
     
     current_data = event_data[timeline_value]
     counties_data = current_data.get('counties', [])
-    
     if not counties_data:
         return html.P('No county data available', style={'color': '#6c757d', 'fontStyle': 'italic'})
-    
+
+    location_assets = location_assets or {}
+    mapping = location_assets.get("mapping", {})  # name -> geoid (string)
+    geojson = location_assets.get("geojson", None)
+
+    # Invert mapping once: geoid -> name
+    id_to_name = {str(geoid): name for name, geoid in mapping.items() if str(name).lower() != "all"}
+
     # Create table data
     table_data = []
     for county in counties_data:
-        fips = county.get('fips', 'Unknown')
-        # Map FIPS back to county name using GeoJSON data
-        county_name = None
-        
-        # First try to get from GeoJSON data
-        if texas_geojson:
-            geoid = f"48{fips.zfill(3)}"
-            for feature in texas_geojson['features']:
-                if feature['properties']['geoid'] == geoid:
-                    county_name = feature['properties']['name']
-                    break
-        
-        # Fallback to mapping file
-        if not county_name:
-            for name, mapped_fips in texas_mapping.items():
-                if mapped_fips == fips:
-                    county_name = name
-                    break
-        
-            # Handle different FIPS formats - the fips might be full 5-digit (48XXX) or just 3-digit (XXX)
-        if len(fips) == 5 and fips.startswith('48'):
-            # Full FIPS code like "48419"
-            geoid = fips
-            short_fips = fips[2:]  # Remove "48" prefix for mapping lookup
-        elif len(fips) == 3:
-            # 3-digit FIPS code like "419"
-            geoid = f"48{fips}"
-            short_fips = fips
-        else:
-            # Handle other formats
-            geoid = f"48{fips.zfill(3)}"
-            short_fips = fips.zfill(3)
+        geoid = str(county.get('fips', '')).strip()
+        if not geoid:
+            continue
 
-     
-        if texas_geojson:
-            for feature in texas_geojson['features']:
-                if feature['properties']['geoid'] == geoid:
-                    county_name = feature['properties']['name']
-                    break
+        county_name = (
+                id_to_name.get(geoid) or
+                geoid  # final fallback: show id
+        )
 
-        # Fallback to mapping file using short FIPS
-        if not county_name:
-            # Remove leading zeros from short_fips for comparison
-            short_fips_no_zero = short_fips.lstrip('0')
-            for name, mapped_fips in texas_mapping.items():
-                if mapped_fips == short_fips_no_zero:
-                    county_name = name
-                    break
-
-        # Final fallback - show readable county name instead of number
-        if not county_name:
-            county_name = f"County {short_fips}"
-        
         if view_type == 'percent':
             infected_val = f"{county.get('infectedPercent', 0):.1f}%"
             deceased_val = f"{county.get('deceasedPercent', 0):.1f}%"
         else:
             infected_val = f"{county.get('infected', 0):,}"
             deceased_val = f"{county.get('deceased', 0):,}"
-        
+
         table_data.append([county_name, infected_val, deceased_val])
-    
-    # Create table
-    
-    table = dbc.Table([
-        html.Thead([
-            html.Tr([
-                html.Th('County'),
-                html.Th('Infected'),
-                html.Th('Deceased')
-            ])
-        ]),
-        html.Tbody([
-            html.Tr([
-                html.Td(row[0]),
-                html.Td(row[1]),
-                html.Td(row[2])
-            ]) for row in table_data
-        ])
-    ],   
+
+    if not table_data:
+        return html.P('No county data available', style={'color': '#6c757d', 'fontStyle': 'italic'})
+
+    table = dbc.Table(
+        [
+            html.Thead(html.Tr([html.Th('Location'), html.Th('Infected'), html.Th('Deceased')])),
+            html.Tbody([html.Tr([html.Td(r[0]), html.Td(r[1]), html.Td(r[2])]) for r in table_data]),
+        ],
         bordered=True,
         hover=True,
         striped=True,
         responsive=False,
         className="w-100",
-        style= {
-            'maxHeight': '800px',
-            'overflowY': 'auto',
-            'display': 'block'
-        }
-    ), 
+        style={'maxHeight': '800px', 'overflowY': 'auto', 'display': 'block'},
+    )
 
     return table
 
@@ -2043,5 +2391,4 @@ def update_table(event_data, timeline_value, view_type):
 server = app.server
 
 if __name__ == '__main__':
-    app.run_server(debug=True, host='0.0.0.0', port=8051)
-                   
+    app.run(debug=True, host='0.0.0.0', port=8051)

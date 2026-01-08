@@ -143,7 +143,17 @@ def on_parent_exit(signame):
 
 @app.task
 def run_pes(input):
+
+    # Temporary solution to get clean start per simulation
+    # Clear previous run outputs
+    mycol.delete_many({})
+
+    # Remove leftover output files
+    for f in glob.glob("/PES/OUTPUT*"):
+        os.remove(f)
+
     os.chdir('/PES')
+
     input_file = return_valid_input(input)
     with open('/PES/INPUT.json', 'w') as o:
         json.dump(input_file, o, indent=2)
