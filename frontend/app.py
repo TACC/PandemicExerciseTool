@@ -23,103 +23,112 @@ app.config.suppress_callback_exceptions = True
 API_BASE_URL = os.getenv('API_BASE_URL', 'http://django-backend-dash:8000')
 
 # ============================================================================
-# NEW: MODEL OPTIONS (Feature 1)
+# NEW: MODEL OPTIONS
 # These correspond to disease models in PandemicExerciseSimulator
 # ============================================================================
 MODEL_OPTIONS = [
     {
         "label": "SEIR Deterministic",
         "value": "SEIR-DET",
-        "description": "Basic Susceptible-Exposed-Infectious-Recovered model. Fixed parameters, deterministic outcome."
+        "description": "SEIR with Euler updates; fractional flows; stochastic binomial travel (between nodes)."
     },
     {
-        "label": "SEIRS Deterministic", 
+        "label": "SEIRS Deterministic",
         "value": "SEIRS-DET",
-        "description": "SEIR with waning immunity. Recovered individuals can become susceptible again."
+        "description": "SEIR with waning immunity; Euler updates; fractional flows; stochastic binomial travel."
     },
     {
         "label": "SEIR Stochastic",
         "value": "SEIR-STOCH",
-        "description": "SEIR with random variation. Each simulation run produces slightly different results."
+        "description": "SEIR with Poisson transitions (within node stochasticity); stochastic binomial travel."
     },
     {
         "label": "SEIRS Stochastic",
         "value": "SEIRS-STOCH",
-        "description": "Combines waning immunity with random variation for realistic simulations."
-    },
-    {
-        "label": "SEATIRD Deterministic",
-        "value": "SEATIRD-DET",
-        "description": "Advanced model with Asymptomatic and Treatment compartments."
-    },
-    {
-        "label": "SEATIRD Stochastic",
-        "value": "SEATIRD-STOCH",
-        "description": "SEATIRD with random variation for realistic population-level simulations."
+        "description": "SEIR with waning immunity; Poisson transitions; stochastic binomial travel."
     },
     {
         "label": "SEIHRD Stochastic",
         "value": "SEIHRD-STOCH",
-        "description": "Includes Hospitalization compartment. Tracks hospital capacity."
+        "description": "Adds hospitalization and death; Poisson transitions; stochastic binomial travel."
+    },
+    {
+        "label": "SEATIRD Deterministic",
+        "value": "SEATIRD-DET",
+        "description": "Adds treatable compartment; Euler updates (fractional flows); stochastic binomial travel."
+    },
+    {
+        "label": "SEATIRD Stochastic",
+        "value": "SEATIRD-STOCH",
+        "description": "SEATIRD with exponential transitions (Gillespie, individual-level stochasticity); stochastic binomial travel."
     },
 ]
 
 # ============================================================================
-# NEW: STATE OPTIONS (Feature 2)
+# NEW: STATE OPTIONS
 # US States for simulation selection
 # ============================================================================
-STATE_OPTIONS = [
-    {"label": "Alabama", "value": "AL"},
-    {"label": "Alaska", "value": "AK"},
-    {"label": "Arizona", "value": "AZ"},
-    {"label": "Arkansas", "value": "AR"},
-    {"label": "California", "value": "CA"},
-    {"label": "Colorado", "value": "CO"},
-    {"label": "Connecticut", "value": "CT"},
-    {"label": "Delaware", "value": "DE"},
-    {"label": "Florida", "value": "FL"},
-    {"label": "Georgia", "value": "GA"},
-    {"label": "Hawaii", "value": "HI"},
-    {"label": "Idaho", "value": "ID"},
-    {"label": "Illinois", "value": "IL"},
-    {"label": "Indiana", "value": "IN"},
-    {"label": "Iowa", "value": "IA"},
-    {"label": "Kansas", "value": "KS"},
-    {"label": "Kentucky", "value": "KY"},
-    {"label": "Louisiana", "value": "LA"},
-    {"label": "Maine", "value": "ME"},
-    {"label": "Maryland", "value": "MD"},
-    {"label": "Massachusetts", "value": "MA"},
-    {"label": "Michigan", "value": "MI"},
-    {"label": "Minnesota", "value": "MN"},
-    {"label": "Mississippi", "value": "MS"},
-    {"label": "Missouri", "value": "MO"},
-    {"label": "Montana", "value": "MT"},
-    {"label": "Nebraska", "value": "NE"},
-    {"label": "Nevada", "value": "NV"},
-    {"label": "New Hampshire", "value": "NH"},
-    {"label": "New Jersey", "value": "NJ"},
-    {"label": "New Mexico", "value": "NM"},
-    {"label": "New York", "value": "NY"},
-    {"label": "North Carolina", "value": "NC"},
-    {"label": "North Dakota", "value": "ND"},
-    {"label": "Ohio", "value": "OH"},
-    {"label": "Oklahoma", "value": "OK"},
-    {"label": "Oregon", "value": "OR"},
-    {"label": "Pennsylvania", "value": "PA"},
-    {"label": "Rhode Island", "value": "RI"},
-    {"label": "South Carolina", "value": "SC"},
-    {"label": "South Dakota", "value": "SD"},
-    {"label": "Tennessee", "value": "TN"},
-    {"label": "Texas", "value": "TX"},
-    {"label": "Utah", "value": "UT"},
-    {"label": "Vermont", "value": "VT"},
-    {"label": "Virginia", "value": "VA"},
-    {"label": "Washington", "value": "WA"},
-    {"label": "West Virginia", "value": "WV"},
-    {"label": "Wisconsin", "value": "WI"},
-    {"label": "Wyoming", "value": "WY"},
-]
+# Label lookup for standard US state jurisdictions
+US_JURISDICTION_LABELS = {
+    "AL": "Alabama",  "AK": "Alaska", "AZ": "Arizona", "AR": "Arkansas", "CA": "California",
+    "CO": "Colorado", "CT": "Connecticut", "DE": "Delaware", "DC": "District of Columbia",
+    "FL": "Florida", "GA": "Georgia", "HI": "Hawaii", "ID": "Idaho", "IL": "Illinois", "IN": "Indiana",
+    "IA": "Iowa", "KS": "Kansas", "KY": "Kentucky", "LA": "Louisiana", "ME": "Maine", "MD": "Maryland",
+    "MA": "Massachusetts", "MI": "Michigan", "MN": "Minnesota", "MS": "Mississippi", "MO": "Missouri",
+    "MT": "Montana", "NE": "Nebraska", "NV": "Nevada", "NH": "New Hampshire", "NJ": "New Jersey",
+    "NM": "New Mexico", "NY": "New York", "NC": "North Carolina", "ND": "North Dakota", "OH": "Ohio",
+    "OK": "Oklahoma", "OR": "Oregon", "PA": "Pennsylvania", "RI": "Rhode Island", "SC": "South Carolina",
+    "SD": "South Dakota", "TN": "Tennessee", "TX": "Texas", "UT": "Utah", "VT": "Vermont",
+    "VA": "Virginia", "WA": "Washington", "WV": "West Virginia", "WI": "Wisconsin", "WY": "Wyoming",
+}
+
+def _prefix_before_underscore(filename: str) -> str:
+    stem = os.path.splitext(os.path.basename(filename))[0]
+    return stem.split("_", 1)[0]
+
+def build_jurisdiction_options(
+    assets_root="assets",
+    mapping_subdir: str = "county_fips_to_names",
+    boundaries_subdir: str = "map_boundaries",
+    require_both: bool = True,
+):
+    """
+    Returns options like [{"label": "...", "value": "..."}] for jurisdictions
+    that have the required assets.
+    - value: prefix before first "_" in the filename
+    - label: known mapping else hyphens -> spaces
+    """
+    mapping_dir = os.path.join(assets_root, mapping_subdir)
+    boundaries_dir = os.path.join(assets_root, boundaries_subdir)
+
+    # Collect prefixes from each directory
+    def prefix(fn):
+        return os.path.splitext(fn)[0].split("_", 1)[0]
+
+    mapping_prefixes = {
+        prefix(f) for f in os.listdir(mapping_dir)
+        if f.endswith(".json")
+    }
+
+    boundary_prefixes = {
+        prefix(f) for f in os.listdir(boundaries_dir)
+        if f.endswith((".geojson", ".json"))
+    }
+
+    prefixes = (
+        mapping_prefixes & boundary_prefixes
+        if require_both else
+        mapping_prefixes | boundary_prefixes
+    )
+
+    options = []
+    for value in sorted(prefixes):
+        label = US_JURISDICTION_LABELS.get(value, value.replace("-", " "))
+        options.append({"label": label, "value": value})
+
+    return options
+
+STATE_OPTIONS = build_jurisdiction_options(require_both=True)
 
 # Load Texas counties and mapping
 def load_texas_data():
@@ -2360,4 +2369,3 @@ server = app.server
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8051)
-                   
