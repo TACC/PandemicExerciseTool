@@ -2016,16 +2016,29 @@ def toggle_simulation(n_clicks, sim_state, disease_params, initial_cases, npi_da
                     'vaccine_wastage_factor': 0.1,
                     'vaccine_pro_rata': 1
                 })
+
+                def geoid_to_county_code(geoid: str) -> str:
+                    """
+                    Convert a 5-digit county FIPS GEOID (e.g., '48141') to the 3-digit county code ('141').
+                    If already 3 digits, return as-is. If it’s not a county FIPS, return as-is.
+                    """
+                    s = str(geoid).strip()
+                    if len(s) == 5 and s.isdigit():
+                        return s[2:]  # drop state FIPS
+                    if len(s) == 3 and s.isdigit():
+                        return s
+                    return s
                 
                 # Add initial cases - use provided cases or default to Harris County
                 initial_infected = []
                 if initial_cases:
                     for case in initial_cases:
                         initial_infected.append({
-                            'county': case['fips_id'],
+                            'county': geoid_to_county_code(case['fips_id']),
                             'infected': case['cases'],
                             'age_group': case['age_group_id']
                         })
+                '''
                 else:
                     # Provide default initial case if none specified
                     initial_infected.append({
@@ -2033,6 +2046,7 @@ def toggle_simulation(n_clicks, sim_state, disease_params, initial_cases, npi_da
                         'infected': 100,
                         'age_group': '0'  # 0-4 years age group
                     })
+                '''
                 payload['initial_infected'] = json.dumps(initial_infected)
                 
                 # Add interventions if any
