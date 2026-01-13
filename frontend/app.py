@@ -466,6 +466,8 @@ app.layout = html.Div([
     dcc.Store(id='npi-data', data=[]),
     dcc.Store(id='antiviral-data', data={}),
     dcc.Store(id='vaccine-data', data={}),
+    dcc.Store(id='antivirals-enabled', data=False),
+    dcc.Store(id='vaccines-enabled', data=False),
     dcc.Store(id='displayed-tab', data='scenario'),
     dcc.Interval(id='simulation-interval', interval=1000, disabled=True),
     
@@ -1917,7 +1919,29 @@ def refresh_displayed_parameters(displayed_tab, disease_params, initial_cases, n
 
 # Antiviral callback
 @callback(
+    [Output('antiviral-effectiveness', 'value'),
+     Output('antiviral-wastage', 'value'),
+     Output('antiviral-stockpile-day', 'value'),
+     Output('antiviral-stockpile-amount', 'value')],
+    Input('antivirals-modal', 'is_open'),
+    State('antiviral-data', 'data'),
+    prevent_initial_call=True
+)
+def prefill_antivirals_modal(is_open, antiviral_data):
+    if not is_open:
+        return [dash.no_update] * 4
+    if antiviral_data:
+        return (
+            antiviral_data.get('effectiveness', 0.15),
+            antiviral_data.get('wastage_factor', 60),
+            antiviral_data.get('stockpile_day', 50),
+            antiviral_data.get('stockpile_amount', 10000),
+        )
+    return (0.15, 60, 50, 10000)
+
+@callback(
     [Output('antiviral-data', 'data'),
+     Output('antivirals-enabled', 'data'),
      Output('displayed-parameters-content', 'children', allow_duplicate=True)],
     Input('antivirals-save', 'n_clicks'),
     [State('antiviral-effectiveness', 'value'),
@@ -1932,28 +1956,53 @@ def refresh_displayed_parameters(displayed_tab, disease_params, initial_cases, n
     prevent_initial_call=True
 )
 def save_antivirals(n_clicks, effectiveness, wastage, stockpile_day, stockpile_amount,
-                   displayed_tab, disease_params, initial_cases, npi_data, vaccine_data):
-    if n_clicks:
-        antiviral_data = {
-            'effectiveness': effectiveness or 0.15,
-            'wastage_factor': wastage or 60,
-            'stockpile_day': stockpile_day or 50,
-            'stockpile_amount': stockpile_amount or 10000
-        }
-        
-        # Update displayed content if on interventions tab
-        if displayed_tab == 'interventions':
-            content = create_interventions_display(npi_data, antiviral_data, vaccine_data)
-        else:
-            content = create_scenario_display(disease_params, initial_cases)
-        
-        return antiviral_data, content
-    
-    return dash.no_update, dash.no_update
+                    displayed_tab, disease_params, initial_cases, npi_data, vaccine_data):
+    if not n_clicks:
+        return dash.no_update, dash.no_update, dash.no_update
+
+    antiviral_data = {
+        'effectiveness': 0.15 if effectiveness is None else effectiveness,
+        'wastage_factor': 60 if wastage is None else wastage,
+        'stockpile_day': 50 if stockpile_day is None else stockpile_day,
+        'stockpile_amount': 10000 if stockpile_amount is None else stockpile_amount
+    }
+
+    if displayed_tab == 'interventions':
+        content = create_interventions_display(npi_data or [], antiviral_data, vaccine_data or {})
+    else:
+        content = create_scenario_display(disease_params or {}, initial_cases or [])
+
+    return antiviral_data, True, content
 
 # Vaccination callback
 @callback(
+    [Output('vaccine-effectiveness', 'value'),
+     Output('vaccine-adherence', 'value'),
+     Output('vaccine-wastage', 'value'),
+     Output('vaccine-strategy', 'value'),
+     Output('vaccine-stockpile-day', 'value'),
+     Output('vaccine-stockpile-amount', 'value')],
+    Input('vaccines-modal', 'is_open'),
+    State('vaccine-data', 'data'),
+    prevent_initial_call=True
+)
+def prefill_vaccines_modal(is_open, vaccine_data):
+    if not is_open:
+        return [dash.no_update] * 6
+    if vaccine_data:
+        return (
+            vaccine_data.get('effectiveness', 0.50),
+            vaccine_data.get('adherence', 0.50),
+            vaccine_data.get('wastage_factor', 60),
+            vaccine_data.get('strategy', 'pro_rata'),
+            vaccine_data.get('stockpile_day', 50),
+            vaccine_data.get('stockpile_amount', 10000),
+        )
+    return (0.50, 0.50, 60, 'pro_rata', 50, 10000)
+
+@callback(
     [Output('vaccine-data', 'data'),
+     Output('vaccines-enabled', 'data'),
      Output('displayed-parameters-content', 'children', allow_duplicate=True)],
     Input('vaccines-save', 'n_clicks'),
     [State('vaccine-effectiveness', 'value'),
@@ -1971,25 +2020,24 @@ def save_antivirals(n_clicks, effectiveness, wastage, stockpile_day, stockpile_a
 )
 def save_vaccines(n_clicks, effectiveness, adherence, wastage, strategy, stockpile_day, stockpile_amount,
                  displayed_tab, disease_params, initial_cases, npi_data, antiviral_data):
-    if n_clicks:
-        vaccine_data = {
-            'effectiveness': effectiveness or 0.50,
-            'adherence': adherence or 0.50,
-            'wastage_factor': wastage or 60,
-            'strategy': strategy or 'pro_rata',
-            'stockpile_day': stockpile_day or 50,
-            'stockpile_amount': stockpile_amount or 10000
-        }
-        
-        # Update displayed content if on interventions tab
-        if displayed_tab == 'interventions':
-            content = create_interventions_display(npi_data, antiviral_data, vaccine_data)
-        else:
-            content = create_scenario_display(disease_params, initial_cases)
-        
-        return vaccine_data, content
-    
-    return dash.no_update, dash.no_update
+    if not n_clicks:
+        return dash.no_update, dash.no_update, dash.no_update
+
+    vaccine_data = {
+        'effectiveness': 0.50 if effectiveness is None else effectiveness,
+        'adherence': 0.50 if adherence is None else adherence,
+        'wastage_factor': 60 if wastage is None else wastage,
+        'strategy': 'pro_rata' if strategy is None else strategy,
+        'stockpile_day': 50 if stockpile_day is None else stockpile_day,
+        'stockpile_amount': 10000 if stockpile_amount is None else stockpile_amount
+    }
+
+    if displayed_tab == 'interventions':
+        content = create_interventions_display(npi_data or [], antiviral_data or {}, vaccine_data)
+    else:
+        content = create_scenario_display(disease_params or {}, initial_cases or [])
+
+    return vaccine_data, True, content
 
 def create_interventions_display(npi_data, antiviral_data, vaccine_data):
     """Create interventions tab display content"""
@@ -2056,11 +2104,14 @@ def create_interventions_display(npi_data, antiviral_data, vaccine_data):
      State('npi-data', 'data'),
      State('antiviral-data', 'data'),
      State('vaccine-data', 'data'),
+     State('antivirals-enabled', 'data'),
+     State('vaccines-enabled', 'data'),
      State('selected-model-store', 'data'),      # NEW: Get selected model
      State('selected-state-store', 'data')],     # NEW: Get selected state
     prevent_initial_call=True
 )
-def toggle_simulation(n_clicks, sim_state, disease_params, initial_cases, npi_data, antiviral_data, vaccine_data, selected_model, selected_state):
+def toggle_simulation(n_clicks, sim_state, disease_params, initial_cases, npi_data, antiviral_data, vaccine_data,
+                      antivirals_enabled, vaccines_enabled, selected_model, selected_state):
     if n_clicks and disease_params:
         is_running = sim_state.get('isRunning', False)
         
@@ -2088,18 +2139,38 @@ def toggle_simulation(n_clicks, sim_state, disease_params, initial_cases, npi_da
                 }
                 
                 # Add default empty values for required fields
+                # baseline defaults
                 payload.update({
-                    'initial_infected': '[]',
                     'npis': '[]',
                     'antiviral_stockpile': 'null',
-                    'antiviral_effectiveness': 0.8,
-                    'antiviral_wastage_factor': 0.1,
+                    'antiviral_effectiveness': None,
+                    'antiviral_wastage_factor': None,
                     'vaccine_stockpile': 'null',
-                    'vaccine_effectiveness': 'null',
-                    'vaccine_adherence': 'null',
-                    'vaccine_wastage_factor': 0.1,
-                    'vaccine_pro_rata': 1
+                    'vaccine_effectiveness': None,
+                    'vaccine_adherence': None,
+                    'vaccine_wastage_factor': None,
+                    'vaccine_pro_rata': None,
                 })
+
+                # NPIs already handled (npis stays [] unless user added NPIs)
+
+                # Antivirals only if enabled
+                if antivirals_enabled and antiviral_data:
+                    payload.update({
+                        'antiviral_effectiveness': antiviral_data['effectiveness'],
+                        'antiviral_stockpile': antiviral_data['stockpile_amount'],
+                        'antiviral_wastage_factor': antiviral_data['wastage_factor'] / 365.0
+                    })
+
+                # Vaccines only if enabled
+                if vaccines_enabled and vaccine_data:
+                    payload.update({
+                        'vaccine_effectiveness': vaccine_data['effectiveness'],
+                        'vaccine_adherence': vaccine_data['adherence'],
+                        'vaccine_stockpile': vaccine_data['stockpile_amount'],
+                        'vaccine_wastage_factor': vaccine_data['wastage_factor'] / 365.0,
+                        'vaccine_pro_rata': vaccine_data['strategy'],
+                    })
 
                 def geoid_to_county_code(geoid: str) -> str:
                     """
