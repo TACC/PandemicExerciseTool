@@ -1,11 +1,17 @@
 {
   "disease_name": "Fast Transmission, High Severity (1918 Influenza)",
-  "R0": 1.8,
-  "beta_scale": 10.0,
-  "tau": 1.2,
-  "kappa": 1.9,
-  "gamma": 4.1,
-  "chi": 1.0,
-  "rho": 0.39,
-  "nu": "0.002013710,0.000766899,0.001312944,0.000481093,0.000127993"
+  "disease_model": {
+    "identity": "seatird-stochastic",
+    "parameters": {
+      "compartments": ["S", "E", "A", "T", "I", "R", "D"],
+      "R0": "1.8",
+      "beta_scale": "14",
+      "tau": "7",
+      "kappa": "2",
+      "gamma": "14.0281",
+      "chi": "3",
+      "nu": "0.002013710,0.000766899,0.001312944,0.000481093,0.000127993",
+      "sigma": "1,1,1,1,1"
+    }
+  }
 }
