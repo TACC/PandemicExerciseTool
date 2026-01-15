@@ -187,6 +187,34 @@ def on_parent_exit(signame):
         result = cdll['libc.so.6'].prctl(1, signum)
     return set_parent_exit_signal
 
+def try_load_json_when_ready(path, max_wait=5.0, poll=0.05):
+    """
+    Wait until dir is non-empty and contains valid JSON, up to max_wait seconds.
+    This was an issue with the time.sleep being insufficient for TX
+    """
+    start = time.time()
+    last_size = -1
+
+    while time.time() - start < max_wait:
+        if not os.path.exists(path):
+            time.sleep(poll)
+            continue
+
+        size = os.path.getsize(path)
+        if size == 0 or size != last_size:
+            # size changing or empty -> still being written
+            last_size = size
+            time.sleep(poll)
+            continue
+
+        # size stable and non-zero: try parsing
+        try:
+            with open(path, "r") as f:
+                return json.load(f)
+        except json.JSONDecodeError:
+            time.sleep(poll)
+
+    raise RuntimeError(f"Timed out waiting for valid JSON: {path}")
 
 @app.task
 def run_pes(input):
@@ -222,24 +250,25 @@ def run_pes(input):
     max_wait_time = 300  # Maximum wait time in seconds (5 minutes)
     start_time = time.time()
     processed_files = 0
-    
+
     while time.time() - start_time < max_wait_time:
-        files = glob.glob("/PES/OUTPUT/output_sim*/output_*.json")
+        # Sorting seems necessary to prevent the variable backend output and frontend read in times
+        files = sorted(glob.glob("/PES/OUTPUT/output_sim*/output_*.json"))
         time.sleep(0.01)
         # IF NEW FILE, ADD IT TO MONGO
         if len(files) > 0:
             print(f"Processing file: {files[0]}")
             time.sleep(0.01)
             try:
-                with open(files[0], 'r') as f:
-                    mydict = json.load(f)
-                    mycol.insert_one(mydict)
-                    processed_files += 1
-                    print(f"Processed day {mydict.get('day', 'unknown')}")
-                    os.remove(files[0])
+                mydict = try_load_json_when_ready(files[0], max_wait=5.0, poll=0.05)
+                mycol.insert_one(mydict)
+                processed_files += 1
+                print(f"Processed day {mydict.get('day', 'unknown')}")
+                os.remove(files[0])
             except Exception as e:
                 print(f"Error processing file {files[0]}: {e}")
-                os.remove(files[0])  # Remove problematic file
+                # IMPORTANT: do NOT delete the file here; let it be retried
+                time.sleep(0.1)
         
         # Check if simulation is complete (usually runs for 30-90 days)
         if processed_files >= 90:  # Assume simulation is complete after 90 days
