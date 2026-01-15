@@ -14,6 +14,8 @@ class PET(models.Model):
     nu = models.TextField()
     #sigma = models.TextField()
 
+    state=models.TextField()
+
     initial_infected = models.TextField(null=True)
     npis = models.TextField(null=True)
 

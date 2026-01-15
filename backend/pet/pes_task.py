@@ -196,8 +196,9 @@ def run_pes(input):
     mycol.delete_many({})
 
     # Remove leftover output files
-    for f in glob.glob("/PES/OUTPUT*"):
-        os.remove(f)
+    for f in glob.glob("/PES/OUTPUT/*"):
+        if f.endswith('.json'):
+            os.remove(f)
 
     os.chdir('/PES')
 
@@ -224,11 +225,11 @@ def run_pes(input):
     
     while time.time() - start_time < max_wait_time:
         files = glob.glob("/PES/OUTPUT/output_sim*/output_*.json")
-        time.sleep(0.5)
+        time.sleep(0.01)
         # IF NEW FILE, ADD IT TO MONGO
         if len(files) > 0:
             print(f"Processing file: {files[0]}")
-            time.sleep(1)
+            time.sleep(0.01)
             try:
                 with open(files[0], 'r') as f:
                     mydict = json.load(f)

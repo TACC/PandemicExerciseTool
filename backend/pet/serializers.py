@@ -15,6 +15,7 @@ class PETSerializer(serializers.ModelSerializer):
                   'chi', 
                   'rho', 
                   'nu',
+                  'state',
                   'initial_infected',
                   'npis',
                   'antiviral_effectiveness', 
