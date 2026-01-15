@@ -490,7 +490,8 @@ app.layout = html.Div([
                         'color': 'white',
                         'fontSize': '24px',
                         'fontWeight': 'bold',
-                        'marginLeft': '10px'
+                        'marginLeft': '10px',
+                        'marginRight': '20px'
                     })
                 ], style={'display': 'flex', 'alignItems': 'center'}),
                 
@@ -730,7 +731,7 @@ def create_home_layout():
                         ],
                         value='percent',
                         inline=True,
-                        style={'marginBottom': '15px'}
+                        style={'marginBottom': '15px', 'paddingLeft': '10px'}
                     )
                 ], className='top-middle-panel'),
                 
@@ -760,9 +761,19 @@ def create_home_layout():
                 ], className='right-panel')
             ], className='col-lg-3'),
             
-            # Footer - Play/Pause and Timeline
+            # Footer - Reset and Play/Pause and Timeline
             html.Div([
                 html.Div([
+                    # Reset Button
+                    html.A(html.Button(
+                        'Reset',
+                        id='reset-btn',
+                        disabled=False,
+                        className='reset-button',
+                        style={'marginRight': '20px'},
+                        n_clicks=0
+                    ), href='/'),
+
                     # Play/Pause Button
                     html.Button(
                         'Play',
@@ -2089,6 +2100,21 @@ def create_interventions_display(npi_data, antiviral_data, vaccine_data):
     
     return html.Div(content)
 
+
+# Reset callback - connects to Django backend
+@callback(
+    Input('reset-btn', 'n_clicks'),
+    prevent_initial_call=True
+)
+def reset_simulation(n_clicks):
+    if n_clicks:
+        logger.info("Resetting simulation...")
+        response = requests.get(f'{API_BASE_URL}/api/reset')
+        logger.info(f"Reset response status: {response.status_code}")
+        if response.status_code == 200:
+            logger.info("Simulation reset successfully on backend.")
+    return dash.no_update
+
 # Play/Pause simulation callback - connects to Django backend
 @callback(
     [Output('simulation-state', 'data'),
@@ -2135,7 +2161,7 @@ def toggle_simulation(n_clicks, sim_state, disease_params, initial_cases, npi_da
                     'sigma': ','.join(map(str, disease_params.get('sigma', [1,1,1,1,1]))),
                     # NEW: Include model and state selection in payload
                     'model_type': selected_model or 'SEIR-DET',
-                    'state': selected_state or 'TX',
+                    'state': US_JURISDICTION_LABELS[selected_state] or 'Texas',
                 }
                 
                 # Add default empty values for required fields
