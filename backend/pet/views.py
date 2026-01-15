@@ -15,7 +15,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-myclient = pymongo.MongoClient("mongodb://mongo-db-dash:27017/")
+myclient = pymongo.MongoClient("mongodb://mongo-db:27017/")
 mydb = myclient["PES"]
 mycol = mydb["days"]
 

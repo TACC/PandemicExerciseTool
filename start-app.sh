@@ -1,7 +1,7 @@
 #!/bin/bash
 
-echo "Starting Pandemic Exercise Tool with Dash Frontend"
-echo "=================================================="
+echo "Starting Pandemic Exercise Tool"
+echo "==============================="
 
 # Check if Docker is available
 if ! command -v docker &> /dev/null; then
@@ -9,14 +9,14 @@ if ! command -v docker &> /dev/null; then
     exit 1
 fi
 
-if ! command -v docker-compose &> /dev/null; then
+if ! command -v docker compose &> /dev/null; then
     echo "Error: Docker Compose is not installed or not in PATH"
     exit 1
 fi
 
 # Build and start services
 echo "Building and starting services..."
-docker-compose -f docker-compose-dash.yml up --build -d
+docker-compose -f docker-compose.yml up --build -d
 
 echo ""
 echo "Services starting up..."
@@ -31,7 +31,7 @@ echo "Waiting for services to be ready..."
 sleep 10
 
 # Check if services are running
-if docker-compose -f docker-compose-dash.yml ps | grep -q "Up"; then
+if docker-compose -f docker-compose.yml ps | grep -q "Up"; then
     echo "✓ Services are running successfully!"
     echo ""
     echo "🎉 Pandemic Exercise Tool is ready!"
@@ -39,8 +39,8 @@ if docker-compose -f docker-compose-dash.yml ps | grep -q "Up"; then
     echo "   Backend API: http://localhost:8000"
     echo ""
     echo "To stop the services, run:"
-    echo "   docker-compose -f docker-compose-dash.yml down"
+    echo "   docker-compose -f docker-compose.yml down"
 else
     echo "✗ Some services failed to start. Check logs with:"
-    echo "   docker-compose -f docker-compose-dash.yml logs"
+    echo "   docker-compose -f docker-compose.yml logs"
 fi
