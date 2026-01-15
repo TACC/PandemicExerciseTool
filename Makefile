@@ -16,6 +16,11 @@ start: ## start
 stop: ## stop
 	docker compose -f docker-compose.yml down
 
+.PHONY: reset-dev
+reset-dev: ## reset dev containers
+	docker compose -f docker-compose-dev.yml down -v
+	docker compose -f docker-compose-dev.yml up -d --build
+
 .PHONY: start-dev
 start-dev: ## start dev environment where frontend components are mounted in container
 	docker compose -f docker-compose-dev.yml up -d --build

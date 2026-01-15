@@ -11,12 +11,12 @@ from ctypes import cdll
 from .texasMapping import texas_mapping
 
 # Get broker URL from environment variable or use default
-broker_url = os.environ.get('CELERY_BROKER_URL', 'redis://redis:6379/0')
-result_backend = os.environ.get('CELERY_RESULT_BACKEND', 'redis://redis:6379/0')
+broker_url = os.environ.get('CELERY_BROKER_URL', 'redis://redis-db:6379/0')
+result_backend = os.environ.get('CELERY_RESULT_BACKEND', 'redis://redis-db:6379/0')
 
 app = Celery('pes', broker=broker_url, backend=result_backend)
 
-myclient = pymongo.MongoClient("mongodb://mongo-db-dash:27017/")
+myclient = pymongo.MongoClient("mongodb://mongo-db:27017/")
 mydb = myclient["PES"]
 mycol = mydb["days"]
 #mycol.drop()
