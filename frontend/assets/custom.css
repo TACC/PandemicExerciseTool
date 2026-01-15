@@ -270,6 +270,31 @@ table th {
     background-color: #218838 !important;
 }
 
+/* Reset button specific styles */
+.reset-button {
+    padding: 10px 30px !important;
+    font-size: 16px !important;
+    background-color: #a72a28 !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+    margin-right: 20px !important;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.reset-button:disabled {
+    opacity: 0.6 !important;
+    cursor: not-allowed !important;
+    background-color: #6c757d !important;
+}
+
+.reset-button:hover:not(:disabled) {
+    background-color: #8f2523 !important;
+}
+
 /* Footer controls */
 .footer-controls {
     display: flex;

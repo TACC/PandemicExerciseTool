@@ -21,7 +21,6 @@ mydb = myclient["PES"]
 mycol = mydb["days"]
 #mycol.drop()
 
-
 def return_valid_input(input):
     """
     Take the json response from the get request and put it in the 
@@ -90,42 +89,90 @@ def return_valid_input(input):
         vs = None
     
     input_file = {
-      'output': 'OUTPUT.json',
-      'number_of_realizations': '1',
+      "output_dir_path": "OUTPUT",
+      "number_of_realizations": "1",
+      "batch_num": "0",
       'data': {
-        'population': '/PES/data/texas/county_age_matrix_small.csv',
-        'contact': '/PES/data/texas/contact_matrix.csv',
-        'flow': '/PES/data/texas/work_matrix_rel.csv',
-        'high_risk_ratios': '/PES/data/texas/high_risk_ratios.csv',
-        'flow_reduction': '/PES/data/texas/flow_reduction.csv',
-        'relative_susceptibility': '/PES/data/texas/relative_susceptibility.csv',
-        'nu_value_matrix': '/PES/data/texas/nu_value_matrix.csv'
+        "population": "/PES/data/STATE/county_pop_by_age_STATE_2019-2023ACS.csv",
+        "contact": "/PES/data/STATE/contact_matrix_STATE_Mistry2021_all.csv",
+        "flow": "/PES/data/STATE/STATE_Q4-2019_mobility-matrix.csv",
+        "high_risk_ratios": "/PES/data/STATE/state_STATE_high-risk-ratios-flu-only.csv"
+  
       },
-      'parameters': {
-        'R0': input['R0'],
-        'beta_scale': input['beta_scale'],
-        'tau': input['tau'],
-        'kappa': input['kappa'],
-        'gamma': input['gamma'],
-        'chi': input['chi'],
-        'rho': input['rho'],
-        'nu': input['nu'].split(',') if isinstance(input['nu'], str) else input['nu']
-      },
-      'initial_infected': json.loads(input.get('initial_infected', '[]')),
-      'non_pharma_interventions': npis,
-      'antivirals': {
-        'antiviral_effectiveness': input['antiviral_effectiveness'],
-        'antiviral_wastage_factor': input['antiviral_wastage_factor'],
-        'antiviral_stockpile': avs
-      },
-      'vaccines': {
-        'vaccine_wastage_factor': input['vaccine_wastage_factor'],
-        'vaccine_pro_rata': input['vaccine_pro_rata'],
-        'vaccine_adherence': va,
-        'vaccine_effectiveness': ve,
-        'vaccine_stockpile': vs 
-      }
+      "disease_model": {
+        "identity": "seatird-stochastic",
+        "parameters": {
+        "compartments": ["S", "E", "A", "T", "I", "R", "D"],
+        "R0": "3",
+        "beta_scale": "14",
+        "tau": "7",
+        "kappa": "2",
+        "gamma": "14.0281",
+        "chi": "3",
+        "nu": [
+            "0.002", 
+            "0.002", 
+            "0.002", 
+            "0.002", 
+            "0.002"
+        ],
+        "sigma": [
+            "1",
+            "1",
+            "1",
+            "1",
+            "1"
+        ]
+        }
+    },
+    "travel_model": {
+        "identity": "binomial",
+        "parameters":{
+        "rho": "1",
+        "flow_reduction": [
+            "1.0",
+            "1.0",
+            "1.0",
+            "1.0",
+            "1.0"
+        ],
+        "traveling_compartments": {
+            "A": "1.0"
+        },
+        "transmitting_compartments": {
+            "A": "1.0", 
+            "T": "1.0", 
+            "I": "1.0"
+        }
+        }
+    },
+    "initial_infected": json.loads(input.get("initial_infected", "[]")),
+    "non_pharma_interventions": [],
+    "antiviral_model": {},
+    "vaccine_model": {}
     }
+
+    state = input.get("state", "Texas")
+
+    # replace STATE placeholders in paths
+    input_file["output_dir_path"] = input_file["output_dir_path"].replace("STATE", state)
+    for k, v in input_file["data"].items():
+        input_file["data"][k] = v.replace("STATE", state)
+
+    # map FLAT payload -> nested disease_model.parameters
+    p = input_file["disease_model"]["parameters"]
+    for key in ["R0", "beta_scale", "tau", "kappa", "gamma", "chi"]:
+        if key in input and input[key] is not None:
+            p[key] = str(input[key])
+
+    # nu (allow list or comma string)
+    if "nu" in input and input["nu"] is not None:
+        nu = input["nu"]
+        p["nu"] = [str(x) for x in (nu.split(",") if isinstance(nu, str) else nu)]
+
+    # rho into travel model
+    if "rho" in input and input["rho"] is not None:
+        input_file["travel_model"]["parameters"]["rho"] = str(input["rho"])
 
     return input_file
 
@@ -149,8 +196,9 @@ def run_pes(input):
     mycol.delete_many({})
 
     # Remove leftover output files
-    for f in glob.glob("/PES/OUTPUT*"):
-        os.remove(f)
+    for f in glob.glob("/PES/OUTPUT/*"):
+        if f.endswith('.json'):
+            os.remove(f)
 
     os.chdir('/PES')
 
@@ -176,12 +224,12 @@ def run_pes(input):
     processed_files = 0
     
     while time.time() - start_time < max_wait_time:
-        files = glob.glob("/PES/OUTPUT*")
-        time.sleep(0.5)
+        files = glob.glob("/PES/OUTPUT/output_sim*/output_*.json")
+        time.sleep(0.01)
         # IF NEW FILE, ADD IT TO MONGO
         if len(files) > 0:
             print(f"Processing file: {files[0]}")
-            time.sleep(1)
+            time.sleep(0.01)
             try:
                 with open(files[0], 'r') as f:
                     mydict = json.load(f)
