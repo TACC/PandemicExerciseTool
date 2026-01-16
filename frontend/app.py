@@ -636,10 +636,13 @@ def create_model_state_selection_panel():
 
 
 # Home page layout - Updated with Model and State Selection
+# Home page layout - Updated with Model and State Selection
+# Home page layout - Updated with Model and State Selection
 def create_home_layout():
     return html.Div([
+        # Main content row with fixed height
         html.Div([
-            # Left Panel - NEW: Model/State Selection + SetScenario, Interventions, DisplayedParameters
+            # Left Panel - WITH SCROLLBAR
             html.Div([
                 html.Div([
                     # NEW: Model and State Selection Panel (Features 1 & 2)
@@ -715,8 +718,16 @@ def create_home_layout():
                             html.P('No scenario set yet.', style={'color': '#6c757d', 'fontStyle': 'italic'})
                         ])
                     ], className='displayed-parameters-panel')
-                ], className='left-panel')
-            ], className='col-lg-2'),
+                ], className='left-panel', style={
+                    'height': '100%',
+                    'overflowY': 'auto',
+                    'overflowX': 'hidden',
+                    'paddingRight': '10px',
+                })
+            ], className='col-lg-2', style={
+                'height': 'calc(100vh - 180px)',
+                'overflowY': 'auto',
+            }),
             
             # Middle Panel - Map and Chart
             html.Div([
@@ -760,43 +771,79 @@ def create_home_layout():
                     html.Div(id='spread-table')
                 ], className='right-panel')
             ], className='col-lg-3'),
-            
-            # Footer - Reset and Play/Pause and Timeline
+        ], className='row', style={
+            'height': 'calc(100vh - 180px)',
+            'overflow': 'hidden',
+        }),
+        
+        # Footer - OUTSIDE the row, always visible at bottom
+        html.Div([
             html.Div([
-                html.Div([
-                    # Reset Button
-                    html.A(html.Button(
-                        'Reset',
-                        id='reset-btn',
-                        disabled=False,
-                        className='reset-button',
-                        style={'marginRight': '20px'},
-                        n_clicks=0
-                    ), href='/'),
+                # Reset Button
+                html.A(html.Button(
+                    'Reset',
+                    id='reset-btn',
+                    disabled=False,
+                    className='reset-button',
+                    style={
+                        'marginRight': '20px',
+                        'padding': '10px 30px',
+                        'fontSize': '16px',
+                        'backgroundColor': '#dc3545',
+                        'color': 'white',
+                        'border': 'none',
+                        'borderRadius': '4px',
+                        'cursor': 'pointer',
+                    },
+                    n_clicks=0
+                ), href='/'),
 
-                    # Play/Pause Button
-                    html.Button(
-                        'Play',
-                        id='play-pause-btn',
-                        disabled=True,
-                        className='play-pause-button'
-                    ),
-                    
-                    # Timeline Slider
-                    html.Div([
-                        dcc.Slider(
-                            id='timeline-slider',
-                            min=0,
-                            max=30,
-                            value=0,
-                            marks={i: str(i) for i in range(0, 31, 5)},
-                            tooltip={'placement': 'bottom', 'always_visible': True},
-                            disabled=True
-                        )
-                    ], style={'width': '70%', 'display': 'inline-block'})
-                ], className='footer-controls')
-            ], style={'marginTop': '20px'})
-        ], className='row')
+                # Play/Pause Button
+                html.Button(
+                    'Play',
+                    id='play-pause-btn',
+                    disabled=True,
+                    className='play-pause-button',
+                    style={
+                        'padding': '10px 30px',
+                        'fontSize': '16px',
+                        'backgroundColor': '#28a745',
+                        'color': 'white',
+                        'border': 'none',
+                        'borderRadius': '4px',
+                        'cursor': 'pointer',
+                        'marginRight': '20px',
+                    }
+                ),
+                
+                # Timeline Slider
+                html.Div([
+                    dcc.Slider(
+                        id='timeline-slider',
+                        min=0,
+                        max=30,
+                        value=0,
+                        marks={i: str(i) for i in range(0, 31, 5)},
+                        tooltip={'placement': 'bottom', 'always_visible': True},
+                        disabled=True
+                    )
+                ], style={'width': '60%', 'display': 'inline-block', 'verticalAlign': 'middle'})
+            ], style={
+                'display': 'flex',
+                'alignItems': 'center',
+                'justifyContent': 'flex-start',
+                'padding': '15px 20px',
+            })
+        ], style={
+            'position': 'fixed',
+            'bottom': '0',
+            'left': '0',
+            'right': '0',
+            'backgroundColor': 'white',
+            'borderTop': '1px solid #dee2e6',
+            'zIndex': '999',
+            'height': '70px',
+        })
     ])
 
 # User Guide layout
