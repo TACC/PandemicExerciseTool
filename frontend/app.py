@@ -74,20 +74,6 @@ MODEL_OPTIONS = [
 # NEW: STATE OPTIONS
 # US States for simulation selection
 # ============================================================================
-# Label lookup for standard US state jurisdictions
-US_JURISDICTION_LABELS = {
-    "AL": "Alabama",  "AK": "Alaska", "AZ": "Arizona", "AR": "Arkansas", "CA": "California",
-    "CO": "Colorado", "CT": "Connecticut", "DE": "Delaware", "DC": "District of Columbia",
-    "FL": "Florida", "GA": "Georgia", "HI": "Hawaii", "ID": "Idaho", "IL": "Illinois", "IN": "Indiana",
-    "IA": "Iowa", "KS": "Kansas", "KY": "Kentucky", "LA": "Louisiana", "ME": "Maine", "MD": "Maryland",
-    "MA": "Massachusetts", "MI": "Michigan", "MN": "Minnesota", "MS": "Mississippi", "MO": "Missouri",
-    "MT": "Montana", "NE": "Nebraska", "NV": "Nevada", "NH": "New Hampshire", "NJ": "New Jersey",
-    "NM": "New Mexico", "NY": "New York", "NC": "North Carolina", "ND": "North Dakota", "OH": "Ohio",
-    "OK": "Oklahoma", "OR": "Oregon", "PA": "Pennsylvania", "RI": "Rhode Island", "SC": "South Carolina",
-    "SD": "South Dakota", "TN": "Tennessee", "TX": "Texas", "UT": "Utah", "VT": "Vermont",
-    "VA": "Virginia", "WA": "Washington", "WV": "West Virginia", "WI": "Wisconsin", "WY": "Wyoming",
-}
-
 def _prefix_before_underscore(filename: str) -> str:
     stem = os.path.splitext(os.path.basename(filename))[0]
     return stem.split("_", 1)[0]
@@ -114,7 +100,7 @@ def build_jurisdiction_options(
 
     boundary_prefixes = {
         prefix(f) for f in os.listdir(boundaries_dir)
-        if f.endswith((".geojson", ".json"))
+        if f.endswith(".geojson")
     }
 
     prefixes = (
@@ -125,7 +111,7 @@ def build_jurisdiction_options(
 
     options = []
     for value in sorted(prefixes):
-        label = US_JURISDICTION_LABELS.get(value, value.replace("-", " "))
+        label = value.replace("-", " ") # US_JURISDICTION_LABELS.get(value,
         options.append({"label": label, "value": value})
 
     return options
@@ -143,7 +129,7 @@ def load_location_assets(location_value: str):
 
     Required:
       - assets/county_fips_to_names/{value}_*.json
-      - assets/map_boundaries/{value}_*.geojson (or .json)
+      - assets/map_boundaries/{value}_*.geojson
 
     Returns:
       names   : list[str]   (derived from mapping keys, excluding "All")
@@ -245,6 +231,8 @@ def create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojso
         # Older versions of code allowed 3 char fips of county only
         if len(fips) == 3:
             full_fips = f"48{fips}"
+        elif len(fips) == 4: # Leading 0s of states are getting lost
+            full_fips = fips.zfill(5)
         else:
             full_fips = fips
         
@@ -263,7 +251,7 @@ def create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojso
         
         # Debug logging for first few counties
         if len(county_values) <= 3:
-            logger.info(f"County {full_fips}: infected={county.get('infected', 0)}, percent={county.get('infectedPercent', 0)}")
+            logger.info(f"County {full_fips}: Symptomatic Infectious={county.get('infected', 0)}, percent={county.get('infectedPercent', 0)}")
     
     logger.info(f"Mapped {len(county_values)} counties to FIPS codes")
     
@@ -332,7 +320,7 @@ def create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojso
                         mode='lines',
                         name=county_name,
                         showlegend=False,
-                        text=f'{county_name} County<br>Infected: {infected:,}<br>Deceased: {deceased:,}<br>Infected %: {infected_pct:.1f}%<br>Deceased %: {deceased_pct:.1f}%',
+                        text=f'{county_name} County<br>Symptomatic Infectious: {infected:,}<br>Deceased: {deceased:,}<br>Symptomatic Infectious %: {infected_pct:.1f}%<br>Deceased %: {deceased_pct:.1f}%',
                         hoverinfo='text'
                     ))
         else:
@@ -350,7 +338,7 @@ def create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojso
                     mode='lines',
                     name=county_name,
                     showlegend=False,
-                    text=f'{county_name} County<br>Infected: {infected:,}<br>Deceased: {deceased:,}<br>Infected %: {infected_pct:.1f}%<br>Deceased %: {deceased_pct:.1f}%',
+                    text=f'{county_name} County<br>Symptomatic Infectious: {infected:,}<br>Deceased: {deceased:,}<br>Symptomatic Infectious %: {infected_pct:.1f}%<br>Deceased %: {deceased_pct:.1f}%',
                     hoverinfo='text'
                 ))
     
@@ -473,7 +461,7 @@ app.layout = html.Div([
     
     # NEW: Stores for Model and State Selection
     dcc.Store(id='selected-model-store', data='SEIR-DET'),
-    dcc.Store(id='selected-state-store', data='TX'),
+    dcc.Store(id='selected-state-store', data='Texas'),
     dcc.Store(id='location-assets-store', data={}),
     
     # Header - Exact match to React Header component
@@ -567,7 +555,7 @@ def create_model_state_selection_panel():
             dcc.Dropdown(
                 id='model-selector-dropdown',
                 options=[{"label": m["label"], "value": m["value"]} for m in MODEL_OPTIONS],
-                value='SEIR-DET',
+                value='SEATIRD-STOCH',
                 clearable=False,
                 placeholder="Select a disease model...",
                 style={'marginBottom': '8px'}
@@ -597,7 +585,7 @@ def create_model_state_selection_panel():
             dcc.Dropdown(
                 id='state-selector-dropdown',
                 options=[{"label": s["label"], "value": s["value"]} for s in STATE_OPTIONS],
-                value='TX',
+                value='Texas',
                 clearable=False,
                 searchable=True,
                 placeholder="Select a state...",
@@ -636,10 +624,13 @@ def create_model_state_selection_panel():
 
 
 # Home page layout - Updated with Model and State Selection
+# Home page layout - Updated with Model and State Selection
+# Home page layout - Updated with Model and State Selection
 def create_home_layout():
     return html.Div([
+        # Main content row with fixed height
         html.Div([
-            # Left Panel - NEW: Model/State Selection + SetScenario, Interventions, DisplayedParameters
+            # Left Panel - WITH SCROLLBAR
             html.Div([
                 html.Div([
                     # NEW: Model and State Selection Panel (Features 1 & 2)
@@ -715,8 +706,16 @@ def create_home_layout():
                             html.P('No scenario set yet.', style={'color': '#6c757d', 'fontStyle': 'italic'})
                         ])
                     ], className='displayed-parameters-panel')
-                ], className='left-panel')
-            ], className='col-lg-2'),
+                ], className='left-panel', style={
+                    'height': '100%',
+                    'overflowY': 'auto',
+                    'overflowX': 'hidden',
+                    'paddingRight': '10px',
+                })
+            ], className='col-lg-2', style={
+                'height': 'calc(100vh - 180px)',
+                'overflowY': 'auto',
+            }),
             
             # Middle Panel - Map and Chart
             html.Div([
@@ -731,6 +730,7 @@ def create_home_layout():
                         ],
                         value='percent',
                         inline=True,
+                        labelStyle={'marginRight': '20px'},
                         style={'marginBottom': '15px', 'paddingLeft': '10px'}
                     )
                 ], className='top-middle-panel'),
@@ -760,43 +760,79 @@ def create_home_layout():
                     html.Div(id='spread-table')
                 ], className='right-panel')
             ], className='col-lg-3'),
-            
-            # Footer - Reset and Play/Pause and Timeline
+        ], className='row', style={
+            'height': 'calc(100vh - 180px)',
+            'overflow': 'hidden',
+        }),
+        
+        # Footer - OUTSIDE the row, always visible at bottom
+        html.Div([
             html.Div([
-                html.Div([
-                    # Reset Button
-                    html.A(html.Button(
-                        'Reset',
-                        id='reset-btn',
-                        disabled=False,
-                        className='reset-button',
-                        style={'marginRight': '20px'},
-                        n_clicks=0
-                    ), href='/'),
+                # Reset Button
+                html.A(html.Button(
+                    'Reset',
+                    id='reset-btn',
+                    disabled=False,
+                    className='reset-button',
+                    style={
+                        'marginRight': '20px',
+                        'padding': '10px 30px',
+                        'fontSize': '16px',
+                        'backgroundColor': '#dc3545',
+                        'color': 'white',
+                        'border': 'none',
+                        'borderRadius': '4px',
+                        'cursor': 'pointer',
+                    },
+                    n_clicks=0
+                ), href='/'),
 
-                    # Play/Pause Button
-                    html.Button(
-                        'Play',
-                        id='play-pause-btn',
-                        disabled=True,
-                        className='play-pause-button'
-                    ),
-                    
-                    # Timeline Slider
-                    html.Div([
-                        dcc.Slider(
-                            id='timeline-slider',
-                            min=0,
-                            max=30,
-                            value=0,
-                            marks={i: str(i) for i in range(0, 31, 5)},
-                            tooltip={'placement': 'bottom', 'always_visible': True},
-                            disabled=True
-                        )
-                    ], style={'width': '70%', 'display': 'inline-block'})
-                ], className='footer-controls')
-            ], style={'marginTop': '20px'})
-        ], className='row')
+                # Play/Pause Button
+                html.Button(
+                    'Play',
+                    id='play-pause-btn',
+                    disabled=True,
+                    className='play-pause-button',
+                    style={
+                        'padding': '10px 30px',
+                        'fontSize': '16px',
+                        'backgroundColor': '#28a745',
+                        'color': 'white',
+                        'border': 'none',
+                        'borderRadius': '4px',
+                        'cursor': 'pointer',
+                        'marginRight': '20px',
+                    }
+                ),
+                
+                # Timeline Slider
+                html.Div([
+                    dcc.Slider(
+                        id='timeline-slider',
+                        min=0,
+                        max=30,
+                        value=0,
+                        marks={i: str(i) for i in range(0, 31, 5)},
+                        tooltip={'placement': 'bottom', 'always_visible': True},
+                        disabled=True
+                    )
+                ], style={'width': '60%', 'display': 'inline-block', 'verticalAlign': 'middle'})
+            ], style={
+                'display': 'flex',
+                'alignItems': 'center',
+                'justifyContent': 'flex-start',
+                'padding': '15px 20px',
+            })
+        ], style={
+            'position': 'fixed',
+            'bottom': '0',
+            'left': '0',
+            'right': '0',
+            'backgroundColor': 'white',
+            'borderTop': '1px solid #dee2e6',
+            'zIndex': '999',
+            'height': '70px',
+        })
     ])
 
 # User Guide layout
@@ -832,7 +868,7 @@ def create_userguide_layout():
                     html.Li([html.B('E - Exposed: '), 'Individuals who have been exposed but are not yet infectious']),
                     html.Li([html.B('A - Asymptomatic: '), 'Infectious individuals without symptoms']),
                     html.Li([html.B('T - Treatable: '), 'Symptomatic individuals who can receive treatment']),
-                    html.Li([html.B('I - Infected: '), 'Symptomatic infectious individuals']),
+                    html.Li([html.B('I - Infectious: '), 'Symptomatic infectious individuals']),
                     html.Li([html.B('R - Recovered: '), 'Individuals who have recovered and are immune']),
                     html.Li([html.B('D - Deceased: '), 'Individuals who have died from the disease'])
                 ])
@@ -1287,7 +1323,7 @@ def apply_model_state_selection(n_clicks, selected_model, selected_state):
 @callback(
     Output('location-assets-store', 'data'),
     Input('apply-model-state-btn', 'n_clicks'),
-    State('selected-state-store', 'data'),
+    State('state-selector-dropdown', 'value'),
     prevent_initial_call=True
 )
 def load_assets_for_selected_location(n_clicks, selected_state):
@@ -1297,20 +1333,11 @@ def load_assets_for_selected_location(n_clicks, selected_state):
     try:
         names, mapping, geojson = load_location_assets(selected_state)
         logger.info(f"Loaded assets for {selected_state}: {len(names)} regions")
-
-        return {
-            "names": names,
-            "mapping": mapping,
-            "geojson": geojson
-        }
+        return {"names": names, "mapping": mapping, "geojson": geojson}
 
     except Exception as e:
         logger.error(f"Failed to load assets for {selected_state}: {e}")
-        return {
-            "names": [],
-            "mapping": {},
-            "geojson": None
-        }
+        return {"names": [], "mapping": {}, "geojson": None}
 
 @callback(
     Output('initial-location', 'options'),
@@ -2160,8 +2187,8 @@ def toggle_simulation(n_clicks, sim_state, disease_params, initial_cases, npi_da
                     'nu': ','.join(map(str, disease_params.get('nu', [0,0,0,0,0]))),
                     'sigma': ','.join(map(str, disease_params.get('sigma', [1,1,1,1,1]))),
                     # NEW: Include model and state selection in payload
-                    'model_type': selected_model or 'SEIR-DET',
-                    'state': US_JURISDICTION_LABELS[selected_state] or 'Texas',
+                    'model_type': selected_model or 'SEATIRD-STOCH',
+                    'state': selected_state or 'Texas',
                 }
                 
                 # Add default empty values for required fields
@@ -2374,7 +2401,7 @@ def fetch_simulation_data(n_intervals, sim_state, event_data):
                             county_population = sum(compartment_summary.values()) if compartment_summary else 1
                             infected_percent = (infected / county_population * 100) if county_population > 0 else 0
                             deceased_percent = (deceased / county_population * 100) if county_population > 0 else 0
-                            
+
                             county_info = {
                                 'fips': fips_id,
                                 'infected': infected,
@@ -2460,9 +2487,9 @@ def update_chart(event_data, timeline_value):
     # Add traces for SEATIRD compartments
     fig.add_trace(go.Scatter(x=days, y=susceptible, name='Susceptible', line=dict(color='blue')))
     fig.add_trace(go.Scatter(x=days, y=exposed, name='Exposed', line=dict(color='orange')))
-    fig.add_trace(go.Scatter(x=days, y=asymptomatic, name='Asymptomatic', line=dict(color='yellow')))
-    fig.add_trace(go.Scatter(x=days, y=treatable, name='Treatable', line=dict(color='purple')))
-    fig.add_trace(go.Scatter(x=days, y=infected, name='Infected', line=dict(color='red', width=3)))
+    fig.add_trace(go.Scatter(x=days, y=asymptomatic, name='Asymptomatic Infectious', line=dict(color='yellow')))
+    fig.add_trace(go.Scatter(x=days, y=treatable, name='Treatable Infectious', line=dict(color='purple')))
+    fig.add_trace(go.Scatter(x=days, y=infected, name='Symptomatic Infectious', line=dict(color='red', width=3)))
     fig.add_trace(go.Scatter(x=days, y=recovered, name='Recovered', line=dict(color='green')))
     fig.add_trace(go.Scatter(x=days, y=deceased, name='Deceased', line=dict(color='black')))
     
@@ -2504,7 +2531,6 @@ def update_table(event_data, timeline_value, view_type, location_assets):
 
     location_assets = location_assets or {}
     mapping = location_assets.get("mapping", {})  # name -> geoid (string)
-    geojson = location_assets.get("geojson", None)
 
     # Invert mapping once: geoid -> name
     id_to_name = {str(geoid): name for name, geoid in mapping.items() if str(name).lower() != "all"}
@@ -2515,6 +2541,10 @@ def update_table(event_data, timeline_value, view_type, location_assets):
         geoid = str(county.get('fips', '')).strip()
         if not geoid:
             continue
+
+        # Ensure FIPS format matches GeoJSON geoid (5-digit county format)
+        if(len(geoid)==4): # Leading 0s of states are getting lost
+            geoid = geoid.zfill(5)
 
         county_name = (
                 id_to_name.get(geoid) or
@@ -2535,7 +2565,7 @@ def update_table(event_data, timeline_value, view_type, location_assets):
 
     table = dbc.Table(
         [
-            html.Thead(html.Tr([html.Th('Location'), html.Th('Infected'), html.Th('Deceased')])),
+            html.Thead(html.Tr([html.Th('Location'), html.Th('Infectious'), html.Th('Deceased')])),
             html.Tbody([html.Tr([html.Td(r[0]), html.Td(r[1]), html.Td(r[2])]) for r in table_data]),
         ],
         bordered=True,
