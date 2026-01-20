@@ -33,39 +33,39 @@ GEO_DIR  = os.path.join(ASSETS_DIR, "map_boundaries")
 # These correspond to disease models in PandemicExerciseSimulator
 # ============================================================================
 MODEL_OPTIONS = [
-    {
-        "label": "SEIR Deterministic",
-        "value": "SEIR-DET",
-        "description": "SEIR with Euler updates; fractional flows; stochastic binomial travel (between nodes)."
-    },
-    {
-        "label": "SEIRS Deterministic",
-        "value": "SEIRS-DET",
-        "description": "SEIR with waning immunity; Euler updates; fractional flows; stochastic binomial travel."
-    },
-    {
-        "label": "SEIR Stochastic",
-        "value": "SEIR-STOCH",
-        "description": "SEIR with Poisson transitions (within node stochasticity); stochastic binomial travel."
-    },
-    {
-        "label": "SEIRS Stochastic",
-        "value": "SEIRS-STOCH",
-        "description": "SEIR with waning immunity; Poisson transitions; stochastic binomial travel."
-    },
-    {
-        "label": "SEIHRD Stochastic",
-        "value": "SEIHRD-STOCH",
-        "description": "Adds hospitalization and death; Poisson transitions; stochastic binomial travel."
-    },
+#    {
+#        "label": "SEIR Deterministic",
+#        "value": "seir-deterministic",
+#        "description": "SEIR with Euler updates; fractional flows; stochastic binomial travel (between nodes)."
+#    },
+#    {
+#        "label": "SEIR Stochastic",
+#        "value": "seir-stochastic",
+#        "description": "SEIR with Poisson transitions (within node stochasticity); stochastic binomial travel."
+#    },
+#    {
+#        "label": "SEIRS Deterministic",
+#        "value": "seirs-deterministic",
+#        "description": "SEIR with waning immunity; Euler updates; fractional flows; stochastic binomial travel."
+#    },
+#    {
+#        "label": "SEIRS Stochastic",
+#        "value": "seirs-stochastic",
+#        "description": "SEIR with waning immunity; Poisson transitions; stochastic binomial travel."
+#    },
+#    {
+#        "label": "SEIHRD Stochastic",
+#        "value": "seihrd-deterministic",
+#        "description": "Adds hospitalization and death; Poisson transitions; stochastic binomial travel."
+#    },
     {
         "label": "SEATIRD Deterministic",
-        "value": "SEATIRD-DET",
+        "value": "seatird-deterministic",
         "description": "Adds treatable compartment; Euler updates (fractional flows); stochastic binomial travel."
     },
     {
         "label": "SEATIRD Stochastic",
-        "value": "SEATIRD-STOCH",
+        "value": "seatird-stochastic",
         "description": "SEATIRD with exponential transitions (Gillespie, individual-level stochasticity); stochastic binomial travel."
     },
 ]
@@ -555,7 +555,7 @@ def create_model_state_selection_panel():
             dcc.Dropdown(
                 id='model-selector-dropdown',
                 options=[{"label": m["label"], "value": m["value"]} for m in MODEL_OPTIONS],
-                value='SEATIRD-STOCH',
+                value='seatird-stochastic',
                 clearable=False,
                 placeholder="Select a disease model...",
                 style={'marginBottom': '8px'}
@@ -2187,7 +2187,7 @@ def toggle_simulation(n_clicks, sim_state, disease_params, initial_cases, npi_da
                     'nu': ','.join(map(str, disease_params.get('nu', [0,0,0,0,0]))),
                     'sigma': ','.join(map(str, disease_params.get('sigma', [1,1,1,1,1]))),
                     # NEW: Include model and state selection in payload
-                    'model_type': selected_model or 'SEATIRD-STOCH',
+                    'model_type': selected_model or 'seatird-stochastic',
                     'state': selected_state or 'Texas',
                 }
                 

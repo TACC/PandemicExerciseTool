@@ -26,6 +26,10 @@ def return_valid_input(input):
     Take the json response from the get request and put it in the 
     format needed by the Pandemic exercise code
     """
+    print('################')
+    print(input)
+    print('################')
+
     try:
         if input['npis'] is not None:
             npis = json.loads(input['npis'])
@@ -152,8 +156,9 @@ def return_valid_input(input):
     "vaccine_model": {}
     }
 
-    state = input.get("state", "Texas")
+    input_file["disease_model"]["identity"] = input.get("model_type")
 
+    state = input.get("state", "Texas")
     # replace STATE placeholders in paths
     input_file["output_dir_path"] = input_file["output_dir_path"].replace("STATE", state)
     for k, v in input_file["data"].items():

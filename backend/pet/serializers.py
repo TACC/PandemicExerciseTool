@@ -6,7 +6,8 @@ class PETSerializer(serializers.ModelSerializer):
     class Meta:
         model = PET
         fields = ('id', 
-                  'disease_name', 
+                  'disease_name',
+                  'model_type',
                   'R0', 
                   'beta_scale', 
                   'tau', 
