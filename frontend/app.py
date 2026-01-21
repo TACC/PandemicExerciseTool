@@ -1636,17 +1636,19 @@ def load_preset_scenario(preset_key):
 # Initial cases management callbacks
 @callback(
     [Output('initial-cases-data', 'data'),
-     Output('initial-cases-table', 'children')],
+     Output('initial-cases-table', 'children'),
+     Output('play-pause-btn', 'disabled', allow_duplicate=True)],  # ← ADD THIS LINE
     [Input('add-initial-case-btn', 'n_clicks'),
      Input({'type': 'remove-case-btn', 'index': ALL}, 'n_clicks')],
     [State('initial-location', 'value'),
      State('initial-cases-count', 'value'),
      State('initial-age-group', 'value'),
      State('initial-cases-data', 'data'),
-     State('location-assets-store', 'data')],
+     State('location-assets-store', 'data'),
+     State('disease-parameters', 'data')],  # ← ADD THIS LINE
     prevent_initial_call=True
 )
-def manage_initial_cases(add_clicks, remove_clicks, location, cases_count, age_group, current_data, location_assets):
+def manage_initial_cases(add_clicks, remove_clicks, location, cases_count, age_group, current_data, location_assets, disease_params):
     triggered_id = ctx.triggered[0]['prop_id'] if ctx.triggered else None
 
     mapping = (location_assets or {}).get("mapping", {})
@@ -1703,7 +1705,10 @@ def manage_initial_cases(add_clicks, remove_clicks, location, cases_count, age_g
     else:
         table = html.P('No initial cases added yet.', style={'color': '#6c757d', 'fontStyle': 'italic'})
     
-    return current_data, table
+    play_disabled = not (bool(disease_params) and bool(current_data) and len(current_data) > 0)
+    
+    return current_data, table, play_disabled
+
 
 # Disease parameters save callback
 @callback(
@@ -1754,8 +1759,13 @@ def save_disease_parameters(n_clicks, scenario_name, r0, tau, kappa, gamma,
         else:
             content = html.P('No interventions set yet.', style={'color': '#6c757d', 'fontStyle': 'italic'})
         
-        # Enable play button if we have disease parameters (initial cases are optional in React)
-        play_disabled = not bool(disease_params)
+        # Enable play button ONLY if we have BOTH disease parameters AND initial cases
+<<<<<<< Updated upstream
+        play_disabled = not (bool(disease_params) and bool(initial_cases) and len(initial_cases) > 0)
+        
+=======
+        play_disabled = not (bool(disease_params) and bool(initial_cases))
+>>>>>>> Stashed changes
         
         return disease_params, content, play_disabled
     
@@ -2583,3 +2593,4 @@ server = app.server
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8051)
+
