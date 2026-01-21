@@ -898,33 +898,33 @@ disease_params_modal = dbc.Modal([
         
         # Disease parameters form
         html.Div([
-            html.Label('Scenario Name'),
+            html.Label('Scenario Name', style={'fontWeight': 'bold'}),
             dcc.Input(id='scenario-name', type='text', value='', 
                 style={'width': '100%', 'marginBottom': '10px'})
         ]),
         html.Div([
-            html.Label('Reproduction Number (R₀)'),
+            html.Label('Reproduction Number (R₀)', style={'fontWeight': 'bold'}),
             html.Small(' - Average number of secondary infections in a susceptible population', 
                 style={'color': '#6c757d'}),
             dcc.Input(id='reproduction-number', type='number', value=1.2, step=0.1, min=0,
                 style={'width': '100%', 'marginBottom': '10px'})
         ]),
         html.Div([
-            html.Label('Latency period (days)'),
+            html.Label('Latency period (days)', style={'fontWeight': 'bold'}),
             html.Small(' - Average number of days spent asymptomatic immediately after infection',
                 style={'color': '#6c757d'}),
             dcc.Input(id='latency-period', type='number', value=1.2, step=0.1, min=0,
                 style={'width': '100%', 'marginBottom': '10px'})
         ]),
         html.Div([
-            html.Label('Asymptomatic period (days)'),
+            html.Label('Asymptomatic period (days)', style={'fontWeight': 'bold'}),
             html.Small(' - Average number of days spent infectious, but not yet symptomatic',
                 style={'color': '#6c757d'}),
             dcc.Input(id='asymptomatic-period', type='number', value=1.9, step=0.1, min=0,
                 style={'width': '100%', 'marginBottom': '10px'})
         ]),
         html.Div([
-            html.Label('Symptomatic period (days)'),
+            html.Label('Symptomatic period (days)', style={'fontWeight': 'bold'}),
             html.Small(' - Average number of days spent symptomatic and infectious',
                 style={'color': '#6c757d'}),
             dcc.Input(id='symptomatic-period', type='number', value=4.1, step=0.1, min=0,
@@ -932,9 +932,9 @@ disease_params_modal = dbc.Modal([
         ]),
         # Age-specific CFR section
         html.Div([
-            html.Label('Infection fatality rate (proportion)', style={'fontWeight': 'bold'}),
-            html.Small(' - Proportion of infections that lead to death', 
-                style={'color': '#6c757d', 'display': 'block', 'marginBottom': '10px'}),
+            html.Label('Mortality rate (1/days)', style={'fontWeight': 'bold'}),
+            html.Small(' - Inverse average number of days spent asymptomatic/treatable/infectious to deceased',
+                style={'color': '#6c757d', 'display': 'block', 'marginBottom': '15px'}),
             
             # CFR inputs for each age group
             html.Div([
@@ -944,13 +944,13 @@ disease_params_modal = dbc.Modal([
                     style={'width': '100%', 'marginBottom': '5px'})
             ]),
             html.Div([
-                html.Label('5-24 years', style={'fontSize': '14px'}),
+                html.Label('5-17 years', style={'fontSize': '14px'}),
                 dcc.Input(id='cfr-5-24', type='number', value=0.000040975,
                     step=0.000000001, min=0, max=100,
                     style={'width': '100%', 'marginBottom': '5px'})
             ]),
             html.Div([
-                html.Label('25-49 years', style={'fontSize': '14px'}),
+                html.Label('18-49 years', style={'fontSize': '14px'}),
                 dcc.Input(id='cfr-25-49', type='number', value=0.000083729,
                     step=0.000000001, min=0, max=100,
                     style={'width': '100%', 'marginBottom': '5px'})
@@ -965,14 +965,15 @@ disease_params_modal = dbc.Modal([
                 html.Label('65+ years', style={'fontSize': '14px'}),
                 dcc.Input(id='cfr-65-plus', type='number', value=0.000008978,
                     step=0.000000001, min=0, max=100,
-                    style={'width': '100%'})
+                    style={'width': '100%', 'marginBottom': '25px'})
             ])
         ]),
+
         # Age-specific relative susceptibility section
         html.Div([
             html.Label('Relative susceptibility (ratio)', style={'fontWeight': 'bold'}),
-            html.Small(' - How susceptible each age group is relative to others', 
-                style={'color': '#6c757d', 'display': 'block', 'marginBottom': '10px'}),
+            html.Small(' - How susceptible each age group is relative to a reference group (e.g. 0-4yro)',
+                style={'color': '#6c757d', 'display': 'block', 'marginBottom': '15px'}),
             
             # inputs for each age group
             html.Div([
@@ -982,13 +983,13 @@ disease_params_modal = dbc.Modal([
                     style={'width': '100%', 'marginBottom': '5px'})
             ]),
             html.Div([
-                html.Label('5-24 years', style={'fontSize': '14px'}),
+                html.Label('5-17 years', style={'fontSize': '14px'}),
                 dcc.Input(id='sigma-5-24', type='number', value=1.0,
                     step=0.000000001, min=0, max=10,
                     style={'width': '100%', 'marginBottom': '5px'})
             ]),
             html.Div([
-                html.Label('25-49 years', style={'fontSize': '14px'}),
+                html.Label('18-49 years', style={'fontSize': '14px'}),
                 dcc.Input(id='sigma-25-49', type='number', value=1.0,
                     step=0.000000001, min=0, max=10,
                     style={'width': '100%', 'marginBottom': '5px'})
@@ -1003,7 +1004,7 @@ disease_params_modal = dbc.Modal([
                 html.Label('65+ years', style={'fontSize': '14px'}),
                 dcc.Input(id='sigma-65-plus', type='number', value=1.0,
                     step=0.000000001, min=0, max=10,
-                    style={'width': '100%'})
+                    style={'width': '100%', 'marginBottom': '5px'})
             ])
         ])
     ]),
@@ -1086,13 +1087,13 @@ npi_modal = dbc.Modal([
                     style={'width': '100%', 'marginBottom': '5px'})
             ]),
             html.Div([
-                html.Label('5-24 years', style={'fontSize': '14px'}),
+                html.Label('5-17 years', style={'fontSize': '14px'}),
                 dcc.Input(id='npi-eff-5-24', type='number', value=0.35,
                     step=0.01, min=0, max=1,
                     style={'width': '100%', 'marginBottom': '5px'})
             ]),
             html.Div([
-                html.Label('25-49 years', style={'fontSize': '14px'}),
+                html.Label('18-49 years', style={'fontSize': '14px'}),
                 dcc.Input(id='npi-eff-25-49', type='number', value=0.2,
                     step=0.01, min=0, max=1,
                     style={'width': '100%', 'marginBottom': '5px'})
@@ -2393,8 +2394,8 @@ def fetch_simulation_data(n_intervals, sim_state, event_data):
                             fips_id = county_data.get('fips_id', '')
                             compartment_summary = county_data.get('compartment_summary', {})
                             
-                            infected = compartment_summary.get('I', 0)
-                            deceased = compartment_summary.get('D', 0)
+                            infected = round(compartment_summary.get('I', 0), 2)
+                            deceased = round(compartment_summary.get('D', 0), 2)
                             susceptible = compartment_summary.get('S', 0)
                             
                             # Calculate percentages
