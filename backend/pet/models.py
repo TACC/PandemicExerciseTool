@@ -15,6 +15,9 @@ class PET(models.Model):
     nu = models.TextField()
     #sigma = models.TextField()
 
+    infectious_period = models.FloatField()
+    immune_period = models.FloatField()
+
     state=models.TextField()
 
     initial_infected = models.TextField(null=True)
