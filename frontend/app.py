@@ -110,38 +110,22 @@ PRESET_SCENARIOS = {
         }
     },
     'seirs': {
-        'slow_mild_2009': {
-                'name': 'Slow Transmission, Mild Severity (2009 H1N1)',
-                'disease_name': '2009 H1N1',
+        'slow_transmission': {
+                'name': 'Slow Transmission',
+                'disease_name': 'Slow Transmission',
                 'R0': 1.2,
                 'latent_period': 7,
-                'infectious_period': 10,
+                'infectious_period': 14,
                 'immune_period': 120,
             },
-            'slow_high_1918': {
-                'name': 'Slow Transmission, High Severity (1918 Influenza)',
-                'disease_name': '1918 Influenza',
-                'R0': 1.2,
-                'latent_period': 7,
-                'infectious_period': 18,
-                'immune_period': 120,
-            },
-            'fast_mild_2009': {
-                'name': 'Fast Transmission, Mild Severity (2009 H1N1)',
-                'disease_name': '2009 H1N1',
-                'R0': 2.5,
-                'latent_period': 7,
-                'infectious_period': 10,
-                'immune_period': 120,
-            },
-            'fast_high_1918': {
-                'name': 'Fast Transmission, High Severity (1918 Influenza)',
-                'disease_name': '1918 Influenza',
-                'R0': 2.5,
-                'latent_period': 7,
-                'infectious_period': 18,
-                'immune_period': 120,
-            }
+        'fast_transmission': {
+            'name': 'Fast Transmission',
+            'disease_name': 'Fast Transmission',
+            'R0': 2.5,
+            'latent_period': 7,
+            'infectious_period': 14,
+            'immune_period': 120,
+        }
     }
 }
 
@@ -1028,7 +1012,7 @@ def update_disease_param_modal_body(selected_value):
             ], id='disease-param-modal-display-infectious', style={'display': 'none'}),
             html.Div([
                 html.Label('Immune period (days)', style={'fontWeight': 'bold'}),
-                html.Small(' - Average number of days spent before returning to susceptible',
+                html.Small(' - Average number of days spent before returning to susceptible (set to 0 to make this an SEIR model)',
                     style={'color': '#6c757d'}),
                 dcc.Input(id='immune-period', type='number', value=4.1, step=0.1, min=0,
                     style={'width': '100%', 'marginBottom': '15px'})
