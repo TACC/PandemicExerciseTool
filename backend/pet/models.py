@@ -4,6 +4,7 @@ from django.db import models
 class PET(models.Model):
 
     disease_name = models.TextField()
+    model_type = models.TextField()
     R0 = models.FloatField()
     beta_scale = models.FloatField()
     tau = models.FloatField()
@@ -13,6 +14,9 @@ class PET(models.Model):
     rho = models.FloatField()
     nu = models.TextField()
     #sigma = models.TextField()
+
+    infectious_period = models.FloatField()
+    immune_period = models.FloatField()
 
     state=models.TextField()
 

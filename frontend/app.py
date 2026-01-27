@@ -1,14 +1,11 @@
 import dash
-from dash import dcc, html, Input, Output, State, callback, ctx, ALL, dash_table
+from dash import dcc, html, Input, Output, State, callback, ctx, ALL
 import dash_bootstrap_components as dbc
-import plotly.express as px
 import plotly.graph_objects as go
-import pandas as pd
 import json
 import requests
 import logging
 import glob
-from datetime import datetime
 import os
 
 # Configure logging
@@ -17,89 +14,145 @@ logger = logging.getLogger(__name__)
 
 # Initialize Dash app with external CSS
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
-app.title = "epiENGAGE - Interactive Outbreak Simulator"
+app.title = 'epiENGAGE - Interactive Outbreak Simulator'
 app.config.suppress_callback_exceptions = True
 
 # API Configuration
-API_BASE_URL = os.getenv('API_BASE_URL', 'http://django-backend-dash:8000')
+API_BASE_URL = os.getenv('API_BASE_URL', 'http://django-backend:8000')
 
 # Dirs with spatial data (names and polygons)
-ASSETS_DIR = "assets"
-NAME_DIR = os.path.join(ASSETS_DIR, "fips_to_names")
-GEO_DIR  = os.path.join(ASSETS_DIR, "map_boundaries")
+ASSETS_DIR = 'assets'
+NAME_DIR = os.path.join(ASSETS_DIR, 'fips_to_names')
+GEO_DIR  = os.path.join(ASSETS_DIR, 'map_boundaries')
+
 
 # ============================================================================
-# NEW: MODEL OPTIONS
-# These correspond to disease models in PandemicExerciseSimulator
+# MODEL OPTIONS
 # ============================================================================
 MODEL_OPTIONS = [
     {
-        "label": "SEIR Deterministic",
-        "value": "SEIR-DET",
-        "description": "SEIR with Euler updates; fractional flows; stochastic binomial travel (between nodes)."
+        'label': 'SEIRS Deterministic',
+        'value': 'seirs-deterministic',
+        'description': 'SEIRS with waning immunity; Euler updates; fractional flows; stochastic binomial travel.'
     },
     {
-        "label": "SEIRS Deterministic",
-        "value": "SEIRS-DET",
-        "description": "SEIR with waning immunity; Euler updates; fractional flows; stochastic binomial travel."
+        'label': 'SEIRS Stochastic',
+        'value': 'seirs-stochastic',
+        'description': 'SEIRS with waning immunity; Poisson transitions; stochastic binomial travel.'
     },
     {
-        "label": "SEIR Stochastic",
-        "value": "SEIR-STOCH",
-        "description": "SEIR with Poisson transitions (within node stochasticity); stochastic binomial travel."
+        'label': 'SEATIRD Deterministic',
+        'value': 'seatird-deterministic',
+        'description': 'Adds treatable compartment; Euler updates (fractional flows); stochastic binomial travel.'
     },
     {
-        "label": "SEIRS Stochastic",
-        "value": "SEIRS-STOCH",
-        "description": "SEIR with waning immunity; Poisson transitions; stochastic binomial travel."
+        'label': 'SEATIRD Stochastic',
+        'value': 'seatird-stochastic',
+        'description': 'SEATIRD with exponential transitions (Gillespie, individual-level stochasticity); stochastic binomial travel.'
     },
-    {
-        "label": "SEIHRD Stochastic",
-        "value": "SEIHRD-STOCH",
-        "description": "Adds hospitalization and death; Poisson transitions; stochastic binomial travel."
-    },
-    {
-        "label": "SEATIRD Deterministic",
-        "value": "SEATIRD-DET",
-        "description": "Adds treatable compartment; Euler updates (fractional flows); stochastic binomial travel."
-    },
-    {
-        "label": "SEATIRD Stochastic",
-        "value": "SEATIRD-STOCH",
-        "description": "SEATIRD with exponential transitions (Gillespie, individual-level stochasticity); stochastic binomial travel."
-    },
+#    {
+#        'label': 'SEIHRD Stochastic',
+#        'value': 'seihrd-deterministic',
+#        'description': 'Adds hospitalization and death; Poisson transitions; stochastic binomial travel.'
+#    },
 ]
 
-# ============================================================================
-# NEW: STATE OPTIONS
-# US States for simulation selection
-# ============================================================================
-def _prefix_before_underscore(filename: str) -> str:
-    stem = os.path.splitext(os.path.basename(filename))[0]
-    return stem.split("_", 1)[0]
+# Preset scenarios
+PRESET_SCENARIOS = {
+    'seatird': {
+        'slow_mild_2009': {
+            'name': 'Slow Transmission, Mild Severity (2009 H1N1)',
+            'disease_name': '2009 H1N1',
+            'R0': 1.2,
+            'beta_scale': 10.0,
+            'tau': 1.2,
+            'kappa': 1.9,
+            'gamma': 4.1,
+            'chi': 1.0,
+            'rho': 0.39,
+            'nu': [0.000022319, 0.000040975, 0.000083729, 0.000061809, 0.000008978]
+        },
+        'slow_high_1918': {
+            'name': 'Slow Transmission, High Severity (1918 Influenza)',
+            'disease_name': '1918 Influenza',
+            'R0': 1.2,
+            'beta_scale': 10.0,
+            'tau': 1.2,
+            'kappa': 1.9,
+            'gamma': 4.1,
+            'chi': 1.0,
+            'rho': 0.39,
+            'nu': [0.05, 0.002, 0.01, 0.05, 0.15]
+        },
+        'fast_mild_2009': {
+            'name': 'Fast Transmission, Mild Severity (2009 H1N1)',
+            'disease_name': '2009 H1N1',
+            'R0': 2.5,
+            'beta_scale': 10.0,
+            'tau': 1.2,
+            'kappa': 1.9,
+            'gamma': 4.1,
+            'chi': 1.0,
+            'rho': 0.39,
+            'nu': [0.000022319, 0.000040975, 0.000083729, 0.000061809, 0.000008978]
+        },
+        'fast_high_1918': {
+            'name': 'Fast Transmission, High Severity (1918 Influenza)',
+            'disease_name': '1918 Influenza',
+            'R0': 2.5,
+            'beta_scale': 10.0,
+            'tau': 1.2,
+            'kappa': 1.9,
+            'gamma': 4.1,
+            'chi': 1.0,
+            'rho': 0.39,
+            'nu': [0.05, 0.002, 0.01, 0.05, 0.15]
+        }
+    },
+    'seirs': {
+        'slow_transmission': {
+                'name': 'Slow Transmission',
+                'disease_name': 'Slow Transmission',
+                'R0': 1.2,
+                'latent_period': 7,
+                'infectious_period': 14,
+                'immune_period': 120,
+            },
+        'fast_transmission': {
+            'name': 'Fast Transmission',
+            'disease_name': 'Fast Transmission',
+            'R0': 2.5,
+            'latent_period': 7,
+            'infectious_period': 14,
+            'immune_period': 120,
+        }
+    }
+}
 
-def build_jurisdiction_options(
-    mapping_dir: str = NAME_DIR,
-    boundaries_dir: str = GEO_DIR,
-    require_both: bool = True,
-):
+
+# ============================================================================
+# STATE OPTIONS
+# ============================================================================
+
+# Collect prefixes from each directory
+def _get_prefix(fn):
+    return os.path.splitext(fn)[0].split('_', 1)[0]
+
+
+def _build_jurisdiction_options(mapping_dir: str, boundaries_dir: str, require_both: bool):
     """
     Returns options like [{"label": "...", "value": "..."}] for jurisdictions
     that have the required assets.
     - value: prefix before first "_" in the filename
     - label: known mapping else hyphens -> spaces
     """
-    # Collect prefixes from each directory
-    def prefix(fn):
-        return os.path.splitext(fn)[0].split("_", 1)[0]
-
     mapping_prefixes = {
-        prefix(f) for f in os.listdir(mapping_dir)
+        _get_prefix(f) for f in os.listdir(mapping_dir)
         if f.endswith(".json")
     }
 
     boundary_prefixes = {
-        prefix(f) for f in os.listdir(boundaries_dir)
+        _get_prefix(f) for f in os.listdir(boundaries_dir)
         if f.endswith(".geojson")
     }
 
@@ -116,19 +169,48 @@ def build_jurisdiction_options(
 
     return options
 
-STATE_OPTIONS = build_jurisdiction_options(require_both=True)
+STATE_OPTIONS = _build_jurisdiction_options(NAME_DIR, GEO_DIR, require_both=True)
 
-# Load location jurisdiction node names and boundaries from subdirs
+
+# ============================================================================
+# OTHER OPTIONS
+# ============================================================================
+
+# Age group constants
+AGE_GROUPS = [
+    {'value': '0-4 years', 'label': '0-4 years'},
+    {'value': '5-17 years', 'label': '5-17 years'},
+    {'value': '18-49 years', 'label': '18-49 years'},
+    {'value': '50-64 years', 'label': '50-64 years'},
+    {'value': '65+ years', 'label': '65+ years'}
+]
+
+AGE_GROUP_MAPPING = {
+    '0-4 years': '0',
+    '5-17 years': '1', 
+    '18-49 years': '2',
+    '50-64 years': '3',
+    '65+ years': '4'
+}
+
+
+
+# ============================================================================
+# HELPER FUNCTIONS FOR MAPS
+# ============================================================================
+
 def _first_match(pattern: str):
+    """Load location jurisdiction node names and boundaries from subdirs"""
     matches = sorted(glob.glob(pattern))
     return matches[0] if matches else None
 
-def load_location_assets(location_value: str):
+
+def _load_location_assets(location_value: str):
     """
     Load all assets needed to plot a location.
 
     Required:
-      - assets/county_fips_to_names/{value}_*.json
+      - assets/fips_to_names/{value}_*.json
       - assets/map_boundaries/{value}_*.geojson
 
     Returns:
@@ -165,50 +247,51 @@ def load_location_assets(location_value: str):
 
     return names, mapping, geojson
 
-def get_county_color(infected_value, view_type='count'):
-    """Get color for county based on infection data"""
-    if view_type == 'percent':
-        # Color scale for percentage values
-        if infected_value > 40:
-            return '#800026'
-        elif infected_value > 30:
-            return '#BD0026'
-        elif infected_value > 20:
-            return '#E31A1C'
-        elif infected_value > 10:
-            return '#FC4E2A'
-        elif infected_value > 5:
-            return '#FD8D3C'
-        elif infected_value > 2.5:
-            return '#FEB24C'
-        elif infected_value > 1:
-            return '#FED976'
-        else:
-            return '#FFEDA0'
-    else:
-        # Color scale for count values (matching React version)
-        if infected_value > 5000:
-            return '#800026'
-        elif infected_value > 2000:
-            return '#BD0026'
-        elif infected_value > 1000:
-            return '#E31A1C'
-        elif infected_value > 500:
-            return '#FC4E2A'
-        elif infected_value > 200:
-            return '#FD8D3C'
-        elif infected_value > 100:
-            return '#FEB24C'
-        elif infected_value > 50:
-            return '#FED976'
-        else:
-            return '#FFEDA0'
 
-def create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojson):
-    """Create map using boundary file provided in geojson"""
+def _create_empty_map():
+    """Create empty map when no data is available"""
+    fig = go.Figure()
+    fig.update_layout(
+        height=400,
+        margin=dict(l=0, r=0, t=40, b=0),
+        xaxis=dict(visible=False),
+        yaxis=dict(visible=False),
+        paper_bgcolor="white",
+        plot_bgcolor="white",
+        title="Map - No Data Available"
+    )
+    return fig
+
+
+def _get_color_from_value(value, max_val):
+    """Define color function"""
+    if max_val == 0 or value == 0:
+        return '#FFEDA0'
     
+    ratio = value / max_val
+    
+    if ratio >= 1.0:
+        return '#800026'
+    elif ratio >= 0.75:
+        return '#BD0026'
+    elif ratio >= 0.625:
+        return '#E31A1C'
+    elif ratio >= 0.5:
+        return '#FC4E2A'
+    elif ratio >= 0.375:
+        return '#FD8D3C'
+    elif ratio >= 0.25:
+        return '#FEB24C'
+    elif ratio >= 0.125:
+        return '#FED976'
+    else:
+        return '#FFEDA0'
+
+
+def _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojson):
+    """Create map using boundary file provided in geojson"""    
     if not event_data or timeline_value is None or timeline_value >= len(event_data):
-        return create_empty_map()
+        return _create_empty_map()
     
     current_data = event_data[timeline_value]
     counties_data = current_data.get('counties', [])
@@ -216,7 +299,7 @@ def create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojso
     logger.info(f"Creating county map for day {current_data.get('day', 0)} with {len(counties_data)} counties")
     
     if not counties_data or not geojson:
-        return create_empty_map()
+        return _create_empty_map()
     
     # Create data mapping from FIPS to values
     county_values = {}
@@ -260,30 +343,6 @@ def create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojso
     if max_value == 0:
         max_value = 1
     
-    # Define color function
-    def get_color_from_value(value, max_val):
-        if max_val == 0 or value == 0:
-            return '#FFEDA0'
-        
-        ratio = value / max_val
-        
-        if ratio >= 1.0:
-            return '#800026'
-        elif ratio >= 0.75:
-            return '#BD0026'
-        elif ratio >= 0.625:
-            return '#E31A1C'
-        elif ratio >= 0.5:
-            return '#FC4E2A'
-        elif ratio >= 0.375:
-            return '#FD8D3C'
-        elif ratio >= 0.25:
-            return '#FEB24C'
-        elif ratio >= 0.125:
-            return '#FED976'
-        else:
-            return '#FFEDA0'
-    
     # Create figure with individual county shapes
     fig = go.Figure()
     
@@ -293,7 +352,7 @@ def create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojso
         county_name = feature['properties']['NAME']
         
         value = county_values.get(geoid, 0)
-        color = get_color_from_value(value, max_value)
+        color = _get_color_from_value(value, max_value)
         
         info = county_info.get(geoid, {})
         infected = info.get('infected', 0)
@@ -360,92 +419,12 @@ def create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojso
     logger.info("Successfully created county map with individual polygons")
     return fig
 
-def create_empty_map():
-    """Create empty map when no data is available"""
-    fig = go.Figure()
-    fig.update_layout(
-        height=400,
-        margin=dict(l=0, r=0, t=40, b=0),
-        xaxis=dict(visible=False),
-        yaxis=dict(visible=False),
-        paper_bgcolor="white",
-        plot_bgcolor="white",
-        title="Map - No Data Available"
-    )
-    return fig
 
-# Age group constants (matching React exactly)
-AGE_GROUPS = [
-    {'value': '0-4 years', 'label': '0-4 years'},
-    {'value': '5-24 years', 'label': '5-24 years'},
-    {'value': '25-49 years', 'label': '25-49 years'},
-    {'value': '50-64 years', 'label': '50-64 years'},
-    {'value': '65+ years', 'label': '65+ years'}
-]
-
-AGE_GROUP_MAPPING = {
-    '0-4 years': '0',
-    '5-24 years': '1', 
-    '25-49 years': '2',
-    '50-64 years': '3',
-    '65+ years': '4'
-}
-
-# Preset scenarios (matching React exactly)
-PRESET_SCENARIOS = {
-    'slow_mild_2009': {
-        'name': 'Slow Transmission, Mild Severity (2009 H1N1)',
-        'disease_name': '2009 H1N1',
-        'R0': 1.2,
-        'beta_scale': 10.0,
-        'tau': 1.2,
-        'kappa': 1.9,
-        'gamma': 4.1,
-        'chi': 1.0,
-        'rho': 0.39,
-        'nu': [0.000022319, 0.000040975, 0.000083729, 0.000061809, 0.000008978]
-    },
-    'slow_high_1918': {
-        'name': 'Slow Transmission, High Severity (1918 Influenza)',
-        'disease_name': '1918 Influenza',
-        'R0': 1.2,
-        'beta_scale': 10.0,
-        'tau': 1.2,
-        'kappa': 1.9,
-        'gamma': 4.1,
-        'chi': 1.0,
-        'rho': 0.39,
-        'nu': [0.05, 0.002, 0.01, 0.05, 0.15]
-    },
-    'fast_mild_2009': {
-        'name': 'Fast Transmission, Mild Severity (2009 H1N1)',
-        'disease_name': '2009 H1N1',
-        'R0': 2.5,
-        'beta_scale': 10.0,
-        'tau': 1.2,
-        'kappa': 1.9,
-        'gamma': 4.1,
-        'chi': 1.0,
-        'rho': 0.39,
-        'nu': [0.000022319, 0.000040975, 0.000083729, 0.000061809, 0.000008978]
-    },
-    'fast_high_1918': {
-        'name': 'Fast Transmission, High Severity (1918 Influenza)',
-        'disease_name': '1918 Influenza',
-        'R0': 2.5,
-        'beta_scale': 10.0,
-        'tau': 1.2,
-        'kappa': 1.9,
-        'gamma': 4.1,
-        'chi': 1.0,
-        'rho': 0.39,
-        'nu': [0.05, 0.002, 0.01, 0.05, 0.15]
-    }
-}
-
-# App Layout - Exact match to React structure
+# ============================================================================
+# APP LAYOUT
+# ============================================================================
 app.layout = html.Div([
-    # Stores for state management (like React useState)
+    # Stores for state management
     dcc.Store(id='simulation-state', data={'isRunning': False, 'currentIndex': 0, 'taskId': None, 'id': None}),
     dcc.Store(id='event-data', data=[]),
     dcc.Store(id='view-type', data='percent'),
@@ -459,12 +438,12 @@ app.layout = html.Div([
     dcc.Store(id='displayed-tab', data='scenario'),
     dcc.Interval(id='simulation-interval', interval=1000, disabled=True),
     
-    # NEW: Stores for Model and State Selection
+    # Stores for Model and State Selection
     dcc.Store(id='selected-model-store', data='SEIR-DET'),
     dcc.Store(id='selected-state-store', data='Texas'),
     dcc.Store(id='location-assets-store', data={}),
     
-    # Header - Exact match to React Header component
+    # Header
     html.Nav([
         html.Div([
             html.Div([
@@ -525,7 +504,7 @@ app.layout = html.Div([
 ])
 
 # ============================================================================
-# NEW: Helper function to create Model and State Selection Panel
+# FUNCTIONS TO CREATE ELEMENTS FOR MAIN CONTENT AREA
 # ============================================================================
 def create_model_state_selection_panel():
     """
@@ -535,7 +514,7 @@ def create_model_state_selection_panel():
     return html.Div([
         # Panel Header
         html.Div([
-            html.H6('⚙️ Simulation Setup', style={
+            html.H6('Simulation Setup', style={
                 'marginBottom': '15px',
                 'paddingBottom': '10px',
                 'borderBottom': '2px solid #102c41',
@@ -555,8 +534,8 @@ def create_model_state_selection_panel():
             dcc.Dropdown(
                 id='model-selector-dropdown',
                 options=[{"label": m["label"], "value": m["value"]} for m in MODEL_OPTIONS],
-                value='SEATIRD-STOCH',
-                clearable=False,
+                value='seatird-deterministic',
+                clearable=True,
                 placeholder="Select a disease model...",
                 style={'marginBottom': '8px'}
             ),
@@ -586,7 +565,7 @@ def create_model_state_selection_panel():
                 id='state-selector-dropdown',
                 options=[{"label": s["label"], "value": s["value"]} for s in STATE_OPTIONS],
                 value='Texas',
-                clearable=False,
+                clearable=True,
                 searchable=True,
                 placeholder="Select a state...",
                 style={'marginBottom': '15px'}
@@ -613,7 +592,6 @@ def create_model_state_selection_panel():
         
         # Status message area
         html.Div(id='model-state-status-message', style={'marginBottom': '15px'})
-        
     ], style={
         'padding': '15px',
         'backgroundColor': 'white',
@@ -623,20 +601,18 @@ def create_model_state_selection_panel():
     })
 
 
-# Home page layout - Updated with Model and State Selection
-# Home page layout - Updated with Model and State Selection
-# Home page layout - Updated with Model and State Selection
+# Home page layout
 def create_home_layout():
     return html.Div([
         # Main content row with fixed height
         html.Div([
-            # Left Panel - WITH SCROLLBAR
+            # Left Panel - Settings
             html.Div([
                 html.Div([
-                    # NEW: Model and State Selection Panel (Features 1 & 2)
+                    # Model and State Selection Panel
                     create_model_state_selection_panel(),
                     
-                    # Set Scenario dropdown (like React SetScenario component)
+                    # Set Scenario dropdown
                     html.Div([
                         html.Button([
                             html.Span('Set Scenario', className='dropdown-text'),
@@ -660,7 +636,7 @@ def create_home_layout():
                         style={'display': 'none'})
                     ], style={'position': 'relative', 'marginBottom': '10px'}),
                     
-                    # Interventions dropdown (like React Interventions component)
+                    # Interventions dropdown 
                     html.Div([
                         html.Button([
                             html.Span('Interventions', className='dropdown-text'),
@@ -688,7 +664,7 @@ def create_home_layout():
                         style={'display': 'none'})
                     ], style={'position': 'relative', 'marginBottom': '10px'}),
                     
-                    # DisplayedParameters section (like React DisplayedParameters component)
+                    # DisplayedParameters section 
                     html.Div([
                         # Tab buttons
                         html.Div([
@@ -774,17 +750,6 @@ def create_home_layout():
                     id='reset-btn',
                     disabled=False,
                     className='reset-button',
-                    style={
-                        'marginRight': '20px',
-                        'padding': '10px 30px',
-                        'fontSize': '16px',
-                        'backgroundColor': '#dc3545',
-                        'color': 'white',
-                        'border': 'none',
-                        'borderRadius': '4px',
-                        'cursor': 'pointer',
-                    },
-                    n_clicks=0
                 ), href='/'),
 
                 # Play/Pause Button
@@ -810,9 +775,9 @@ def create_home_layout():
                     dcc.Slider(
                         id='timeline-slider',
                         min=0,
-                        max=30,
+                        step=1,
                         value=0,
-                        marks={i: str(i) for i in range(0, 31, 5)},
+                        marks={i: str(i) for i in range(0, 201, 5)},
                         tooltip={'placement': 'bottom', 'always_visible': True},
                         disabled=True
                     )
@@ -835,7 +800,12 @@ def create_home_layout():
         })
     ])
 
+
+# ============================================================================
+# MAIN CONTENT AREA FOR USER GUIDE
+# ============================================================================
 # User Guide layout
+# TODO Make this a dcc.Markdown instead
 def create_userguide_layout():
     return html.Div([
         html.Div([
@@ -876,142 +846,182 @@ def create_userguide_layout():
         ], style={'padding': '20px', 'maxWidth': '800px', 'margin': '0 auto'})
     ])
 
+# ============================================================================
+# MODALS
+# ============================================================================
 # Disease Parameters Modal Component
 disease_params_modal = dbc.Modal([
     dbc.ModalHeader(dbc.ModalTitle("Disease Parameters")),
-    dbc.ModalBody([
-        # Preset scenarios dropdown
-        html.Div([
-            html.Label('Load from Catalog', style={'fontWeight': 'bold', 'marginBottom': '5px'}),
-            dcc.Dropdown(
-                id='preset-scenario-dropdown',
-                options=[
-                    {'label': scenario['name'], 'value': key} 
-                    for key, scenario in PRESET_SCENARIOS.items()
-                ],
-                placeholder='Select a preset scenario...',
-                style={'marginBottom': '15px'}
-            )
-        ]),
-        
-        html.Hr(),
-        
-        # Disease parameters form
-        html.Div([
-            html.Label('Scenario Name'),
-            dcc.Input(id='scenario-name', type='text', value='', 
-                style={'width': '100%', 'marginBottom': '10px'})
-        ]),
-        html.Div([
-            html.Label('Reproduction Number (R₀)'),
-            html.Small(' - Average number of secondary infections in a susceptible population', 
-                style={'color': '#6c757d'}),
-            dcc.Input(id='reproduction-number', type='number', value=1.2, step=0.1, min=0,
-                style={'width': '100%', 'marginBottom': '10px'})
-        ]),
-        html.Div([
-            html.Label('Latency period (days)'),
-            html.Small(' - Average number of days spent asymptomatic immediately after infection',
-                style={'color': '#6c757d'}),
-            dcc.Input(id='latency-period', type='number', value=1.2, step=0.1, min=0,
-                style={'width': '100%', 'marginBottom': '10px'})
-        ]),
-        html.Div([
-            html.Label('Asymptomatic period (days)'),
-            html.Small(' - Average number of days spent infectious, but not yet symptomatic',
-                style={'color': '#6c757d'}),
-            dcc.Input(id='asymptomatic-period', type='number', value=1.9, step=0.1, min=0,
-                style={'width': '100%', 'marginBottom': '10px'})
-        ]),
-        html.Div([
-            html.Label('Symptomatic period (days)'),
-            html.Small(' - Average number of days spent symptomatic and infectious',
-                style={'color': '#6c757d'}),
-            dcc.Input(id='symptomatic-period', type='number', value=4.1, step=0.1, min=0,
-                style={'width': '100%', 'marginBottom': '15px'})
-        ]),
-        # Age-specific CFR section
-        html.Div([
-            html.Label('Infection fatality rate (proportion)', style={'fontWeight': 'bold'}),
-            html.Small(' - Proportion of infections that lead to death', 
-                style={'color': '#6c757d', 'display': 'block', 'marginBottom': '10px'}),
-            
-            # CFR inputs for each age group
-            html.Div([
-                html.Label('0-4 years', style={'fontSize': '14px'}),
-                dcc.Input(id='cfr-0-4', type='number', value=0.000022319, 
-                    step=0.000000001, min=0, max=100,
-                    style={'width': '100%', 'marginBottom': '5px'})
-            ]),
-            html.Div([
-                html.Label('5-24 years', style={'fontSize': '14px'}),
-                dcc.Input(id='cfr-5-24', type='number', value=0.000040975,
-                    step=0.000000001, min=0, max=100,
-                    style={'width': '100%', 'marginBottom': '5px'})
-            ]),
-            html.Div([
-                html.Label('25-49 years', style={'fontSize': '14px'}),
-                dcc.Input(id='cfr-25-49', type='number', value=0.000083729,
-                    step=0.000000001, min=0, max=100,
-                    style={'width': '100%', 'marginBottom': '5px'})
-            ]),
-            html.Div([
-                html.Label('50-64 years', style={'fontSize': '14px'}),
-                dcc.Input(id='cfr-50-64', type='number', value=0.000061809,
-                    step=0.000000001, min=0, max=100,
-                    style={'width': '100%', 'marginBottom': '5px'})
-            ]),
-            html.Div([
-                html.Label('65+ years', style={'fontSize': '14px'}),
-                dcc.Input(id='cfr-65-plus', type='number', value=0.000008978,
-                    step=0.000000001, min=0, max=100,
-                    style={'width': '100%'})
-            ])
-        ]),
-        # Age-specific relative susceptibility section
-        html.Div([
-            html.Label('Relative susceptibility (ratio)', style={'fontWeight': 'bold'}),
-            html.Small(' - How susceptible each age group is relative to others', 
-                style={'color': '#6c757d', 'display': 'block', 'marginBottom': '10px'}),
-            
-            # inputs for each age group
-            html.Div([
-                html.Label('0-4 years', style={'fontSize': '14px'}),
-                dcc.Input(id='sigma-0-4', type='number', value=1.0, 
-                    step=0.000000001, min=0, max=10,
-                    style={'width': '100%', 'marginBottom': '5px'})
-            ]),
-            html.Div([
-                html.Label('5-24 years', style={'fontSize': '14px'}),
-                dcc.Input(id='sigma-5-24', type='number', value=1.0,
-                    step=0.000000001, min=0, max=10,
-                    style={'width': '100%', 'marginBottom': '5px'})
-            ]),
-            html.Div([
-                html.Label('25-49 years', style={'fontSize': '14px'}),
-                dcc.Input(id='sigma-25-49', type='number', value=1.0,
-                    step=0.000000001, min=0, max=10,
-                    style={'width': '100%', 'marginBottom': '5px'})
-            ]),
-            html.Div([
-                html.Label('50-64 years', style={'fontSize': '14px'}),
-                dcc.Input(id='sigma-50-64', type='number', value=1.0,
-                    step=0.000000001, min=0, max=10,
-                    style={'width': '100%', 'marginBottom': '5px'})
-            ]),
-            html.Div([
-                html.Label('65+ years', style={'fontSize': '14px'}),
-                dcc.Input(id='sigma-65-plus', type='number', value=1.0,
-                    step=0.000000001, min=0, max=10,
-                    style={'width': '100%'})
-            ])
-        ])
-    ]),
+    dbc.ModalBody(id="disease-params-modal-body"),
     dbc.ModalFooter([
         dbc.Button("Save", id="disease-params-save", className="ms-auto", n_clicks=0),
         dbc.Button("Close", id="disease-params-close", className="ms-auto", n_clicks=0)
     ])
 ], id="disease-params-modal", is_open=False, size="lg")
+
+
+@callback(
+    Output('disease-params-modal-body', 'children'),
+    Input('model-selector-dropdown', 'value'),
+    prevent_initial_call=True
+)
+def update_disease_param_modal_body(selected_value):
+    scenario_prefix = selected_value.split('-')[0]
+
+    if selected_value is not None:
+        return dbc.ModalBody([
+            # Preset scenarios dropdown
+            html.Div([
+                html.Label('Load from Catalog', style={'fontWeight': 'bold', 'marginBottom': '5px'}),
+                dcc.Dropdown(
+                    id='preset-scenario-dropdown',
+                    options=[
+                        {'label': scenario['name'], 'value': key} 
+                        for key, scenario in PRESET_SCENARIOS[scenario_prefix].items()
+                    ],
+                    placeholder='Select a preset scenario...',
+                    style={'marginBottom': '15px'}
+                )
+            ]),
+            
+            html.Hr(),
+            
+            # Currently all models expect scenario name, R0, and latent period
+            html.Div([
+                html.Label('Scenario Name', style={'fontWeight': 'bold'}),
+                dcc.Input(id='scenario-name', type='text', value='', 
+                    style={'width': '100%', 'marginBottom': '10px'})
+            ]),
+            html.Div([
+                html.Label('Reproduction Number (R₀)', style={'fontWeight': 'bold'}),
+                html.Small(' - Average number of secondary infections in a susceptible population', 
+                    style={'color': '#6c757d'}),
+                dcc.Input(id='reproduction-number', type='number', value=1.2, step=0.1, min=0,
+                    style={'width': '100%', 'marginBottom': '10px'})
+            ]),
+    
+            html.Div([
+                html.Label('Latent period (days)', style={'fontWeight': 'bold'}),
+                html.Small(' - Average number of days spent asymptomatic immediately after infection',
+                    style={'color': '#6c757d'}),
+                dcc.Input(id='latent-period', type='number', value=1.2, step=0.1, min=0,
+                    style={'width': '100%', 'marginBottom': '10px'})
+            ]),
+    
+            # Asymptomatic, symptomatic, CFR and sigma just for SEATIRD
+            html.Div([
+                html.Label('Asymptomatic period (days)', style={'fontWeight': 'bold'}),
+                html.Small(' - Average number of days spent infectious, but not yet symptomatic',
+                    style={'color': '#6c757d'}),
+                dcc.Input(id='asymptomatic-period', type='number', value=1.9, step=0.1, min=0,
+                    style={'width': '100%', 'marginBottom': '10px'})
+            ], id='disease-param-modal-display-asymptomatic', style={'display': 'none'}),
+            html.Div([
+                html.Label('Symptomatic period (days)', style={'fontWeight': 'bold'}),
+                html.Small(' - Average number of days spent symptomatic and infectious',
+                    style={'color': '#6c757d'}),
+                dcc.Input(id='symptomatic-period', type='number', value=4.1, step=0.1, min=0,
+                    style={'width': '100%', 'marginBottom': '15px'})
+            ], id='disease-param-modal-display-symptomatic', style={'display': 'none'}),
+
+            # Age-specific CFR section
+            html.Div([
+                html.Label('Mortality rate (1/days)', style={'fontWeight': 'bold'}),
+                html.Small(' - Inverse average number of days spent asymptomatic/treatable/infectious to deceased',
+                    style={'color': '#6c757d', 'display': 'block', 'marginBottom': '15px'}),
+                
+                # CFR inputs for each age group
+                html.Div([
+                    html.Label('0-4 years', style={'fontSize': '14px'}),
+                    dcc.Input(id='cfr-0-4', type='number', value=0.000022319, 
+                        step=0.000000001, min=0, max=100,
+                        style={'width': '100%', 'marginBottom': '5px'})
+                ]),
+                html.Div([
+                    html.Label('5-17 years', style={'fontSize': '14px'}),
+                    dcc.Input(id='cfr-5-24', type='number', value=0.000040975,
+                        step=0.000000001, min=0, max=100,
+                        style={'width': '100%', 'marginBottom': '5px'})
+                ]),
+                html.Div([
+                    html.Label('18-49 years', style={'fontSize': '14px'}),
+                    dcc.Input(id='cfr-25-49', type='number', value=0.000083729,
+                        step=0.000000001, min=0, max=100,
+                        style={'width': '100%', 'marginBottom': '5px'})
+                ]),
+                html.Div([
+                    html.Label('50-64 years', style={'fontSize': '14px'}),
+                    dcc.Input(id='cfr-50-64', type='number', value=0.000061809,
+                        step=0.000000001, min=0, max=100,
+                        style={'width': '100%', 'marginBottom': '5px'})
+                ]),
+                html.Div([
+                    html.Label('65+ years', style={'fontSize': '14px'}),
+                    dcc.Input(id='cfr-65-plus', type='number', value=0.000008978,
+                        step=0.000000001, min=0, max=100,
+                        style={'width': '100%', 'marginBottom': '25px'})
+                ])
+            ], id='disease-param-modal-display-cfr', style={'display': 'none'}),
+    
+            # Age-specific relative susceptibility section
+            html.Div([
+                html.Label('Relative susceptibility (ratio)', style={'fontWeight': 'bold'}),
+                html.Small(' - How susceptible each age group is relative to a reference group (e.g. 0-4yro)',
+                    style={'color': '#6c757d', 'display': 'block', 'marginBottom': '15px'}),
+                
+                # inputs for each age group
+                html.Div([
+                    html.Label('0-4 years', style={'fontSize': '14px'}),
+                    dcc.Input(id='sigma-0-4', type='number', value=1.0, 
+                        step=0.000000001, min=0, max=10,
+                        style={'width': '100%', 'marginBottom': '5px'})
+                ]),
+                html.Div([
+                    html.Label('5-17 years', style={'fontSize': '14px'}),
+                    dcc.Input(id='sigma-5-24', type='number', value=1.0,
+                        step=0.000000001, min=0, max=10,
+                        style={'width': '100%', 'marginBottom': '5px'})
+                ]),
+                html.Div([
+                    html.Label('18-49 years', style={'fontSize': '14px'}),
+                    dcc.Input(id='sigma-25-49', type='number', value=1.0,
+                        step=0.000000001, min=0, max=10,
+                        style={'width': '100%', 'marginBottom': '5px'})
+                ]),
+                html.Div([
+                    html.Label('50-64 years', style={'fontSize': '14px'}),
+                    dcc.Input(id='sigma-50-64', type='number', value=1.0,
+                        step=0.000000001, min=0, max=10,
+                        style={'width': '100%', 'marginBottom': '5px'})
+                ]),
+                html.Div([
+                    html.Label('65+ years', style={'fontSize': '14px'}),
+                    dcc.Input(id='sigma-65-plus', type='number', value=1.0,
+                        step=0.000000001, min=0, max=10,
+                        style={'width': '100%', 'marginBottom': '5px'})
+                ])
+            ], id='disease-param-modal-display-sigma', style={'display': 'none'}),
+
+            # These next two just for SEIRS
+            html.Div([
+                html.Label('Infectious period (days)', style={'fontWeight': 'bold'}),
+                html.Small(' - Average number of days spent infectious',
+                    style={'color': '#6c757d'}),
+                dcc.Input(id='infectious-period', type='number', value=1.9, step=0.1, min=0,
+                    style={'width': '100%', 'marginBottom': '10px'})
+            ], id='disease-param-modal-display-infectious', style={'display': 'none'}),
+            html.Div([
+                html.Label('Immune period (days)', style={'fontWeight': 'bold'}),
+                html.Small(' - Average number of days spent before returning to susceptible (set to 0 to make this an SEIR model)',
+                    style={'color': '#6c757d'}),
+                dcc.Input(id='immune-period', type='number', value=4.1, step=0.1, min=0,
+                    style={'width': '100%', 'marginBottom': '15px'})
+            ], id='disease-param-modal-display-immune', style={'display': 'none'})
+        ])
+    else:
+        return dbc.ModalBody(['Select a valid disease model to set parameters.'])
+
+
 
 # Initial Cases Modal Component  
 initial_cases_modal = dbc.Modal([
@@ -1036,7 +1046,7 @@ initial_cases_modal = dbc.Modal([
             dcc.Dropdown(
                 id='initial-age-group',
                 options=AGE_GROUPS,
-                value='0-4 years',
+                value='18-49 years',
                 style={'marginBottom': '15px'}
             )
         ]),
@@ -1052,6 +1062,7 @@ initial_cases_modal = dbc.Modal([
         dbc.Button("Close", id="initial-cases-close", className="ms-auto", n_clicks=0)
     ])
 ], id="initial-cases-modal", is_open=False, size="lg")
+
 
 # NPI (Non-Pharmaceutical Interventions) Modal Component
 npi_modal = dbc.Modal([
@@ -1086,13 +1097,13 @@ npi_modal = dbc.Modal([
                     style={'width': '100%', 'marginBottom': '5px'})
             ]),
             html.Div([
-                html.Label('5-24 years', style={'fontSize': '14px'}),
+                html.Label('5-17 years', style={'fontSize': '14px'}),
                 dcc.Input(id='npi-eff-5-24', type='number', value=0.35,
                     step=0.01, min=0, max=1,
                     style={'width': '100%', 'marginBottom': '5px'})
             ]),
             html.Div([
-                html.Label('25-49 years', style={'fontSize': '14px'}),
+                html.Label('18-49 years', style={'fontSize': '14px'}),
                 dcc.Input(id='npi-eff-25-49', type='number', value=0.2,
                     step=0.01, min=0, max=1,
                     style={'width': '100%', 'marginBottom': '5px'})
@@ -1234,7 +1245,7 @@ app.layout.children.extend([disease_params_modal, initial_cases_modal, npi_modal
 
 
 # ============================================================================
-# Callbacks for Model and State Selection
+# CALLBACKS
 # ============================================================================
 
 @callback(
@@ -1320,6 +1331,7 @@ def apply_model_state_selection(n_clicks, selected_model, selected_state):
     
     return success_msg, selected_model, selected_state
 
+
 @callback(
     Output('location-assets-store', 'data'),
     Input('apply-model-state-btn', 'n_clicks'),
@@ -1331,13 +1343,14 @@ def load_assets_for_selected_location(n_clicks, selected_state):
         return dash.no_update
 
     try:
-        names, mapping, geojson = load_location_assets(selected_state)
+        names, mapping, geojson = _load_location_assets(selected_state)
         logger.info(f"Loaded assets for {selected_state}: {len(names)} regions")
         return {"names": names, "mapping": mapping, "geojson": geojson}
-
+    
     except Exception as e:
         logger.error(f"Failed to load assets for {selected_state}: {e}")
         return {"names": [], "mapping": {}, "geojson": None}
+
 
 @callback(
     Output('initial-location', 'options'),
@@ -1351,6 +1364,7 @@ def update_initial_location_options(location_assets):
         {"label": name, "value": name}
         for name in location_assets.get("names", [])
     ]
+
 
 @callback(
     Output('npi-location', 'options'),
@@ -1366,9 +1380,6 @@ def update_npi_location_options(location_assets):
         [{"label": n, "value": n} for n in names]
     )
 
-# ============================================================================
-# EXISTING CALLBACKS
-# ============================================================================
 
 # Navigation callback
 @callback(
@@ -1392,6 +1403,7 @@ def navigate_pages(home_clicks, userguide_clicks):
     else:
         return create_home_layout(), 'tab-button active', 'tab-button', False, False, False, False, False
 
+
 # Initialize with home page
 @callback(
     Output('main-content', 'children', allow_duplicate=True),
@@ -1400,6 +1412,7 @@ def navigate_pages(home_clicks, userguide_clicks):
 )
 def init_main_content(_):
     return create_home_layout()
+
 
 # Restore UI state after navigation completes
 @callback(
@@ -1605,33 +1618,95 @@ def toggle_vaccines_modal(open_click, close_click, save_click, is_open):
 @callback(
     [Output('scenario-name', 'value'),
      Output('reproduction-number', 'value'),
-     Output('latency-period', 'value'),
+     Output('latent-period', 'value'),
      Output('asymptomatic-period', 'value'),
      Output('symptomatic-period', 'value'),
      Output('cfr-0-4', 'value'),
      Output('cfr-5-24', 'value'),
      Output('cfr-25-49', 'value'),
      Output('cfr-50-64', 'value'),
-     Output('cfr-65-plus', 'value')],
+     Output('cfr-65-plus', 'value'),
+     Output('infectious-period', 'value'),
+     Output('immune-period', 'value'),],
     Input('preset-scenario-dropdown', 'value'),
+    State('model-selector-dropdown', 'value'),
     prevent_initial_call=True
 )
-def load_preset_scenario(preset_key):
-    if preset_key and preset_key in PRESET_SCENARIOS:
-        scenario = PRESET_SCENARIOS[preset_key]
+def load_preset_scenario(preset_key, selected_value):
+    scenario_prefix = selected_value.split('-')[0]
+
+    if preset_key and preset_key in PRESET_SCENARIOS[scenario_prefix]:
+        scenario = PRESET_SCENARIOS[scenario_prefix][preset_key]
+
+        if scenario_prefix == 'seatird':
+            return (
+                scenario.get('disease_name', None),
+                scenario.get('R0', None),
+                scenario.get('tau', None),
+                scenario.get('kappa', None),
+                scenario.get('gamma', None),
+                scenario.get('nu', [])[0],
+                scenario.get('nu', [])[1],
+                scenario.get('nu', [])[2],
+                scenario.get('nu', [])[3],
+                scenario.get('nu', [])[4],
+                dash.no_update,
+                dash.no_update
+            )
+        elif scenario_prefix == 'seirs':
+            return (
+                scenario.get('disease_name', None),
+                scenario.get('R0', None),
+                scenario.get('latent_period', None),
+                dash.no_update,
+                dash.no_update,
+                dash.no_update,
+                dash.no_update,
+                dash.no_update,
+                dash.no_update,
+                dash.no_update,
+                scenario.get('infectious_period', None),
+                scenario.get('immune_period', None)
+            )
+    return [dash.no_update] * 12
+
+
+# Load the correct disease parameters in the modal
+@callback(
+    [Output('disease-param-modal-display-asymptomatic', 'style'),
+     Output('disease-param-modal-display-symptomatic', 'style'),
+     Output('disease-param-modal-display-cfr', 'style'),
+     Output('disease-param-modal-display-sigma', 'style'), 
+     Output('disease-param-modal-display-infectious', 'style'), 
+     Output('disease-param-modal-display-immune', 'style'),],
+    Input('disease-params-modal', 'is_open'),
+    State('model-selector-dropdown', 'value'),
+    prevent_initial_call=True
+)
+def display_correct_disease_parameters(modal_is_open, selected_value):
+    scenario_prefix = selected_value.split('-')[0]
+
+    if scenario_prefix == 'seatird':
         return (
-            scenario['disease_name'],
-            scenario['R0'],
-            scenario['tau'],
-            scenario['kappa'],
-            scenario['gamma'],
-            scenario['nu'][0],
-            scenario['nu'][1],
-            scenario['nu'][2],
-            scenario['nu'][3],
-            scenario['nu'][4]
+            {'display': 'block'},
+            {'display': 'block'},
+            {'display': 'block'},
+            {'display': 'block'},
+            {'display': 'none'},
+            {'display': 'none'},
         )
-    return [dash.no_update] * 10
+    elif scenario_prefix == 'seirs':
+        return (
+            {'display': 'none'},
+            {'display': 'none'},
+            {'display': 'none'},
+            {'display': 'none'},
+            {'display': 'block'},
+            {'display': 'block'},
+        )
+    
+    return [dash.no_update] * 6
+
 
 # Initial cases management callbacks
 @callback(
@@ -1718,7 +1793,7 @@ def manage_initial_cases(add_clicks, remove_clicks, location, cases_count, age_g
     Input('disease-params-save', 'n_clicks'),
     [State('scenario-name', 'value'),
      State('reproduction-number', 'value'),
-     State('latency-period', 'value'),
+     State('latent-period', 'value'),
      State('asymptomatic-period', 'value'),
      State('symptomatic-period', 'value'),
      State('cfr-0-4', 'value'),
@@ -1731,6 +1806,8 @@ def manage_initial_cases(add_clicks, remove_clicks, location, cases_count, age_g
      State('sigma-25-49', 'value'),
      State('sigma-50-64', 'value'),
      State('sigma-65-plus', 'value'),
+     State('infectious-period', 'value'),
+     State('immune-period', 'value'),
      State('initial-cases-data', 'data'),
      State('displayed-tab', 'data')],
     prevent_initial_call=True
@@ -1738,6 +1815,7 @@ def manage_initial_cases(add_clicks, remove_clicks, location, cases_count, age_g
 def save_disease_parameters(n_clicks, scenario_name, r0, tau, kappa, gamma, 
                           cfr_0_4, cfr_5_24, cfr_25_49, cfr_50_64, cfr_65_plus,
                           sigma_0_4, sigma_5_24, sigma_25_49, sigma_50_64, sigma_65_plus,
+                          infectious_period, immune_period,
                           initial_cases, displayed_tab):
     if n_clicks:
         # Save disease parameters
@@ -1751,8 +1829,12 @@ def save_disease_parameters(n_clicks, scenario_name, r0, tau, kappa, gamma,
             'rho': 0.39,  # Default treatment seeking rate
             'nu': [cfr_0_4 or 0, cfr_5_24 or 0, cfr_25_49 or 0, cfr_50_64 or 0, cfr_65_plus or 0],
             'sigma': [sigma_0_4 or 1, sigma_5_24 or 1, sigma_25_49 or 1, sigma_50_64 or 1, sigma_65_plus or 1],
+            'infectious_period': infectious_period or 7,
+            'immune_period': immune_period or 100,
         }
         
+        print(disease_params)
+        #TODO fix this to only display relevant parameters for disease model selected
         # Update displayed parameters
         if displayed_tab == 'scenario':
             content = create_scenario_display(disease_params, initial_cases)
@@ -1770,6 +1852,7 @@ def save_disease_parameters(n_clicks, scenario_name, r0, tau, kappa, gamma,
         return disease_params, content, play_disabled
     
     return dash.no_update, dash.no_update, dash.no_update
+
 
 # Tab switching callback
 @callback(
@@ -1810,7 +1893,7 @@ def create_scenario_display(disease_params, initial_cases):
             html.H6('Disease Parameters', style={'fontWeight': 'bold', 'marginBottom': '10px'}),
             html.P(f"Scenario: {disease_params.get('scenario_name', 'Custom')}"),
             html.P(f"Reproduction Number: {disease_params.get('R0', 0)}"),
-            html.P(f"Latency Period: {disease_params.get('tau', 0)} days"),
+            html.P(f"Latent Period: {disease_params.get('tau', 0)} days"),
             html.P(f"Asymptomatic Period: {disease_params.get('kappa', 0)} days"),
             html.P(f"Symptomatic Period: {disease_params.get('gamma', 0)} days"),
             html.P('Case Fatality Rate:'),
@@ -2196,9 +2279,10 @@ def toggle_simulation(n_clicks, sim_state, disease_params, initial_cases, npi_da
                     'rho': disease_params.get('rho', 0.39),
                     'nu': ','.join(map(str, disease_params.get('nu', [0,0,0,0,0]))),
                     'sigma': ','.join(map(str, disease_params.get('sigma', [1,1,1,1,1]))),
-                    # NEW: Include model and state selection in payload
-                    'model_type': selected_model or 'SEATIRD-STOCH',
+                    'model_type': selected_model or 'seatird-stochastic',
                     'state': selected_state or 'Texas',
+                    'infectious_period': disease_params.get('infectious_period', 14),
+                    'immune_period': disease_params.get('immune_period', 120),
                 }
                 
                 # Add default empty values for required fields
@@ -2403,8 +2487,8 @@ def fetch_simulation_data(n_intervals, sim_state, event_data):
                             fips_id = county_data.get('fips_id', '')
                             compartment_summary = county_data.get('compartment_summary', {})
                             
-                            infected = compartment_summary.get('I', 0)
-                            deceased = compartment_summary.get('D', 0)
+                            infected = round(compartment_summary.get('I', 0), 2)
+                            deceased = round(compartment_summary.get('D', 0), 2)
                             susceptible = compartment_summary.get('S', 0)
                             
                             # Calculate percentages
@@ -2465,7 +2549,7 @@ def update_map(event_data, timeline_value, view_type, location_assets):
     )
 
     geojson = location_assets.get("geojson") if location_assets else None
-    return create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojson)
+    return _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojson)
 
 @callback(
     Output('line-chart', 'figure'),
