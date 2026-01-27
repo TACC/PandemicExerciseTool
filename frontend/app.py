@@ -7,6 +7,7 @@ import requests
 import logging
 import glob
 import os
+import math
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -267,8 +268,7 @@ def _get_color_from_value(value, max_val):
     """Define color function"""
     if max_val == 0 or value == 0:
         return '#FFEDA0'
-    
-    ratio = value / max_val
+    ratio = math.log1p(value) / math.log1p(max_val)
     
     if ratio >= 1.0:
         return '#800026'
@@ -282,10 +282,8 @@ def _get_color_from_value(value, max_val):
         return '#FD8D3C'
     elif ratio >= 0.25:
         return '#FEB24C'
-    elif ratio >= 0.125:
-        return '#FED976'
     else:
-        return '#FFEDA0'
+        return '#FED976'
 
 
 def _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojson):
@@ -379,7 +377,7 @@ def _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojs
                         mode='lines',
                         name=county_name,
                         showlegend=False,
-                        text=f'{county_name} County<br>Symptomatic Infectious: {infected:,}<br>Deceased: {deceased:,}<br>Symptomatic Infectious %: {infected_pct:.1f}%<br>Deceased %: {deceased_pct:.1f}%',
+                        text=f'{county_name} County<br>Symptomatic Infectious: {infected:,} ({infected_pct:.1f}%)<br>Deceased: {deceased:,} ({deceased_pct:.1f}%)',
                         hoverinfo='text'
                     ))
         else:
@@ -427,7 +425,7 @@ app.layout = html.Div([
     # Stores for state management
     dcc.Store(id='simulation-state', data={'isRunning': False, 'currentIndex': 0, 'taskId': None, 'id': None}),
     dcc.Store(id='event-data', data=[]),
-    dcc.Store(id='view-type', data='percent'),
+    dcc.Store(id='view-type', data='count'),
     dcc.Store(id='disease-parameters', data={}),
     dcc.Store(id='initial-cases-data', data=[]),
     dcc.Store(id='npi-data', data=[]),
@@ -705,7 +703,7 @@ def create_home_layout():
                             {'label': ' Percentage', 'value': 'percent'},
                             {'label': ' Count', 'value': 'count'}
                         ],
-                        value='percent',
+                        value='count',
                         inline=True,
                         labelStyle={'marginRight': '20px'},
                         style={'marginBottom': '15px', 'paddingLeft': '10px'}
