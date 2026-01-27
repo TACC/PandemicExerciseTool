@@ -654,7 +654,8 @@ def create_home_layout():
                             html.Button('Antivirals',
                                 id='antivirals-btn',
                                 className='dropdown-items',
-                                n_clicks=0),
+                                n_clicks=0,
+                                style={'display': 'none'}), ### Remove this style to show Antiviral button ###
                             html.Button('Vaccines',
                                 id='vaccines-btn',
                                 className='dropdown-items',
@@ -1712,7 +1713,7 @@ def display_correct_disease_parameters(modal_is_open, selected_value):
 @callback(
     [Output('initial-cases-data', 'data'),
      Output('initial-cases-table', 'children'),
-     Output('play-pause-btn', 'disabled', allow_duplicate=True)],  # ← ADD THIS LINE
+     Output('play-pause-btn', 'disabled', allow_duplicate=True)],
     [Input('add-initial-case-btn', 'n_clicks'),
      Input({'type': 'remove-case-btn', 'index': ALL}, 'n_clicks')],
     [State('initial-location', 'value'),
@@ -1720,7 +1721,7 @@ def display_correct_disease_parameters(modal_is_open, selected_value):
      State('initial-age-group', 'value'),
      State('initial-cases-data', 'data'),
      State('location-assets-store', 'data'),
-     State('disease-parameters', 'data')],  # ← ADD THIS LINE
+     State('disease-parameters', 'data')],
     prevent_initial_call=True
 )
 def manage_initial_cases(add_clicks, remove_clicks, location, cases_count, age_group, current_data, location_assets, disease_params):
@@ -1809,14 +1810,15 @@ def manage_initial_cases(add_clicks, remove_clicks, location, cases_count, age_g
      State('infectious-period', 'value'),
      State('immune-period', 'value'),
      State('initial-cases-data', 'data'),
-     State('displayed-tab', 'data')],
+     State('displayed-tab', 'data'),
+     State('selected-model-store', 'data'),],
     prevent_initial_call=True
 )
 def save_disease_parameters(n_clicks, scenario_name, r0, tau, kappa, gamma, 
                           cfr_0_4, cfr_5_24, cfr_25_49, cfr_50_64, cfr_65_plus,
                           sigma_0_4, sigma_5_24, sigma_25_49, sigma_50_64, sigma_65_plus,
                           infectious_period, immune_period,
-                          initial_cases, displayed_tab):
+                          initial_cases, displayed_tab, selected_model):
     if n_clicks:
         # Save disease parameters
         disease_params = {
@@ -1831,9 +1833,10 @@ def save_disease_parameters(n_clicks, scenario_name, r0, tau, kappa, gamma,
             'sigma': [sigma_0_4 or 1, sigma_5_24 or 1, sigma_25_49 or 1, sigma_50_64 or 1, sigma_65_plus or 1],
             'infectious_period': infectious_period or 7,
             'immune_period': immune_period or 100,
+            'model_type': selected_model,
         }
         
-        print(disease_params)
+        logging.info(f'disease_params = {disease_params}')
         #TODO fix this to only display relevant parameters for disease model selected
         # Update displayed parameters
         if displayed_tab == 'scenario':
@@ -1885,22 +1888,33 @@ def create_scenario_display(disease_params, initial_cases):
     
     # Disease parameters section
     if disease_params:
-        content.extend([
-            html.H6('Disease Parameters', style={'fontWeight': 'bold', 'marginBottom': '10px'}),
-            html.P(f"Scenario: {disease_params.get('scenario_name', 'Custom')}"),
-            html.P(f"Reproduction Number: {disease_params.get('R0', 0)}"),
-            html.P(f"Latent Period: {disease_params.get('tau', 0)} days"),
-            html.P(f"Asymptomatic Period: {disease_params.get('kappa', 0)} days"),
-            html.P(f"Symptomatic Period: {disease_params.get('gamma', 0)} days"),
-            html.P('Case Fatality Rate:'),
-            html.Ul([
-                html.Li(f"0-4: {disease_params.get('nu', [0,0,0,0,0])[0]:.9f}"),
-                html.Li(f"5-24: {disease_params.get('nu', [0,0,0,0,0])[1]:.9f}"),
-                html.Li(f"25-49: {disease_params.get('nu', [0,0,0,0,0])[2]:.9f}"),
-                html.Li(f"50-64: {disease_params.get('nu', [0,0,0,0,0])[3]:.9f}"),
-                html.Li(f"65+: {disease_params.get('nu', [0,0,0,0,0])[4]:.9f}")
-            ], style={'marginLeft': '20px', 'marginBottom': '15px'})
-        ])
+
+        if disease_params['model_type'].startswith('seatird-'):
+            content.extend([
+                html.H6('Disease Parameters', style={'fontWeight': 'bold', 'marginBottom': '10px'}),
+                html.P(f"Scenario: {disease_params.get('scenario_name', 'Custom')}"),
+                html.P(f"Reproduction Number: {disease_params.get('R0', 0)}"),
+                html.P(f"Latent Period: {disease_params.get('tau', 0)} days"),
+                html.P(f"Asymptomatic Period: {disease_params.get('kappa', 0)} days"),
+                html.P(f"Symptomatic Period: {disease_params.get('gamma', 0)} days"),
+                html.P('Case Fatality Rate:'),
+                html.Ul([
+                    html.Li(f"0-4: {disease_params.get('nu', [0,0,0,0,0])[0]:.9f}"),
+                    html.Li(f"5-24: {disease_params.get('nu', [0,0,0,0,0])[1]:.9f}"),
+                    html.Li(f"25-49: {disease_params.get('nu', [0,0,0,0,0])[2]:.9f}"),
+                    html.Li(f"50-64: {disease_params.get('nu', [0,0,0,0,0])[3]:.9f}"),
+                    html.Li(f"65+: {disease_params.get('nu', [0,0,0,0,0])[4]:.9f}")
+                ], style={'marginLeft': '20px', 'marginBottom': '15px'})
+            ])
+        if disease_params['model_type'].startswith('seirs-'):
+            content.extend([
+                html.H6('Disease Parameters', style={'fontWeight': 'bold', 'marginBottom': '10px'}),
+                html.P(f"Scenario: {disease_params.get('scenario_name', 'Custom')}"),
+                html.P(f"Reproduction Number: {disease_params.get('R0', 0)}"),
+                html.P(f"Latent Period: {disease_params.get('tau', 0)} days"),
+                html.P(f"Infectious Period: {disease_params.get('infectious_period', 0)} days"),
+                html.P(f"Immune Period: {disease_params.get('immune_period', 0)} days"),
+            ])
     
     # Initial cases section
     if initial_cases:
@@ -1944,7 +1958,6 @@ def manage_npis(add_clicks, remove_clicks,
     current_npi_data = list(current_npi_data or [])
     trig = ctx.triggered_id  # structured; no regex needed
 
-    # ----- Add -----
     if trig == 'add-npi-btn':
         # Basic validation
         if not name:
@@ -2248,8 +2261,8 @@ def reset_simulation(n_clicks):
      State('vaccine-data', 'data'),
      State('antivirals-enabled', 'data'),
      State('vaccines-enabled', 'data'),
-     State('selected-model-store', 'data'),      # NEW: Get selected model
-     State('selected-state-store', 'data')],     # NEW: Get selected state
+     State('selected-model-store', 'data'),
+     State('selected-state-store', 'data')],
     prevent_initial_call=True
 )
 def toggle_simulation(n_clicks, sim_state, disease_params, initial_cases, npi_data, antiviral_data, vaccine_data,
