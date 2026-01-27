@@ -1842,12 +1842,8 @@ def save_disease_parameters(n_clicks, scenario_name, r0, tau, kappa, gamma,
             content = html.P('No interventions set yet.', style={'color': '#6c757d', 'fontStyle': 'italic'})
         
         # Enable play button ONLY if we have BOTH disease parameters AND initial cases
-<<<<<<< Updated upstream
         play_disabled = not (bool(disease_params) and bool(initial_cases) and len(initial_cases) > 0)
         
-=======
-        play_disabled = not (bool(disease_params) and bool(initial_cases))
->>>>>>> Stashed changes
         
         return disease_params, content, play_disabled
     
