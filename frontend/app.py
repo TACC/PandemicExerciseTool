@@ -689,10 +689,11 @@ def create_home_layout():
                     'paddingRight': '10px',
                 })
             ], className='col-lg-2', style={
-                'height': 'calc(100vh - 180px)',
+                'height': '100%',        # inherit from row
+                'minHeight': 0,
                 'overflowY': 'auto',
             }),
-            
+
             # Middle Panel - Map and Chart
             html.Div([
                 # View toggle (count/percent)
@@ -710,34 +711,45 @@ def create_home_layout():
                         style={'marginBottom': '15px', 'paddingLeft': '10px'}
                     )
                 ], className='top-middle-panel'),
-                
+
                 # Map and Chart container
                 html.Div([
                     # Map
                     dcc.Graph(
                         id='spread-map',
-                        style={'height': '400px', 'marginBottom': '10px'},
+                        style={'flex': '0 0 400px'},
                         config={'displayModeBar': False}
                     ),
-                    
+
                     # Line Chart
                     dcc.Graph(
                         id='line-chart',
-                        style={'height': '300px'},
+                        style={'flex': '1 1 auto'},
                         config={'displayModeBar': False}
                     )
-                ], className='map-and-chart-container')
-            ], className='col-lg-7'),
+                ],
+                className='map-and-chart-container',
+                style={
+                    'display': 'flex',
+                    'flexDirection': 'column',
+                    # subtract fixed header (80px) + fixed footer (70px)
+                    'height': '100%',
+                    'minHeight': 0,
+                    'overflow': 'hidden'
+                })
+            ], className='col-lg-7', style={'height': '100%', 'minHeight': 0}),
             
             # Right Panel - Table
             html.Div([
                 html.Div([
                     html.H6('County Data', style={'marginBottom': '15px'}),
-                    html.Div(id='spread-table')
-                ], className='right-panel')
-            ], className='col-lg-3'),
+                    html.Div(id='spread-table', style={'height': '100%', 'overflowY': 'auto'})
+                ], className='right-panel', style={'height': '100%', 'overflow': 'hidden'})
+            ], className='col-lg-3', style={'height': '100%', 'minHeight': 0}),
         ], className='row', style={
-            'height': 'calc(100vh - 180px)',
+            'height': 'calc(100vh - 80px)',
+            'paddingBottom': '70px', # reserve fixed footer height
+            'boxSizing': 'border-box',
             'overflow': 'hidden',
         }),
         
@@ -2795,15 +2807,22 @@ def update_chart(event_data, timeline_value):
     
     fig.update_layout(
         title=dict(
-            text="Epidemic Curve - SEATIRD Model",
-            y=0.98,
-            yanchor='top'
+            #text="Epidemic Curve", # remove title to make space for legend
+            y=0.96,
+            yanchor='top',
+            pad=dict(t=5)
         ),
         xaxis_title="Day",
         yaxis_title="Population Count",
         height=300,
-        legend=dict(orientation="h", yanchor="bottom", y=1.08, xanchor="right", x=1),
-        margin=dict(l=40, r=40, t=80, b=40),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1
+        ),
+        margin=dict(l=40, r=40, t=60, b=70),
         hovermode='x unified'
     )
 
