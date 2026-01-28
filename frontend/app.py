@@ -2656,7 +2656,7 @@ def toggle_simulation(n_clicks, sim_state, disease_params, initial_cases, npi_da
 )
 def fetch_simulation_data(n_intervals, sim_state, event_data):
     if sim_state.get('isRunning', False):
-        current_day = len(event_data) + 1  # Start from day 1, not day 0
+        current_day = len(event_data) # Start from day 0
         
         try:
             # Fetch real data from Django backend
