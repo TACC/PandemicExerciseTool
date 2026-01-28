@@ -431,6 +431,7 @@ app.layout = html.Div([
     dcc.Store(id='npi-data', data=[]),
     dcc.Store(id='antiviral-data', data={}),
     dcc.Store(id='vaccine-data', data={}),
+    dcc.Store(id='vaccine-stockpile', data=[]),
     dcc.Store(id='antivirals-enabled', data=False),
     dcc.Store(id='vaccines-enabled', data=False),
     dcc.Store(id='displayed-tab', data='scenario'),
@@ -1182,62 +1183,256 @@ antivirals_modal = dbc.Modal([
     ])
 ], id="antivirals-modal", is_open=False)
 
+
+VACCINE_MODELS = {
+    "stockpile-age-risk": "Stockpile Age Risk",
+}
+
 # Vaccines Modal Component
 vaccines_modal = dbc.Modal([
     dbc.ModalHeader(dbc.ModalTitle("Vaccines")),
+
     dbc.ModalBody([
         html.Div([
-            html.Label('Vaccine Effectiveness'),
-            dcc.Input(id='vaccine-effectiveness', type='number', value=0.50, 
-                min=0, max=1, step=0.01,
-                style={'width': '100%', 'marginBottom': '10px'})
-        ]),
-        html.Div([
-            html.Label('Vaccine Adherence'),
-            dcc.Input(id='vaccine-adherence', type='number', value=0.50, 
-                min=0, max=1, step=0.0001,
-                style={'width': '100%', 'marginBottom': '10px'})
-        ]),
-        html.Div([
-            html.Label('Vaccine Wastage Factor (days)'),
-            dcc.Input(id='vaccine-wastage', type='number', value=60, 
-                min=0, max=1000, step=1,
-                style={'width': '100%', 'marginBottom': '15px'})
-        ]),
-        
-        # Vaccine Strategy
-        html.Div([
-            html.Label('Vaccine Strategy', style={'fontWeight': 'bold', 'marginBottom': '10px'}),
-            dcc.RadioItems(
-                id='vaccine-strategy',
+            html.Label('Vaccine Model', style={'fontWeight': 'bold', 'marginBottom': '5px'}),
+            dcc.Dropdown(
                 options=[
-                    {'label': ' Pro Rata (distributes equally to all age groups)', 'value': 'pro_rata'},
-                    {'label': ' Children (distributes to youngest age groups first)', 'value': 'children'}
+                    {'label': model, 'value': key}
+                    for key, model in VACCINE_MODELS.items()
                 ],
-                value='pro_rata',
-                style={'marginBottom': '15px'}
+                placeholder='Select a vaccine model...',
+                clearable=True,
+                style={'marginBottom': '15px'},
+                id='vaccine-model-dropdown',
             )
         ]),
-        
-        html.H6('Stockpile Management', style={'fontWeight': 'bold', 'marginBottom': '10px'}),
-        html.Div([
-            html.Label('New Stockpile Day'),
-            dcc.Input(id='vaccine-stockpile-day', type='number', value=50, 
-                min=1, max=1000, step=1,
-                style={'width': '100%', 'marginBottom': '10px'})
-        ]),
-        html.Div([
-            html.Label('New Stockpile Amount'),
-            dcc.Input(id='vaccine-stockpile-amount', type='number', value=10000, 
-                min=0, step=1,
-                style={'width': '100%', 'marginBottom': '15px'})
-        ])
+        html.Hr(),
+        html.Div(id='vaccine-parameter-body'),
     ]),
     dbc.ModalFooter([
         dbc.Button("Save", id="vaccines-save", className="ms-auto", n_clicks=0),
         dbc.Button("Close", id="vaccines-close", className="ms-auto", n_clicks=0)
     ])
 ], id="vaccines-modal", is_open=False)
+
+
+@callback(
+    Output('vaccine-parameter-body', 'children'),
+    Input('vaccine-model-dropdown', 'value'),
+    prevent_initial_call=True
+)
+def update_vaccines_modal_body(selected_value):
+    if selected_value == 'stockpile-age-risk':
+        return html.Div([
+
+            # Vaccine priority groups
+            html.Div([
+                html.Label('Vaccine Priority Groups', style={'fontWeight': 'bold'}),
+                html.Small('Select age specific priority groups for vaccine distribution',
+                    style={'color': '#6c757d', 'display': 'block', 'marginBottom': '10px'}),
+
+                dcc.Checklist([
+                        { 'label': '0-4 years', 'value': 'vac-arpg-0-4' },
+                        { 'label': '5-17 years', 'value': 'vac-arpg-5-17' },
+                        { 'label': '18-49 years', 'value': 'vac-arpg-18-49' },
+                        { 'label': '50-64 years', 'value': 'vac-arpg-50-64' },
+                        { 'label': '65+ years', 'value': 'vac-arpg-65-plus' },
+                    ], value=['vac-arpg-18-49'],
+                    inputStyle={'marginRight': '10px'},
+                    labelStyle={'display': 'flex', 'align-items': 'center', 'fontSize': '14px'},
+                ),
+            ], style={'marginBottom': '15px'}),
+
+            html.Div([
+                html.Label('Vaccine Half Life (days)', style={'fontWeight': 'bold'}),
+                html.Small('Number of days required to clear half the vaccine from the body'),
+                dcc.Input(id='vaccine-half-life', type='number', value=60,
+                    min=0, max=1000, step=1,
+                    style={'width': '100%', 'marginBottom': '15px'})
+            ], style={'display': 'none'}), ### This is currently hidden ###
+
+            html.Div([
+                html.Label('Vaccine Capacity (proportion)', style={'fontWeight': 'bold'}),
+                html.Small('Proportion of population that can be vaccinated, from 0 to 1'),
+                dcc.Input(id='vaccine-capacity', type='number', value=0.5,
+                    min=0, max=1, step=0.01,
+                    style={'width': '100%', 'marginBottom': '15px'})
+            ]),
+
+            html.Div([
+                html.Label('Vaccine Effectiveness Lag (days)', style={'fontWeight': 'bold'}),
+                html.Small('Number of days before vaccine starts to take effect'),
+                dcc.Input(id='vaccine-effectiveness-lag', type='number', value=14,
+                    min=0, max=100, step=1,
+                    style={'width': '100%', 'marginBottom': '15px'})
+            ]),
+
+            # Age-specific effectiveness
+            html.Div([
+                html.Label('Vaccine effectiveness (proportion)', style={'fontWeight': 'bold'}),
+                html.Small('Age-specific effectiveness values where 0 is not effective and 1 is completely effective',
+                    style={'color': '#6c757d', 'display': 'block', 'marginBottom': '10px'}),
+
+                html.Div([
+                    html.Label('0-4 years', style={'fontSize': '14px'}),
+                    dcc.Input(id='vac-eff-0-4', type='number', value=0.4,
+                        step=0.01, min=0, max=1,
+                        style={'width': '100%', 'marginBottom': '5px'})
+                ]),
+                html.Div([
+                    html.Label('5-17 years', style={'fontSize': '14px'}),
+                    dcc.Input(id='vac-eff-5-17', type='number', value=0.35,
+                        step=0.01, min=0, max=1,
+                        style={'width': '100%', 'marginBottom': '5px'})
+                ]),
+                html.Div([
+                    html.Label('18-49 years', style={'fontSize': '14px'}),
+                    dcc.Input(id='vac-eff-18-49', type='number', value=0.2,
+                        step=0.01, min=0, max=1,
+                        style={'width': '100%', 'marginBottom': '5px'})
+                ]),
+                html.Div([
+                    html.Label('50-64 years', style={'fontSize': '14px'}),
+                    dcc.Input(id='vac-eff-50-64', type='number', value=0.25,
+                        step=0.01, min=0, max=1,
+                        style={'width': '100%', 'marginBottom': '5px'})
+                ]),
+                html.Div([
+                    html.Label('65+ years', style={'fontSize': '14px'}),
+                    dcc.Input(id='vac-eff-65-plus', type='number', value=0.1,
+                        step=0.01, min=0, max=1,
+                        style={'width': '100%', 'marginBottom': '15px'})
+                ])
+            ]),
+
+            # Age-specific adherence
+            html.Div([
+                html.Label('Vaccine adherence (proportion)', style={'fontWeight': 'bold'}),
+                html.Small('Age-specific adherence values where 0 is not adherent and 1 is completely adherent',
+                    style={'color': '#6c757d', 'display': 'block', 'marginBottom': '10px'}),
+
+                html.Div([
+                    html.Label('0-4 years', style={'fontSize': '14px'}),
+                    dcc.Input(id='vac-adh-0-4', type='number', value=0.4,
+                        step=0.01, min=0, max=1,
+                        style={'width': '100%', 'marginBottom': '5px'})
+                ]),
+                html.Div([
+                    html.Label('5-17 years', style={'fontSize': '14px'}),
+                    dcc.Input(id='vac-adh-5-17', type='number', value=0.35,
+                        step=0.01, min=0, max=1,
+                        style={'width': '100%', 'marginBottom': '5px'})
+                ]),
+                html.Div([
+                    html.Label('18-49 years', style={'fontSize': '14px'}),
+                    dcc.Input(id='vac-adh-18-49', type='number', value=0.2,
+                        step=0.01, min=0, max=1,
+                        style={'width': '100%', 'marginBottom': '5px'})
+                ]),
+                html.Div([
+                    html.Label('50-64 years', style={'fontSize': '14px'}),
+                    dcc.Input(id='vac-adh-50-64', type='number', value=0.25,
+                        step=0.01, min=0, max=1,
+                        style={'width': '100%', 'marginBottom': '5px'})
+                ]),
+                html.Div([
+                    html.Label('65+ years', style={'fontSize': '14px'}),
+                    dcc.Input(id='vac-adh-65-plus', type='number', value=0.1,
+                        step=0.01, min=0, max=1,
+                        style={'width': '100%', 'marginBottom': '15px'})
+                ])
+            ]),
+
+            # Vaccine stockpile section
+            html.Label(['Vaccine Stockpile'], style={'fontWeight': 'bold'}),
+            html.Small('Vaccine reserves available beginning on a specified day',
+                style={'color': '#6c757d', 'display': 'block', 'marginBottom': '10px'}),
+
+            html.Div([
+                html.Label('Stockpile Day'),
+                dcc.Input(id='vac-stockpile-day', type='number', min=1, max=300,
+                    placeholder="Specify stockpile day...",
+                    style={'width': '100%', 'marginBottom': '10px'})
+            ]),
+            html.Div([
+                html.Label('Stockpile Amount'),
+                dcc.Input(id='vac-stockpile-amount', type='number', min=1,
+                    placeholder="Specify stockpile amount...",
+                    style={'width': '100%', 'marginBottom': '10px'})
+            ]),
+            html.Button('Add Vaccine Stockpile', id='add-vac-stockpile-btn',
+                className='btn btn-secondary', style={'marginBottom': '15px'}),
+
+            # Table showing added vaccine stockpiles
+            html.Div(id='vac-stockpile-table')
+        ])
+    else:
+        return html.Div([])
+
+
+# Vaccine stockpile management callbacks
+@callback(
+    [Output('vaccine-stockpile', 'data'),
+     Output('vac-stockpile-table', 'children'),],
+    [Input('add-vac-stockpile-btn', 'n_clicks'),
+     Input({'type': 'remove-vac-stockpile-btn', 'index': ALL}, 'n_clicks')],
+    [State('vac-stockpile-day', 'value'),
+     State('vac-stockpile-amount', 'value'),
+     State('vaccine-stockpile', 'data'),],
+    prevent_initial_call=True
+)
+def manage_vaccine_stockpile(add_clicks, remove_clicks, day, amount, current_data):
+    triggered_id = ctx.triggered[0]['prop_id'] if ctx.triggered else None
+
+    if 'add-vac-stockpile-btn' in triggered_id and day and amount:
+        # Add new case
+        new_case = {
+            'id': len(current_data),
+            'day': day,
+            'amount': amount,
+        }
+        current_data.append(new_case)
+
+    elif 'remove-vac-stockpile-btn' in triggered_id:
+        # Remove case by index
+        import re
+        match = re.search(r'"index":(\d+)', triggered_id)
+        if match:
+            remove_index = int(match.group(1))
+            current_data = [case for case in current_data if case['id'] != remove_index]
+
+    # Create table
+    if current_data:
+        table_rows = []
+        for case in current_data:
+            table_rows.append(
+                html.Tr([
+                    html.Td(f'{case["day"]}'),
+                    html.Td(f'{case["amount"]}'),
+                    html.Td(
+                        html.Button('Remove',
+                            id={'type': 'remove-vac-stockpile-btn', 'index': case['id']},
+                            className='btn btn-sm btn-danger')
+                    )
+                ])
+            )
+        table = html.Table([
+            html.Thead([
+                html.Tr([
+                    html.Th('Day'),
+                    html.Th('Amount'),
+                    html.Th('Action')
+                ])
+            ]),
+            html.Tbody(table_rows)
+        ], className='table table-striped')
+    else:
+        table = html.P('No stockpiles added yet.', style={'color': '#6c757d', 'fontStyle': 'italic'})
+
+    return current_data, table
+
+
+
 
 # Add modals to layout
 app.layout.children.extend([disease_params_modal, initial_cases_modal, npi_modal, antivirals_modal, vaccines_modal])
