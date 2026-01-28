@@ -1352,7 +1352,7 @@ def update_vaccines_modal_body(selected_value):
 
             html.Div([
                 html.Label('Stockpile Day'),
-                dcc.Input(id='vac-stockpile-day', type='number', min=1, max=300,
+                dcc.Input(id='vac-stockpile-day', type='number', min=-300, max=300,
                     placeholder="Specify stockpile day...",
                     style={'width': '100%', 'marginBottom': '10px'})
             ]),
@@ -2410,16 +2410,31 @@ def create_interventions_display(npi_data, antiviral_data, vaccine_data, vaccine
     ## Vaccines section
     if vaccine_data:
         model_label = 'Stockpile Age Risk' if vaccine_data['vaccine_model'] == 'stockpile-age-risk' else 'Undefined'
-        content.extend([
-            html.H6('Vaccines', style={'fontWeight': 'bold', 'marginBottom': '10px'}),
+        content.extend([html.H6('Vaccines', style={'fontWeight': 'bold', 'marginBottom': '10px'})])
+        content.append(html.Div([
             html.P(f"Vaccine Model: {model_label}"),
             html.P(f"Priority Groups: {vaccine_data['priority_groups']}"),
-            html.P(f"Capacity: {vaccine_data['capacity']}"),
+            html.P(f"Capacity: {vaccine_data['capacity']} (proportion)"),
             html.P(f"Effectiveness Lag: {vaccine_data['effectiveness_lag']} days"),
-            html.P(f"Effectiveness: {vaccine_data['effectiveness']}"),
-            html.P(f"Adherence: {vaccine_data['adherence']}"),
-            html.P(f"Stockpile: {vaccine_stockpile}")
-        ])
+            html.P(f"Effectiveness:"),
+            html.Ul([
+                    html.Li(f"0-4: {vaccine_data['effectiveness'][0]:.2f}"),
+                    html.Li(f"5-17: {vaccine_data['effectiveness'][1]:.2f}"),
+                    html.Li(f"18-49: {vaccine_data['effectiveness'][2]:.2f}"),
+                    html.Li(f"50-64: {vaccine_data['effectiveness'][3]:.2f}"),
+                    html.Li(f"65+: {vaccine_data['effectiveness'][4]:.2f}")
+            ], style={'marginLeft': '20px'}),
+            html.P(f"Adherence:"),
+            html.Ul([
+                    html.Li(f"0-4: {vaccine_data['adherence'][0]:.2f}"),
+                    html.Li(f"5-17: {vaccine_data['adherence'][1]:.2f}"),
+                    html.Li(f"18-49: {vaccine_data['adherence'][2]:.2f}"),
+                    html.Li(f"50-64: {vaccine_data['adherence'][3]:.2f}"),
+                    html.Li(f"65+: {vaccine_data['adherence'][4]:.2f}")
+            ], style={'marginLeft': '20px'}),
+            html.P(f"Stockpile:"),
+            html.Ul(children=[html.Li(f'day={i["day"]} , amt={i["amount"]}') for i in vaccine_stockpile], style={'marginLeft': '20px'})
+        ], style={'marginBottom': '15px', 'padding': '10px', 'border': '1px solid #dee2e6', 'borderRadius': '4px'}))
     
     return html.Div(content)
 
@@ -2488,41 +2503,7 @@ def toggle_simulation(n_clicks, sim_state, disease_params, initial_cases, npi_da
                     'infectious_period': disease_params.get('infectious_period', 14),
                     'immune_period': disease_params.get('immune_period', 120),
                 }
-                
-                # Add default empty values for required fields
-                # baseline defaults
-                payload.update({
-                    'npis': '[]',
-                    'antiviral_stockpile': 'null',
-                    'antiviral_effectiveness': None,
-                    'antiviral_wastage_factor': None,
-                    'vaccine_stockpile': 'null',
-                    'vaccine_effectiveness': None,
-                    'vaccine_adherence': None,
-                    'vaccine_wastage_factor': None,
-                    'vaccine_pro_rata': None,
-                })
 
-                # NPIs already handled (npis stays [] unless user added NPIs)
-
-                # Antivirals only if enabled
-                if antivirals_enabled and antiviral_data:
-                    payload.update({
-                        'antiviral_effectiveness': antiviral_data['effectiveness'],
-                        'antiviral_stockpile': antiviral_data['stockpile_amount'],
-                        'antiviral_wastage_factor': antiviral_data['wastage_factor'] / 365.0
-                    })
-
-                # Vaccines only if enabled
-                if vaccines_enabled and vaccine_data:
-                    payload.update({
-                        'vaccine_effectiveness': vaccine_data['effectiveness'],
-                        'vaccine_adherence': vaccine_data['adherence'],
-                        'vaccine_stockpile': vaccine_data['stockpile_amount'],
-                        'vaccine_wastage_factor': vaccine_data['wastage_factor'] / 365.0,
-                        'vaccine_pro_rata': vaccine_data['strategy'],
-                    })
-                
                 # Add initial cases - use provided cases or default to Harris County
                 initial_infected = []
                 if initial_cases:
@@ -2534,8 +2515,16 @@ def toggle_simulation(n_clicks, sim_state, disease_params, initial_cases, npi_da
                         })
 
                 payload['initial_infected'] = json.dumps(initial_infected)
-                
-                # Add interventions if any
+
+                # Add default empty values for required fields
+                # baseline defaults
+                payload.update({
+                    'npis': json.dumps([]),
+                    'antiviral_model': json.dumps({}),
+                    'vaccine_model': json.dumps({}),
+                })
+
+                # Add NPIs
                 if npi_data:
                     npis = []
                     for npi in npi_data:
@@ -2547,23 +2536,30 @@ def toggle_simulation(n_clicks, sim_state, disease_params, initial_cases, npi_da
                             'location': npi['location']
                         })
                     payload['npis'] = json.dumps(npis)
-                
-                if antiviral_data:
+
+                # Antivirals only if enabled
+                #if antivirals_enabled and antiviral_data:
+                #    payload.update({
+                #        'antiviral_effectiveness': antiviral_data['effectiveness'],
+                #        'antiviral_stockpile': antiviral_data['stockpile_amount'],
+                #        'antiviral_wastage_factor': antiviral_data['wastage_factor'] / 365.0
+                #    })
+
+                # Add vaccines
+                if vaccines_enabled and vaccine_data:
                     payload.update({
-                        'antiviral_effectiveness': antiviral_data['effectiveness'],
-                        'antiviral_stockpile': antiviral_data['stockpile_amount'],
-                        'antiviral_wastage_factor': antiviral_data['wastage_factor'] / 365.0  # Convert to proportion
+                        'vaccine_model': vaccine_data['vaccine_model'],
+                        'priority_groups': vaccine_data['priority_groups'],
+                        'capacity': vaccine_data['capacity'],
+                        'effectiveness_lag': vaccine_data['effectiveness_lag'],
+                        'effectiveness': vaccine_data['effectiveness'],
+                        'adherence': vaccine_data['adherence'],
                     })
                 
-                if vaccine_data:
                     payload.update({
-                        'vaccine_effectiveness': vaccine_data['effectiveness'],
-                        'vaccine_adherence': vaccine_data['adherence'],
-                        'vaccine_stockpile': vaccine_data['stockpile_amount'],
-                        'vaccine_wastage_factor': vaccine_data['wastage_factor'] / 365.0,  # Convert to proportion
-                        'vaccine_pro_rata': vaccine_data['strategy']
+                        'vaccine_stockpile': json.dumps(vaccine_stockpile)
                     })
-                
+
                 # Call Django API to create simulation
                 logger.info(f"Sending payload to API: {payload}")
                 response = requests.post(f'{API_BASE_URL}/api/pet/', json=payload)
