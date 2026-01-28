@@ -2312,31 +2312,6 @@ def save_antivirals(n_clicks, effectiveness, wastage, stockpile_day, stockpile_a
 
     return antiviral_data, True, content
 
-## Vaccination callback
-#@callback(
-#    [Output('vaccine-effectiveness', 'value'),
-#     Output('vaccine-adherence', 'value'),
-#     Output('vaccine-wastage', 'value'),
-#     Output('vaccine-strategy', 'value'),
-#     Output('vaccine-stockpile-day', 'value'),
-#     Output('vaccine-stockpile-amount', 'value')],
-#    Input('vaccines-modal', 'is_open'),
-#    State('vaccine-data', 'data'),
-#    prevent_initial_call=True
-#)
-#def prefill_vaccines_modal(is_open, vaccine_data):
-#    if not is_open:
-#        return [dash.no_update] * 6
-#    if vaccine_data:
-#        return (
-#            vaccine_data.get('effectiveness', 0.50),
-#            vaccine_data.get('adherence', 0.50),
-#            vaccine_data.get('wastage_factor', 60),
-#            vaccine_data.get('strategy', 'pro_rata'),
-#            vaccine_data.get('stockpile_day', 50),
-#            vaccine_data.get('stockpile_amount', 10000),
-#        )
-#    return (0.50, 0.50, 60, 'pro_rata', 50, 10000)
 
 @callback(
     [Output('vaccine-data', 'data'),
