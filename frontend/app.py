@@ -332,7 +332,7 @@ def _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojs
         
         # Debug logging for first few counties
         if len(county_values) <= 3:
-            logger.info(f"County {full_fips}: Symptomatic Infectious={county.get('infected', 0)}, percent={county.get('infectedPercent', 0)}")
+            logger.info(f"County {full_fips}: Infectious={county.get('infected', 0)}, percent={county.get('infectedPercent', 0)}")
     
     logger.info(f"Mapped {len(county_values)} counties to FIPS codes")
     
@@ -377,7 +377,7 @@ def _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojs
                         mode='lines',
                         name=county_name,
                         showlegend=False,
-                        text=f'{county_name} County<br>Symptomatic Infectious: {infected:,} ({infected_pct:.1f}%)<br>Deceased: {deceased:,} ({deceased_pct:.1f}%)',
+                        text=f'{county_name} County<br>Infectious: {infected:,} ({infected_pct:.1f}%)<br>Deceased: {deceased:,} ({deceased_pct:.1f}%)',
                         hoverinfo='text'
                     ))
         else:
@@ -395,7 +395,7 @@ def _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojs
                     mode='lines',
                     name=county_name,
                     showlegend=False,
-                    text=f'{county_name} County<br>Symptomatic Infectious: {infected:,}<br>Deceased: {deceased:,}<br>Symptomatic Infectious %: {infected_pct:.1f}%<br>Deceased %: {deceased_pct:.1f}%',
+                    text=f'{county_name} County<br>Infectious: {infected:,} ({infected_pct:.1f}%)<br>Deceased: {deceased:,} ({deceased_pct:.1f}%)',
                     hoverinfo='text'
                 ))
     
@@ -2786,9 +2786,10 @@ def update_map(event_data, timeline_value, view_type, location_assets):
 @callback(
     Output('line-chart', 'figure'),
     [Input('event-data', 'data'),
-     Input('timeline-slider', 'value')]
+     Input('timeline-slider', 'value')],
+    State('selected-model-store', 'data')
 )
-def update_chart(event_data, timeline_value):
+def update_chart(event_data, timeline_value, selected_model):
     if not event_data:
         fig = go.Figure()
         fig.update_layout(
@@ -2807,17 +2808,50 @@ def update_chart(event_data, timeline_value):
     infected = [d.get('totalInfectedCount', 0) for d in event_data]
     recovered = [d.get('totalRecoveredCount', 0) for d in event_data]
     deceased = [d.get('totalDeceased', 0) for d in event_data]
-    
-    fig = go.Figure()
-    
+
+    # Decide which series to show
+    model = (selected_model or "").lower()
+    if model.startswith("seir") or model.startswith("seirs"):
+        # SEIR
+        series = [
+            ("Susceptible", susceptible),
+            ("Exposed", exposed),
+            ("Infectious", infected),
+            ("Recovered", recovered),
+        ]
+    else:
+        # SEATIRD
+        series = [
+            ("Susceptible", susceptible),
+            ("Exposed", exposed),
+            ("Asymptomatic Infectious", asymptomatic),
+            ("Treatable Infectious", treatable),
+            ("Symptomatic Infectious", infected),
+            ("Recovered", recovered),
+            ("Deceased", deceased),
+        ]
+
     # Add traces for SEATIRD compartments
-    fig.add_trace(go.Scatter(x=days, y=susceptible, name='Susceptible', line=dict(color='blue')))
-    fig.add_trace(go.Scatter(x=days, y=exposed, name='Exposed', line=dict(color='orange')))
-    fig.add_trace(go.Scatter(x=days, y=asymptomatic, name='Asymptomatic Infectious', line=dict(color='yellow')))
-    fig.add_trace(go.Scatter(x=days, y=treatable, name='Treatable Infectious', line=dict(color='purple')))
-    fig.add_trace(go.Scatter(x=days, y=infected, name='Symptomatic Infectious', line=dict(color='red', width=3)))
-    fig.add_trace(go.Scatter(x=days, y=recovered, name='Recovered', line=dict(color='green')))
-    fig.add_trace(go.Scatter(x=days, y=deceased, name='Deceased', line=dict(color='black')))
+    COLOR_MAP = {
+        "Susceptible": "blue",
+        "Exposed": "orange",
+        "Asymptomatic Infectious": "gold",
+        "Treatable Infectious": "purple",
+        "Symptomatic Infectious": "red",
+        "Infectious": "red",
+        "Recovered": "green",
+        "Deceased": "black",
+    }
+    fig = go.Figure()
+    for name, y in series:
+        fig.add_trace(
+            go.Scatter(
+                x=days,
+                y=y,
+                name=name,
+                line=dict(color=COLOR_MAP.get(name))
+            )
+        )
     
     # Add vertical line for current day
     if timeline_value is not None and timeline_value < len(days):
@@ -2923,8 +2957,8 @@ def update_table(event_data, timeline_value, view_type, location_assets, search_
             infected_disp = f"{infected_num:.1f}%"
             deceased_disp = f"{deceased_num:.1f}%"
         else:
-            infected_disp = f"{infected_num:,.0f}"
-            deceased_disp = f"{deceased_num:,.0f}"
+            infected_disp = f"{math.floor(infected_num):,}"
+            deceased_disp = f"{math.floor(deceased_num):,}"
 
         table_data.append({
             "name": county_name,
