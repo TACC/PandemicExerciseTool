@@ -332,7 +332,7 @@ def _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojs
         
         # Debug logging for first few counties
         if len(county_values) <= 3:
-            logger.info(f"County {full_fips}: Symptomatic Infectious={county.get('infected', 0)}, percent={county.get('infectedPercent', 0)}")
+            logger.info(f"County {full_fips}: Infectious={county.get('infected', 0)}, percent={county.get('infectedPercent', 0)}")
     
     logger.info(f"Mapped {len(county_values)} counties to FIPS codes")
     
@@ -377,7 +377,7 @@ def _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojs
                         mode='lines',
                         name=county_name,
                         showlegend=False,
-                        text=f'{county_name} County<br>Symptomatic Infectious: {infected:,} ({infected_pct:.1f}%)<br>Deceased: {deceased:,} ({deceased_pct:.1f}%)',
+                        text=f'{county_name} County<br>Infectious: {infected:,} ({infected_pct:.1f}%)<br>Deceased: {deceased:,} ({deceased_pct:.1f}%)',
                         hoverinfo='text'
                     ))
         else:
@@ -395,7 +395,7 @@ def _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojs
                     mode='lines',
                     name=county_name,
                     showlegend=False,
-                    text=f'{county_name} County<br>Symptomatic Infectious: {infected:,}<br>Deceased: {deceased:,}<br>Symptomatic Infectious %: {infected_pct:.1f}%<br>Deceased %: {deceased_pct:.1f}%',
+                    text=f'{county_name} County<br>Infectious: {infected:,} ({infected_pct:.1f}%)<br>Deceased: {deceased:,} ({deceased_pct:.1f}%)',
                     hoverinfo='text'
                 ))
     
@@ -732,7 +732,6 @@ def create_home_layout():
                 style={
                     'display': 'flex',
                     'flexDirection': 'column',
-                    # subtract fixed header (80px) + fixed footer (70px)
                     'height': '100%',
                     'minHeight': 0,
                     'overflow': 'hidden'
@@ -742,12 +741,25 @@ def create_home_layout():
             # Right Panel - Table
             html.Div([
                 html.Div([
-                    html.H6('County Data', style={'marginBottom': '15px'}),
-                    html.Div(id='spread-table', style={'height': '100%', 'overflowY': 'auto'})
-                ], className='right-panel', style={'height': '100%', 'overflow': 'hidden'})
+                    html.H6('County Data', style={'marginBottom': '10px'}),
+                    dcc.Input(
+                        id='county-search',
+                        type='text',
+                        placeholder='Search (county or number)…',
+                        debounce=True,
+                        style={'width': '100%', 'marginBottom': '10px'}
+                    ),
+                    dcc.Store(id='county-table-sort', data={'col': 'infected', 'dir': 'desc'}),
+                    html.Button(id='sort-location', n_clicks=0, style={'display': 'none'}),
+                    html.Button(id='sort-infected', n_clicks=0, style={'display': 'none'}),
+                    html.Button(id='sort-deceased', n_clicks=0, style={'display': 'none'}),
+                    html.Div(id='spread-table', style={'flex': '1 1 auto', 'minHeight': 0, 'overflowY': 'auto'})
+                ], className='right-panel', style={
+                    'height': '100%', 'minHeight': 0,
+                    'display': 'flex', 'flexDirection': 'column', 'overflow': 'hidden'})
             ], className='col-lg-3', style={'height': '100%', 'minHeight': 0}),
         ], className='row', style={
-            'height': 'calc(100vh - 80px)',
+            'height': 'calc(100vh - 80px)',  # subtract fixed header (80px)
             'paddingBottom': '70px', # reserve fixed footer height
             'boxSizing': 'border-box',
             'overflow': 'hidden',
@@ -2698,10 +2710,18 @@ def fetch_simulation_data(n_intervals, sim_state, event_data):
                         for county_data in api_data['data']:
                             fips_id = county_data.get('fips_id', '')
                             compartment_summary = county_data.get('compartment_summary', {})
-                            
-                            infected = round(compartment_summary.get('I', 0), 2)
-                            deceased = round(compartment_summary.get('D', 0), 2)
-                            susceptible = compartment_summary.get('S', 0)
+
+                            # Infectious should be all infectious compartments
+                            A = compartment_summary.get('A', 0) or 0
+                            I = compartment_summary.get('I', 0) or 0
+                            T = compartment_summary.get('T', 0) or 0
+                            infected = round(A + I + T, 2)
+
+                            attempt_d = compartment_summary.get('D', None)
+                            if attempt_d is None:
+                                deceased = round(compartment_summary.get('R', 0), 2)
+                            else:
+                                deceased = round(attempt_d, 2)
                             
                             # Calculate percentages
                             county_population = sum(compartment_summary.values()) if compartment_summary else 1
@@ -2766,9 +2786,10 @@ def update_map(event_data, timeline_value, view_type, location_assets):
 @callback(
     Output('line-chart', 'figure'),
     [Input('event-data', 'data'),
-     Input('timeline-slider', 'value')]
+     Input('timeline-slider', 'value')],
+    State('selected-model-store', 'data')
 )
-def update_chart(event_data, timeline_value):
+def update_chart(event_data, timeline_value, selected_model):
     if not event_data:
         fig = go.Figure()
         fig.update_layout(
@@ -2787,17 +2808,50 @@ def update_chart(event_data, timeline_value):
     infected = [d.get('totalInfectedCount', 0) for d in event_data]
     recovered = [d.get('totalRecoveredCount', 0) for d in event_data]
     deceased = [d.get('totalDeceased', 0) for d in event_data]
-    
-    fig = go.Figure()
-    
+
+    # Decide which series to show
+    model = (selected_model or "").lower()
+    if model.startswith("seir") or model.startswith("seirs"):
+        # SEIR
+        series = [
+            ("Susceptible", susceptible),
+            ("Exposed", exposed),
+            ("Infectious", infected),
+            ("Recovered", recovered),
+        ]
+    else:
+        # SEATIRD
+        series = [
+            ("Susceptible", susceptible),
+            ("Exposed", exposed),
+            ("Asymptomatic Infectious", asymptomatic),
+            ("Treatable Infectious", treatable),
+            ("Symptomatic Infectious", infected),
+            ("Recovered", recovered),
+            ("Deceased", deceased),
+        ]
+
     # Add traces for SEATIRD compartments
-    fig.add_trace(go.Scatter(x=days, y=susceptible, name='Susceptible', line=dict(color='blue')))
-    fig.add_trace(go.Scatter(x=days, y=exposed, name='Exposed', line=dict(color='orange')))
-    fig.add_trace(go.Scatter(x=days, y=asymptomatic, name='Asymptomatic Infectious', line=dict(color='yellow')))
-    fig.add_trace(go.Scatter(x=days, y=treatable, name='Treatable Infectious', line=dict(color='purple')))
-    fig.add_trace(go.Scatter(x=days, y=infected, name='Symptomatic Infectious', line=dict(color='red', width=3)))
-    fig.add_trace(go.Scatter(x=days, y=recovered, name='Recovered', line=dict(color='green')))
-    fig.add_trace(go.Scatter(x=days, y=deceased, name='Deceased', line=dict(color='black')))
+    COLOR_MAP = {
+        "Susceptible": "blue",
+        "Exposed": "orange",
+        "Asymptomatic Infectious": "gold",
+        "Treatable Infectious": "purple",
+        "Symptomatic Infectious": "red",
+        "Infectious": "red",
+        "Recovered": "green",
+        "Deceased": "black",
+    }
+    fig = go.Figure()
+    for name, y in series:
+        fig.add_trace(
+            go.Scatter(
+                x=days,
+                y=y,
+                name=name,
+                line=dict(color=COLOR_MAP.get(name))
+            )
+        )
     
     # Add vertical line for current day
     if timeline_value is not None and timeline_value < len(days):
@@ -2827,20 +2881,52 @@ def update_chart(event_data, timeline_value):
     return fig
 
 @callback(
-    Output('spread-table', 'children'),
+    [Output('spread-table', 'children'),
+    Output('county-table-sort', 'data')],
     [Input('event-data', 'data'),
      Input('timeline-slider', 'value'),
      Input('view-toggle', 'value'),
-     Input('location-assets-store', 'data')]
+     Input('location-assets-store', 'data'),
+     Input('county-search', 'value'),
+     Input('sort-location', 'n_clicks'),
+     Input('sort-infected', 'n_clicks'),
+     Input('sort-deceased', 'n_clicks')],
+    [State('county-table-sort', 'data'),
+     State('selected-model-store', 'data')]
 )
-def update_table(event_data, timeline_value, view_type, location_assets):
+def update_table(event_data, timeline_value, view_type, location_assets, search_text,
+                 location_clicks, infected_clicks, deceased_clicks, sort_state, selected_model):
+    # --- sort state update based on which header was clicked
+    sort_state = sort_state or {'col': 'infected', 'dir': 'desc'}
+
+    model = (selected_model or "").lower()
+    right_col_label = "Recovered" if model.startswith("seir") or model.startswith("seirs") else "Deceased"
+
     if not event_data or timeline_value is None or timeline_value >= len(event_data):
-        return html.P('No data available', style={'color': '#6c757d', 'fontStyle': 'italic'})
+        return html.P('No data available', style={'color': '#6c757d', 'fontStyle': 'italic'}), sort_state
     
     current_data = event_data[timeline_value]
     counties_data = current_data.get('counties', [])
     if not counties_data:
-        return html.P('No county data available', style={'color': '#6c757d', 'fontStyle': 'italic'})
+        return html.P('No county data available', style={'color': '#6c757d', 'fontStyle': 'italic'}), sort_state
+
+    trig = ctx.triggered_id
+    if trig == 'sort-location':
+        if sort_state.get('col') == 'name':
+            sort_state['dir'] = 'asc' if sort_state['dir'] == 'desc' else 'desc'
+        else:
+            sort_state = {'col': 'name', 'dir': 'desc'}
+    elif trig == 'sort-infected':
+        if sort_state.get('col') == 'infected':
+            sort_state['dir'] = 'asc' if sort_state.get('dir') == 'desc' else 'desc'
+        else:
+            sort_state = {'col': 'infected', 'dir': 'desc'}
+    elif trig == 'sort-deceased':
+        if sort_state.get('col') == 'deceased':
+            sort_state['dir'] = 'asc' if sort_state.get('dir') == 'desc' else 'desc'
+        else:
+            sort_state = {'col': 'deceased', 'dir': 'desc'}
+
 
     location_assets = location_assets or {}
     mapping = location_assets.get("mapping", {})  # name -> geoid (string)
@@ -2859,37 +2945,84 @@ def update_table(event_data, timeline_value, view_type, location_assets):
         if(len(geoid)==4): # Leading 0s of states are getting lost
             geoid = geoid.zfill(5)
 
-        county_name = (
-                id_to_name.get(geoid) or
-                geoid  # final fallback: show id
-        )
+        county_name = (id_to_name.get(geoid) or geoid)  # final fallback: show id
+
+        # keep numeric for sorting + searching
+        infected_num = float(county.get('infectedPercent', 0)) if view_type == 'percent' else float(
+            county.get('infected', 0))
+        deceased_num = float(county.get('deceasedPercent', 0)) if view_type == 'percent' else float(
+            county.get('deceased', 0))
 
         if view_type == 'percent':
-            infected_val = f"{county.get('infectedPercent', 0):.1f}%"
-            deceased_val = f"{county.get('deceasedPercent', 0):.1f}%"
+            infected_disp = f"{infected_num:.1f}%"
+            deceased_disp = f"{deceased_num:.1f}%"
         else:
-            infected_val = f"{county.get('infected', 0):,}"
-            deceased_val = f"{county.get('deceased', 0):,}"
+            infected_disp = f"{math.floor(infected_num):,}"
+            deceased_disp = f"{math.floor(deceased_num):,}"
 
-        table_data.append([county_name, infected_val, deceased_val])
+        table_data.append({
+            "name": county_name,
+            "infected_num": infected_num,
+            "deceased_num": deceased_num,
+            "infected_disp": infected_disp,
+            "deceased_disp": deceased_disp,
+        })
+
+        # --- search (works for numbers because we search stringified values too)
+        if search_text:
+            q = search_text.strip().lower()
+
+            def matches(r):
+                hay = f"{r['name']} {r['infected_num']} {r['deceased_num']} {r['infected_disp']} {r['deceased_disp']}".lower()
+                return q in hay
+
+            table_data = [r for r in table_data if matches(r)]
 
     if not table_data:
-        return html.P('No county data available', style={'color': '#6c757d', 'fontStyle': 'italic'})
+        return html.P('No county data available', style={'color': '#6c757d', 'fontStyle': 'italic'}), sort_state
+
+    # --- sort
+    key = {
+        'name': 'name',
+        'infected': 'infected_num',
+        'deceased': 'deceased_num'
+    }[sort_state['col']]
+    reverse = (sort_state['dir'] == 'desc')
+    table_data.sort(key=lambda r: r[key], reverse=reverse)
+
+    # --- header with clickable sort buttons (minimal styling)
+    arrow_loc = '▲' if sort_state['col'] == 'name' and sort_state['dir'] == 'asc' else (
+        '▼' if sort_state['col'] == 'name' else '')
+    arrow_inf = '▼' if sort_state['col'] == 'infected' and sort_state['dir'] == 'desc' else (
+        '▲' if sort_state['col'] == 'infected' else '')
+    arrow_dec = '▼' if sort_state['col'] == 'deceased' and sort_state['dir'] == 'desc' else (
+        '▲' if sort_state['col'] == 'deceased' else '')
+
+    header = html.Thead(html.Tr([
+        html.Th(html.Button(f'Location {arrow_loc}', id='sort-location', n_clicks=0,
+                            style={'border': 'none', 'background': 'transparent', 'padding': 0, 'fontWeight': 'bold'})),
+        html.Th(html.Button(f'Infectious {arrow_inf}', id='sort-infected', n_clicks=0,
+                            style={'border': 'none', 'background': 'transparent', 'padding': 0, 'fontWeight': 'bold'})),
+        html.Th(html.Button(f'{right_col_label} {arrow_dec}', id='sort-deceased', n_clicks=0,
+                            style={'border': 'none', 'background': 'transparent', 'padding': 0, 'fontWeight': 'bold'})),
+    ]))
+
+    body = html.Tbody([
+        html.Tr([html.Td(r["name"]), html.Td(r["infected_disp"]), html.Td(r["deceased_disp"])])
+        for r in table_data
+    ])
 
     table = dbc.Table(
-        [
-            html.Thead(html.Tr([html.Th('Location'), html.Th('Infectious'), html.Th('Deceased')])),
-            html.Tbody([html.Tr([html.Td(r[0]), html.Td(r[1]), html.Td(r[2])]) for r in table_data]),
-        ],
+        [header, body],
         bordered=True,
         hover=True,
         striped=True,
         responsive=False,
         className="w-100",
-        style={'maxHeight': '800px', 'overflowY': 'auto', 'display': 'block'},
+        style={'maxHeight': '800px', 'overflowY': 'auto', 'display': 'block'}
     )
 
-    return table
+    return table, sort_state
 
 # Expose server for deployment
 server = app.server
