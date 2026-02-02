@@ -34,12 +34,12 @@ MODEL_OPTIONS = [
     {
         'label': 'SEIRS Deterministic',
         'value': 'seirs-deterministic',
-        'description': 'SEIRS with waning immunity; Euler updates; fractional flows; stochastic binomial travel.'
+        'description': 'SEIR with waning immunity; Euler updates; fractional flows; stochastic binomial travel.'
     },
     {
         'label': 'SEIRS Stochastic',
         'value': 'seirs-stochastic',
-        'description': 'SEIRS with waning immunity; Poisson transitions; stochastic binomial travel.'
+        'description': 'SEIR with waning immunity; Poisson transitions; stochastic binomial travel.'
     },
     {
         'label': 'SEATIRD Deterministic',
@@ -117,7 +117,7 @@ PRESET_SCENARIOS = {
                 'R0': 1.2,
                 'latent_period': 7,
                 'infectious_period': 14,
-                'immune_period': 120,
+                'immune_period': 0,
             },
         'fast_transmission': {
             'name': 'Fast Transmission',
@@ -125,7 +125,7 @@ PRESET_SCENARIOS = {
             'R0': 2.5,
             'latent_period': 7,
             'infectious_period': 14,
-            'immune_period': 120,
+            'immune_period': 0,
         }
     }
 }
@@ -438,8 +438,8 @@ app.layout = html.Div([
     dcc.Interval(id='simulation-interval', interval=1000, disabled=True),
     
     # Stores for Model and State Selection
-    dcc.Store(id='selected-model-store', data='SEIR-DET'),
-    dcc.Store(id='selected-state-store', data='Texas'),
+    dcc.Store(id='selected-model-store', data='seirs-deterministic'),
+    dcc.Store(id='selected-state-store', data='Alaska'),
     dcc.Store(id='location-assets-store', data={}),
     
     # Header
@@ -533,7 +533,7 @@ def create_model_state_selection_panel():
             dcc.Dropdown(
                 id='model-selector-dropdown',
                 options=[{"label": m["label"], "value": m["value"]} for m in MODEL_OPTIONS],
-                value='seatird-deterministic',
+                value='seirs-deterministic',
                 clearable=True,
                 placeholder="Select a disease model...",
                 style={'marginBottom': '8px'}
@@ -563,7 +563,7 @@ def create_model_state_selection_panel():
             dcc.Dropdown(
                 id='state-selector-dropdown',
                 options=[{"label": s["label"], "value": s["value"]} for s in STATE_OPTIONS],
-                value='Texas',
+                value='Alaska',
                 clearable=True,
                 searchable=True,
                 placeholder="Select a state...",
@@ -689,6 +689,8 @@ def create_home_layout():
                     'paddingRight': '10px',
                 })
             ], className='col-lg-2', style={
+                'flex': '0 0 20%',
+                'maxWidth': '20%',
                 'height': '100%',        # inherit from row
                 'minHeight': 0,
                 'overflowY': 'auto',
@@ -736,7 +738,12 @@ def create_home_layout():
                     'minHeight': 0,
                     'overflow': 'hidden'
                 })
-            ], className='col-lg-7', style={'height': '100%', 'minHeight': 0}),
+            ], className='col-lg-7', style={
+                'flex': '0 0 58%',
+                'maxWidth': '58%',
+                'height': '100%',
+                'minHeight': 0
+            }),
             
             # Right Panel - Table
             html.Div([
@@ -757,8 +764,14 @@ def create_home_layout():
                 ], className='right-panel', style={
                     'height': '100%', 'minHeight': 0,
                     'display': 'flex', 'flexDirection': 'column', 'overflow': 'hidden'})
-            ], className='col-lg-3', style={'height': '100%', 'minHeight': 0}),
+            ], className='col-lg-3', style={
+                'flex': '0 0 22%',
+                'maxWidth': '22%',
+                'height': '100%',
+                'minHeight': 0
+            }),
         ], className='row', style={
+            'display': 'flex',
             'height': 'calc(100vh - 80px)',  # subtract fixed header (80px)
             'paddingBottom': '70px', # reserve fixed footer height
             'boxSizing': 'border-box',
@@ -926,7 +939,7 @@ def update_disease_param_modal_body(selected_value):
     
             html.Div([
                 html.Label('Latent period (days)', style={'fontWeight': 'bold'}),
-                html.Small(' - Average number of days spent asymptomatic immediately after infection',
+                html.Small(' - Average number of days from infection to infectiousness',
                     style={'color': '#6c757d'}),
                 dcc.Input(id='latent-period', type='number', value=1.2, step=0.1, min=0,
                     style={'width': '100%', 'marginBottom': '10px'})
@@ -948,7 +961,7 @@ def update_disease_param_modal_body(selected_value):
                     style={'width': '100%', 'marginBottom': '15px'})
             ], id='disease-param-modal-display-symptomatic', style={'display': 'none'}),
 
-            # Age-specific CFR section
+            # Age-specific CFR section => this is not CFR in the model it's mean time to death
             html.Div([
                 html.Label('Mortality rate (1/days)', style={'fontWeight': 'bold'}),
                 html.Small(' - Inverse average number of days spent asymptomatic/treatable/infectious to deceased',
@@ -1038,7 +1051,7 @@ def update_disease_param_modal_body(selected_value):
                 html.Label('Immune period (days)', style={'fontWeight': 'bold'}),
                 html.Small(' - Average number of days spent before returning to susceptible (set to 0 to make this an SEIR model)',
                     style={'color': '#6c757d'}),
-                dcc.Input(id='immune-period', type='number', value=4.1, step=0.1, min=0,
+                dcc.Input(id='immune-period', type='number', value=0, step=0.1, min=0,
                     style={'width': '100%', 'marginBottom': '15px'})
             ], id='disease-param-modal-display-immune', style={'display': 'none'})
         ])
@@ -1209,7 +1222,7 @@ antivirals_modal = dbc.Modal([
 
 
 VACCINE_MODELS = {
-    "stockpile-age-risk": "Stockpile Age Risk",
+    "stockpile-age-risk": "Stockpile Release by Age", # Currently doesn't allow for risk preference
 }
 
 # Vaccines Modal Component
@@ -1279,7 +1292,7 @@ def update_vaccines_modal_body(selected_value):
 
             html.Div([
                 html.Label('Vaccine Capacity (proportion)', style={'fontWeight': 'bold'}),
-                html.Small('Proportion of population that can be vaccinated, from 0 to 1'),
+                html.Small('Proportion of population the jurisdiction has the capacity to vaccinate per day, from 0 to 1'),
                 dcc.Input(id='vaccine-capacity', type='number', value=0.5,
                     min=0, max=1, step=0.01,
                     style={'width': '100%', 'marginBottom': '15px'})
@@ -1287,7 +1300,7 @@ def update_vaccines_modal_body(selected_value):
 
             html.Div([
                 html.Label('Vaccine Effectiveness Lag (days)', style={'fontWeight': 'bold'}),
-                html.Small('Number of days before vaccine starts to take effect'),
+                html.Small('Number of days before vaccine starts to take effect. You can change this to alter your vaccine release time series as well.'),
                 dcc.Input(id='vaccine-effectiveness-lag', type='number', value=14,
                     min=0, max=100, step=1,
                     style={'width': '100%', 'marginBottom': '15px'})
@@ -1296,7 +1309,7 @@ def update_vaccines_modal_body(selected_value):
             # Age-specific effectiveness
             html.Div([
                 html.Label('Vaccine effectiveness (proportion)', style={'fontWeight': 'bold'}),
-                html.Small('Age-specific effectiveness values where 0 is not effective and 1 is completely effective',
+                html.Small('Age-specific effectiveness of vaccine against infection. 0 is not effective and 1 is completely effective',
                     style={'color': '#6c757d', 'display': 'block', 'marginBottom': '10px'}),
 
                 html.Div([
@@ -1334,7 +1347,7 @@ def update_vaccines_modal_body(selected_value):
             # Age-specific adherence
             html.Div([
                 html.Label('Vaccine adherence (proportion)', style={'fontWeight': 'bold'}),
-                html.Small('Age-specific adherence values where 0 is not adherent and 1 is completely adherent',
+                html.Small('Age-specific proportion of the population that will seek vaccination. 0 is no one and 1 is completely adherent',
                     style={'color': '#6c757d', 'display': 'block', 'marginBottom': '10px'}),
 
                 html.Div([
@@ -1371,7 +1384,7 @@ def update_vaccines_modal_body(selected_value):
 
             # Vaccine stockpile section
             html.Label(['Vaccine Stockpile'], style={'fontWeight': 'bold'}),
-            html.Small('Vaccine reserves available beginning on a specified day',
+            html.Small('Vaccine reserves available beginning on a specified day. Negative days are allowed to vaccinate people before epidemic begins on day 0.',
                 style={'color': '#6c757d', 'display': 'block', 'marginBottom': '10px'}),
 
             html.Div([
@@ -2522,10 +2535,10 @@ def toggle_simulation(n_clicks, sim_state, disease_params, initial_cases, npi_da
                     'rho': disease_params.get('rho', 0.39),
                     'nu': ','.join(map(str, disease_params.get('nu', [0,0,0,0,0]))),
                     'sigma': ','.join(map(str, disease_params.get('sigma', [1,1,1,1,1]))),
-                    'model_type': selected_model or 'seatird-stochastic',
-                    'state': selected_state or 'Texas',
+                    'model_type': selected_model or 'seirs-deterministic',
+                    'state': selected_state or 'Alaska',
                     'infectious_period': disease_params.get('infectious_period', 14),
-                    'immune_period': disease_params.get('immune_period', 120),
+                    'immune_period': disease_params.get('immune_period', 0),
                 }
 
                 # Add initial cases - use provided cases or default to Harris County
@@ -3000,11 +3013,14 @@ def update_table(event_data, timeline_value, view_type, location_assets, search_
 
     header = html.Thead(html.Tr([
         html.Th(html.Button(f'Location {arrow_loc}', id='sort-location', n_clicks=0,
-                            style={'border': 'none', 'background': 'transparent', 'padding': 0, 'fontWeight': 'bold'})),
+                            style={'border': 'none', 'background': 'transparent', 'padding': 0, 'fontWeight': 'bold',
+                                   'minWidth': '90px'})),
         html.Th(html.Button(f'Infectious {arrow_inf}', id='sort-infected', n_clicks=0,
-                            style={'border': 'none', 'background': 'transparent', 'padding': 0, 'fontWeight': 'bold'})),
+                            style={'border': 'none', 'background': 'transparent', 'padding': 0, 'fontWeight': 'bold',
+                                   'minWidth': '90px'})),
         html.Th(html.Button(f'{right_col_label} {arrow_dec}', id='sort-deceased', n_clicks=0,
-                            style={'border': 'none', 'background': 'transparent', 'padding': 0, 'fontWeight': 'bold'})),
+                            style={'border': 'none', 'background': 'transparent', 'padding': 0, 'fontWeight': 'bold',
+                                   'minWidth': '90px'})),
     ]))
 
     body = html.Tbody([
@@ -3019,7 +3035,7 @@ def update_table(event_data, timeline_value, view_type, location_assets, search_
         striped=True,
         responsive=False,
         className="w-100",
-        style={'maxHeight': '800px', 'overflowY': 'auto', 'display': 'block'}
+        style={'maxHeight': '800px', 'overflowY': 'auto', 'display': 'block', 'tableLayout': 'fixed'}
     )
 
     return table, sort_state
