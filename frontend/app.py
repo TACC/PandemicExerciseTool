@@ -853,7 +853,7 @@ def create_userguide_layout():
                     html.Li([html.B('Select Disease Model: '), 'Choose which epidemiological model to use (SEIR, SEIRS, SEATIRD, etc.).']),
                     html.Li([html.B('Select State: '), 'Choose which US state to simulate.']),
                     html.Li([html.B('Set Disease Parameters: '), 'Configure the disease characteristics including reproduction number, incubation period, and other epidemiological parameters.']),
-                    html.Li([html.B('Select Initial Cases: '), 'Choose which counties will have initial cases and specify the number of cases per county and age group.']),
+                    html.Li([html.B('Select Initial Cases: '), 'Choose which counties will have initial cases and specify the number of cases per county and age group in the low severity risk group.']),
                     html.Li([html.B('Configure Interventions: '), 'Set up non-pharmaceutical interventions, antivirals, and vaccines.']),
                     html.Li([html.B('Run Simulation: '), 'Click the "Play" button to start the simulation. You can pause it at any time.']),
                     html.Li([html.B('View Results: '), 'Monitor the outbreak progression through the map, epidemic curve, and county data table.'])
