@@ -352,7 +352,7 @@ def _get_color_from_value(value, max_val):
         return '#FED976'
 
 
-def _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojson):
+def _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojson, selected_model):
     """Create map using boundary file provided in geojson"""    
     if not event_data or timeline_value is None or timeline_value >= len(event_data):
         return _create_empty_map()
@@ -433,19 +433,34 @@ def _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojs
                 for ring in polygon:
                     lons = [coord[0] for coord in ring]
                     lats = [coord[1] for coord in ring]
-                    
-                    fig.add_trace(go.Scatter(
-                        x=lons,
-                        y=lats,
-                        fill='toself',
-                        fillcolor=color,
-                        line=dict(color='darkgray', width=0.5),
-                        mode='lines',
-                        name=county_name,
-                        showlegend=False,
-                        text=f'{county_name} County<br>Infectious: {infected:,} ({infected_pct:.1f}%)<br>Deceased: {deceased:,} ({deceased_pct:.1f}%)',
-                        hoverinfo='text'
-                    ))
+
+                    model = (selected_model or "").lower()
+                    if model.startswith("seir") or model.startswith("seirs"):
+                        fig.add_trace(go.Scatter(
+                            x=lons,
+                            y=lats,
+                            fill='toself',
+                            fillcolor=color,
+                            line=dict(color='darkgray', width=0.5),
+                            mode='lines',
+                            name=county_name,
+                            showlegend=False,
+                            text=f'{county_name} County<br>Infectious: {infected:,} ({infected_pct:.1f}%)<br>Recovered: {deceased:,} ({deceased_pct:.1f}%)',
+                            hoverinfo='text'
+                        ))
+                    else:
+                        fig.add_trace(go.Scatter(
+                            x=lons,
+                            y=lats,
+                            fill='toself',
+                            fillcolor=color,
+                            line=dict(color='darkgray', width=0.5),
+                            mode='lines',
+                            name=county_name,
+                            showlegend=False,
+                            text=f'{county_name} County<br>Infectious: {infected:,} ({infected_pct:.1f}%)<br>Deceased: {deceased:,} ({deceased_pct:.1f}%)',
+                            hoverinfo='text'
+                        ))
         else:
             # Single Polygon
             for ring in coordinates:
@@ -2858,9 +2873,10 @@ def fetch_simulation_data(n_intervals, sim_state, event_data):
     [Input('event-data', 'data'),
      Input('timeline-slider', 'value'),
      Input('view-toggle', 'value'),
-     Input('location-assets-store', 'data')]
+     Input('location-assets-store', 'data')],
+    State('selected-model-store', 'data')
 )
-def update_map(event_data, timeline_value, view_type, location_assets):
+def update_map(event_data, timeline_value, view_type, location_assets, selected_model):
     """Update map with county-level choropleth visualization"""
     
     geojson = location_assets.get("geojson") if location_assets else None
@@ -2878,7 +2894,7 @@ def update_map(event_data, timeline_value, view_type, location_assets):
         f"geojson_loaded={bool(geojson)}"
     )
 
-    return _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojson)
+    return _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojson, selected_model)
 
 
 @callback(
