@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import time
 import json
+import logging
 from celery import Celery
 import subprocess
 import glob
@@ -9,6 +10,10 @@ import pymongo
 import signal
 from ctypes import cdll
 from .texasMapping import texas_mapping
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Get broker URL from environment variable or use default
 broker_url = os.environ.get('CELERY_BROKER_URL', 'redis://redis-db:6379/0')
@@ -21,14 +26,14 @@ mydb = myclient["PES"]
 mycol = mydb["days"]
 #mycol.drop()
 
+
 def return_valid_input(input):
     """
-    Take the json response from the get request and put it in the 
+    Take the json response from the post request and put it in the
     format needed by the Pandemic exercise code
     """
-    print('################')
-    print(input)
-    print('################')
+    logging.info('Parsing input from post request')
+    logging.info(input)
 
     try:
         if input['npis'] is not None:
@@ -68,29 +73,10 @@ def return_valid_input(input):
         print(f"Error processing NPIs: {e}")
         npis = None
     
-    try: 
-        avs = json.loads(input['antiviral_stockpile'])
-    except (TypeError, json.JSONDecodeError): 
-        avs = None
-    
-    try: 
-        va = json.loads(input['vaccine_adherence'])
-    except (TypeError, json.JSONDecodeError): 
-        va = None
-    if va is not None:
-        va = [va] * 5
-    
-    try: 
-        ve = json.loads(input['vaccine_effectiveness'])
-    except (TypeError, json.JSONDecodeError): 
-        ve = None
-    if ve is not None:
-        ve = [ve] * 5
-    
-    try: 
-        vs = json.loads(input['vaccine_stockpile'])
-    except (TypeError, json.JSONDecodeError): 
-        vs = None
+    #try:
+    #    avs = json.loads(input['antiviral_stockpile'])
+    #except (TypeError, json.JSONDecodeError):
+    #    avs = None
     
     input_file = {
       "output_dir_path": "OUTPUT",
@@ -100,11 +86,10 @@ def return_valid_input(input):
         "population": "/PES/data/STATE/county_pop_by_age_STATE_2019-2023ACS.csv",
         "contact": "/PES/data/STATE/contact_matrix_STATE_Mistry2021_all.csv",
         "flow": "/PES/data/STATE/STATE_Q4-2019_mobility-matrix.csv",
-        "high_risk_ratios": "/PES/data/STATE/state_STATE_high-risk-ratios-flu-only.csv"
-  
+        "high_risk_ratios": "/PES/data/STATE/state_STATE_high-risk-ratios-flu-only.csv",
       },
       "disease_model": {
-        "identity": "seatird-stochastic",
+        "identity": input.get("model_type"),
         "parameters": {
         "compartments": ["S", "E", "A", "T", "I", "R", "D"],
         "R0": "3",
@@ -113,41 +98,17 @@ def return_valid_input(input):
         "kappa": "2",
         "gamma": "14.0281",
         "chi": "3",
-        "nu": [
-            "0.002", 
-            "0.002", 
-            "0.002", 
-            "0.002", 
-            "0.002"
-        ],
-        "sigma": [
-            "1",
-            "1",
-            "1",
-            "1",
-            "1"
-        ]
+        "nu": [ "0.002", "0.002", "0.002", "0.002", "0.002" ],
+        "sigma": [ "1", "1", "1", "1", "1" ]
         }
     },
     "travel_model": {
         "identity": "binomial",
         "parameters":{
             "rho": "1",
-            "flow_reduction": [
-                "1.0",
-                "1.0",
-                "1.0",
-                "1.0",
-                "1.0"
-            ],
-            "traveling_compartments": {
-                "A": "1.0"
-            },
-            "transmitting_compartments": {
-                "A": "1.0", 
-                "T": "1.0", 
-                "I": "1.0"
-            }
+            "flow_reduction": [ "1.0", "1.0", "1.0", "1.0", "1.0" ],
+            "traveling_compartments": { "A": "1.0" },
+            "transmitting_compartments": { "A": "1.0", "T": "1.0", "I": "1.0" }
         }
     },
     "initial_infected": json.loads(input.get("initial_infected", "[]")),
@@ -156,10 +117,10 @@ def return_valid_input(input):
     "vaccine_model": {}
     }
 
-    input_file["disease_model"]["identity"] = input.get("model_type")
+    #input_file["disease_model"]["identity"] = input.get("model_type")
 
-    state = input.get("state", "Texas")
     # replace STATE placeholders in paths
+    state = input.get("state", "Texas")
     input_file["output_dir_path"] = input_file["output_dir_path"].replace("STATE", state)
     for k, v in input_file["data"].items():
         input_file["data"][k] = v.replace("STATE", state)
@@ -177,10 +138,14 @@ def return_valid_input(input):
             nu = input["nu"]
             p["nu"] = [str(x) for x in (nu.split(",") if isinstance(nu, str) else nu)]
 
+        # sigma (allow list or comma string)
+        if "sigma" in input and input["sigma"] is not None:
+            sigma = input["sigma"]
+            p["sigma"] = [str(x) for x in (sigma.split(",") if isinstance(sigma, str) else sigma)]
+
         input_file['disease_model']['parameters'] = p
 
     elif input['model_type'].startswith('seirs'):
-        print('####### THIS IS SEIRS MODEL TYPE')
         p = {"compartments": ["S", "E", "I", "R"],
              "R0": input["R0"],
              "latent_period_days": input.get("tau", 7),
@@ -192,10 +157,26 @@ def return_valid_input(input):
         input_file['travel_model']['parameters']['traveling_compartments'] = {'I': '0.2'}
         input_file['travel_model']['parameters']['transmitting_compartments'] = {'I': '1.0'}
 
-
     # rho into travel model
     if "rho" in input and input["rho"] is not None:
         input_file["travel_model"]["parameters"]["rho"] = str(input["rho"])
+
+    # Put vaccine model bits into input file
+    if input['vaccine_model'] is not None:
+        vm = {
+            'identity': input['vaccine_model'],
+            'parameters': {
+                'age_risk_priority_groups': json.loads(input['vaccine_priority_groups']),
+                'vaccine_half_life_days': None,
+                'vaccine_capacity_proportion': input['vaccine_capacity'],
+                'vaccine_adherence': json.loads(input['vaccine_adherence']),
+                'vaccine_effectiveness': json.loads(input['vaccine_effectiveness']),
+                'vaccine_eff_lag_days': input['vaccine_effectiveness_lag'],
+                'vaccine_stockpile': json.loads(input['vaccine_stockpile']),
+            }
+        }
+
+    input_file['vaccine_model'] = vm
 
     return input_file
 
@@ -209,6 +190,7 @@ def on_parent_exit(signame):
     def set_parent_exit_signal():
         result = cdll['libc.so.6'].prctl(1, signum)
     return set_parent_exit_signal
+
 
 def try_load_json_when_ready(path, max_wait=5.0, poll=0.05):
     """
@@ -239,6 +221,7 @@ def try_load_json_when_ready(path, max_wait=5.0, poll=0.05):
 
     raise RuntimeError(f"Timed out waiting for valid JSON: {path}")
 
+
 @app.task
 def run_pes(input):
 
@@ -253,13 +236,15 @@ def run_pes(input):
 
     os.chdir('/PES')
 
+    # Format api request into valid input file
     input_file = return_valid_input(input)
     with open('/PES/INPUT.json', 'w') as o:
         json.dump(input_file, o, indent=2)
-    print('Wrote INPUT.json to file, contents are:')
-    print(json.dumps(input_file, indent=2))
-    print('Now running PES code.....')
 
+    logging.info('Wrote INPUT.json to file, contents are:')
+    logging.info(json.dumps(input_file, indent=2))
+
+    # Simulation subrocess start
     subprocess.Popen(['python3',
                       '/PES/src/simulator.py',
                       '--input',
@@ -270,6 +255,7 @@ def run_pes(input):
                       'INFO'],
                       preexec_fn=on_parent_exit('SIGHUP'))
     
+    # Simulation control
     max_wait_time = 300  # Maximum wait time in seconds (5 minutes)
     max_processed_files = 200
     start_time = time.time()
@@ -279,34 +265,40 @@ def run_pes(input):
         # Sorting seems necessary to prevent the variable backend output and frontend read in times
         files = sorted(glob.glob("/PES/OUTPUT/output_sim0/output_*.json"))
         time.sleep(0.05)
-        # IF NEW FILE, ADD IT TO MONGO
+
+        # If new file found, add it to mongo
         if len(files) > 0:
-            #print(f"Processing file: {files[0]}")
-            this_file = f'/PES/OUTPUT/output_sim0/output_{processed_files}.json'
-            print(f'Processing file: {this_file}')
+            this_filename = f'/PES/OUTPUT/output_sim0/output_{processed_files}.json'
+            logging.info(f'Processing file: {this_filename}')
             time.sleep(0.05) # wait a bit in case data still being written to file
+
             try:
-                mydict = try_load_json_when_ready(this_file, max_wait=5.0, poll=0.05)
-                mycol.insert_one(mydict)
+                this_output = try_load_json_when_ready(this_filename, max_wait=5.0, poll=0.05)
+                mycol.insert_one(this_output)
                 processed_files += 1
-                print(f"Processed day {mydict.get('day', 'unknown')}")
-                os.remove(this_file)
+                print(f"Processed day {this_output.get('day', 'unknown')}")
+                os.remove(this_filename)
+
             except Exception as e:
-                print(f"Error processing file {this_file}: {e}")
+                print(f"Error processing file {this_filename}: {e}")
                 # IMPORTANT: do NOT delete the file here; let it be retried
                 time.sleep(0.1)
-        
+
         # Check if simulation is complete (usually runs for 30-90 days)
-        if processed_files >= max_processed_files:  # Assume simulation is complete after N days
+        if processed_files >= max_processed_files:
             break
     
-    print(f"Simulation completed. Processed {processed_files} files.")
+    logging.info(f"Simulation completed. Processed {processed_files} files.")
+
+    # Clean up process if it is still running
     try:
         pid = subprocess.check_output(['pgrep', '-f', 'python3 /PES/src/simulator.py'], text=True)
         os.kill(int(pid), signal.SIGKILL)
-        print(f'Forcibly killing python process')
     except Exception as e:
-        print(f'There was a problem exiting the process: {e}')
+        logging.warning(f'There was a problem exiting the process: {e}')
+
+    # Make sure all old output files are removed
     for f in glob.glob("/PES/OUTPUT/output_sim0/output_*.json"):
         os.remove(f)
+
     return f'Simulation completed. Processed {processed_files} files.'

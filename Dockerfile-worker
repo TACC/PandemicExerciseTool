@@ -4,7 +4,6 @@ RUN pip install "poetry==1.8.3"
 
 ADD https://api.github.com/repos/TACC/PandemicExerciseSimulator/git/refs/heads/main /version.json
 RUN git clone --branch 0.2.2 https://github.com/TACC/PandemicExerciseSimulator /PES
-WORKDIR /PES
 
 RUN poetry config virtualenvs.create false && \
     poetry install --no-root

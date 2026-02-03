@@ -2618,6 +2618,8 @@ def toggle_simulation(n_clicks, sim_state, disease_params, initial_cases, npi_da
                 # Format parameters for Django API exactly like React
                 payload = {
                     'disease_name': disease_params.get('scenario_name', 'Custom'),
+                    'model_type': selected_model or 'seirs-deterministic',
+                    'state': selected_state or 'Alabama',
                     'R0': disease_params.get('R0', 1.2),
                     'beta_scale': disease_params.get('beta_scale', 10.0),
                     'tau': disease_params.get('tau', 1.2),
@@ -2627,8 +2629,6 @@ def toggle_simulation(n_clicks, sim_state, disease_params, initial_cases, npi_da
                     'rho': disease_params.get('rho', 0.39),
                     'nu': ','.join(map(str, disease_params.get('nu', [0,0,0,0,0]))),
                     'sigma': ','.join(map(str, disease_params.get('sigma', [1,1,1,1,1]))),
-                    'model_type': selected_model or 'seirs-deterministic',
-                    'state': selected_state or 'Alaska',
                     'infectious_period': disease_params.get('infectious_period', 14),
                     'immune_period': disease_params.get('immune_period', 0),
                 }
@@ -2678,11 +2678,11 @@ def toggle_simulation(n_clicks, sim_state, disease_params, initial_cases, npi_da
                 if vaccines_enabled and vaccine_data:
                     payload.update({
                         'vaccine_model': vaccine_data['vaccine_model'],
-                        'priority_groups': vaccine_data['priority_groups'],
-                        'capacity': vaccine_data['capacity'],
-                        'effectiveness_lag': vaccine_data['effectiveness_lag'],
-                        'effectiveness': vaccine_data['effectiveness'],
-                        'adherence': vaccine_data['adherence'],
+                        'vaccine_priority_groups': json.dumps(vaccine_data['priority_groups']),
+                        'vaccine_capacity': vaccine_data['capacity'],
+                        'vaccine_effectiveness_lag': vaccine_data['effectiveness_lag'],
+                        'vaccine_effectiveness': json.dumps(vaccine_data['effectiveness']),
+                        'vaccine_adherence': json.dumps(vaccine_data['adherence']),
                     })
                 
                     payload.update({
