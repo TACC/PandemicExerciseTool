@@ -4,13 +4,29 @@ A Python Dash-based pandemic and epidemic simulation application that integrates
 to model epidemics within all 50 US states + DC.
 
 ## Features
-- **Multiple Models**: Deterministic and Stochastic compartmental/mechanistic models
-- **Interactive Controls**: Configure disease parameters and initial cases
-- **Interventions**: Model non-pharmaceutical interventions and vaccination across age groups
-- **US Counties**: Interactive maps with county-level visualizations
-- **Realistic population subgroups**: Population data from 2023 census stratified by age and high & low risk of severe outcome
-- **Real-time Simulation**: Live epidemic progression visualized on map and in time series
-- **Docker Ready**: Complete containerized deployment
+![Dashboard](assets/simulator_plotly.png)
+<dl>
+  <dt><strong>Multiple Models</strong></dt>
+  <dd>Deterministic and stochastic compartmental, mechanistic models (SEIR, SEIRS, and SEATIRD)</dd>
+
+  <dt><strong>Interactive Controls</strong></dt>
+  <dd>Configure disease parameters and initial cases for every county and age group</dd>
+
+  <dt><strong>Interventions</strong></dt>
+  <dd>Model non-pharmaceutical interventions and vaccination across age groups</dd>
+
+  <dt><strong>US Counties</strong></dt>
+  <dd>Interactive maps with county-level visualizations</dd>
+
+  <dt><strong>Realistic Subgroups</strong></dt>
+  <dd>Population data from 2023 census stratified by age and high & low risk of severe outcome</dd>
+
+  <dt><strong>Real-time Simulation</strong></dt>
+  <dd>Live epidemic progression visualized on map and in time series</dd>
+
+  <dt><strong>Docker Ready</strong></dt>
+  <dd>Complete containerized deployment</dd>
+</dl>
 
 ## Quick Start
 ### Prerequisites
