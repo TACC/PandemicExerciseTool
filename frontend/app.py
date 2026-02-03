@@ -352,7 +352,7 @@ def _get_color_from_value(value, max_val):
         return '#FED976'
 
 
-def _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojson):
+def _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojson, selected_model):
     """Create map using boundary file provided in geojson"""    
     if not event_data or timeline_value is None or timeline_value >= len(event_data):
         return _create_empty_map()
@@ -433,19 +433,34 @@ def _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojs
                 for ring in polygon:
                     lons = [coord[0] for coord in ring]
                     lats = [coord[1] for coord in ring]
-                    
-                    fig.add_trace(go.Scatter(
-                        x=lons,
-                        y=lats,
-                        fill='toself',
-                        fillcolor=color,
-                        line=dict(color='darkgray', width=0.5),
-                        mode='lines',
-                        name=county_name,
-                        showlegend=False,
-                        text=f'{county_name} County<br>Infectious: {infected:,} ({infected_pct:.1f}%)<br>Deceased: {deceased:,} ({deceased_pct:.1f}%)',
-                        hoverinfo='text'
-                    ))
+
+                    model = (selected_model or "").lower()
+                    if model.startswith("seir") or model.startswith("seirs"):
+                        fig.add_trace(go.Scatter(
+                            x=lons,
+                            y=lats,
+                            fill='toself',
+                            fillcolor=color,
+                            line=dict(color='darkgray', width=0.5),
+                            mode='lines',
+                            name=county_name,
+                            showlegend=False,
+                            text=f'{county_name} County<br>Infectious: {infected:,} ({infected_pct:.1f}%)<br>Recovered: {deceased:,} ({deceased_pct:.1f}%)',
+                            hoverinfo='text'
+                        ))
+                    else:
+                        fig.add_trace(go.Scatter(
+                            x=lons,
+                            y=lats,
+                            fill='toself',
+                            fillcolor=color,
+                            line=dict(color='darkgray', width=0.5),
+                            mode='lines',
+                            name=county_name,
+                            showlegend=False,
+                            text=f'{county_name} County<br>Infectious: {infected:,} ({infected_pct:.1f}%)<br>Deceased: {deceased:,} ({deceased_pct:.1f}%)',
+                            hoverinfo='text'
+                        ))
         else:
             # Single Polygon
             for ring in coordinates:
@@ -914,36 +929,47 @@ def create_userguide_layout():
         html.Div([
             html.H2('User Guide', style={'marginBottom': '20px', 'color': '#102c41'}),
             html.Div([
-                html.H4('How to Use the Pandemic Simulator'),
+                html.H4('How to Use the Interactive Outbreak Simulator'),
                 html.Ol([
-                    html.Li([html.B('Select Disease Model: '), 'Choose which epidemiological model to use (SEIR, SEIRS, SEATIRD, etc.).']),
+                    html.Li([html.B('Select Disease Model: '), 'Choose which epidemiological model to use (SEIRS, SEATIRD, etc.).']),
                     html.Li([html.B('Select State: '), 'Choose which US state to simulate.']),
                     html.Li([html.B('Set Disease Parameters: '), 'Configure the disease characteristics including reproduction number, incubation period, and other epidemiological parameters.']),
-                    html.Li([html.B('Select Initial Cases: '), 'Choose which counties will have initial cases and specify the number of cases per county and age group.']),
-                    html.Li([html.B('Configure Interventions: '), 'Set up non-pharmaceutical interventions, antivirals, and vaccines.']),
+                    html.Li([html.B('Select Initial Cases: '), 'Specify the number of cases per county and age group in the low severity risk group.']),
+                    html.Li([html.B('Configure Interventions: '), 'Set up non-pharmaceutical interventions or release vaccines from a stockpile.']),
                     html.Li([html.B('Run Simulation: '), 'Click the "Play" button to start the simulation. You can pause it at any time.']),
-                    html.Li([html.B('View Results: '), 'Monitor the outbreak progression through the map, epidemic curve, and county data table.'])
+                    html.Li([html.B('View Results: '), 'Monitor the outbreak progression through the map, epidemic curve, and county data table. '
+                                                       'When finished hit Pause, then use the bottom scroll bar to investigate different days.'
+                                                       'Click on compartment names in the legend to remove them from the plot.'])
                 ]),
                 html.Hr(),
                 html.H5('Disease Models Available'),
                 html.Ul([
-                    html.Li([html.B('SEIR: '), 'Susceptible-Exposed-Infectious-Recovered - Basic compartmental model']),
-                    html.Li([html.B('SEIRS: '), 'SEIR with waning immunity - Recovered can become susceptible again']),
-                    html.Li([html.B('SEATIRD: '), 'Adds Asymptomatic and Treatment compartments for more detail']),
-                    html.Li([html.B('SEIHRD: '), 'Includes Hospitalization tracking']),
-                    html.Li([html.B('Deterministic vs Stochastic: '), 'Deterministic gives same result each run; Stochastic includes randomness'])
+                    html.Li([html.B('SEIR: '), 'Susceptible-Exposed-Infectious-Recovered - Basic compartmental model.']),
+                    html.Li([html.B('SEIRS: '), 'SEIR with waning immunity - Recovered can become susceptible again.']),
+                    html.Li([html.B('SEATIRD: '), 'Adds Asymptomatic, Treatment, and Death compartments to capture severity of disease.']),
+                    #html.Li([html.B('SEIHRD: '), 'Includes Hospitalization tracking']),
+                    html.Li([html.B('Deterministic vs Stochastic: '), 'Deterministic uses Euler\'s Method to advance the simulation and can move fractions of a person; '
+                                                                      'Stochastic is a Poisson draw or the Gillespie Algorithm moving only integer people.'
+                                                                      'All models have a stochastic Binomial draw for new infections spread between counties.'])
+                ]),
+                html.Hr(),
+                html.H5('SEIR and SEIRS Model'),
+                html.Ul([
+                    html.Li([html.B('S - Susceptible: '), 'Individuals who can become infected.']),
+                    html.Li([html.B('E - Exposed: '), 'Individuals who have been exposed but are not yet infectious.']),
+                    html.Li([html.B('I - Infectious: '), 'Infectious individuals, the travel model assumes 20% are asymptomatic.']),
+                    html.Li([html.B('R - Recovered: '), 'Individuals who have recovered and are immune, unless the immune period is set to a positive non-zero number.']),
                 ]),
                 html.Hr(),
                 html.H5('SEATIRD Model'),
-                html.P('The pandemic simulator uses a SEATIRD compartmental model:'),
                 html.Ul([
-                    html.Li([html.B('S - Susceptible: '), 'Individuals who can become infected']),
-                    html.Li([html.B('E - Exposed: '), 'Individuals who have been exposed but are not yet infectious']),
-                    html.Li([html.B('A - Asymptomatic: '), 'Infectious individuals without symptoms']),
-                    html.Li([html.B('T - Treatable: '), 'Symptomatic individuals who can receive treatment']),
-                    html.Li([html.B('I - Infectious: '), 'Symptomatic infectious individuals']),
-                    html.Li([html.B('R - Recovered: '), 'Individuals who have recovered and are immune']),
-                    html.Li([html.B('D - Deceased: '), 'Individuals who have died from the disease'])
+                    html.Li([html.B('S - Susceptible: '), 'Individuals who can become infected.']),
+                    html.Li([html.B('E - Exposed: '), 'Individuals who have been exposed but are not yet infectious.']),
+                    html.Li([html.B('A - Asymptomatic: '), 'Infectious individuals without symptoms.']),
+                    html.Li([html.B('T - Treatable: '), 'Symptomatic individuals who can receive antiviral treatment (planned intervention).']),
+                    html.Li([html.B('I - Infectious: '), 'Symptomatic infectious individuals.']),
+                    html.Li([html.B('R - Recovered: '), 'Individuals who have recovered and are immune.']),
+                    html.Li([html.B('D - Deceased: '), 'Individuals who have died from the disease.'])
                 ])
             ])
         ], style={'padding': '20px', 'maxWidth': '800px', 'margin': '0 auto'})
@@ -1115,7 +1141,7 @@ def update_disease_param_modal_body(selected_value):
             ], id='disease-param-modal-display-infectious', style={'display': 'none'}),
             html.Div([
                 html.Label('Immune period (days)', style={'fontWeight': 'bold'}),
-                html.Small(' - Average number of days spent before returning to susceptible (set to 0 to make this an SEIR model)',
+                html.Small(' - Average number of days before returning to susceptible (set to 0 to make this an SEIR model)',
                     style={'color': '#6c757d'}),
                 dcc.Input(id='immune-period', type='number', value=0, step=0.1, min=0,
                     style={'width': '100%', 'marginBottom': '15px'})
@@ -2129,7 +2155,7 @@ def save_disease_parameters(n_clicks, scenario_name, r0, tau, kappa, gamma,
             'nu': [cfr_0_4 or 0, cfr_5_24 or 0, cfr_25_49 or 0, cfr_50_64 or 0, cfr_65_plus or 0],
             'sigma': [sigma_0_4 or 1, sigma_5_24 or 1, sigma_25_49 or 1, sigma_50_64 or 1, sigma_65_plus or 1],
             'infectious_period': infectious_period or 7,
-            'immune_period': immune_period or 100,
+            'immune_period': immune_period or 0,
             'model_type': selected_model,
         }
         
@@ -2847,9 +2873,10 @@ def fetch_simulation_data(n_intervals, sim_state, event_data):
     [Input('event-data', 'data'),
      Input('timeline-slider', 'value'),
      Input('view-toggle', 'value'),
-     Input('location-assets-store', 'data')]
+     Input('location-assets-store', 'data')],
+    State('selected-model-store', 'data')
 )
-def update_map(event_data, timeline_value, view_type, location_assets):
+def update_map(event_data, timeline_value, view_type, location_assets, selected_model):
     """Update map with county-level choropleth visualization"""
     
     geojson = location_assets.get("geojson") if location_assets else None
@@ -2867,7 +2894,7 @@ def update_map(event_data, timeline_value, view_type, location_assets):
         f"geojson_loaded={bool(geojson)}"
     )
 
-    return _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojson)
+    return _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojson, selected_model)
 
 
 @callback(
