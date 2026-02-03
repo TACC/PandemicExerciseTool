@@ -34,12 +34,12 @@ MODEL_OPTIONS = [
     {
         'label': 'SEIRS Deterministic',
         'value': 'seirs-deterministic',
-        'description': 'SEIRS with waning immunity; Euler updates; fractional flows; stochastic binomial travel.'
+        'description': 'SEIR with waning immunity; Euler updates; fractional flows; stochastic binomial travel.'
     },
     {
         'label': 'SEIRS Stochastic',
         'value': 'seirs-stochastic',
-        'description': 'SEIRS with waning immunity; Poisson transitions; stochastic binomial travel.'
+        'description': 'SEIR with waning immunity; Poisson transitions; stochastic binomial travel.'
     },
     {
         'label': 'SEATIRD Deterministic',
@@ -117,7 +117,7 @@ PRESET_SCENARIOS = {
                 'R0': 1.2,
                 'latent_period': 7,
                 'infectious_period': 14,
-                'immune_period': 120,
+                'immune_period': 0,
             },
         'fast_transmission': {
             'name': 'Fast Transmission',
@@ -125,7 +125,7 @@ PRESET_SCENARIOS = {
             'R0': 2.5,
             'latent_period': 7,
             'infectious_period': 14,
-            'immune_period': 120,
+            'immune_period': 0,
         }
     }
 }
@@ -261,6 +261,72 @@ def _create_empty_map():
         plot_bgcolor="white",
         title="Map - No Data Available"
     )
+    return fig
+
+def _create_empty_state_map(geojson):
+    """Create map showing state boundaries before simulation starts"""
+    if not geojson or 'features' not in geojson:
+        return _create_empty_map()
+    
+    fig = go.Figure()
+    
+    # Add each county as a light yellow shape with boundary
+    for feature in geojson['features']:
+        county_name = feature['properties'].get('NAME', 'Unknown')
+        coordinates = feature['geometry']['coordinates']
+        
+        # Handle MultiPolygon vs Polygon
+        if feature['geometry']['type'] == 'MultiPolygon':
+            for polygon in coordinates:
+                for ring in polygon:
+                    lons = [coord[0] for coord in ring]
+                    lats = [coord[1] for coord in ring]
+                    
+                    fig.add_trace(go.Scatter(
+                        x=lons,
+                        y=lats,
+                        fill='toself',
+                        fillcolor='#FFEDA0',  # Light yellow
+                        line=dict(color='darkgray', width=0.5),
+                        mode='lines',
+                        name=county_name,
+                        showlegend=False,
+                        text=f'{county_name} - No data yet - click PLAY to start simulation',
+                        hoverinfo='text'
+                    ))
+        else:
+            # Single Polygon
+            for ring in coordinates:
+                lons = [coord[0] for coord in ring]
+                lats = [coord[1] for coord in ring]
+                
+                fig.add_trace(go.Scatter(
+                    x=lons,
+                    y=lats,
+                    fill='toself',
+                    fillcolor='#FFEDA0',  # Light yellow
+                    line=dict(color='darkgray', width=0.5),
+                    mode='lines',
+                    name=county_name,
+                    showlegend=False,
+                    text=f'{county_name} - No data yet - click PLAY to start simulation',
+                    hoverinfo='text'
+                ))
+    
+    fig.update_layout(
+        title="Map - No Data Available (Select disease parameters and click PLAY)",
+        height=400,
+        margin=dict(l=0, r=0, t=40, b=0),
+        paper_bgcolor='white',
+        plot_bgcolor='white',
+        xaxis=dict(showgrid=False, showticklabels=False, zeroline=False),
+        yaxis=dict(showgrid=False, showticklabels=False, zeroline=False, scaleanchor="x", scaleratio=1),
+        hovermode='closest'
+    )
+    
+    fig.update_xaxes(autorange=True)
+    fig.update_yaxes(autorange=True)
+    
     return fig
 
 
@@ -438,8 +504,8 @@ app.layout = html.Div([
     dcc.Interval(id='simulation-interval', interval=1000, disabled=True),
     
     # Stores for Model and State Selection
-    dcc.Store(id='selected-model-store', data='SEIR-DET'),
-    dcc.Store(id='selected-state-store', data='Texas'),
+    dcc.Store(id='selected-model-store', data='seirs-deterministic'),
+    dcc.Store(id='selected-state-store', data='Alaska'),
     dcc.Store(id='location-assets-store', data={}),
     
     # Header
@@ -533,7 +599,7 @@ def create_model_state_selection_panel():
             dcc.Dropdown(
                 id='model-selector-dropdown',
                 options=[{"label": m["label"], "value": m["value"]} for m in MODEL_OPTIONS],
-                value='seatird-deterministic',
+                value='seirs-deterministic',
                 clearable=True,
                 placeholder="Select a disease model...",
                 style={'marginBottom': '8px'}
@@ -563,7 +629,7 @@ def create_model_state_selection_panel():
             dcc.Dropdown(
                 id='state-selector-dropdown',
                 options=[{"label": s["label"], "value": s["value"]} for s in STATE_OPTIONS],
-                value='Texas',
+                value='Alaska',
                 clearable=True,
                 searchable=True,
                 placeholder="Select a state...",
@@ -689,6 +755,8 @@ def create_home_layout():
                     'paddingRight': '10px',
                 })
             ], className='col-lg-2', style={
+                'flex': '0 0 20%',
+                'maxWidth': '20%',
                 'height': '100%',        # inherit from row
                 'minHeight': 0,
                 'overflowY': 'auto',
@@ -736,7 +804,12 @@ def create_home_layout():
                     'minHeight': 0,
                     'overflow': 'hidden'
                 })
-            ], className='col-lg-7', style={'height': '100%', 'minHeight': 0}),
+            ], className='col-lg-7', style={
+                'flex': '0 0 58%',
+                'maxWidth': '58%',
+                'height': '100%',
+                'minHeight': 0
+            }),
             
             # Right Panel - Table
             html.Div([
@@ -757,8 +830,14 @@ def create_home_layout():
                 ], className='right-panel', style={
                     'height': '100%', 'minHeight': 0,
                     'display': 'flex', 'flexDirection': 'column', 'overflow': 'hidden'})
-            ], className='col-lg-3', style={'height': '100%', 'minHeight': 0}),
+            ], className='col-lg-3', style={
+                'flex': '0 0 22%',
+                'maxWidth': '22%',
+                'height': '100%',
+                'minHeight': 0
+            }),
         ], className='row', style={
+            'display': 'flex',
             'height': 'calc(100vh - 80px)',  # subtract fixed header (80px)
             'paddingBottom': '70px', # reserve fixed footer height
             'boxSizing': 'border-box',
@@ -926,7 +1005,7 @@ def update_disease_param_modal_body(selected_value):
     
             html.Div([
                 html.Label('Latent period (days)', style={'fontWeight': 'bold'}),
-                html.Small(' - Average number of days spent asymptomatic immediately after infection',
+                html.Small(' - Average number of days from infection to infectiousness',
                     style={'color': '#6c757d'}),
                 dcc.Input(id='latent-period', type='number', value=1.2, step=0.1, min=0,
                     style={'width': '100%', 'marginBottom': '10px'})
@@ -948,7 +1027,7 @@ def update_disease_param_modal_body(selected_value):
                     style={'width': '100%', 'marginBottom': '15px'})
             ], id='disease-param-modal-display-symptomatic', style={'display': 'none'}),
 
-            # Age-specific CFR section
+            # Age-specific CFR section => this is not CFR in the model it's mean time to death
             html.Div([
                 html.Label('Mortality rate (1/days)', style={'fontWeight': 'bold'}),
                 html.Small(' - Inverse average number of days spent asymptomatic/treatable/infectious to deceased',
@@ -1038,7 +1117,7 @@ def update_disease_param_modal_body(selected_value):
                 html.Label('Immune period (days)', style={'fontWeight': 'bold'}),
                 html.Small(' - Average number of days spent before returning to susceptible (set to 0 to make this an SEIR model)',
                     style={'color': '#6c757d'}),
-                dcc.Input(id='immune-period', type='number', value=4.1, step=0.1, min=0,
+                dcc.Input(id='immune-period', type='number', value=0, step=0.1, min=0,
                     style={'width': '100%', 'marginBottom': '15px'})
             ], id='disease-param-modal-display-immune', style={'display': 'none'})
         ])
@@ -1209,7 +1288,7 @@ antivirals_modal = dbc.Modal([
 
 
 VACCINE_MODELS = {
-    "stockpile-age-risk": "Stockpile Age Risk",
+    "stockpile-age-risk": "Stockpile Release by Age", # Currently doesn't allow for risk preference
 }
 
 # Vaccines Modal Component
@@ -1279,7 +1358,7 @@ def update_vaccines_modal_body(selected_value):
 
             html.Div([
                 html.Label('Vaccine Capacity (proportion)', style={'fontWeight': 'bold'}),
-                html.Small('Proportion of population that can be vaccinated, from 0 to 1'),
+                html.Small('Proportion of population the jurisdiction has the capacity to vaccinate per day, from 0 to 1'),
                 dcc.Input(id='vaccine-capacity', type='number', value=0.5,
                     min=0, max=1, step=0.01,
                     style={'width': '100%', 'marginBottom': '15px'})
@@ -1287,7 +1366,7 @@ def update_vaccines_modal_body(selected_value):
 
             html.Div([
                 html.Label('Vaccine Effectiveness Lag (days)', style={'fontWeight': 'bold'}),
-                html.Small('Number of days before vaccine starts to take effect'),
+                html.Small('Number of days before vaccine starts to take effect. You can change this to alter your vaccine release time series as well.'),
                 dcc.Input(id='vaccine-effectiveness-lag', type='number', value=14,
                     min=0, max=100, step=1,
                     style={'width': '100%', 'marginBottom': '15px'})
@@ -1296,7 +1375,7 @@ def update_vaccines_modal_body(selected_value):
             # Age-specific effectiveness
             html.Div([
                 html.Label('Vaccine effectiveness (proportion)', style={'fontWeight': 'bold'}),
-                html.Small('Age-specific effectiveness values where 0 is not effective and 1 is completely effective',
+                html.Small('Age-specific effectiveness of vaccine against infection. 0 is not effective and 1 is completely effective',
                     style={'color': '#6c757d', 'display': 'block', 'marginBottom': '10px'}),
 
                 html.Div([
@@ -1334,7 +1413,7 @@ def update_vaccines_modal_body(selected_value):
             # Age-specific adherence
             html.Div([
                 html.Label('Vaccine adherence (proportion)', style={'fontWeight': 'bold'}),
-                html.Small('Age-specific adherence values where 0 is not adherent and 1 is completely adherent',
+                html.Small('Age-specific proportion of the population that will seek vaccination. 0 is no one and 1 is completely adherent',
                     style={'color': '#6c757d', 'display': 'block', 'marginBottom': '10px'}),
 
                 html.Div([
@@ -1371,7 +1450,7 @@ def update_vaccines_modal_body(selected_value):
 
             # Vaccine stockpile section
             html.Label(['Vaccine Stockpile'], style={'fontWeight': 'bold'}),
-            html.Small('Vaccine reserves available beginning on a specified day',
+            html.Small('Vaccine reserves available beginning on a specified day. Negative days are allowed to vaccinate people before epidemic begins on day 0.',
                 style={'color': '#6c757d', 'display': 'block', 'marginBottom': '10px'}),
 
             html.Div([
@@ -2513,8 +2592,8 @@ def toggle_simulation(n_clicks, sim_state, disease_params, initial_cases, npi_da
                 # Format parameters for Django API exactly like React
                 payload = {
                     'disease_name': disease_params.get('scenario_name', 'Custom'),
-                    'model_type': selected_model or 'seatird-stochastic',
-                    'state': selected_state or 'Texas',
+                    'model_type': selected_model or 'seirs-deterministic',
+                    'state': selected_state or 'Alabama',
                     'R0': disease_params.get('R0', 1.2),
                     'beta_scale': disease_params.get('beta_scale', 10.0),
                     'tau': disease_params.get('tau', 1.2),
@@ -2525,7 +2604,7 @@ def toggle_simulation(n_clicks, sim_state, disease_params, initial_cases, npi_da
                     'nu': ','.join(map(str, disease_params.get('nu', [0,0,0,0,0]))),
                     'sigma': ','.join(map(str, disease_params.get('sigma', [1,1,1,1,1]))),
                     'infectious_period': disease_params.get('infectious_period', 14),
-                    'immune_period': disease_params.get('immune_period', 120),
+                    'immune_period': disease_params.get('immune_period', 0),
                 }
 
                 # Add initial cases - use provided cases or default to Harris County
@@ -2762,6 +2841,7 @@ def fetch_simulation_data(n_intervals, sim_state, event_data):
     return event_data, max(30, len(event_data)), len(event_data) - 1 if event_data else 0
 
 # Real data visualization callbacks
+
 @callback(
     Output('spread-map', 'figure'),
     [Input('event-data', 'data'),
@@ -2771,17 +2851,24 @@ def fetch_simulation_data(n_intervals, sim_state, event_data):
 )
 def update_map(event_data, timeline_value, view_type, location_assets):
     """Update map with county-level choropleth visualization"""
-
+    
+    geojson = location_assets.get("geojson") if location_assets else None
+    
+    # Show empty map with state boundaries if no simulation data yet
+    if geojson and (not event_data or len(event_data) == 0):
+        logger.info("Displaying empty map with state boundaries")
+        return _create_empty_state_map(geojson)
+    
     # DEBUG LOGGING
     logger.info(
         f"map debug → "
         f"event_days={len(event_data) if event_data else 0}, "
         f"timeline={timeline_value}, "
-        f"geojson_loaded={bool((location_assets or {}).get('geojson'))}"
+        f"geojson_loaded={bool(geojson)}"
     )
 
-    geojson = location_assets.get("geojson") if location_assets else None
     return _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojson)
+
 
 @callback(
     Output('line-chart', 'figure'),
@@ -3000,11 +3087,14 @@ def update_table(event_data, timeline_value, view_type, location_assets, search_
 
     header = html.Thead(html.Tr([
         html.Th(html.Button(f'Location {arrow_loc}', id='sort-location', n_clicks=0,
-                            style={'border': 'none', 'background': 'transparent', 'padding': 0, 'fontWeight': 'bold'})),
+                            style={'border': 'none', 'background': 'transparent', 'padding': 0, 'fontWeight': 'bold',
+                                   'minWidth': '90px'})),
         html.Th(html.Button(f'Infectious {arrow_inf}', id='sort-infected', n_clicks=0,
-                            style={'border': 'none', 'background': 'transparent', 'padding': 0, 'fontWeight': 'bold'})),
+                            style={'border': 'none', 'background': 'transparent', 'padding': 0, 'fontWeight': 'bold',
+                                   'minWidth': '90px'})),
         html.Th(html.Button(f'{right_col_label} {arrow_dec}', id='sort-deceased', n_clicks=0,
-                            style={'border': 'none', 'background': 'transparent', 'padding': 0, 'fontWeight': 'bold'})),
+                            style={'border': 'none', 'background': 'transparent', 'padding': 0, 'fontWeight': 'bold',
+                                   'minWidth': '90px'})),
     ]))
 
     body = html.Tbody([
@@ -3019,7 +3109,7 @@ def update_table(event_data, timeline_value, view_type, location_assets, search_
         striped=True,
         responsive=False,
         className="w-100",
-        style={'maxHeight': '800px', 'overflowY': 'auto', 'display': 'block'}
+        style={'maxHeight': '800px', 'overflowY': 'auto', 'display': 'block', 'tableLayout': 'fixed'}
     )
 
     return table, sort_state
@@ -3029,4 +3119,5 @@ server = app.server
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8051)
+
 
