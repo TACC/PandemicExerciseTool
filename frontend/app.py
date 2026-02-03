@@ -263,6 +263,72 @@ def _create_empty_map():
     )
     return fig
 
+def _create_empty_state_map(geojson):
+    """Create map showing state boundaries before simulation starts"""
+    if not geojson or 'features' not in geojson:
+        return _create_empty_map()
+    
+    fig = go.Figure()
+    
+    # Add each county as a light yellow shape with boundary
+    for feature in geojson['features']:
+        county_name = feature['properties'].get('NAME', 'Unknown')
+        coordinates = feature['geometry']['coordinates']
+        
+        # Handle MultiPolygon vs Polygon
+        if feature['geometry']['type'] == 'MultiPolygon':
+            for polygon in coordinates:
+                for ring in polygon:
+                    lons = [coord[0] for coord in ring]
+                    lats = [coord[1] for coord in ring]
+                    
+                    fig.add_trace(go.Scatter(
+                        x=lons,
+                        y=lats,
+                        fill='toself',
+                        fillcolor='#FFEDA0',  # Light yellow
+                        line=dict(color='darkgray', width=0.5),
+                        mode='lines',
+                        name=county_name,
+                        showlegend=False,
+                        text=f'{county_name} - No data yet - click PLAY to start simulation',
+                        hoverinfo='text'
+                    ))
+        else:
+            # Single Polygon
+            for ring in coordinates:
+                lons = [coord[0] for coord in ring]
+                lats = [coord[1] for coord in ring]
+                
+                fig.add_trace(go.Scatter(
+                    x=lons,
+                    y=lats,
+                    fill='toself',
+                    fillcolor='#FFEDA0',  # Light yellow
+                    line=dict(color='darkgray', width=0.5),
+                    mode='lines',
+                    name=county_name,
+                    showlegend=False,
+                    text=f'{county_name} - No data yet - click PLAY to start simulation',
+                    hoverinfo='text'
+                ))
+    
+    fig.update_layout(
+        title="Map - No Data Available (Select disease parameters and click PLAY)",
+        height=400,
+        margin=dict(l=0, r=0, t=40, b=0),
+        paper_bgcolor='white',
+        plot_bgcolor='white',
+        xaxis=dict(showgrid=False, showticklabels=False, zeroline=False),
+        yaxis=dict(showgrid=False, showticklabels=False, zeroline=False, scaleanchor="x", scaleratio=1),
+        hovermode='closest'
+    )
+    
+    fig.update_xaxes(autorange=True)
+    fig.update_yaxes(autorange=True)
+    
+    return fig
+
 
 def _get_color_from_value(value, max_val):
     """Define color function"""
@@ -2775,6 +2841,7 @@ def fetch_simulation_data(n_intervals, sim_state, event_data):
     return event_data, max(30, len(event_data)), len(event_data) - 1 if event_data else 0
 
 # Real data visualization callbacks
+
 @callback(
     Output('spread-map', 'figure'),
     [Input('event-data', 'data'),
@@ -2784,17 +2851,24 @@ def fetch_simulation_data(n_intervals, sim_state, event_data):
 )
 def update_map(event_data, timeline_value, view_type, location_assets):
     """Update map with county-level choropleth visualization"""
-
+    
+    geojson = location_assets.get("geojson") if location_assets else None
+    
+    # Show empty map with state boundaries if no simulation data yet
+    if geojson and (not event_data or len(event_data) == 0):
+        logger.info("Displaying empty map with state boundaries")
+        return _create_empty_state_map(geojson)
+    
     # DEBUG LOGGING
     logger.info(
         f"map debug → "
         f"event_days={len(event_data) if event_data else 0}, "
         f"timeline={timeline_value}, "
-        f"geojson_loaded={bool((location_assets or {}).get('geojson'))}"
+        f"geojson_loaded={bool(geojson)}"
     )
 
-    geojson = location_assets.get("geojson") if location_assets else None
     return _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojson)
+
 
 @callback(
     Output('line-chart', 'figure'),
@@ -3045,4 +3119,5 @@ server = app.server
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8051)
+
 
