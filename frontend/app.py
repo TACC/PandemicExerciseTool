@@ -115,16 +115,16 @@ PRESET_SCENARIOS = {
                 'name': 'Slow Transmission',
                 'disease_name': 'Slow Transmission',
                 'R0': 1.2,
-                'latent_period': 7,
-                'infectious_period': 14,
+                'latent_period': 1,
+                'infectious_period': 7,
                 'immune_period': 0,
             },
         'fast_transmission': {
             'name': 'Fast Transmission',
             'disease_name': 'Fast Transmission',
             'R0': 2.5,
-            'latent_period': 7,
-            'infectious_period': 14,
+            'latent_period': 1,
+            'infectious_period': 7,
             'immune_period': 0,
         }
     }
@@ -413,7 +413,7 @@ def _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojs
     # Add each county as a separate trace
     for feature in geojson['features']:
         geoid = feature['properties']['GEOID']
-        county_name = feature['properties']['NAME']
+        county_name = feature['properties']['NAMELSAD']
         
         value = county_values.get(geoid, 0)
         color = _get_color_from_value(value, max_value)
@@ -445,7 +445,7 @@ def _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojs
                             mode='lines',
                             name=county_name,
                             showlegend=False,
-                            text=f'{county_name} County<br>Infectious: {infected:,} ({infected_pct:.1f}%)<br>Recovered: {deceased:,} ({deceased_pct:.1f}%)',
+                            text=f'{county_name}<br>Infectious: {infected:,} ({infected_pct:.1f}%)<br>Recovered: {deceased:,} ({deceased_pct:.1f}%)',
                             hoverinfo='text'
                         ))
                     else:
@@ -458,7 +458,7 @@ def _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojs
                             mode='lines',
                             name=county_name,
                             showlegend=False,
-                            text=f'{county_name} County<br>Infectious: {infected:,} ({infected_pct:.1f}%)<br>Deceased: {deceased:,} ({deceased_pct:.1f}%)',
+                            text=f'{county_name}<br>Infectious: {infected:,} ({infected_pct:.1f}%)<br>Deceased: {deceased:,} ({deceased_pct:.1f}%)',
                             hoverinfo='text'
                         ))
         else:
@@ -942,15 +942,36 @@ def create_userguide_layout():
                                                        'Click on compartment names in the legend to remove them from the plot.'])
                 ]),
                 html.Hr(),
+                html.H5('Tips & Need to Knows'),
+                html.Ul([
+                    html.Li([html.B('Max time is 10min: '),
+                             'Each simulation will run for at most 10 minutes, so if the epidemic stops progressing this may be why.']),
+                    html.Li([html.B('Day limit is 200: '),
+                             'The epidemic will stop progressing at 200 days.']),
+                    html.Li([html.B('Stochastic SEATIRD is slow: '),
+                             'This is stochastic model is the Gillespie Algorithm and will create an event queue for each individual exposed. '
+                             'A large population will take a long time to get through the queue and update per day.']),
+                    html.Li([html.B('Texas is slow: '),
+                             'Texas has the most counties of any US state and takes a long time to advance a simulation when the epidemic is '
+                             'in multiple counties. In general, daily simulation time increases with the number of nodes in the network (counties in the state).']),
+                    html.Li([html.B('All infectious travel in SEIR: '),
+                             'The SEIR model does not have an asymtomatic compartment, so we\'re assuming everyone in I is willing to travel while infectious. '
+                             'Future version will let you contral this proportion within the dashboard.' ]),
+                    html.Li([html.B('Hit pause and take screenshots: '),
+                             'You can zoom into the map and deselect compartments in the line plot while paused. '
+                             'We\'re working on a data export button as well, so in the mean time pause, zoom, explore, and take a screenshot.']),
+                ]),
+                html.Hr(),
                 html.H5('Disease Models Available'),
                 html.Ul([
-                    html.Li([html.B('SEIR: '), 'Susceptible-Exposed-Infectious-Recovered - Basic compartmental model.']),
-                    html.Li([html.B('SEIRS: '), 'SEIR with waning immunity - Recovered can become susceptible again.']),
-                    html.Li([html.B('SEATIRD: '), 'Adds Asymptomatic, Treatment, and Death compartments to capture severity of disease.']),
-                    #html.Li([html.B('SEIHRD: '), 'Includes Hospitalization tracking']),
-                    html.Li([html.B('Deterministic vs Stochastic: '), 'Deterministic uses Euler\'s Method to advance the simulation and can move fractions of a person; '
-                                                                      'Stochastic is a Poisson draw or the Gillespie Algorithm moving only integer people.'
-                                                                      'All models have a stochastic Binomial draw for new infections spread between counties.'])
+                    html.Li([html.B('Deterministic vs Stochastic: '),
+                             'Deterministic uses Euler\'s Method to advance the simulation and can move fractions of a person; '
+                             'Stochastic is a Poisson draw (SEIR/S) or the Gillespie Algorithm (SEATIRD) moving only integer people. '
+                             'All models have a stochastic Binomial draw for new infections spread between counties.']),
+                    html.Li([html.B('SEIR: '),    'Susceptible-Exposed-Infectious-Recovered - Basic compartmental model.']),
+                    html.Li([html.B('SEIRS: '),   'SEIR with waning immunity - Recovered can become susceptible again.']),
+                    html.Li([html.B('SEATIRD: '), 'Adds Asymptomatic (A), Treatable (T), and Deceased (D) compartments added to capture severity of disease.']),
+                    # html.Li([html.B('SEIHRD: '), 'Includes Hospitalization (H) and 3 infectious compartments (Asymptomatic, Pre-symptomatic, and Symptomatic) tracking']),
                 ]),
                 html.Hr(),
                 html.H5('SEIR and SEIRS Model'),
