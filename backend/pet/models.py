@@ -26,13 +26,13 @@ class PET(models.Model):
     #antiviral_wastage_factor = models.FloatField(null=True)
     #antiviral_stockpile = models.TextField(null=True)
 
-    vaccine_model = models.TextField(blank=True)
-    vaccine_priority_groups = models.TextField(blank=True)
-    vaccine_capacity = models.FloatField(blank=True)
-    vaccine_effectiveness_lag = models.FloatField(blank=True)
-    vaccine_effectiveness = models.TextField(blank=True)
-    vaccine_adherence = models.TextField(blank=True)
-    vaccine_stockpile = models.TextField(blank=True)
+    vaccine_model = models.TextField(blank=True, null=True)
+    vaccine_priority_groups = models.TextField(blank=True, null=True)
+    vaccine_capacity = models.FloatField(blank=True, null=True)
+    vaccine_effectiveness_lag = models.FloatField(blank=True, null=True)
+    vaccine_effectiveness = models.TextField(blank=True, null=True)
+    vaccine_adherence = models.TextField(blank=True, null=True)
+    vaccine_stockpile = models.TextField(blank=True, null=True)
     
     def __str__(self):
         return(f'{self.disease_name}, model_type={self.model_type}, state={self.state}') 
