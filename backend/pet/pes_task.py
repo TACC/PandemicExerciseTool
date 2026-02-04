@@ -118,7 +118,7 @@ def return_valid_input(input):
              }
         input_file['disease_model']['parameters'] = p
 
-        input_file['travel_model']['parameters']['traveling_compartments'] = {'I': '0.2'}
+        input_file['travel_model']['parameters']['traveling_compartments'] = {'I': '1.0'}
         input_file['travel_model']['parameters']['transmitting_compartments'] = {'I': '1.0'}
 
     # rho into travel model
@@ -265,7 +265,7 @@ def run_pes(input):
                       preexec_fn=on_parent_exit('SIGHUP'))
     
     # Simulation control
-    max_wait_time = 300  # Maximum wait time in seconds (5 minutes)
+    max_wait_time = 600  # Maximum wait time in seconds (10 minutes)
     max_processed_files = 200
     start_time = time.time()
     processed_files = 0
