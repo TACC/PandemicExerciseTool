@@ -35,43 +35,7 @@ def return_valid_input(input):
     logging.info('Parsing input from post request')
     logging.info(input)
 
-    try:
-        if input['npis'] is not None:
-            npis = json.loads(input['npis'])
-            for index, npi in enumerate(npis):
-                new_list = []
-                # Handle location - can be string or list
-                location = npi['location']
-                if isinstance(location, str):
-                    counties = location.split(',')
-                elif isinstance(location, list):
-                    counties = location
-                else:
-                    counties = [str(location)]
-                
-                for county in counties:
-                    if county in texas_mapping:
-                        new_county = texas_mapping[county]
-                        new_list.append(new_county)
-                    else:
-                        print(f"Warning: County '{county}' not found in mapping")
-                        new_list.append('1')  # Default to Anderson County
-                npis[index]['location'] = (',').join(new_list)
-                
-                # Handle effectiveness - can be string or list
-                effectiveness = npi['effectiveness']
-                if isinstance(effectiveness, str):
-                    eff_list = effectiveness.split(',')
-                elif isinstance(effectiveness, list):
-                    eff_list = [str(x) for x in effectiveness]
-                else:
-                    eff_list = [str(effectiveness)]
-                npis[index]['effectiveness'] = eff_list
-        else:
-            npis = []
-    except (TypeError, KeyError, json.JSONDecodeError) as e:
-        print(f"Error processing NPIs: {e}")
-        npis = None
+
     
     #try:
     #    avs = json.loads(input['antiviral_stockpile'])
@@ -161,8 +125,53 @@ def return_valid_input(input):
     if "rho" in input and input["rho"] is not None:
         input_file["travel_model"]["parameters"]["rho"] = str(input["rho"])
 
+
+    # Put NPIs into input file
+    try:
+        if input['npis'] is not None:
+            npis = json.loads(input['npis'])
+            for index, npi in enumerate(npis):
+                new_list = []
+                # Handle location - can be string or list
+                location = npi['location']
+                if isinstance(location, str):
+                    counties = location.split(',')
+                elif isinstance(location, list):
+                    counties = location
+                else:
+                    counties = [str(location)]
+
+                for county in counties:
+                    if county in texas_mapping:
+                        new_county = texas_mapping[county]
+                        new_list.append(new_county)
+                    else:
+                        print(f"Warning: County '{county}' not found in mapping")
+                        new_list.append('1')  # Default to Anderson County
+                npis[index]['location'] = (',').join(new_list)
+
+                # Handle effectiveness - can be string or list
+                effectiveness = npi['effectiveness']
+                if isinstance(effectiveness, str):
+                    eff_list = effectiveness.split(',')
+                elif isinstance(effectiveness, list):
+                    eff_list = [str(x) for x in effectiveness]
+                else:
+                    eff_list = [str(effectiveness)]
+                npis[index]['effectiveness'] = eff_list
+        else:
+            npis = []
+    except (TypeError, KeyError, json.JSONDecodeError) as e:
+        print(f"Error processing NPIs: {e}")
+        npis = []
+
+    input_file['npis'] = npis
+
+
     # Put vaccine model bits into input file
-    if input['vaccine_model'] is not None:
+    if input['vaccine_model'] == '{}':
+        vm = {}
+    else:
         vm = {
             'identity': input['vaccine_model'],
             'parameters': {
