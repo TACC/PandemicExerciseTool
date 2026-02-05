@@ -520,7 +520,7 @@ app.layout = html.Div([
     
     # Stores for Model and State Selection
     dcc.Store(id='selected-model-store', data='seirs-deterministic'),
-    dcc.Store(id='selected-state-store', data='Alaska'),
+    dcc.Store(id='selected-state-store', data='Alabama'),
     dcc.Store(id='location-assets-store', data={}),
     
     # Header
@@ -644,7 +644,7 @@ def create_model_state_selection_panel():
             dcc.Dropdown(
                 id='state-selector-dropdown',
                 options=[{"label": s["label"], "value": s["value"]} for s in STATE_OPTIONS],
-                value='Alaska',
+                value='Alabama',
                 clearable=True,
                 searchable=True,
                 placeholder="Select a state...",
