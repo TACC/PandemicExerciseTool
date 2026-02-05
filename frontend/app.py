@@ -8,14 +8,20 @@ import logging
 import glob
 import os
 import math
+import subprocess
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Get version from environment
+result = subprocess.run("git symbolic-ref -q --short HEAD || git describe --tags --exact-match",
+                        shell=True, capture_output=True)
+version = result.stdout.decode("utf-8").strip() if result.stdout else 'Unknown'
+
 # Initialize Dash app with external CSS
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
-app.title = 'epiENGAGE - Interactive Outbreak Simulator'
+app.title = f'epiENGAGE - Interactive Outbreak Simulator v-{version}'
 app.config.suppress_callback_exceptions = True
 
 # API Configuration
@@ -520,7 +526,7 @@ app.layout = html.Div([
     
     # Stores for Model and State Selection
     dcc.Store(id='selected-model-store', data='seirs-deterministic'),
-    dcc.Store(id='selected-state-store', data='Alaska'),
+    dcc.Store(id='selected-state-store', data='Alabama'),
     dcc.Store(id='location-assets-store', data={}),
     
     # Header
@@ -560,7 +566,7 @@ app.layout = html.Div([
                 ], style={'flex': '1', 'textAlign': 'center'}),
                 
                 html.Div([
-                    html.Span('Interactive Outbreak Simulator', style={'color': 'white'})
+                    html.Span(f'Interactive Outbreak Simulator v-{version}', style={'color': 'white'})
                 ])
             ], style={
                 'display': 'flex',
@@ -644,7 +650,7 @@ def create_model_state_selection_panel():
             dcc.Dropdown(
                 id='state-selector-dropdown',
                 options=[{"label": s["label"], "value": s["value"]} for s in STATE_OPTIONS],
-                value='Alaska',
+                value='Alabama',
                 clearable=True,
                 searchable=True,
                 placeholder="Select a state...",
@@ -2591,17 +2597,37 @@ def create_interventions_display(npi_data, antiviral_data, vaccine_data, vaccine
 
 # Reset callback - connects to Django backend
 @callback(
+    Output('simulation-state', 'data', allow_duplicate=True),
     Input('reset-btn', 'n_clicks'),
+    State('simulation-state', 'data'),
     prevent_initial_call=True
 )
-def reset_simulation(n_clicks):
+def reset_simulation(n_clicks, sim_state):
     if n_clicks:
         logger.info("Resetting simulation...")
+
+        if sim_state.get('isRunning'):
+            try:
+                task_id = sim_state.get('taskId')
+                if task_id:
+                    requests.get(f'{API_BASE_URL}/api/delete/{task_id}')
+            except:
+                pass
+
+            new_state = {**sim_state, 'isRunning': False}
+
+        else:
+            new_state = {**sim_state}
+
         response = requests.get(f'{API_BASE_URL}/api/reset')
         logger.info(f"Reset response status: {response.status_code}")
         if response.status_code == 200:
             logger.info("Simulation reset successfully on backend.")
+
+        return new_state
+
     return dash.no_update
+
 
 # Play/Pause simulation callback - connects to Django backend
 @callback(
