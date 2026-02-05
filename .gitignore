@@ -12,6 +12,7 @@
 .env.development.local
 .env.test.local
 .env.production.local
+id_rsa.pub
 
 .python-version
 **/__pycache__/ 
