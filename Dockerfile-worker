@@ -1,22 +1,17 @@
-FROM python:3.10
+FROM python:3.12
 
 RUN pip install "poetry==1.8.3"
 
 ADD https://api.github.com/repos/TACC/PandemicExerciseSimulator/git/refs/heads/main /version.json
-RUN git clone https://github.com/TACC/PandemicExerciseSimulator /PES
+RUN git clone --branch 0.2.2 https://github.com/TACC/PandemicExerciseSimulator /PES
 WORKDIR /PES
 
 RUN poetry config virtualenvs.create false && \
     poetry install --no-root
 
 WORKDIR /django-app
-COPY ./backend/requirements.txt /django-app
-
+COPY ./backend/requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
-
-COPY ./backend/backend /django-app/backend
-COPY ./backend/db.sqlite3 /django-app/
-COPY ./backend/manage.py /django-app/
 COPY ./backend/pet /django-app/pet
 
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["celery", "-A", "pet.pes_task", "worker", "--loglevel=INFO"]

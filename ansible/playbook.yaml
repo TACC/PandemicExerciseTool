@@ -1,0 +1,80 @@
+- name: Set up keys
+  hosts: all
+  tags: key
+  become: true
+  tasks:
+
+  - name: Set up multiple authorized keys
+    ansible.posix.authorized_key:
+      user: ubuntu
+      state: present
+      key: '{{ item }}'
+    with_file:
+      - ./id_rsa.pub
+
+
+- name: Install and configure nginx
+  hosts: all
+  tags: nginx
+  become: true
+  tasks:
+
+  - name: Install nginx
+    ansible.builtin.apt:
+      name: nginx
+      update_cache: yes
+
+  - name: Copy config
+    ansible.builtin.copy:
+      src: ./dash-app.conf
+      dest: /etc/nginx/sites-available/dash-app.conf
+      owner: root
+      group: root
+      mode: u=rw,g=r,o=r
+
+  - name: Create symlink
+    ansible.builtin.file:
+      src: /etc/nginx/sites-available/dash-app.conf
+      dest: /etc/nginx/sites-enabled/dash-app.conf
+      owner: root
+      group: root
+      state: link
+
+  - name: Remove default symlink
+    ansible.builtin.file:
+      path: /etc/nginx/sites-enabled/default
+      state: absent
+
+  - name: Restart nginx
+    ansible.builtin.service:
+      name: nginx
+      state: restarted
+
+
+- name: Start dash app
+  hosts: all
+  tags: dash
+  tasks:
+
+  - name: Git checkout
+    ansible.builtin.git:
+      repo: 'https://github.com/TACC/PandemicExerciseTool.git'
+      dest: /home/ubuntu/PandemicExerciseTool
+      version: development
+      force: true
+
+  - name: Stop existing containers
+    community.docker.docker_compose_v2:
+      project_src: /home/ubuntu/PandemicExerciseTool
+      files:
+        - docker-compose.yml
+      state: absent
+
+  - name: Start new containers
+    community.docker.docker_compose_v2:
+      project_src: /home/ubuntu/PandemicExerciseTool
+      files:
+        - docker-compose.yml
+      state: present
+      build: always
+
