@@ -2591,17 +2591,37 @@ def create_interventions_display(npi_data, antiviral_data, vaccine_data, vaccine
 
 # Reset callback - connects to Django backend
 @callback(
+    Output('simulation-state', 'data', allow_duplicate=True),
     Input('reset-btn', 'n_clicks'),
+    State('simulation-state', 'data'),
     prevent_initial_call=True
 )
-def reset_simulation(n_clicks):
+def reset_simulation(n_clicks, sim_state):
     if n_clicks:
         logger.info("Resetting simulation...")
+
+        if sim_state.get('isRunning'):
+            try:
+                task_id = sim_state.get('taskId')
+                if task_id:
+                    requests.get(f'{API_BASE_URL}/api/delete/{task_id}')
+            except:
+                pass
+
+            new_state = {**sim_state, 'isRunning': False}
+
+        else:
+            new_state = {**sim_state}
+
         response = requests.get(f'{API_BASE_URL}/api/reset')
         logger.info(f"Reset response status: {response.status_code}")
         if response.status_code == 200:
             logger.info("Simulation reset successfully on backend.")
+
+        return new_state
+
     return dash.no_update
+
 
 # Play/Pause simulation callback - connects to Django backend
 @callback(
