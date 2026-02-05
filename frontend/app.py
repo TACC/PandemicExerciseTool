@@ -8,14 +8,20 @@ import logging
 import glob
 import os
 import math
+import subprocess
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Get version from environment
+result = subprocess.run("git symbolic-ref -q --short HEAD || git describe --tags --exact-match",
+                        shell=True, capture_output=True)
+version = result.stdout.decode("utf-8").strip() if result.stdout else 'Unknown'
+
 # Initialize Dash app with external CSS
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
-app.title = 'epiENGAGE - Interactive Outbreak Simulator'
+app.title = f'epiENGAGE - Interactive Outbreak Simulator v-{version}'
 app.config.suppress_callback_exceptions = True
 
 # API Configuration
@@ -560,7 +566,7 @@ app.layout = html.Div([
                 ], style={'flex': '1', 'textAlign': 'center'}),
                 
                 html.Div([
-                    html.Span('Interactive Outbreak Simulator', style={'color': 'white'})
+                    html.Span(f'Interactive Outbreak Simulator v-{version}', style={'color': 'white'})
                 ])
             ], style={
                 'display': 'flex',
