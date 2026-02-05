@@ -1,3 +1,18 @@
+- name: Set up keys
+  hosts: all
+  tags: key
+  become: true
+  tasks:
+
+  - name: Set up multiple authorized keys
+    ansible.posix.authorized_key:
+      user: ubuntu
+      state: present
+      key: '{{ item }}'
+    with_file:
+      - ./id_rsa.pub
+
+
 - name: Install and configure nginx
   hosts: all
   tags: nginx
