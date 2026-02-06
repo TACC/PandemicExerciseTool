@@ -60,7 +60,7 @@
     ansible.builtin.git:
       repo: 'https://github.com/TACC/PandemicExerciseTool.git'
       dest: /home/ubuntu/PandemicExerciseTool
-      version: development
+      version: 0.4.0
       force: true
 
   - name: Stop existing containers
@@ -68,6 +68,12 @@
       project_src: /home/ubuntu/PandemicExerciseTool
       files:
         - docker-compose.yml
+      state: absent
+
+  - name: Ensure mongo dir is emptied
+    become: true
+    ansible.builtin.file:
+      path: /home/ubuntu/PandemicExerciseTool/mongo-data
       state: absent
 
   - name: Start new containers
