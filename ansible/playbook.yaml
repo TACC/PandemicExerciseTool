@@ -60,7 +60,7 @@
     ansible.builtin.git:
       repo: 'https://github.com/TACC/PandemicExerciseTool.git'
       dest: /home/ubuntu/PandemicExerciseTool
-      version: development
+      version: 0.4.1
       force: true
 
   - name: Stop existing containers
