@@ -11,7 +11,7 @@ def test_app_creation():
         print("✓ Dash imports successful")
         
         from api_client import PandemicAPIClient
-        from data_loader import DataLoader
+        from frontend.test.data_loader import DataLoader
         from visualization import VisualizationGenerator
         print("✓ Custom imports successful")
         
