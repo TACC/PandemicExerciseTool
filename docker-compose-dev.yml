@@ -69,7 +69,7 @@ services:
     environment:
       - API_BASE_URL=http://django-backend:8000
     volumes:
-      - ./frontend:/app
+      - ./frontend:/app/frontend
     networks:
       - pandemic-network
 
