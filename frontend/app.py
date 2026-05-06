@@ -802,6 +802,72 @@ def create_home_layout():
         })
     ])
 
+def create_interventions_display(npi_data, antiviral_data, vaccine_data, vaccine_stockpile):
+    """Create interventions tab display content"""
+    if not npi_data and not antiviral_data and not vaccine_data:
+        return html.P('No interventions set yet.', style={'color': '#6c757d', 'fontStyle': 'italic'})
+    
+    content = []
+    
+    # NPIs section
+    if npi_data:
+        content.extend([
+            html.H6('Non-Pharmaceutical Interventions', style={'fontWeight': 'bold', 'marginBottom': '10px'}),
+        ])
+        for npi in npi_data:
+            content.append(html.Div([
+                html.P(f"Name: {npi['name']}"),
+                html.P(f"Start Day: {npi['start']}, Duration: {npi['duration']} days"),
+                html.P(f"Location: {', '.join(npi['location'])}"),
+                html.P('Age-specific effectiveness:'),
+                html.Ul([
+                    html.Li(f"0-4: {npi['effectiveness'][0]:.2f}"),
+                    html.Li(f"5-24: {npi['effectiveness'][1]:.2f}"),
+                    html.Li(f"25-49: {npi['effectiveness'][2]:.2f}"),
+                    html.Li(f"50-64: {npi['effectiveness'][3]:.2f}"),
+                    html.Li(f"65+: {npi['effectiveness'][4]:.2f}")
+                ], style={'marginLeft': '20px'})
+            ], style={'marginBottom': '15px', 'padding': '10px', 'border': '1px solid #dee2e6', 'borderRadius': '4px'}))
+    
+    # Antivirals section
+    if antiviral_data:
+        content.extend([
+            html.H6('Antivirals', style={'fontWeight': 'bold', 'marginBottom': '10px'}),
+            html.P(f"Effectiveness: {antiviral_data['effectiveness']:.2f}"),
+            html.P(f"Wastage Factor: {antiviral_data['wastage_factor']} days"),
+            html.P(f"Stockpile: {antiviral_data['stockpile_amount']} on day {antiviral_data['stockpile_day']}")
+        ])
+    
+    ## Vaccines section
+    if vaccine_data:
+        model_label = 'Stockpile Age Risk' if vaccine_data['vaccine_model'] == 'stockpile-age-risk' else 'Undefined'
+        content.extend([html.H6('Vaccines', style={'fontWeight': 'bold', 'marginBottom': '10px'})])
+        content.append(html.Div([
+            html.P(f"Vaccine Model: {model_label}"),
+            html.P(f"Priority Groups: {vaccine_data['priority_groups']}"),
+            html.P(f"Capacity: {vaccine_data['capacity']} (proportion)"),
+            html.P(f"Effectiveness Lag: {vaccine_data['effectiveness_lag']} days"),
+            html.P(f"Effectiveness:"),
+            html.Ul([
+                    html.Li(f"0-4: {vaccine_data['effectiveness'][0]:.2f}"),
+                    html.Li(f"5-17: {vaccine_data['effectiveness'][1]:.2f}"),
+                    html.Li(f"18-49: {vaccine_data['effectiveness'][2]:.2f}"),
+                    html.Li(f"50-64: {vaccine_data['effectiveness'][3]:.2f}"),
+                    html.Li(f"65+: {vaccine_data['effectiveness'][4]:.2f}")
+            ], style={'marginLeft': '20px'}),
+            html.P(f"Adherence:"),
+            html.Ul([
+                    html.Li(f"0-4: {vaccine_data['adherence'][0]:.2f}"),
+                    html.Li(f"5-17: {vaccine_data['adherence'][1]:.2f}"),
+                    html.Li(f"18-49: {vaccine_data['adherence'][2]:.2f}"),
+                    html.Li(f"50-64: {vaccine_data['adherence'][3]:.2f}"),
+                    html.Li(f"65+: {vaccine_data['adherence'][4]:.2f}")
+            ], style={'marginLeft': '20px'}),
+            html.P(f"Stockpile:"),
+            html.Ul(children=[html.Li(f'day={i["day"]} , amt={i["amount"]}') for i in vaccine_stockpile], style={'marginLeft': '20px'})
+        ], style={'marginBottom': '15px', 'padding': '10px', 'border': '1px solid #dee2e6', 'borderRadius': '4px'}))
+    
+    return html.Div(content)
 
 # ============================================================================
 # MODALS
@@ -815,169 +881,6 @@ disease_params_modal = dbc.Modal([
         dbc.Button("Close", id="disease-params-close", className="ms-auto", n_clicks=0)
     ])
 ], id="disease-params-modal", is_open=False, size="lg")
-
-
-@callback(
-    Output('disease-params-modal-body', 'children'),
-    Input('model-selector-dropdown', 'value'),
-    prevent_initial_call=True
-)
-def update_disease_param_modal_body(selected_value):
-    scenario_prefix = selected_value.split('-')[0]
-
-    if selected_value is not None:
-        return dbc.ModalBody([
-            # Preset scenarios dropdown
-            html.Div([
-                html.Label('Load from Catalog', style={'fontWeight': 'bold', 'marginBottom': '5px'}),
-                dcc.Dropdown(
-                    id='preset-scenario-dropdown',
-                    options=[
-                        {'label': scenario['name'], 'value': key} 
-                        for key, scenario in PRESET_SCENARIOS[scenario_prefix].items()
-                    ],
-                    placeholder='Select a preset scenario...',
-                    style={'marginBottom': '15px'}
-                )
-            ]),
-            
-            html.Hr(),
-            
-            # Currently all models expect scenario name, R0, and latent period
-            html.Div([
-                html.Label('Scenario Name', style={'fontWeight': 'bold'}),
-                dcc.Input(id='scenario-name', type='text', value='', 
-                    style={'width': '100%', 'marginBottom': '10px'})
-            ]),
-            html.Div([
-                html.Label('Reproduction Number (R₀)', style={'fontWeight': 'bold'}),
-                html.Small(' - Average number of secondary infections in a susceptible population', 
-                    style={'color': '#6c757d'}),
-                dcc.Input(id='reproduction-number', type='number', value=1.2, step=0.1, min=0,
-                    style={'width': '100%', 'marginBottom': '10px'})
-            ]),
-    
-            html.Div([
-                html.Label('Latent period (days)', style={'fontWeight': 'bold'}),
-                html.Small(' - Average number of days from infection to infectiousness',
-                    style={'color': '#6c757d'}),
-                dcc.Input(id='latent-period', type='number', value=1.2, step=0.1, min=0,
-                    style={'width': '100%', 'marginBottom': '10px'})
-            ]),
-    
-            # Asymptomatic, symptomatic, CFR and sigma just for SEATIRD
-            html.Div([
-                html.Label('Asymptomatic period (days)', style={'fontWeight': 'bold'}),
-                html.Small(' - Average number of days spent infectious, but not yet symptomatic',
-                    style={'color': '#6c757d'}),
-                dcc.Input(id='asymptomatic-period', type='number', value=1.9, step=0.1, min=0,
-                    style={'width': '100%', 'marginBottom': '10px'})
-            ], id='disease-param-modal-display-asymptomatic', style={'display': 'none'}),
-            html.Div([
-                html.Label('Symptomatic period (days)', style={'fontWeight': 'bold'}),
-                html.Small(' - Average number of days spent symptomatic and infectious',
-                    style={'color': '#6c757d'}),
-                dcc.Input(id='symptomatic-period', type='number', value=4.1, step=0.1, min=0,
-                    style={'width': '100%', 'marginBottom': '15px'})
-            ], id='disease-param-modal-display-symptomatic', style={'display': 'none'}),
-
-            # Age-specific CFR section => this is not CFR in the model it's mean time to death
-            html.Div([
-                html.Label('Mortality rate (1/days)', style={'fontWeight': 'bold'}),
-                html.Small(' - Inverse average number of days spent asymptomatic/treatable/infectious to deceased',
-                    style={'color': '#6c757d', 'display': 'block', 'marginBottom': '15px'}),
-                
-                # CFR inputs for each age group
-                html.Div([
-                    html.Label('0-4 years', style={'fontSize': '14px'}),
-                    dcc.Input(id='cfr-0-4', type='number', value=0.000022319, 
-                        step=0.000000001, min=0, max=100,
-                        style={'width': '100%', 'marginBottom': '5px'})
-                ]),
-                html.Div([
-                    html.Label('5-17 years', style={'fontSize': '14px'}),
-                    dcc.Input(id='cfr-5-24', type='number', value=0.000040975,
-                        step=0.000000001, min=0, max=100,
-                        style={'width': '100%', 'marginBottom': '5px'})
-                ]),
-                html.Div([
-                    html.Label('18-49 years', style={'fontSize': '14px'}),
-                    dcc.Input(id='cfr-25-49', type='number', value=0.000083729,
-                        step=0.000000001, min=0, max=100,
-                        style={'width': '100%', 'marginBottom': '5px'})
-                ]),
-                html.Div([
-                    html.Label('50-64 years', style={'fontSize': '14px'}),
-                    dcc.Input(id='cfr-50-64', type='number', value=0.000061809,
-                        step=0.000000001, min=0, max=100,
-                        style={'width': '100%', 'marginBottom': '5px'})
-                ]),
-                html.Div([
-                    html.Label('65+ years', style={'fontSize': '14px'}),
-                    dcc.Input(id='cfr-65-plus', type='number', value=0.000008978,
-                        step=0.000000001, min=0, max=100,
-                        style={'width': '100%', 'marginBottom': '25px'})
-                ])
-            ], id='disease-param-modal-display-cfr', style={'display': 'none'}),
-    
-            # Age-specific relative susceptibility section
-            html.Div([
-                html.Label('Relative susceptibility (ratio)', style={'fontWeight': 'bold'}),
-                html.Small(' - How susceptible each age group is relative to a reference group (e.g. 0-4yro)',
-                    style={'color': '#6c757d', 'display': 'block', 'marginBottom': '15px'}),
-                
-                # inputs for each age group
-                html.Div([
-                    html.Label('0-4 years', style={'fontSize': '14px'}),
-                    dcc.Input(id='sigma-0-4', type='number', value=1.0, 
-                        step=0.000000001, min=0, max=10,
-                        style={'width': '100%', 'marginBottom': '5px'})
-                ]),
-                html.Div([
-                    html.Label('5-17 years', style={'fontSize': '14px'}),
-                    dcc.Input(id='sigma-5-24', type='number', value=1.0,
-                        step=0.000000001, min=0, max=10,
-                        style={'width': '100%', 'marginBottom': '5px'})
-                ]),
-                html.Div([
-                    html.Label('18-49 years', style={'fontSize': '14px'}),
-                    dcc.Input(id='sigma-25-49', type='number', value=1.0,
-                        step=0.000000001, min=0, max=10,
-                        style={'width': '100%', 'marginBottom': '5px'})
-                ]),
-                html.Div([
-                    html.Label('50-64 years', style={'fontSize': '14px'}),
-                    dcc.Input(id='sigma-50-64', type='number', value=1.0,
-                        step=0.000000001, min=0, max=10,
-                        style={'width': '100%', 'marginBottom': '5px'})
-                ]),
-                html.Div([
-                    html.Label('65+ years', style={'fontSize': '14px'}),
-                    dcc.Input(id='sigma-65-plus', type='number', value=1.0,
-                        step=0.000000001, min=0, max=10,
-                        style={'width': '100%', 'marginBottom': '5px'})
-                ])
-            ], id='disease-param-modal-display-sigma', style={'display': 'none'}),
-
-            # These next two just for SEIRS
-            html.Div([
-                html.Label('Infectious period (days)', style={'fontWeight': 'bold'}),
-                html.Small(' - Average number of days spent infectious',
-                    style={'color': '#6c757d'}),
-                dcc.Input(id='infectious-period', type='number', value=1.9, step=0.1, min=0,
-                    style={'width': '100%', 'marginBottom': '10px'})
-            ], id='disease-param-modal-display-infectious', style={'display': 'none'}),
-            html.Div([
-                html.Label('Immune period (days)', style={'fontWeight': 'bold'}),
-                html.Small(' - Average number of days before returning to susceptible (set to 0 to make this an SEIR model)',
-                    style={'color': '#6c757d'}),
-                dcc.Input(id='immune-period', type='number', value=0, step=0.1, min=0,
-                    style={'width': '100%', 'marginBottom': '15px'})
-            ], id='disease-param-modal-display-immune', style={'display': 'none'})
-        ])
-    else:
-        return dbc.ModalBody(['Select a valid disease model to set parameters.'])
-
 
 
 # Initial Cases Modal Component  
@@ -1168,6 +1071,175 @@ vaccines_modal = dbc.Modal([
     ])
 ], id="vaccines-modal", is_open=False)
 
+
+# Add modals to layout
+app.layout.children.extend([disease_params_modal, initial_cases_modal, npi_modal, antivirals_modal, vaccines_modal])
+
+
+# ============================================================================
+# CALLBACKS
+# ============================================================================
+
+@callback(
+    Output('disease-params-modal-body', 'children'),
+    Input('model-selector-dropdown', 'value'),
+    prevent_initial_call=True
+)
+def update_disease_param_modal_body(selected_value):
+    scenario_prefix = selected_value.split('-')[0]
+
+    if selected_value is not None:
+        return dbc.ModalBody([
+            # Preset scenarios dropdown
+            html.Div([
+                html.Label('Load from Catalog', style={'fontWeight': 'bold', 'marginBottom': '5px'}),
+                dcc.Dropdown(
+                    id='preset-scenario-dropdown',
+                    options=[
+                        {'label': scenario['name'], 'value': key} 
+                        for key, scenario in PRESET_SCENARIOS[scenario_prefix].items()
+                    ],
+                    placeholder='Select a preset scenario...',
+                    style={'marginBottom': '15px'}
+                )
+            ]),
+            
+            html.Hr(),
+            
+            # Currently all models expect scenario name, R0, and latent period
+            html.Div([
+                html.Label('Scenario Name', style={'fontWeight': 'bold'}),
+                dcc.Input(id='scenario-name', type='text', value='', 
+                    style={'width': '100%', 'marginBottom': '10px'})
+            ]),
+            html.Div([
+                html.Label('Reproduction Number (R₀)', style={'fontWeight': 'bold'}),
+                html.Small(' - Average number of secondary infections in a susceptible population', 
+                    style={'color': '#6c757d'}),
+                dcc.Input(id='reproduction-number', type='number', value=1.2, step=0.1, min=0,
+                    style={'width': '100%', 'marginBottom': '10px'})
+            ]),
+    
+            html.Div([
+                html.Label('Latent period (days)', style={'fontWeight': 'bold'}),
+                html.Small(' - Average number of days from infection to infectiousness',
+                    style={'color': '#6c757d'}),
+                dcc.Input(id='latent-period', type='number', value=1.2, step=0.1, min=0,
+                    style={'width': '100%', 'marginBottom': '10px'})
+            ]),
+    
+            # Asymptomatic, symptomatic, CFR and sigma just for SEATIRD
+            html.Div([
+                html.Label('Asymptomatic period (days)', style={'fontWeight': 'bold'}),
+                html.Small(' - Average number of days spent infectious, but not yet symptomatic',
+                    style={'color': '#6c757d'}),
+                dcc.Input(id='asymptomatic-period', type='number', value=1.9, step=0.1, min=0,
+                    style={'width': '100%', 'marginBottom': '10px'})
+            ], id='disease-param-modal-display-asymptomatic', style={'display': 'none'}),
+            html.Div([
+                html.Label('Symptomatic period (days)', style={'fontWeight': 'bold'}),
+                html.Small(' - Average number of days spent symptomatic and infectious',
+                    style={'color': '#6c757d'}),
+                dcc.Input(id='symptomatic-period', type='number', value=4.1, step=0.1, min=0,
+                    style={'width': '100%', 'marginBottom': '15px'})
+            ], id='disease-param-modal-display-symptomatic', style={'display': 'none'}),
+
+            # Age-specific CFR section => this is not CFR in the model it's mean time to death
+            html.Div([
+                html.Label('Mortality rate (1/days)', style={'fontWeight': 'bold'}),
+                html.Small(' - Inverse average number of days spent asymptomatic/treatable/infectious to deceased',
+                    style={'color': '#6c757d', 'display': 'block', 'marginBottom': '15px'}),
+                
+                # CFR inputs for each age group
+                html.Div([
+                    html.Label('0-4 years', style={'fontSize': '14px'}),
+                    dcc.Input(id='cfr-0-4', type='number', value=0.000022319, 
+                        step=0.000000001, min=0, max=100,
+                        style={'width': '100%', 'marginBottom': '5px'})
+                ]),
+                html.Div([
+                    html.Label('5-17 years', style={'fontSize': '14px'}),
+                    dcc.Input(id='cfr-5-24', type='number', value=0.000040975,
+                        step=0.000000001, min=0, max=100,
+                        style={'width': '100%', 'marginBottom': '5px'})
+                ]),
+                html.Div([
+                    html.Label('18-49 years', style={'fontSize': '14px'}),
+                    dcc.Input(id='cfr-25-49', type='number', value=0.000083729,
+                        step=0.000000001, min=0, max=100,
+                        style={'width': '100%', 'marginBottom': '5px'})
+                ]),
+                html.Div([
+                    html.Label('50-64 years', style={'fontSize': '14px'}),
+                    dcc.Input(id='cfr-50-64', type='number', value=0.000061809,
+                        step=0.000000001, min=0, max=100,
+                        style={'width': '100%', 'marginBottom': '5px'})
+                ]),
+                html.Div([
+                    html.Label('65+ years', style={'fontSize': '14px'}),
+                    dcc.Input(id='cfr-65-plus', type='number', value=0.000008978,
+                        step=0.000000001, min=0, max=100,
+                        style={'width': '100%', 'marginBottom': '25px'})
+                ])
+            ], id='disease-param-modal-display-cfr', style={'display': 'none'}),
+    
+            # Age-specific relative susceptibility section
+            html.Div([
+                html.Label('Relative susceptibility (ratio)', style={'fontWeight': 'bold'}),
+                html.Small(' - How susceptible each age group is relative to a reference group (e.g. 0-4yro)',
+                    style={'color': '#6c757d', 'display': 'block', 'marginBottom': '15px'}),
+                
+                # inputs for each age group
+                html.Div([
+                    html.Label('0-4 years', style={'fontSize': '14px'}),
+                    dcc.Input(id='sigma-0-4', type='number', value=1.0, 
+                        step=0.000000001, min=0, max=10,
+                        style={'width': '100%', 'marginBottom': '5px'})
+                ]),
+                html.Div([
+                    html.Label('5-17 years', style={'fontSize': '14px'}),
+                    dcc.Input(id='sigma-5-24', type='number', value=1.0,
+                        step=0.000000001, min=0, max=10,
+                        style={'width': '100%', 'marginBottom': '5px'})
+                ]),
+                html.Div([
+                    html.Label('18-49 years', style={'fontSize': '14px'}),
+                    dcc.Input(id='sigma-25-49', type='number', value=1.0,
+                        step=0.000000001, min=0, max=10,
+                        style={'width': '100%', 'marginBottom': '5px'})
+                ]),
+                html.Div([
+                    html.Label('50-64 years', style={'fontSize': '14px'}),
+                    dcc.Input(id='sigma-50-64', type='number', value=1.0,
+                        step=0.000000001, min=0, max=10,
+                        style={'width': '100%', 'marginBottom': '5px'})
+                ]),
+                html.Div([
+                    html.Label('65+ years', style={'fontSize': '14px'}),
+                    dcc.Input(id='sigma-65-plus', type='number', value=1.0,
+                        step=0.000000001, min=0, max=10,
+                        style={'width': '100%', 'marginBottom': '5px'})
+                ])
+            ], id='disease-param-modal-display-sigma', style={'display': 'none'}),
+
+            # These next two just for SEIRS
+            html.Div([
+                html.Label('Infectious period (days)', style={'fontWeight': 'bold'}),
+                html.Small(' - Average number of days spent infectious',
+                    style={'color': '#6c757d'}),
+                dcc.Input(id='infectious-period', type='number', value=1.9, step=0.1, min=0,
+                    style={'width': '100%', 'marginBottom': '10px'})
+            ], id='disease-param-modal-display-infectious', style={'display': 'none'}),
+            html.Div([
+                html.Label('Immune period (days)', style={'fontWeight': 'bold'}),
+                html.Small(' - Average number of days before returning to susceptible (set to 0 to make this an SEIR model)',
+                    style={'color': '#6c757d'}),
+                dcc.Input(id='immune-period', type='number', value=0, step=0.1, min=0,
+                    style={'width': '100%', 'marginBottom': '15px'})
+            ], id='disease-param-modal-display-immune', style={'display': 'none'})
+        ])
+    else:
+        return dbc.ModalBody(['Select a valid disease model to set parameters.'])
 
 @callback(
     Output('vaccine-parameter-body', 'children'),
@@ -1386,15 +1458,6 @@ def manage_vaccine_stockpile(add_clicks, remove_clicks, day, amount, current_dat
 
     #logger.info(f'current_data = {current_data}')
     return current_data, table
-
-
-# Add modals to layout
-app.layout.children.extend([disease_params_modal, initial_cases_modal, npi_modal, antivirals_modal, vaccines_modal])
-
-
-# ============================================================================
-# CALLBACKS
-# ============================================================================
 
 @callback(
     Output('model-description-display', 'children'),
@@ -2322,74 +2385,6 @@ def save_vaccines(n_clicks, vaccine_model,
         content = create_scenario_display(disease_params or {}, initial_cases or [])
 
     return vaccine_data, True, content
-
-
-def create_interventions_display(npi_data, antiviral_data, vaccine_data, vaccine_stockpile):
-    """Create interventions tab display content"""
-    if not npi_data and not antiviral_data and not vaccine_data:
-        return html.P('No interventions set yet.', style={'color': '#6c757d', 'fontStyle': 'italic'})
-    
-    content = []
-    
-    # NPIs section
-    if npi_data:
-        content.extend([
-            html.H6('Non-Pharmaceutical Interventions', style={'fontWeight': 'bold', 'marginBottom': '10px'}),
-        ])
-        for npi in npi_data:
-            content.append(html.Div([
-                html.P(f"Name: {npi['name']}"),
-                html.P(f"Start Day: {npi['start']}, Duration: {npi['duration']} days"),
-                html.P(f"Location: {', '.join(npi['location'])}"),
-                html.P('Age-specific effectiveness:'),
-                html.Ul([
-                    html.Li(f"0-4: {npi['effectiveness'][0]:.2f}"),
-                    html.Li(f"5-24: {npi['effectiveness'][1]:.2f}"),
-                    html.Li(f"25-49: {npi['effectiveness'][2]:.2f}"),
-                    html.Li(f"50-64: {npi['effectiveness'][3]:.2f}"),
-                    html.Li(f"65+: {npi['effectiveness'][4]:.2f}")
-                ], style={'marginLeft': '20px'})
-            ], style={'marginBottom': '15px', 'padding': '10px', 'border': '1px solid #dee2e6', 'borderRadius': '4px'}))
-    
-    # Antivirals section
-    if antiviral_data:
-        content.extend([
-            html.H6('Antivirals', style={'fontWeight': 'bold', 'marginBottom': '10px'}),
-            html.P(f"Effectiveness: {antiviral_data['effectiveness']:.2f}"),
-            html.P(f"Wastage Factor: {antiviral_data['wastage_factor']} days"),
-            html.P(f"Stockpile: {antiviral_data['stockpile_amount']} on day {antiviral_data['stockpile_day']}")
-        ])
-    
-    ## Vaccines section
-    if vaccine_data:
-        model_label = 'Stockpile Age Risk' if vaccine_data['vaccine_model'] == 'stockpile-age-risk' else 'Undefined'
-        content.extend([html.H6('Vaccines', style={'fontWeight': 'bold', 'marginBottom': '10px'})])
-        content.append(html.Div([
-            html.P(f"Vaccine Model: {model_label}"),
-            html.P(f"Priority Groups: {vaccine_data['priority_groups']}"),
-            html.P(f"Capacity: {vaccine_data['capacity']} (proportion)"),
-            html.P(f"Effectiveness Lag: {vaccine_data['effectiveness_lag']} days"),
-            html.P(f"Effectiveness:"),
-            html.Ul([
-                    html.Li(f"0-4: {vaccine_data['effectiveness'][0]:.2f}"),
-                    html.Li(f"5-17: {vaccine_data['effectiveness'][1]:.2f}"),
-                    html.Li(f"18-49: {vaccine_data['effectiveness'][2]:.2f}"),
-                    html.Li(f"50-64: {vaccine_data['effectiveness'][3]:.2f}"),
-                    html.Li(f"65+: {vaccine_data['effectiveness'][4]:.2f}")
-            ], style={'marginLeft': '20px'}),
-            html.P(f"Adherence:"),
-            html.Ul([
-                    html.Li(f"0-4: {vaccine_data['adherence'][0]:.2f}"),
-                    html.Li(f"5-17: {vaccine_data['adherence'][1]:.2f}"),
-                    html.Li(f"18-49: {vaccine_data['adherence'][2]:.2f}"),
-                    html.Li(f"50-64: {vaccine_data['adherence'][3]:.2f}"),
-                    html.Li(f"65+: {vaccine_data['adherence'][4]:.2f}")
-            ], style={'marginLeft': '20px'}),
-            html.P(f"Stockpile:"),
-            html.Ul(children=[html.Li(f'day={i["day"]} , amt={i["amount"]}') for i in vaccine_stockpile], style={'marginLeft': '20px'})
-        ], style={'marginBottom': '15px', 'padding': '10px', 'border': '1px solid #dee2e6', 'borderRadius': '4px'}))
-    
-    return html.Div(content)
 
 
 # Reset callback - connects to Django backend
