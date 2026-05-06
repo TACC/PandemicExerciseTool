@@ -83,7 +83,7 @@ def test_simulation_api():
 def test_data_loading():
     """Test data loading functionality"""
     try:
-        from data_loader import DataLoader
+        from frontend.test.data_loader import DataLoader
         loader = DataLoader()
         
         counties = loader.load_texas_counties()
@@ -100,7 +100,7 @@ def test_data_loading():
 def test_visualization():
     """Test visualization generation"""
     try:
-        from data_loader import DataLoader
+        from frontend.test.data_loader import DataLoader
         from visualization import VisualizationGenerator
         
         loader = DataLoader()
