@@ -203,6 +203,10 @@ dependencies = [
     { name = "pandas" },
     { name = "plotly" },
     { name = "requests" },
+]
+
+[package.dev-dependencies]
+dev = [
     { name = "ruff" },
 ]
 
@@ -214,8 +218,10 @@ requires-dist = [
     { name = "pandas", specifier = "==2.1.4" },
     { name = "plotly", specifier = "==5.17.0" },
     { name = "requests", specifier = "==2.31.0" },
-    { name = "ruff", specifier = ">=0.15.12" },
 ]
+
+[package.metadata.requires-dev]
+dev = [{ name = "ruff", specifier = ">=0.15.12" }]
 
 [[package]]
 name = "gunicorn"

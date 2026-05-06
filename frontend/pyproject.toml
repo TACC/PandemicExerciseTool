@@ -11,7 +11,6 @@ dependencies = [
     "pandas==2.1.4",
     "plotly==5.17.0",
     "requests==2.31.0",
-    "ruff>=0.15.12",
 ]
 
 [tool.ruff]
@@ -20,3 +19,8 @@ indent-width = 4
 
 [tool.ruff.format]
 quote-style = "single"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.15.12",
+]
