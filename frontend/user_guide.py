@@ -1,9 +1,10 @@
 from dash import html, dcc
 
-    
+
 def create_userguide_layout():
 
-    return dcc.Markdown('''
+    return dcc.Markdown(
+        """
 
 ## User Guide
 
@@ -61,6 +62,6 @@ def create_userguide_layout():
 
 
 
-    ''',
-    style=({'padding': '20px', 'maxWidth': '800px', 'margin': '0 auto'}),
+    """,
+        style=({'padding': '20px', 'maxWidth': '800px', 'margin': '0 auto'}),
     )
