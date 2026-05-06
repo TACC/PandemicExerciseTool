@@ -12,7 +12,7 @@ import plotly.graph_objects as go
 import requests
 
 from user_guide import create_userguide_layout
-
+from constants import MODEL_OPTIONS, PRESET_SCENARIOS, AGE_GROUPS, AGE_GROUP_MAPPING, VACCINE_MODELS
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -33,112 +33,8 @@ API_BASE_URL = os.getenv('API_BASE_URL', 'http://django-backend:8000')
 
 # Dirs with spatial data (names and polygons)
 ASSETS_DIR = 'assets'
-NAME_DIR = os.path.join(ASSETS_DIR, 'fips_to_names')
-GEO_DIR  = os.path.join(ASSETS_DIR, 'map_boundaries')
-
-
-# ============================================================================
-# MODEL OPTIONS
-# ============================================================================
-MODEL_OPTIONS = [
-    {
-        'label': 'SEIRS Deterministic',
-        'value': 'seirs-deterministic',
-        'description': 'SEIR with waning immunity; Euler updates; fractional flows; stochastic binomial travel.'
-    },
-    {
-        'label': 'SEIRS Stochastic',
-        'value': 'seirs-stochastic',
-        'description': 'SEIR with waning immunity; Poisson transitions; stochastic binomial travel.'
-    },
-    {
-        'label': 'SEATIRD Deterministic',
-        'value': 'seatird-deterministic',
-        'description': 'Adds treatable compartment; Euler updates (fractional flows); stochastic binomial travel.'
-    },
-    {
-        'label': 'SEATIRD Stochastic',
-        'value': 'seatird-stochastic',
-        'description': 'SEATIRD with exponential transitions (Gillespie, individual-level stochasticity); stochastic binomial travel.'
-    },
-#    {
-#        'label': 'SEIHRD Stochastic',
-#        'value': 'seihrd-deterministic',
-#        'description': 'Adds hospitalization and death; Poisson transitions; stochastic binomial travel.'
-#    },
-]
-
-# Preset scenarios
-PRESET_SCENARIOS = {
-    'seatird': {
-        'slow_mild_2009': {
-            'name': 'Slow Transmission, Mild Severity (2009 H1N1)',
-            'disease_name': '2009 H1N1',
-            'R0': 1.2,
-            'beta_scale': 10.0,
-            'tau': 1.2,
-            'kappa': 1.9,
-            'gamma': 4.1,
-            'chi': 1.0,
-            'rho': 0.39,
-            'nu': [0.000022319, 0.000040975, 0.000083729, 0.000061809, 0.000008978]
-        },
-        'slow_high_1918': {
-            'name': 'Slow Transmission, High Severity (1918 Influenza)',
-            'disease_name': '1918 Influenza',
-            'R0': 1.2,
-            'beta_scale': 10.0,
-            'tau': 1.2,
-            'kappa': 1.9,
-            'gamma': 4.1,
-            'chi': 1.0,
-            'rho': 0.39,
-            'nu': [0.05, 0.002, 0.01, 0.05, 0.15]
-        },
-        'fast_mild_2009': {
-            'name': 'Fast Transmission, Mild Severity (2009 H1N1)',
-            'disease_name': '2009 H1N1',
-            'R0': 2.5,
-            'beta_scale': 10.0,
-            'tau': 1.2,
-            'kappa': 1.9,
-            'gamma': 4.1,
-            'chi': 1.0,
-            'rho': 0.39,
-            'nu': [0.000022319, 0.000040975, 0.000083729, 0.000061809, 0.000008978]
-        },
-        'fast_high_1918': {
-            'name': 'Fast Transmission, High Severity (1918 Influenza)',
-            'disease_name': '1918 Influenza',
-            'R0': 2.5,
-            'beta_scale': 10.0,
-            'tau': 1.2,
-            'kappa': 1.9,
-            'gamma': 4.1,
-            'chi': 1.0,
-            'rho': 0.39,
-            'nu': [0.05, 0.002, 0.01, 0.05, 0.15]
-        }
-    },
-    'seirs': {
-        'slow_transmission': {
-                'name': 'Slow Transmission',
-                'disease_name': 'Slow Transmission',
-                'R0': 1.2,
-                'latent_period': 1,
-                'infectious_period': 7,
-                'immune_period': 0,
-            },
-        'fast_transmission': {
-            'name': 'Fast Transmission',
-            'disease_name': 'Fast Transmission',
-            'R0': 2.5,
-            'latent_period': 1,
-            'infectious_period': 7,
-            'immune_period': 0,
-        }
-    }
-}
+name_dir = os.path.join(ASSETS_DIR, 'fips_to_names')
+geo_dir  = os.path.join(ASSETS_DIR, 'map_boundaries')
 
 
 # ============================================================================
@@ -180,29 +76,7 @@ def _build_jurisdiction_options(mapping_dir: str, boundaries_dir: str, require_b
 
     return options
 
-STATE_OPTIONS = _build_jurisdiction_options(NAME_DIR, GEO_DIR, require_both=True)
-
-
-# ============================================================================
-# OTHER OPTIONS
-# ============================================================================
-
-# Age group constants
-AGE_GROUPS = [
-    {'value': '0-4 years', 'label': '0-4 years'},
-    {'value': '5-17 years', 'label': '5-17 years'},
-    {'value': '18-49 years', 'label': '18-49 years'},
-    {'value': '50-64 years', 'label': '50-64 years'},
-    {'value': '65+ years', 'label': '65+ years'}
-]
-
-AGE_GROUP_MAPPING = {
-    '0-4 years': '0',
-    '5-17 years': '1', 
-    '18-49 years': '2',
-    '50-64 years': '3',
-    '65+ years': '4'
-}
+STATE_OPTIONS = _build_jurisdiction_options(name_dir, geo_dir, require_both=True)
 
 
 
@@ -230,11 +104,11 @@ def _load_location_assets(location_value: str):
       geojson : dict
     """
     # ---- name -> id mapping (required)
-    name_path = _first_match(os.path.join(NAME_DIR, f"{location_value}_*.json"))
+    name_path = _first_match(os.path.join(name_dir, f"{location_value}_*.json"))
     if not name_path:
         raise FileNotFoundError(
             f"Missing name mapping for '{location_value}'. "
-            f"Expected {NAME_DIR}/{location_value}_*.json"
+            f"Expected {name_dir}/{location_value}_*.json"
         )
 
     with open(name_path, "r") as f:
@@ -244,13 +118,13 @@ def _load_location_assets(location_value: str):
 
     # ---- geometry (required)
     geo_path = (
-        _first_match(os.path.join(GEO_DIR, f"{location_value}_*.geojson"))
-        or _first_match(os.path.join(GEO_DIR, f"{location_value}_*.json"))
+        _first_match(os.path.join(geo_dir, f"{location_value}_*.geojson"))
+        or _first_match(os.path.join(geo_dir, f"{location_value}_*.json"))
     )
     if not geo_path:
         raise FileNotFoundError(
             f"Missing geometry for '{location_value}'. "
-            f"Expected {GEO_DIR}/{location_value}_*.geojson (or .json)"
+            f"Expected {geo_dir}/{location_value}_*.geojson (or .json)"
         )
 
     with open(geo_path, "r") as f:
@@ -1266,10 +1140,6 @@ antivirals_modal = dbc.Modal([
     ])
 ], id="antivirals-modal", is_open=False)
 
-
-VACCINE_MODELS = {
-    "stockpile-age-risk": "Stockpile Release by Age", # Currently doesn't allow for risk preference
-}
 
 # Vaccines Modal Component
 vaccines_modal = dbc.Modal([
