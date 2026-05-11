@@ -6,7 +6,7 @@ import os
 import subprocess
 
 import dash
-from dash import dcc, html, Input, Output, State, callback, ctx, ALL
+from dash import dcc, html, Input, Output, State, callback, ctx, ALL, page_container
 import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
 import requests
@@ -27,7 +27,7 @@ result = subprocess.run(
 version = result.stdout.decode('utf-8').strip() if result.stdout else 'Unknown'
 
 # Initialize Dash app with external CSS
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], use_pages=True)
 app.title = f'epiENGAGE - Interactive Outbreak Simulator v-{version}'
 app.config.suppress_callback_exceptions = True
 
@@ -532,7 +532,12 @@ app.layout = html.Div(
             },
         ),
         # Main content area
-        html.Div(id='main-content', style={'marginTop': '80px'}),
+        html.Div(
+            [
+                html.Div(page_container, style={'marginTop': '80px'}),
+                html.Div(id='main-content'),
+            ]
+        ),
     ]
 )
 
