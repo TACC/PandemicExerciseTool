@@ -20,7 +20,7 @@ from constants import (
     API_BASE_URL,
 )
 
-register_page(__name__, path='/')
+register_page(__name__, path='/', title='epiENGAGE Home')
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -818,7 +818,7 @@ def create_home_layout():
                                     )
                                 ],
                                 style={
-                                    'width': '60%',
+                                    'width': '100%',
                                     'display': 'inline-block',
                                     'verticalAlign': 'middle',
                                 },

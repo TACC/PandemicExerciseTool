@@ -1,7 +1,7 @@
 from dash import register_page
 import dash_core_components as dcc
 
-register_page(__name__)
+register_page(__name__, title='epiENGAGE User Guide')
 
 
 def layout(**kwargs):

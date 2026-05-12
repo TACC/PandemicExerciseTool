@@ -11,7 +11,7 @@ import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
 import requests
 
-from user_guide import create_userguide_layout
+# from user_guide import create_userguide_layout
 from constants import MODEL_OPTIONS, PRESET_SCENARIOS, AGE_GROUPS, AGE_GROUP_MAPPING, VACCINE_MODELS
 
 # Configure logging
