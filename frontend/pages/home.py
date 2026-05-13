@@ -3,7 +3,6 @@ import json
 import logging
 import math
 import os
-import subprocess
 
 import dash
 from dash import dcc, html, Input, Output, State, callback, ctx, ALL, register_page
@@ -140,6 +139,26 @@ def _create_empty_map():
     return fig
 
 
+def _add_county_polygon(lons, lats, color, county_name, infections=None):
+    """Create a county to add to the state map"""
+    if not infections:
+        text = f'{county_name} - No data yet - click PLAY to start simulation'
+    else:
+        text = f'{county_name}<br>Infectious: {infections.infected:,} ({infections.infected_pct:.1f}%)<br>Recovered: {infections.deceased:,} ({infections.deceased_pct:.1f}%)'
+    return go.Scatter(
+        x=lons,
+        y=lats,
+        fill='toself',
+        fillcolor=color,
+        line=dict(color='darkgray', width=0.5),
+        mode='lines',
+        name=county_name,
+        showlegend=False,
+        text=text,
+        hoverinfo='text',
+    )
+
+
 def _create_empty_state_map(geojson):
     """Create map showing state boundaries before simulation starts"""
     if not geojson or 'features' not in geojson:
@@ -159,40 +178,14 @@ def _create_empty_state_map(geojson):
                     lons = [coord[0] for coord in ring]
                     lats = [coord[1] for coord in ring]
 
-                    fig.add_trace(
-                        go.Scatter(
-                            x=lons,
-                            y=lats,
-                            fill='toself',
-                            fillcolor='#FFEDA0',  # Light yellow
-                            line=dict(color='darkgray', width=0.5),
-                            mode='lines',
-                            name=county_name,
-                            showlegend=False,
-                            text=f'{county_name} - No data yet - click PLAY to start simulation',
-                            hoverinfo='text',
-                        )
-                    )
+                    fig.add_trace(_add_county_polygon(lons, lats, '#FFEDA0', county_name))
         else:
             # Single Polygon
             for ring in coordinates:
                 lons = [coord[0] for coord in ring]
                 lats = [coord[1] for coord in ring]
 
-                fig.add_trace(
-                    go.Scatter(
-                        x=lons,
-                        y=lats,
-                        fill='toself',
-                        fillcolor='#FFEDA0',  # Light yellow
-                        line=dict(color='darkgray', width=0.5),
-                        mode='lines',
-                        name=county_name,
-                        showlegend=False,
-                        text=f'{county_name} - No data yet - click PLAY to start simulation',
-                        hoverinfo='text',
-                    )
-                )
+                fig.add_trace(_add_county_polygon(lons, lats, '#FFEDA0', county_name))
 
     fig.update_layout(
         title='Map - No Data Available (Select disease parameters and click PLAY)',
@@ -235,7 +228,6 @@ def _get_color_from_value(value, max_val):
         return '#FED976'
 
 
-# TODO: create helper function that returns go.Scatter with appropriate settings to reduce repitition
 def _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojson, selected_model):
     """Create map using boundary file provided in geojson"""
     if not event_data or timeline_value is None or timeline_value >= len(event_data):
@@ -313,6 +305,13 @@ def _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojs
         infected_pct = info.get('infectedPercent', 0)
         deceased_pct = info.get('deceasedPercent', 0)
 
+        infections = {
+            'infected': infected,
+            'infected_pct': infected_pct,
+            'deceased': deceased,
+            'deceased_pct': deceased_pct,
+        }
+
         # Extract coordinates for the county polygon
         coordinates = feature['geometry']['coordinates']
 
@@ -326,33 +325,11 @@ def _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojs
                     model = (selected_model or '').lower()
                     if model.startswith('seir') or model.startswith('seirs'):
                         fig.add_trace(
-                            go.Scatter(
-                                x=lons,
-                                y=lats,
-                                fill='toself',
-                                fillcolor=color,
-                                line=dict(color='darkgray', width=0.5),
-                                mode='lines',
-                                name=county_name,
-                                showlegend=False,
-                                text=f'{county_name}<br>Infectious: {infected:,} ({infected_pct:.1f}%)<br>Recovered: {deceased:,} ({deceased_pct:.1f}%)',
-                                hoverinfo='text',
-                            )
+                            _add_county_polygon(lons, lats, color, county_name, infections)
                         )
                     else:
                         fig.add_trace(
-                            go.Scatter(
-                                x=lons,
-                                y=lats,
-                                fill='toself',
-                                fillcolor=color,
-                                line=dict(color='darkgray', width=0.5),
-                                mode='lines',
-                                name=county_name,
-                                showlegend=False,
-                                text=f'{county_name}<br>Infectious: {infected:,} ({infected_pct:.1f}%)<br>Deceased: {deceased:,} ({deceased_pct:.1f}%)',
-                                hoverinfo='text',
-                            )
+                            _add_county_polygon(lons, lats, color, county_name, infections)
                         )
         else:
             # Single Polygon
@@ -360,20 +337,7 @@ def _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojs
                 lons = [coord[0] for coord in ring]
                 lats = [coord[1] for coord in ring]
 
-                fig.add_trace(
-                    go.Scatter(
-                        x=lons,
-                        y=lats,
-                        fill='toself',
-                        fillcolor=color,
-                        line=dict(color='darkgray', width=0.5),
-                        mode='lines',
-                        name=county_name,
-                        showlegend=False,
-                        text=f'{county_name} County<br>Infectious: {infected:,} ({infected_pct:.1f}%)<br>Deceased: {deceased:,} ({deceased_pct:.1f}%)',
-                        hoverinfo='text',
-                    )
-                )
+                fig.add_trace(_add_county_polygon(lons, lats, color, county_name, infections))
 
     # Configure layout to match React version exactly
     fig.update_layout(
@@ -394,575 +358,6 @@ def _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojs
 
     logger.info('Successfully created county map with individual polygons')
     return fig
-
-
-# ============================================================================
-# FUNCTIONS TO CREATE ELEMENTS FOR MAIN CONTENT AREA
-# ============================================================================
-def create_model_state_selection_panel():
-    """
-    Creates the Model and State selection dropdowns.
-    This is the core UI for Features 1 and 2.
-    """
-    return html.Div(
-        [
-            # Panel Header
-            html.Div(
-                [
-                    html.H6(
-                        'Simulation Setup',
-                        style={
-                            'marginBottom': '15px',
-                            'paddingBottom': '10px',
-                            'borderBottom': '2px solid #102c41',
-                            'color': '#102c41',
-                            'fontWeight': 'bold',
-                        },
-                    )
-                ]
-            ),
-            # FEATURE 1: Model Selection Dropdown
-            html.Div(
-                [
-                    html.Label(
-                        'Disease Model',
-                        style={
-                            'fontWeight': 'bold',
-                            'marginBottom': '5px',
-                            'display': 'block',
-                            'color': '#333',
-                        },
-                    ),
-                    dcc.Dropdown(
-                        id='model-selector-dropdown',
-                        options=[{'label': m['label'], 'value': m['value']} for m in MODEL_OPTIONS],
-                        value='seirs-deterministic',
-                        clearable=True,
-                        placeholder='Select a disease model...',
-                        style={'marginBottom': '8px'},
-                    ),
-                    # Model description display
-                    html.Div(
-                        id='model-description-display',
-                        style={
-                            'fontSize': '12px',
-                            'color': '#666',
-                            'padding': '8px',
-                            'backgroundColor': '#f8f9fa',
-                            'borderRadius': '4px',
-                            'marginBottom': '15px',
-                        },
-                    ),
-                ]
-            ),
-            # FEATURE 2: State Selection Dropdown
-            html.Div(
-                [
-                    html.Label(
-                        'State',
-                        style={
-                            'fontWeight': 'bold',
-                            'marginBottom': '5px',
-                            'display': 'block',
-                            'color': '#333',
-                        },
-                    ),
-                    dcc.Dropdown(
-                        id='state-selector-dropdown',
-                        options=[{'label': s['label'], 'value': s['value']} for s in STATE_OPTIONS],
-                        value='Alabama',
-                        clearable=True,
-                        searchable=True,
-                        placeholder='Select a state...',
-                        style={'marginBottom': '15px'},
-                    ),
-                ]
-            ),
-            # Apply Button
-            html.Button(
-                '✓ Apply Selection',
-                id='apply-model-state-btn',
-                n_clicks=0,
-                style={
-                    'width': '100%',
-                    'padding': '10px',
-                    'backgroundColor': '#102c41',
-                    'color': 'white',
-                    'border': 'none',
-                    'borderRadius': '5px',
-                    'cursor': 'pointer',
-                    'fontWeight': 'bold',
-                    'marginBottom': '10px',
-                },
-            ),
-            # Status message area
-            html.Div(id='model-state-status-message', style={'marginBottom': '15px'}),
-        ],
-        style={
-            'padding': '15px',
-            'backgroundColor': 'white',
-            'borderRadius': '8px',
-            'boxShadow': '0 2px 4px rgba(0,0,0,0.1)',
-            'marginBottom': '15px',
-        },
-    )
-
-
-# Home page layout
-def create_home_layout():
-    return html.Div(
-        [
-            # Main content row with fixed height
-            html.Div(
-                [
-                    # Left Panel - Settings
-                    html.Div(
-                        [
-                            html.Div(
-                                [
-                                    # Model and State Selection Panel
-                                    create_model_state_selection_panel(),
-                                    # Set Scenario dropdown
-                                    html.Div(
-                                        [
-                                            html.Button(
-                                                [
-                                                    html.Span(
-                                                        'Set Scenario', className='dropdown-text'
-                                                    ),
-                                                    html.Span('▾', className='dropdown-arrow'),
-                                                ],
-                                                id='set-scenario-btn',
-                                                className='parameters-button',
-                                            ),
-                                            # Dropdown menu
-                                            html.Div(
-                                                [
-                                                    html.Button(
-                                                        'Disease Parameters',
-                                                        id='disease-params-btn',
-                                                        className='dropdown-items',
-                                                        n_clicks=0,
-                                                    ),
-                                                    html.Button(
-                                                        'Initial Cases',
-                                                        id='initial-cases-btn',
-                                                        className='dropdown-items',
-                                                        n_clicks=0,
-                                                    ),
-                                                ],
-                                                id='scenario-dropdown',
-                                                style={'display': 'none'},
-                                            ),
-                                        ],
-                                        style={'position': 'relative', 'marginBottom': '10px'},
-                                    ),
-                                    # Interventions dropdown
-                                    html.Div(
-                                        [
-                                            html.Button(
-                                                [
-                                                    html.Span(
-                                                        'Interventions', className='dropdown-text'
-                                                    ),
-                                                    html.Span('▾', className='dropdown-arrow'),
-                                                ],
-                                                id='interventions-btn',
-                                                className='parameters-button',
-                                            ),
-                                            # Dropdown menu
-                                            html.Div(
-                                                [
-                                                    html.Button(
-                                                        'Non-Pharmaceutical',
-                                                        id='npi-btn',
-                                                        className='dropdown-items',
-                                                        n_clicks=0,
-                                                    ),
-                                                    html.Button(
-                                                        'Antivirals',
-                                                        id='antivirals-btn',
-                                                        className='dropdown-items',
-                                                        n_clicks=0,
-                                                        style={'display': 'none'},
-                                                    ),  ### Remove this style to show Antiviral button ###
-                                                    html.Button(
-                                                        'Vaccines',
-                                                        id='vaccines-btn',
-                                                        className='dropdown-items',
-                                                        n_clicks=0,
-                                                    ),
-                                                ],
-                                                id='interventions-dropdown',
-                                                style={'display': 'none'},
-                                            ),
-                                        ],
-                                        style={'position': 'relative', 'marginBottom': '10px'},
-                                    ),
-                                    # DisplayedParameters section
-                                    html.Div(
-                                        [
-                                            # Tab buttons
-                                            html.Div(
-                                                [
-                                                    html.Button(
-                                                        'Scenario',
-                                                        id='scenario-tab-btn',
-                                                        className='tab-btn active-tab',
-                                                        style={'marginRight': '5px'},
-                                                    ),
-                                                    html.Button(
-                                                        'Interventions',
-                                                        id='interventions-tab-btn',
-                                                        className='tab-btn',
-                                                    ),
-                                                ],
-                                                style={'marginBottom': '10px'},
-                                            ),
-                                            # Tab content
-                                            html.Div(
-                                                id='displayed-parameters-content',
-                                                children=[
-                                                    html.P(
-                                                        'No scenario set yet.',
-                                                        style={
-                                                            'color': '#6c757d',
-                                                            'fontStyle': 'italic',
-                                                        },
-                                                    )
-                                                ],
-                                            ),
-                                        ],
-                                        className='displayed-parameters-panel',
-                                    ),
-                                ],
-                                className='left-panel',
-                                style={
-                                    'height': '100%',
-                                    'overflowY': 'auto',
-                                    'overflowX': 'hidden',
-                                    'paddingRight': '10px',
-                                },
-                            )
-                        ],
-                        className='col-lg-2',
-                        style={
-                            'flex': '0 0 20%',
-                            'maxWidth': '20%',
-                            'height': '100%',  # inherit from row
-                            'minHeight': 0,
-                            'overflowY': 'auto',
-                        },
-                    ),
-                    # Middle Panel - Map and Chart
-                    html.Div(
-                        [
-                            # View toggle (count/percent)
-                            html.Div(
-                                [
-                                    html.H6('Show values as:', style={'marginBottom': '10px'}),
-                                    dcc.RadioItems(
-                                        id='view-toggle',
-                                        options=[
-                                            {'label': ' Percentage', 'value': 'percent'},
-                                            {'label': ' Count', 'value': 'count'},
-                                        ],
-                                        value='count',
-                                        inline=True,
-                                        labelStyle={'marginRight': '20px'},
-                                        style={'marginBottom': '15px', 'paddingLeft': '10px'},
-                                    ),
-                                ],
-                                className='top-middle-panel',
-                            ),
-                            # Map and Chart container
-                            html.Div(
-                                [
-                                    # Map
-                                    dcc.Graph(
-                                        id='spread-map',
-                                        style={'flex': '0 0 400px'},
-                                        config={'displayModeBar': False},
-                                    ),
-                                    # Line Chart
-                                    dcc.Graph(
-                                        id='line-chart',
-                                        style={'flex': '1 1 auto'},
-                                        config={'displayModeBar': False},
-                                    ),
-                                ],
-                                className='map-and-chart-container',
-                                style={
-                                    'display': 'flex',
-                                    'flexDirection': 'column',
-                                    'height': '100%',
-                                    'minHeight': 0,
-                                    'overflow': 'hidden',
-                                },
-                            ),
-                        ],
-                        className='col-lg-7',
-                        style={
-                            'flex': '0 0 58%',
-                            'maxWidth': '58%',
-                            'height': '100%',
-                            'minHeight': 0,
-                        },
-                    ),
-                    # Right Panel - Table
-                    html.Div(
-                        [
-                            html.Div(
-                                [
-                                    html.H6('County Data', style={'marginBottom': '10px'}),
-                                    dcc.Input(
-                                        id='county-search',
-                                        type='text',
-                                        placeholder='Search (county or number)…',
-                                        debounce=True,
-                                        style={'width': '100%', 'marginBottom': '10px'},
-                                    ),
-                                    dcc.Store(
-                                        id='county-table-sort',
-                                        data={'col': 'infected', 'dir': 'desc'},
-                                    ),
-                                    html.Button(
-                                        id='sort-location', n_clicks=0, style={'display': 'none'}
-                                    ),
-                                    html.Button(
-                                        id='sort-infected', n_clicks=0, style={'display': 'none'}
-                                    ),
-                                    html.Button(
-                                        id='sort-deceased', n_clicks=0, style={'display': 'none'}
-                                    ),
-                                    html.Div(
-                                        id='spread-table',
-                                        style={
-                                            'flex': '1 1 auto',
-                                            'minHeight': 0,
-                                            'overflowY': 'auto',
-                                        },
-                                    ),
-                                ],
-                                className='right-panel',
-                                style={
-                                    'height': '100%',
-                                    'minHeight': 0,
-                                    'display': 'flex',
-                                    'flexDirection': 'column',
-                                    'overflow': 'hidden',
-                                },
-                            )
-                        ],
-                        className='col-lg-3',
-                        style={
-                            'flex': '0 0 22%',
-                            'maxWidth': '22%',
-                            'height': '100%',
-                            'minHeight': 0,
-                        },
-                    ),
-                ],
-                className='row',
-                style={
-                    'display': 'flex',
-                    'height': 'calc(100vh - 80px)',  # subtract fixed header (80px)
-                    'paddingBottom': '70px',  # reserve fixed footer height
-                    'boxSizing': 'border-box',
-                    'overflow': 'hidden',
-                },
-            ),
-            # Footer - OUTSIDE the row, always visible at bottom
-            html.Div(
-                [
-                    html.Div(
-                        [
-                            # Reset Button
-                            html.A(
-                                html.Button(
-                                    'Reset',
-                                    id='reset-btn',
-                                    disabled=False,
-                                    className='reset-button',
-                                ),
-                                href='/',
-                            ),
-                            # Play/Pause Button
-                            html.Button(
-                                'Play',
-                                id='play-pause-btn',
-                                disabled=True,
-                                className='play-pause-button',
-                                style={
-                                    'padding': '10px 30px',
-                                    'fontSize': '16px',
-                                    'backgroundColor': '#28a745',
-                                    'color': 'white',
-                                    'border': 'none',
-                                    'borderRadius': '4px',
-                                    'cursor': 'pointer',
-                                    'marginRight': '20px',
-                                },
-                            ),
-                            # Timeline Slider
-                            html.Div(
-                                [
-                                    dcc.Slider(
-                                        id='timeline-slider',
-                                        min=0,
-                                        step=1,
-                                        value=0,
-                                        marks={i: str(i) for i in range(0, 201, 5)},
-                                        tooltip={'placement': 'bottom', 'always_visible': True},
-                                        disabled=True,
-                                    )
-                                ],
-                                style={
-                                    'width': '100%',
-                                    'display': 'inline-block',
-                                    'verticalAlign': 'middle',
-                                },
-                            ),
-                        ],
-                        style={
-                            'display': 'flex',
-                            'alignItems': 'center',
-                            'justifyContent': 'flex-start',
-                            'padding': '15px 20px',
-                        },
-                    )
-                ],
-                style={
-                    'position': 'fixed',
-                    'bottom': '0',
-                    'left': '0',
-                    'right': '0',
-                    'backgroundColor': 'white',
-                    'borderTop': '1px solid #dee2e6',
-                    'zIndex': '999',
-                    'height': '70px',
-                },
-            ),
-        ]
-    )
-
-
-def create_interventions_display(npi_data, antiviral_data, vaccine_data, vaccine_stockpile):
-    """Create interventions tab display content"""
-    if not npi_data and not antiviral_data and not vaccine_data:
-        return html.P(
-            'No interventions set yet.', style={'color': '#6c757d', 'fontStyle': 'italic'}
-        )
-
-    content = []
-
-    # NPIs section
-    if npi_data:
-        content.extend(
-            [
-                html.H6(
-                    'Non-Pharmaceutical Interventions',
-                    style={'fontWeight': 'bold', 'marginBottom': '10px'},
-                ),
-            ]
-        )
-        for npi in npi_data:
-            content.append(
-                html.Div(
-                    [
-                        html.P(f'Name: {npi["name"]}'),
-                        html.P(f'Start Day: {npi["start"]}, Duration: {npi["duration"]} days'),
-                        html.P(f'Location: {", ".join(npi["location"])}'),
-                        html.P('Age-specific effectiveness:'),
-                        html.Ul(
-                            [
-                                html.Li(f'0-4: {npi["effectiveness"][0]:.2f}'),
-                                html.Li(f'5-24: {npi["effectiveness"][1]:.2f}'),
-                                html.Li(f'25-49: {npi["effectiveness"][2]:.2f}'),
-                                html.Li(f'50-64: {npi["effectiveness"][3]:.2f}'),
-                                html.Li(f'65+: {npi["effectiveness"][4]:.2f}'),
-                            ],
-                            style={'marginLeft': '20px'},
-                        ),
-                    ],
-                    style={
-                        'marginBottom': '15px',
-                        'padding': '10px',
-                        'border': '1px solid #dee2e6',
-                        'borderRadius': '4px',
-                    },
-                )
-            )
-
-    # Antivirals section
-    if antiviral_data:
-        content.extend(
-            [
-                html.H6('Antivirals', style={'fontWeight': 'bold', 'marginBottom': '10px'}),
-                html.P(f'Effectiveness: {antiviral_data["effectiveness"]:.2f}'),
-                html.P(f'Wastage Factor: {antiviral_data["wastage_factor"]} days'),
-                html.P(
-                    f'Stockpile: {antiviral_data["stockpile_amount"]} on day {antiviral_data["stockpile_day"]}'
-                ),
-            ]
-        )
-
-    ## Vaccines section
-    if vaccine_data:
-        model_label = (
-            'Stockpile Age Risk'
-            if vaccine_data['vaccine_model'] == 'stockpile-age-risk'
-            else 'Undefined'
-        )
-        content.extend([html.H6('Vaccines', style={'fontWeight': 'bold', 'marginBottom': '10px'})])
-        content.append(
-            html.Div(
-                [
-                    html.P(f'Vaccine Model: {model_label}'),
-                    html.P(f'Priority Groups: {vaccine_data["priority_groups"]}'),
-                    html.P(f'Capacity: {vaccine_data["capacity"]} (proportion)'),
-                    html.P(f'Effectiveness Lag: {vaccine_data["effectiveness_lag"]} days'),
-                    html.P('Effectiveness:'),
-                    html.Ul(
-                        [
-                            html.Li(f'0-4: {vaccine_data["effectiveness"][0]:.2f}'),
-                            html.Li(f'5-17: {vaccine_data["effectiveness"][1]:.2f}'),
-                            html.Li(f'18-49: {vaccine_data["effectiveness"][2]:.2f}'),
-                            html.Li(f'50-64: {vaccine_data["effectiveness"][3]:.2f}'),
-                            html.Li(f'65+: {vaccine_data["effectiveness"][4]:.2f}'),
-                        ],
-                        style={'marginLeft': '20px'},
-                    ),
-                    html.P('Adherence:'),
-                    html.Ul(
-                        [
-                            html.Li(f'0-4: {vaccine_data["adherence"][0]:.2f}'),
-                            html.Li(f'5-17: {vaccine_data["adherence"][1]:.2f}'),
-                            html.Li(f'18-49: {vaccine_data["adherence"][2]:.2f}'),
-                            html.Li(f'50-64: {vaccine_data["adherence"][3]:.2f}'),
-                            html.Li(f'65+: {vaccine_data["adherence"][4]:.2f}'),
-                        ],
-                        style={'marginLeft': '20px'},
-                    ),
-                    html.P('Stockpile:'),
-                    html.Ul(
-                        children=[
-                            html.Li(f'day={i["day"]} , amt={i["amount"]}')
-                            for i in vaccine_stockpile
-                        ],
-                        style={'marginLeft': '20px'},
-                    ),
-                ],
-                style={
-                    'marginBottom': '15px',
-                    'padding': '10px',
-                    'border': '1px solid #dee2e6',
-                    'borderRadius': '4px',
-                },
-            )
-        )
-
-    return html.Div(content)
 
 
 # ============================================================================
@@ -1326,11 +721,580 @@ vaccines_modal = dbc.Modal(
 )
 
 
-# TODO: add modals back in
-# Add modals to layout
-# app.layout.children.extend(
-#     [disease_params_modal, initial_cases_modal, npi_modal, antivirals_modal, vaccines_modal]
-# )
+# ============================================================================
+# FUNCTIONS TO CREATE ELEMENTS FOR MAIN CONTENT AREA
+# ============================================================================
+def create_model_state_selection_panel():
+    """
+    Creates the Model and State selection dropdowns.
+    This is the core UI for Features 1 and 2.
+    """
+    return html.Div(
+        [
+            # Panel Header
+            html.Div(
+                [
+                    html.H6(
+                        'Simulation Setup',
+                        style={
+                            'marginBottom': '15px',
+                            'paddingBottom': '10px',
+                            'borderBottom': '2px solid #102c41',
+                            'color': '#102c41',
+                            'fontWeight': 'bold',
+                        },
+                    )
+                ]
+            ),
+            # FEATURE 1: Model Selection Dropdown
+            html.Div(
+                [
+                    html.Label(
+                        'Disease Model',
+                        style={
+                            'fontWeight': 'bold',
+                            'marginBottom': '5px',
+                            'display': 'block',
+                            'color': '#333',
+                        },
+                    ),
+                    dcc.Dropdown(
+                        id='model-selector-dropdown',
+                        options=[{'label': m['label'], 'value': m['value']} for m in MODEL_OPTIONS],
+                        value='seirs-deterministic',
+                        clearable=True,
+                        placeholder='Select a disease model...',
+                        style={'marginBottom': '8px'},
+                    ),
+                    # Model description display
+                    html.Div(
+                        id='model-description-display',
+                        style={
+                            'fontSize': '12px',
+                            'color': '#666',
+                            'padding': '8px',
+                            'backgroundColor': '#f8f9fa',
+                            'borderRadius': '4px',
+                            'marginBottom': '15px',
+                        },
+                    ),
+                ]
+            ),
+            # FEATURE 2: State Selection Dropdown
+            html.Div(
+                [
+                    html.Label(
+                        'State',
+                        style={
+                            'fontWeight': 'bold',
+                            'marginBottom': '5px',
+                            'display': 'block',
+                            'color': '#333',
+                        },
+                    ),
+                    dcc.Dropdown(
+                        id='state-selector-dropdown',
+                        options=[{'label': s['label'], 'value': s['value']} for s in STATE_OPTIONS],
+                        value='Alabama',
+                        clearable=True,
+                        searchable=True,
+                        placeholder='Select a state...',
+                        style={'marginBottom': '15px'},
+                    ),
+                ]
+            ),
+            # Apply Button
+            html.Button(
+                '✓ Apply Selection',
+                id='apply-model-state-btn',
+                n_clicks=0,
+                style={
+                    'width': '100%',
+                    'padding': '10px',
+                    'backgroundColor': '#102c41',
+                    'color': 'white',
+                    'border': 'none',
+                    'borderRadius': '5px',
+                    'cursor': 'pointer',
+                    'fontWeight': 'bold',
+                    'marginBottom': '10px',
+                },
+            ),
+            # Status message area
+            html.Div(id='model-state-status-message', style={'marginBottom': '15px'}),
+        ],
+        style={
+            'padding': '15px',
+            'backgroundColor': 'white',
+            'borderRadius': '8px',
+            'boxShadow': '0 2px 4px rgba(0,0,0,0.1)',
+            'marginBottom': '15px',
+        },
+    )
+
+
+# [disease_params_modal, initial_cases_modal, npi_modal, antivirals_modal, vaccines_modal]
+# Home page layout
+def create_home_layout():
+    return html.Div(
+        [
+            # Main content row with fixed height
+            html.Div(
+                [
+                    # Left Panel - Settings
+                    html.Div(
+                        [
+                            html.Div(
+                                [
+                                    # Model and State Selection Panel
+                                    create_model_state_selection_panel(),
+                                    # Set Scenario dropdown
+                                    html.Div(
+                                        [
+                                            html.Button(
+                                                [
+                                                    html.Span(
+                                                        'Set Scenario', className='dropdown-text'
+                                                    ),
+                                                    html.Span('▾', className='dropdown-arrow'),
+                                                ],
+                                                id='set-scenario-btn',
+                                                className='parameters-button',
+                                            ),
+                                            # Dropdown menu
+                                            html.Div(
+                                                [
+                                                    html.Button(
+                                                        'Disease Parameters',
+                                                        id='disease-params-btn',
+                                                        className='dropdown-items',
+                                                        n_clicks=0,
+                                                    ),
+                                                    # html.Div(),
+                                                    html.Button(
+                                                        'Initial Cases',
+                                                        id='initial-cases-btn',
+                                                        className='dropdown-items',
+                                                        n_clicks=0,
+                                                    ),
+                                                ],
+                                                id='scenario-dropdown',
+                                                style={'display': 'none'},
+                                            ),
+                                        ],
+                                        style={'position': 'relative', 'marginBottom': '10px'},
+                                    ),
+                                    # Interventions dropdown
+                                    html.Div(
+                                        [
+                                            html.Button(
+                                                [
+                                                    html.Span(
+                                                        'Interventions', className='dropdown-text'
+                                                    ),
+                                                    html.Span('▾', className='dropdown-arrow'),
+                                                ],
+                                                id='interventions-btn',
+                                                className='parameters-button',
+                                            ),
+                                            # Dropdown menu
+                                            html.Div(
+                                                [
+                                                    html.Button(
+                                                        'Non-Pharmaceutical',
+                                                        id='npi-btn',
+                                                        className='dropdown-items',
+                                                        n_clicks=0,
+                                                    ),
+                                                    html.Button(
+                                                        'Antivirals',
+                                                        id='antivirals-btn',
+                                                        className='dropdown-items',
+                                                        n_clicks=0,
+                                                        style={'display': 'none'},
+                                                    ),  ### Remove this style to show Antiviral button ###
+                                                    html.Button(
+                                                        'Vaccines',
+                                                        id='vaccines-btn',
+                                                        className='dropdown-items',
+                                                        n_clicks=0,
+                                                    ),
+                                                ],
+                                                id='interventions-dropdown',
+                                                style={'display': 'none'},
+                                            ),
+                                        ],
+                                        style={'position': 'relative', 'marginBottom': '10px'},
+                                    ),
+                                    # DisplayedParameters section
+                                    html.Div(
+                                        [
+                                            # Tab buttons
+                                            html.Div(
+                                                [
+                                                    html.Button(
+                                                        'Scenario',
+                                                        id='scenario-tab-btn',
+                                                        className='tab-btn active-tab',
+                                                        style={'marginRight': '5px'},
+                                                    ),
+                                                    html.Button(
+                                                        'Interventions',
+                                                        id='interventions-tab-btn',
+                                                        className='tab-btn',
+                                                    ),
+                                                ],
+                                                style={'marginBottom': '10px'},
+                                            ),
+                                            # Tab content
+                                            html.Div(
+                                                id='displayed-parameters-content',
+                                                children=[
+                                                    html.P(
+                                                        'No scenario set yet.',
+                                                        style={
+                                                            'color': '#6c757d',
+                                                            'fontStyle': 'italic',
+                                                        },
+                                                    )
+                                                ],
+                                            ),
+                                        ],
+                                        className='displayed-parameters-panel',
+                                    ),
+                                ],
+                                className='left-panel',
+                                style={
+                                    'height': '100%',
+                                    'overflowY': 'auto',
+                                    'overflowX': 'hidden',
+                                    'paddingRight': '10px',
+                                },
+                            )
+                        ],
+                        className='col-lg-2',
+                        style={
+                            'flex': '0 0 20%',
+                            'maxWidth': '20%',
+                            'height': '100%',  # inherit from row
+                            'minHeight': 0,
+                            'overflowY': 'auto',
+                        },
+                    ),
+                    # Middle Panel - Map and Chart
+                    html.Div(
+                        [
+                            # View toggle (count/percent)
+                            html.Div(
+                                [
+                                    html.H6('Show values as:', style={'marginBottom': '10px'}),
+                                    dcc.RadioItems(
+                                        id='view-toggle',
+                                        options=[
+                                            {'label': ' Percentage', 'value': 'percent'},
+                                            {'label': ' Count', 'value': 'count'},
+                                        ],
+                                        value='count',
+                                        inline=True,
+                                        labelStyle={'marginRight': '20px'},
+                                        style={'marginBottom': '15px', 'paddingLeft': '10px'},
+                                    ),
+                                ],
+                                className='top-middle-panel',
+                            ),
+                            # Map and Chart container
+                            html.Div(
+                                [
+                                    # Map
+                                    dcc.Graph(
+                                        id='spread-map',
+                                        style={'flex': '0 0 400px'},
+                                        config={'displayModeBar': False},
+                                    ),
+                                    # Line Chart
+                                    dcc.Graph(
+                                        id='line-chart',
+                                        style={'flex': '1 1 auto'},
+                                        config={'displayModeBar': False},
+                                    ),
+                                ],
+                                className='map-and-chart-container',
+                                style={
+                                    'display': 'flex',
+                                    'flexDirection': 'column',
+                                    'height': '100%',
+                                    'minHeight': 0,
+                                    'overflow': 'hidden',
+                                },
+                            ),
+                        ],
+                        className='col-lg-7',
+                        style={
+                            'flex': '0 0 58%',
+                            'maxWidth': '58%',
+                            'height': '100%',
+                            'minHeight': 0,
+                        },
+                    ),
+                    # Right Panel - Table
+                    html.Div(
+                        [
+                            html.Div(
+                                [
+                                    html.H6('County Data', style={'marginBottom': '10px'}),
+                                    dcc.Input(
+                                        id='county-search',
+                                        type='text',
+                                        placeholder='Search (county or number)…',
+                                        debounce=True,
+                                        style={'width': '100%', 'marginBottom': '10px'},
+                                    ),
+                                    dcc.Store(
+                                        id='county-table-sort',
+                                        data={'col': 'infected', 'dir': 'desc'},
+                                    ),
+                                    html.Button(
+                                        id='sort-location', n_clicks=0, style={'display': 'none'}
+                                    ),
+                                    html.Button(
+                                        id='sort-infected', n_clicks=0, style={'display': 'none'}
+                                    ),
+                                    html.Button(
+                                        id='sort-deceased', n_clicks=0, style={'display': 'none'}
+                                    ),
+                                    html.Div(
+                                        id='spread-table',
+                                        style={
+                                            'flex': '1 1 auto',
+                                            'minHeight': 0,
+                                            'overflowY': 'auto',
+                                        },
+                                    ),
+                                ],
+                                className='right-panel',
+                                style={
+                                    'height': '100%',
+                                    'minHeight': 0,
+                                    'display': 'flex',
+                                    'flexDirection': 'column',
+                                    'overflow': 'hidden',
+                                },
+                            )
+                        ],
+                        className='col-lg-3',
+                        style={
+                            'flex': '0 0 22%',
+                            'maxWidth': '22%',
+                            'height': '100%',
+                            'minHeight': 0,
+                        },
+                    ),
+                ],
+                className='row',
+                style={
+                    'display': 'flex',
+                    'height': 'calc(100vh - 80px)',  # subtract fixed header (80px)
+                    'paddingBottom': '70px',  # reserve fixed footer height
+                    'boxSizing': 'border-box',
+                    'overflow': 'hidden',
+                },
+            ),
+            # Footer - OUTSIDE the row, always visible at bottom
+            html.Div(
+                [
+                    html.Div(
+                        [
+                            # Reset Button
+                            html.A(
+                                html.Button(
+                                    'Reset',
+                                    id='reset-btn',
+                                    disabled=False,
+                                    className='reset-button',
+                                ),
+                                href='/',
+                            ),
+                            # Play/Pause Button
+                            html.Button(
+                                'Play',
+                                id='play-pause-btn',
+                                disabled=True,
+                                className='play-pause-button',
+                                style={
+                                    'padding': '10px 30px',
+                                    'fontSize': '16px',
+                                    'backgroundColor': '#28a745',
+                                    'color': 'white',
+                                    'border': 'none',
+                                    'borderRadius': '4px',
+                                    'cursor': 'pointer',
+                                    'marginRight': '20px',
+                                },
+                            ),
+                            # Timeline Slider
+                            html.Div(
+                                [
+                                    dcc.Slider(
+                                        id='timeline-slider',
+                                        min=0,
+                                        step=1,
+                                        value=0,
+                                        marks={i: str(i) for i in range(0, 201, 5)},
+                                        tooltip={'placement': 'bottom', 'always_visible': True},
+                                        disabled=True,
+                                    )
+                                ],
+                                style={
+                                    'width': '100%',
+                                    'display': 'inline-block',
+                                    'verticalAlign': 'middle',
+                                },
+                            ),
+                        ],
+                        style={
+                            'display': 'flex',
+                            'alignItems': 'center',
+                            'justifyContent': 'flex-start',
+                            'padding': '15px 20px',
+                        },
+                    )
+                ],
+                style={
+                    'position': 'fixed',
+                    'bottom': '0',
+                    'left': '0',
+                    'right': '0',
+                    'backgroundColor': 'white',
+                    'borderTop': '1px solid #dee2e6',
+                    'zIndex': '999',
+                    'height': '70px',
+                },
+            ),
+            disease_params_modal,
+            initial_cases_modal,
+            npi_modal,
+            antivirals_modal,
+            vaccines_modal,
+        ]
+    )
+
+
+def create_interventions_display(npi_data, antiviral_data, vaccine_data, vaccine_stockpile):
+    """Create interventions tab display content"""
+    if not npi_data and not antiviral_data and not vaccine_data:
+        return html.P(
+            'No interventions set yet.', style={'color': '#6c757d', 'fontStyle': 'italic'}
+        )
+
+    content = []
+
+    # NPIs section
+    if npi_data:
+        content.extend(
+            [
+                html.H6(
+                    'Non-Pharmaceutical Interventions',
+                    style={'fontWeight': 'bold', 'marginBottom': '10px'},
+                ),
+            ]
+        )
+        for npi in npi_data:
+            content.append(
+                html.Div(
+                    [
+                        html.P(f'Name: {npi["name"]}'),
+                        html.P(f'Start Day: {npi["start"]}, Duration: {npi["duration"]} days'),
+                        html.P(f'Location: {", ".join(npi["location"])}'),
+                        html.P('Age-specific effectiveness:'),
+                        html.Ul(
+                            [
+                                html.Li(f'0-4: {npi["effectiveness"][0]:.2f}'),
+                                html.Li(f'5-24: {npi["effectiveness"][1]:.2f}'),
+                                html.Li(f'25-49: {npi["effectiveness"][2]:.2f}'),
+                                html.Li(f'50-64: {npi["effectiveness"][3]:.2f}'),
+                                html.Li(f'65+: {npi["effectiveness"][4]:.2f}'),
+                            ],
+                            style={'marginLeft': '20px'},
+                        ),
+                    ],
+                    style={
+                        'marginBottom': '15px',
+                        'padding': '10px',
+                        'border': '1px solid #dee2e6',
+                        'borderRadius': '4px',
+                    },
+                )
+            )
+
+    # Antivirals section
+    if antiviral_data:
+        content.extend(
+            [
+                html.H6('Antivirals', style={'fontWeight': 'bold', 'marginBottom': '10px'}),
+                html.P(f'Effectiveness: {antiviral_data["effectiveness"]:.2f}'),
+                html.P(f'Wastage Factor: {antiviral_data["wastage_factor"]} days'),
+                html.P(
+                    f'Stockpile: {antiviral_data["stockpile_amount"]} on day {antiviral_data["stockpile_day"]}'
+                ),
+            ]
+        )
+
+    ## Vaccines section
+    if vaccine_data:
+        model_label = (
+            'Stockpile Age Risk'
+            if vaccine_data['vaccine_model'] == 'stockpile-age-risk'
+            else 'Undefined'
+        )
+        content.extend([html.H6('Vaccines', style={'fontWeight': 'bold', 'marginBottom': '10px'})])
+        content.append(
+            html.Div(
+                [
+                    html.P(f'Vaccine Model: {model_label}'),
+                    html.P(f'Priority Groups: {vaccine_data["priority_groups"]}'),
+                    html.P(f'Capacity: {vaccine_data["capacity"]} (proportion)'),
+                    html.P(f'Effectiveness Lag: {vaccine_data["effectiveness_lag"]} days'),
+                    html.P('Effectiveness:'),
+                    html.Ul(
+                        [
+                            html.Li(f'0-4: {vaccine_data["effectiveness"][0]:.2f}'),
+                            html.Li(f'5-17: {vaccine_data["effectiveness"][1]:.2f}'),
+                            html.Li(f'18-49: {vaccine_data["effectiveness"][2]:.2f}'),
+                            html.Li(f'50-64: {vaccine_data["effectiveness"][3]:.2f}'),
+                            html.Li(f'65+: {vaccine_data["effectiveness"][4]:.2f}'),
+                        ],
+                        style={'marginLeft': '20px'},
+                    ),
+                    html.P('Adherence:'),
+                    html.Ul(
+                        [
+                            html.Li(f'0-4: {vaccine_data["adherence"][0]:.2f}'),
+                            html.Li(f'5-17: {vaccine_data["adherence"][1]:.2f}'),
+                            html.Li(f'18-49: {vaccine_data["adherence"][2]:.2f}'),
+                            html.Li(f'50-64: {vaccine_data["adherence"][3]:.2f}'),
+                            html.Li(f'65+: {vaccine_data["adherence"][4]:.2f}'),
+                        ],
+                        style={'marginLeft': '20px'},
+                    ),
+                    html.P('Stockpile:'),
+                    html.Ul(
+                        children=[
+                            html.Li(f'day={i["day"]} , amt={i["amount"]}')
+                            for i in vaccine_stockpile
+                        ],
+                        style={'marginLeft': '20px'},
+                    ),
+                ],
+                style={
+                    'marginBottom': '15px',
+                    'padding': '10px',
+                    'border': '1px solid #dee2e6',
+                    'borderRadius': '4px',
+                },
+            )
+        )
+
+    return html.Div(content)
 
 
 # ============================================================================
@@ -1339,7 +1303,8 @@ vaccines_modal = dbc.Modal(
 
 
 def layout(**kwargs):
-    return create_home_layout()
+    layout = create_home_layout()
+    return layout
 
 
 # ============================================================================
@@ -1350,6 +1315,7 @@ def layout(**kwargs):
 @callback(
     Output('disease-params-modal-body', 'children'),
     Input('model-selector-dropdown', 'value'),
+    # Input('selected-model-store', 'data'),
     prevent_initial_call=True,
 )
 def update_disease_param_modal_body(selected_value):
@@ -2182,13 +2148,13 @@ def update_npi_location_options(location_assets):
 
 
 # Initialize with home page
-@callback(
-    Output('main-content', 'children', allow_duplicate=True),
-    Input('main-content', 'id'),
-    prevent_initial_call='initial_duplicate',
-)
-def init_main_content(_):
-    return create_home_layout()
+# @callback(
+#     Output('main-content', 'children', allow_duplicate=True),
+#     Input('main-content', 'id'),
+#     prevent_initial_call='initial_duplicate',
+# )
+# def init_main_content(_):
+#     return create_home_layout()
 
 
 # Restore UI state after navigation completes
@@ -2760,6 +2726,7 @@ def switch_displayed_tab(
         return content, 'tab-btn active-tab', 'tab-btn', 'scenario'
 
 
+# TODO: move this out of callbacks section
 def create_scenario_display(disease_params, initial_cases):
     """Create scenario tab display content"""
     if not disease_params and not initial_cases:
@@ -2915,6 +2882,7 @@ def manage_npis(
     return current_npi_data, _render_npi_table(current_npi_data)
 
 
+# TODO: move this out of callbacks section
 def _render_npi_table(npi_list):
     if not npi_list:
         return dash.html.P('No NPIs added yet.', style={'color': '#6c757d', 'fontStyle': 'italic'})
