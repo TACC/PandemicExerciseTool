@@ -367,7 +367,9 @@ def _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojs
 disease_params_modal = dbc.Modal(
     [
         dbc.ModalHeader(dbc.ModalTitle('Disease Parameters')),
-        dbc.ModalBody(id='disease-params-modal-body'),
+        dbc.ModalBody(
+            id='disease-params-modal-body',
+        ),
         dbc.ModalFooter(
             [
                 dbc.Button('Save', id='disease-params-save', className='ms-auto', n_clicks=0),
@@ -1175,7 +1177,8 @@ def create_home_layout():
             npi_modal,
             antivirals_modal,
             vaccines_modal,
-        ]
+        ],
+        # id='main-content',
     )
 
 
@@ -1297,6 +1300,39 @@ def create_interventions_display(npi_data, antiviral_data, vaccine_data, vaccine
     return html.Div(content)
 
 
+def create_disease_param_number_input(label: str, subtitle: str, inputs: list):
+    """
+    each element in the inputs list should be structured like
+    {input_label, input_id, input_value, input_step, input_min}
+    """
+    label_elem = html.Label(label, style={'fontWeight': 'bold'})
+    subtitle_elem = html.Small(subtitle, style={'color': '#6c757d'})
+    input_elems = [label_elem, subtitle_elem]
+    if len(inputs) > 1:
+        input_style = {'width': '100%', 'marginBottom': '5px'}
+    else:
+        input_style = {'width': '100%', 'marginBottom': '10px'}
+    print(inputs)
+    for i in range(len(inputs)):
+        input_elem = dcc.Input(
+            id=inputs[i]['input_id'],
+            type='number',
+            value=inputs[i]['input_value'],
+            step=inputs[i]['input_step'],
+            min=inputs[i]['input_min'],
+            style=input_style,
+        )
+        if inputs[i]['input_label'] is not None:
+            input_elems.append(
+                html.Div(
+                    [html.Label(inputs[i]['input_label'], style={'fontSize': '14px'}), input_elem]
+                )
+            )
+        else:
+            input_elems.append(input_elem)
+    return html.Div(input_elems)
+
+
 # ============================================================================
 # LAYOUT
 # ============================================================================
@@ -1312,327 +1348,416 @@ def layout(**kwargs):
 # ============================================================================
 
 
+# @callback(
+#     Output('disease-params-modal-body', 'children'),
+#     Input('model-selector-dropdown', 'value'),
+#     # Input('selected-model-store', 'data'),
+#     prevent_initial_call=True,
+# )
+# def update_disease_param_modal_body(selected_value):
+#     scenario_prefix = selected_value.split('-')[0]
+
+#     if selected_value is not None:
+#         return dbc.ModalBody(
+#             [
+#                 # Preset scenarios dropdown
+#                 html.Div(
+#                     [
+#                         html.Label(
+#                             'Load from Catalog', style={'fontWeight': 'bold', 'marginBottom': '5px'}
+#                         ),
+#                         dcc.Dropdown(
+#                             id='preset-scenario-dropdown',
+#                             options=[
+#                                 {'label': scenario['name'], 'value': key}
+#                                 for key, scenario in PRESET_SCENARIOS[scenario_prefix].items()
+#                             ],
+#                             placeholder='Select a preset scenario...',
+#                             style={'marginBottom': '15px'},
+#                         ),
+#                     ]
+#                 ),
+#                 html.Hr(),
+#                 # Currently all models expect scenario name, R0, and latent period
+#                 html.Div(
+#                     [
+#                         html.Label('Scenario Name', style={'fontWeight': 'bold'}),
+#                         dcc.Input(
+#                             id='scenario-name',
+#                             type='text',
+#                             value='',
+#                             style={'width': '100%', 'marginBottom': '10px'},
+#                         ),
+#                     ]
+#                 ),
+#                 html.Div(
+#                     [
+#                         html.Label('Reproduction Number (R₀)', style={'fontWeight': 'bold'}),
+#                         html.Small(
+#                             ' - Average number of secondary infections in a susceptible population',
+#                             style={'color': '#6c757d'},
+#                         ),
+#                         dcc.Input(
+#                             id='reproduction-number',
+#                             type='number',
+#                             value=1.2,
+#                             step=0.1,
+#                             min=0,
+#                             style={'width': '100%', 'marginBottom': '10px'},
+#                         ),
+#                     ]
+#                 ),
+#                 html.Div(
+#                     [
+#                         html.Label('Latent period (days)', style={'fontWeight': 'bold'}),
+#                         html.Small(
+#                             ' - Average number of days from infection to infectiousness',
+#                             style={'color': '#6c757d'},
+#                         ),
+#                         dcc.Input(
+#                             id='latent-period',
+#                             type='number',
+#                             value=1.2,
+#                             step=0.1,
+#                             min=0,
+#                             style={'width': '100%', 'marginBottom': '10px'},
+#                         ),
+#                     ]
+#                 ),
+#                 # Asymptomatic, symptomatic, CFR and sigma just for SEATIRD
+#                 html.Div(
+#                     [
+#                         html.Label('Asymptomatic period (days)', style={'fontWeight': 'bold'}),
+#                         html.Small(
+#                             ' - Average number of days spent infectious, but not yet symptomatic',
+#                             style={'color': '#6c757d'},
+#                         ),
+#                         dcc.Input(
+#                             id='asymptomatic-period',
+#                             type='number',
+#                             value=1.9,
+#                             step=0.1,
+#                             min=0,
+#                             style={'width': '100%', 'marginBottom': '10px'},
+#                         ),
+#                     ],
+#                     id='disease-param-modal-display-asymptomatic',
+#                     style={'display': 'none'},
+#                 ),
+#                 html.Div(
+#                     [
+#                         html.Label('Symptomatic period (days)', style={'fontWeight': 'bold'}),
+#                         html.Small(
+#                             ' - Average number of days spent symptomatic and infectious',
+#                             style={'color': '#6c757d'},
+#                         ),
+#                         dcc.Input(
+#                             id='symptomatic-period',
+#                             type='number',
+#                             value=4.1,
+#                             step=0.1,
+#                             min=0,
+#                             style={'width': '100%', 'marginBottom': '15px'},
+#                         ),
+#                     ],
+#                     id='disease-param-modal-display-symptomatic',
+#                     style={'display': 'none'},
+#                 ),
+#                 # Age-specific CFR section => this is not CFR in the model it's mean time to death
+#                 html.Div(
+#                     [
+#                         html.Label('Mortality rate (1/days)', style={'fontWeight': 'bold'}),
+#                         html.Small(
+#                             ' - Inverse average number of days spent asymptomatic/treatable/infectious to deceased',
+#                             style={'color': '#6c757d', 'display': 'block', 'marginBottom': '15px'},
+#                         ),
+#                         # CFR inputs for each age group
+#                         html.Div(
+#                             [
+#                                 html.Label('0-4 years', style={'fontSize': '14px'}),
+#                                 dcc.Input(
+#                                     id='cfr-0-4',
+#                                     type='number',
+#                                     value=0.000022319,
+#                                     step=0.000000001,
+#                                     min=0,
+#                                     max=100,
+#                                     style={'width': '100%', 'marginBottom': '5px'},
+#                                 ),
+#                             ]
+#                         ),
+#                         html.Div(
+#                             [
+#                                 html.Label('5-17 years', style={'fontSize': '14px'}),
+#                                 dcc.Input(
+#                                     id='cfr-5-24',
+#                                     type='number',
+#                                     value=0.000040975,
+#                                     step=0.000000001,
+#                                     min=0,
+#                                     max=100,
+#                                     style={'width': '100%', 'marginBottom': '5px'},
+#                                 ),
+#                             ]
+#                         ),
+#                         html.Div(
+#                             [
+#                                 html.Label('18-49 years', style={'fontSize': '14px'}),
+#                                 dcc.Input(
+#                                     id='cfr-25-49',
+#                                     type='number',
+#                                     value=0.000083729,
+#                                     step=0.000000001,
+#                                     min=0,
+#                                     max=100,
+#                                     style={'width': '100%', 'marginBottom': '5px'},
+#                                 ),
+#                             ]
+#                         ),
+#                         html.Div(
+#                             [
+#                                 html.Label('50-64 years', style={'fontSize': '14px'}),
+#                                 dcc.Input(
+#                                     id='cfr-50-64',
+#                                     type='number',
+#                                     value=0.000061809,
+#                                     step=0.000000001,
+#                                     min=0,
+#                                     max=100,
+#                                     style={'width': '100%', 'marginBottom': '5px'},
+#                                 ),
+#                             ]
+#                         ),
+#                         html.Div(
+#                             [
+#                                 html.Label('65+ years', style={'fontSize': '14px'}),
+#                                 dcc.Input(
+#                                     id='cfr-65-plus',
+#                                     type='number',
+#                                     value=0.000008978,
+#                                     step=0.000000001,
+#                                     min=0,
+#                                     max=100,
+#                                     style={'width': '100%', 'marginBottom': '25px'},
+#                                 ),
+#                             ]
+#                         ),
+#                     ],
+#                     id='disease-param-modal-display-cfr',
+#                     style={'display': 'none'},
+#                 ),
+#                 # Age-specific relative susceptibility section
+#                 html.Div(
+#                     [
+#                         html.Label('Relative susceptibility (ratio)', style={'fontWeight': 'bold'}),
+#                         html.Small(
+#                             ' - How susceptible each age group is relative to a reference group (e.g. 0-4yro)',
+#                             style={'color': '#6c757d', 'display': 'block', 'marginBottom': '15px'},
+#                         ),
+#                         # inputs for each age group
+#                         html.Div(
+#                             [
+#                                 html.Label('0-4 years', style={'fontSize': '14px'}),
+#                                 dcc.Input(
+#                                     id='sigma-0-4',
+#                                     type='number',
+#                                     value=1.0,
+#                                     step=0.000000001,
+#                                     min=0,
+#                                     max=10,
+#                                     style={'width': '100%', 'marginBottom': '5px'},
+#                                 ),
+#                             ]
+#                         ),
+#                         html.Div(
+#                             [
+#                                 html.Label('5-17 years', style={'fontSize': '14px'}),
+#                                 dcc.Input(
+#                                     id='sigma-5-24',
+#                                     type='number',
+#                                     value=1.0,
+#                                     step=0.000000001,
+#                                     min=0,
+#                                     max=10,
+#                                     style={'width': '100%', 'marginBottom': '5px'},
+#                                 ),
+#                             ]
+#                         ),
+#                         html.Div(
+#                             [
+#                                 html.Label('18-49 years', style={'fontSize': '14px'}),
+#                                 dcc.Input(
+#                                     id='sigma-25-49',
+#                                     type='number',
+#                                     value=1.0,
+#                                     step=0.000000001,
+#                                     min=0,
+#                                     max=10,
+#                                     style={'width': '100%', 'marginBottom': '5px'},
+#                                 ),
+#                             ]
+#                         ),
+#                         html.Div(
+#                             [
+#                                 html.Label('50-64 years', style={'fontSize': '14px'}),
+#                                 dcc.Input(
+#                                     id='sigma-50-64',
+#                                     type='number',
+#                                     value=1.0,
+#                                     step=0.000000001,
+#                                     min=0,
+#                                     max=10,
+#                                     style={'width': '100%', 'marginBottom': '5px'},
+#                                 ),
+#                             ]
+#                         ),
+#                         html.Div(
+#                             [
+#                                 html.Label('65+ years', style={'fontSize': '14px'}),
+#                                 dcc.Input(
+#                                     id='sigma-65-plus',
+#                                     type='number',
+#                                     value=1.0,
+#                                     step=0.000000001,
+#                                     min=0,
+#                                     max=10,
+#                                     style={'width': '100%', 'marginBottom': '5px'},
+#                                 ),
+#                             ]
+#                         ),
+#                     ],
+#                     id='disease-param-modal-display-sigma',
+#                     style={'display': 'none'},
+#                 ),
+#                 # These next two just for SEIRS
+#                 html.Div(
+#                     [
+#                         html.Label('Infectious period (days)', style={'fontWeight': 'bold'}),
+#                         html.Small(
+#                             ' - Average number of days spent infectious', style={'color': '#6c757d'}
+#                         ),
+#                         dcc.Input(
+#                             id='infectious-period',
+#                             type='number',
+#                             value=1.9,
+#                             step=0.1,
+#                             min=0,
+#                             style={'width': '100%', 'marginBottom': '10px'},
+#                         ),
+#                     ],
+#                     id='disease-param-modal-display-infectious',
+#                     style={'display': 'none'},
+#                 ),
+#                 html.Div(
+#                     [
+#                         html.Label('Immune period (days)', style={'fontWeight': 'bold'}),
+#                         html.Small(
+#                             ' - Average number of days before returning to susceptible (set to 0 to make this an SEIR model)',
+#                             style={'color': '#6c757d'},
+#                         ),
+#                         dcc.Input(
+#                             id='immune-period',
+#                             type='number',
+#                             value=0,
+#                             step=0.1,
+#                             min=0,
+#                             style={'width': '100%', 'marginBottom': '15px'},
+#                         ),
+#                     ],
+#                     id='disease-param-modal-display-immune',
+#                     style={'display': 'none'},
+#                 ),
+#             ]
+#         )
+#     else:
+#         return dbc.ModalBody(['Select a valid disease model to set parameters.'])
+
+
 @callback(
     Output('disease-params-modal-body', 'children'),
     Input('model-selector-dropdown', 'value'),
-    # Input('selected-model-store', 'data'),
     prevent_initial_call=True,
 )
 def update_disease_param_modal_body(selected_value):
     scenario_prefix = selected_value.split('-')[0]
 
     if selected_value is not None:
-        return dbc.ModalBody(
+        modal_elems = [
+            # Preset scenarios dropdown
+            html.Div(
+                [
+                    html.Label(
+                        'Load from Catalog', style={'fontWeight': 'bold', 'marginBottom': '5px'}
+                    ),
+                    dcc.Dropdown(
+                        id='preset-scenario-dropdown',
+                        options=[
+                            {'label': scenario['name'], 'value': key}
+                            for key, scenario in PRESET_SCENARIOS[scenario_prefix].items()
+                        ],
+                        placeholder='Select a preset scenario...',
+                        style={'marginBottom': '15px'},
+                    ),
+                ]
+            ),
+            html.Hr(),
+            # Currently all models expect scenario name, R0, and latent period
+            html.Div(
+                [
+                    html.Label('Scenario Name', style={'fontWeight': 'bold'}),
+                    dcc.Input(
+                        id='scenario-name',
+                        type='text',
+                        value='',
+                        style={'width': '100%', 'marginBottom': '10px'},
+                    ),
+                ]
+            ),
+        ]
+        modal_elems.extend(
             [
-                # Preset scenarios dropdown
-                html.Div(
-                    [
-                        html.Label(
-                            'Load from Catalog', style={'fontWeight': 'bold', 'marginBottom': '5px'}
-                        ),
-                        dcc.Dropdown(
-                            id='preset-scenario-dropdown',
-                            options=[
-                                {'label': scenario['name'], 'value': key}
-                                for key, scenario in PRESET_SCENARIOS[scenario_prefix].items()
-                            ],
-                            placeholder='Select a preset scenario...',
-                            style={'marginBottom': '15px'},
-                        ),
-                    ]
-                ),
-                html.Hr(),
-                # Currently all models expect scenario name, R0, and latent period
-                html.Div(
-                    [
-                        html.Label('Scenario Name', style={'fontWeight': 'bold'}),
-                        dcc.Input(
-                            id='scenario-name',
-                            type='text',
-                            value='',
-                            style={'width': '100%', 'marginBottom': '10px'},
-                        ),
-                    ]
-                ),
-                html.Div(
-                    [
-                        html.Label('Reproduction Number (R₀)', style={'fontWeight': 'bold'}),
-                        html.Small(
-                            ' - Average number of secondary infections in a susceptible population',
-                            style={'color': '#6c757d'},
-                        ),
-                        dcc.Input(
-                            id='reproduction-number',
-                            type='number',
-                            value=1.2,
-                            step=0.1,
-                            min=0,
-                            style={'width': '100%', 'marginBottom': '10px'},
-                        ),
-                    ]
-                ),
-                html.Div(
-                    [
-                        html.Label('Latent period (days)', style={'fontWeight': 'bold'}),
-                        html.Small(
-                            ' - Average number of days from infection to infectiousness',
-                            style={'color': '#6c757d'},
-                        ),
-                        dcc.Input(
-                            id='latent-period',
-                            type='number',
-                            value=1.2,
-                            step=0.1,
-                            min=0,
-                            style={'width': '100%', 'marginBottom': '10px'},
-                        ),
-                    ]
-                ),
-                # Asymptomatic, symptomatic, CFR and sigma just for SEATIRD
-                html.Div(
-                    [
-                        html.Label('Asymptomatic period (days)', style={'fontWeight': 'bold'}),
-                        html.Small(
-                            ' - Average number of days spent infectious, but not yet symptomatic',
-                            style={'color': '#6c757d'},
-                        ),
-                        dcc.Input(
-                            id='asymptomatic-period',
-                            type='number',
-                            value=1.9,
-                            step=0.1,
-                            min=0,
-                            style={'width': '100%', 'marginBottom': '10px'},
-                        ),
+                create_disease_param_number_input(
+                    label='Reproduction Number (R₀)',
+                    subtitle=' - Average number of secondary infections in a susceptible population',
+                    inputs=[
+                        {
+                            'input_label': None,
+                            'input_id': 'reproduction-number',
+                            'input_value': 1.2,
+                            'input_step': 0.1,
+                            'input_min': 0,
+                        }
                     ],
-                    id='disease-param-modal-display-asymptomatic',
-                    style={'display': 'none'},
                 ),
-                html.Div(
-                    [
-                        html.Label('Symptomatic period (days)', style={'fontWeight': 'bold'}),
-                        html.Small(
-                            ' - Average number of days spent symptomatic and infectious',
-                            style={'color': '#6c757d'},
-                        ),
-                        dcc.Input(
-                            id='symptomatic-period',
-                            type='number',
-                            value=4.1,
-                            step=0.1,
-                            min=0,
-                            style={'width': '100%', 'marginBottom': '15px'},
-                        ),
+                create_disease_param_number_input(
+                    label='Latent period (days)',
+                    subtitle=' - Average number of days from infection to infectiousness',
+                    inputs=[
+                        {
+                            'input_label': None,
+                            'input_id': 'latent-period',
+                            'input_value': 1.2,
+                            'input_step': 0.1,
+                            'input_min': 0,
+                        }
                     ],
-                    id='disease-param-modal-display-symptomatic',
-                    style={'display': 'none'},
                 ),
-                # Age-specific CFR section => this is not CFR in the model it's mean time to death
-                html.Div(
-                    [
-                        html.Label('Mortality rate (1/days)', style={'fontWeight': 'bold'}),
-                        html.Small(
-                            ' - Inverse average number of days spent asymptomatic/treatable/infectious to deceased',
-                            style={'color': '#6c757d', 'display': 'block', 'marginBottom': '15px'},
-                        ),
-                        # CFR inputs for each age group
-                        html.Div(
-                            [
-                                html.Label('0-4 years', style={'fontSize': '14px'}),
-                                dcc.Input(
-                                    id='cfr-0-4',
-                                    type='number',
-                                    value=0.000022319,
-                                    step=0.000000001,
-                                    min=0,
-                                    max=100,
-                                    style={'width': '100%', 'marginBottom': '5px'},
-                                ),
-                            ]
-                        ),
-                        html.Div(
-                            [
-                                html.Label('5-17 years', style={'fontSize': '14px'}),
-                                dcc.Input(
-                                    id='cfr-5-24',
-                                    type='number',
-                                    value=0.000040975,
-                                    step=0.000000001,
-                                    min=0,
-                                    max=100,
-                                    style={'width': '100%', 'marginBottom': '5px'},
-                                ),
-                            ]
-                        ),
-                        html.Div(
-                            [
-                                html.Label('18-49 years', style={'fontSize': '14px'}),
-                                dcc.Input(
-                                    id='cfr-25-49',
-                                    type='number',
-                                    value=0.000083729,
-                                    step=0.000000001,
-                                    min=0,
-                                    max=100,
-                                    style={'width': '100%', 'marginBottom': '5px'},
-                                ),
-                            ]
-                        ),
-                        html.Div(
-                            [
-                                html.Label('50-64 years', style={'fontSize': '14px'}),
-                                dcc.Input(
-                                    id='cfr-50-64',
-                                    type='number',
-                                    value=0.000061809,
-                                    step=0.000000001,
-                                    min=0,
-                                    max=100,
-                                    style={'width': '100%', 'marginBottom': '5px'},
-                                ),
-                            ]
-                        ),
-                        html.Div(
-                            [
-                                html.Label('65+ years', style={'fontSize': '14px'}),
-                                dcc.Input(
-                                    id='cfr-65-plus',
-                                    type='number',
-                                    value=0.000008978,
-                                    step=0.000000001,
-                                    min=0,
-                                    max=100,
-                                    style={'width': '100%', 'marginBottom': '25px'},
-                                ),
-                            ]
-                        ),
+                create_disease_param_number_input(
+                    label='Asymptomatic period (days)',
+                    subtitle=' - Average number of days spent infectious, but not yet symptomatic',
+                    inputs=[
+                        {
+                            'input_label': None,
+                            'input_id': 'asymptomatic-period',
+                            'input_value': 1.9,
+                            'input_step': 0.1,
+                            'input_min': 0,
+                        }
                     ],
-                    id='disease-param-modal-display-cfr',
-                    style={'display': 'none'},
-                ),
-                # Age-specific relative susceptibility section
-                html.Div(
-                    [
-                        html.Label('Relative susceptibility (ratio)', style={'fontWeight': 'bold'}),
-                        html.Small(
-                            ' - How susceptible each age group is relative to a reference group (e.g. 0-4yro)',
-                            style={'color': '#6c757d', 'display': 'block', 'marginBottom': '15px'},
-                        ),
-                        # inputs for each age group
-                        html.Div(
-                            [
-                                html.Label('0-4 years', style={'fontSize': '14px'}),
-                                dcc.Input(
-                                    id='sigma-0-4',
-                                    type='number',
-                                    value=1.0,
-                                    step=0.000000001,
-                                    min=0,
-                                    max=10,
-                                    style={'width': '100%', 'marginBottom': '5px'},
-                                ),
-                            ]
-                        ),
-                        html.Div(
-                            [
-                                html.Label('5-17 years', style={'fontSize': '14px'}),
-                                dcc.Input(
-                                    id='sigma-5-24',
-                                    type='number',
-                                    value=1.0,
-                                    step=0.000000001,
-                                    min=0,
-                                    max=10,
-                                    style={'width': '100%', 'marginBottom': '5px'},
-                                ),
-                            ]
-                        ),
-                        html.Div(
-                            [
-                                html.Label('18-49 years', style={'fontSize': '14px'}),
-                                dcc.Input(
-                                    id='sigma-25-49',
-                                    type='number',
-                                    value=1.0,
-                                    step=0.000000001,
-                                    min=0,
-                                    max=10,
-                                    style={'width': '100%', 'marginBottom': '5px'},
-                                ),
-                            ]
-                        ),
-                        html.Div(
-                            [
-                                html.Label('50-64 years', style={'fontSize': '14px'}),
-                                dcc.Input(
-                                    id='sigma-50-64',
-                                    type='number',
-                                    value=1.0,
-                                    step=0.000000001,
-                                    min=0,
-                                    max=10,
-                                    style={'width': '100%', 'marginBottom': '5px'},
-                                ),
-                            ]
-                        ),
-                        html.Div(
-                            [
-                                html.Label('65+ years', style={'fontSize': '14px'}),
-                                dcc.Input(
-                                    id='sigma-65-plus',
-                                    type='number',
-                                    value=1.0,
-                                    step=0.000000001,
-                                    min=0,
-                                    max=10,
-                                    style={'width': '100%', 'marginBottom': '5px'},
-                                ),
-                            ]
-                        ),
-                    ],
-                    id='disease-param-modal-display-sigma',
-                    style={'display': 'none'},
-                ),
-                # These next two just for SEIRS
-                html.Div(
-                    [
-                        html.Label('Infectious period (days)', style={'fontWeight': 'bold'}),
-                        html.Small(
-                            ' - Average number of days spent infectious', style={'color': '#6c757d'}
-                        ),
-                        dcc.Input(
-                            id='infectious-period',
-                            type='number',
-                            value=1.9,
-                            step=0.1,
-                            min=0,
-                            style={'width': '100%', 'marginBottom': '10px'},
-                        ),
-                    ],
-                    id='disease-param-modal-display-infectious',
-                    style={'display': 'none'},
-                ),
-                html.Div(
-                    [
-                        html.Label('Immune period (days)', style={'fontWeight': 'bold'}),
-                        html.Small(
-                            ' - Average number of days before returning to susceptible (set to 0 to make this an SEIR model)',
-                            style={'color': '#6c757d'},
-                        ),
-                        dcc.Input(
-                            id='immune-period',
-                            type='number',
-                            value=0,
-                            step=0.1,
-                            min=0,
-                            style={'width': '100%', 'marginBottom': '15px'},
-                        ),
-                    ],
-                    id='disease-param-modal-display-immune',
-                    style={'display': 'none'},
                 ),
             ]
         )
+        return dbc.ModalBody(modal_elems)
     else:
         return dbc.ModalBody(['Select a valid disease model to set parameters.'])
 
@@ -2145,16 +2270,6 @@ def update_npi_location_options(location_assets):
     return [{'label': 'Statewide', 'value': 'Statewide'}] + [
         {'label': n, 'value': n} for n in names
     ]
-
-
-# Initialize with home page
-# @callback(
-#     Output('main-content', 'children', allow_duplicate=True),
-#     Input('main-content', 'id'),
-#     prevent_initial_call='initial_duplicate',
-# )
-# def init_main_content(_):
-#     return create_home_layout()
 
 
 # Restore UI state after navigation completes
