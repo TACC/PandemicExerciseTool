@@ -366,6 +366,30 @@ def _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojs
 
 
 # Input helper
+def create_modal_footer(prefix: str):
+    """Create a standard Save/Close modal footer. prefix is the modal name, e.g. 'npi'."""
+    return dbc.ModalFooter(
+        [
+            dbc.Button('Save',  id=f'{prefix}-save',  className='ms-auto', n_clicks=0),
+            dbc.Button('Close', id=f'{prefix}-close', className='ms-auto', n_clicks=0),
+        ]
+    )
+
+
+def create_labeled_input(label: str, input_id: str, margin_bottom: str = '10px', **kwargs):
+    """Create a plain html.Label + full-width dcc.Input wrapped in a Div."""
+    return html.Div(
+        [
+            html.Label(label),
+            dcc.Input(
+                id=input_id,
+                style={'width': '100%', 'marginBottom': margin_bottom},
+                **kwargs,
+            ),
+        ]
+    )
+
+
 def create_bold_label_subtitle_number_input(label: str, subtitle: str, inputs: list):
     """
     Each element in inputs: {input_label, input_id, input_value, input_step, input_min}
@@ -399,12 +423,7 @@ disease_params_modal = dbc.Modal(
         dbc.ModalBody(
             id='disease-params-modal-body',
         ),
-        dbc.ModalFooter(
-            [
-                dbc.Button('Save', id='disease-params-save', className='ms-auto', n_clicks=0),
-                dbc.Button('Close', id='disease-params-close', className='ms-auto', n_clicks=0),
-            ]
-        ),
+        create_modal_footer('disease-params'),
     ],
     id='disease-params-modal',
     is_open=False,
@@ -429,18 +448,7 @@ initial_cases_modal = dbc.Modal(
                         ),
                     ]
                 ),
-                html.Div(
-                    [
-                        html.Label('Number of Cases'),
-                        dcc.Input(
-                            id='initial-cases-count',
-                            type='number',
-                            value=100,
-                            min=1,
-                            style={'width': '100%', 'marginBottom': '10px'},
-                        ),
-                    ]
-                ),
+                create_labeled_input('Number of Cases', 'initial-cases-count', type='number', value=100, min=1),
                 html.Div(
                     [
                         html.Label('Age Group'),
@@ -462,12 +470,7 @@ initial_cases_modal = dbc.Modal(
                 html.Div(id='initial-cases-table'),
             ]
         ),
-        dbc.ModalFooter(
-            [
-                dbc.Button('Save', id='initial-cases-save', className='ms-auto', n_clicks=0),
-                dbc.Button('Close', id='initial-cases-close', className='ms-auto', n_clicks=0),
-            ]
-        ),
+        create_modal_footer('initial-cases'),
     ],
     id='initial-cases-modal',
     is_open=False,
@@ -481,45 +484,9 @@ npi_modal = dbc.Modal(
         dbc.ModalHeader(dbc.ModalTitle('Non-Pharmaceutical Interventions')),
         dbc.ModalBody(
             [
-                html.Div(
-                    [
-                        html.Label('NPI Name'),
-                        dcc.Input(
-                            id='npi-name',
-                            type='text',
-                            value='School Closures',
-                            style={'width': '100%', 'marginBottom': '10px'},
-                        ),
-                    ]
-                ),
-                html.Div(
-                    [
-                        html.Label('NPI start (simulation day)'),
-                        dcc.Input(
-                            id='npi-start',
-                            type='number',
-                            value=5,
-                            min=0,
-                            max=1000,
-                            step=1,
-                            style={'width': '100%', 'marginBottom': '10px'},
-                        ),
-                    ]
-                ),
-                html.Div(
-                    [
-                        html.Label('NPI duration (days)'),
-                        dcc.Input(
-                            id='npi-duration',
-                            type='number',
-                            value=30,
-                            min=1,
-                            max=1000,
-                            step=1,
-                            style={'width': '100%', 'marginBottom': '15px'},
-                        ),
-                    ]
-                ),
+                create_labeled_input('NPI Name', 'npi-name', type='text', value='School Closures'),
+                create_labeled_input('NPI start (simulation day)', 'npi-start', type='number', value=5, min=0, max=1000, step=1),
+                create_labeled_input('NPI duration (days)', 'npi-duration', margin_bottom='15px', type='number', value=30, min=1, max=1000, step=1),
                 # Age-specific effectiveness section
                 create_bold_label_subtitle_number_input(
                     label='NPI effectiveness (proportion)',
@@ -555,12 +522,7 @@ npi_modal = dbc.Modal(
                 html.Div(id='npi-table'),
             ]
         ),
-        dbc.ModalFooter(
-            [
-                dbc.Button('Save', id='npi-save', className='ms-auto', n_clicks=0),
-                dbc.Button('Close', id='npi-close', className='ms-auto', n_clicks=0),
-            ]
-        ),
+        create_modal_footer('npi'),
     ],
     id='npi-modal',
     is_open=False,
@@ -573,72 +535,16 @@ antivirals_modal = dbc.Modal(
         dbc.ModalHeader(dbc.ModalTitle('Antivirals')),
         dbc.ModalBody(
             [
-                html.Div(
-                    [
-                        html.Label('Antiviral Effectiveness'),
-                        dcc.Input(
-                            id='antiviral-effectiveness',
-                            type='number',
-                            value=0.15,
-                            min=0,
-                            max=1,
-                            step=0.01,
-                            style={'width': '100%', 'marginBottom': '10px'},
-                        ),
-                    ]
-                ),
-                html.Div(
-                    [
-                        html.Label('Antiviral Wastage Factor (days)'),
-                        dcc.Input(
-                            id='antiviral-wastage',
-                            type='number',
-                            value=60,
-                            min=0,
-                            max=1000,
-                            step=1,
-                            style={'width': '100%', 'marginBottom': '15px'},
-                        ),
-                    ]
-                ),
+                create_labeled_input('Antiviral Effectiveness', 'antiviral-effectiveness', type='number', value=0.15, min=0, max=1, step=0.01),
+                create_labeled_input('Antiviral Wastage Factor (days)', 'antiviral-wastage', margin_bottom='15px', type='number', value=60, min=0, max=1000, step=1),
                 html.H6(
                     'Stockpile Management', style={'fontWeight': 'bold', 'marginBottom': '10px'}
                 ),
-                html.Div(
-                    [
-                        html.Label('New Stockpile Day'),
-                        dcc.Input(
-                            id='antiviral-stockpile-day',
-                            type='number',
-                            value=50,
-                            min=1,
-                            max=1000,
-                            step=1,
-                            style={'width': '100%', 'marginBottom': '10px'},
-                        ),
-                    ]
-                ),
-                html.Div(
-                    [
-                        html.Label('New Stockpile Amount'),
-                        dcc.Input(
-                            id='antiviral-stockpile-amount',
-                            type='number',
-                            value=10000,
-                            min=0,
-                            step=1,
-                            style={'width': '100%', 'marginBottom': '15px'},
-                        ),
-                    ]
-                ),
+                create_labeled_input('New Stockpile Day', 'antiviral-stockpile-day', type='number', value=50, min=1, max=1000, step=1),
+                create_labeled_input('New Stockpile Amount', 'antiviral-stockpile-amount', margin_bottom='15px', type='number', value=10000, min=0, step=1),
             ]
         ),
-        dbc.ModalFooter(
-            [
-                dbc.Button('Save', id='antivirals-save', className='ms-auto', n_clicks=0),
-                dbc.Button('Close', id='antivirals-close', className='ms-auto', n_clicks=0),
-            ]
-        ),
+        create_modal_footer('antivirals'),
     ],
     id='antivirals-modal',
     is_open=False,
@@ -783,27 +689,8 @@ vaccines_modal = dbc.Modal(
                             'Vaccine reserves available beginning on a specified day. Negative days are allowed to vaccinate people before epidemic begins on day 0.',
                             style={'color': '#6c757d', 'display': 'block', 'marginBottom': '10px'},
                         ),
-                        html.Div([
-                            html.Label('Stockpile Day'),
-                            dcc.Input(
-                                id='vac-stockpile-day',
-                                type='number',
-                                min=-300,
-                                max=300,
-                                placeholder='Specify stockpile day...',
-                                style={'width': '100%', 'marginBottom': '10px'},
-                            ),
-                        ]),
-                        html.Div([
-                            html.Label('Stockpile Amount'),
-                            dcc.Input(
-                                id='vac-stockpile-amount',
-                                type='number',
-                                min=1,
-                                placeholder='Specify stockpile amount...',
-                                style={'width': '100%', 'marginBottom': '10px'},
-                            ),
-                        ]),
+                        create_labeled_input('Stockpile Day', 'vac-stockpile-day', type='number', min=-300, max=300, placeholder='Specify stockpile day...'),
+                        create_labeled_input('Stockpile Amount', 'vac-stockpile-amount', type='number', min=1, placeholder='Specify stockpile amount...'),
                         html.Button(
                             'Add Vaccine Stockpile',
                             id='add-vac-stockpile-btn',
@@ -815,12 +702,7 @@ vaccines_modal = dbc.Modal(
                 ),
             ]
         ),
-        dbc.ModalFooter(
-            [
-                dbc.Button('Save', id='vaccines-save', className='ms-auto', n_clicks=0),
-                dbc.Button('Close', id='vaccines-close', className='ms-auto', n_clicks=0),
-            ]
-        ),
+        create_modal_footer('vaccines'),
     ],
     id='vaccines-modal',
     is_open=False,
