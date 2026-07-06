@@ -921,10 +921,7 @@ def create_home_layout():
                                                 children=[
                                                     html.P(
                                                         'No scenario set yet.',
-                                                        style={
-                                                            'color': '#6c757d',
-                                                            'fontStyle': 'italic',
-                                                        },
+                                                        className='param-display__empty-state',
                                                     )
                                                 ],
                                             ),
@@ -933,22 +930,9 @@ def create_home_layout():
                                     ),
                                 ],
                                 className='sim-layout__left',
-                                style={
-                                    'height': '100%',
-                                    'overflowY': 'auto',
-                                    'overflowX': 'hidden',
-                                    'paddingRight': '10px',
-                                },
                             )
                         ],
-                        className='col-lg-2',
-                        style={
-                            'flex': '0 0 20%',
-                            'maxWidth': '20%',
-                            'height': '100%',  # inherit from row
-                            'minHeight': 0,
-                            'overflowY': 'auto',
-                        },
+                        className='col-lg-2 sim-layout__col--left',
                     ),
                     # Middle Panel - Map and Chart
                     html.Div(
@@ -956,7 +940,7 @@ def create_home_layout():
                             # View toggle (count/percent)
                             html.Div(
                                 [
-                                    html.H6('Show values as:', style={'marginBottom': '10px'}),
+                                    html.H6('Show values as:', className='mb-2'),
                                     dcc.RadioItems(
                                         id='view-toggle',
                                         options=[
@@ -966,7 +950,7 @@ def create_home_layout():
                                         value='count',
                                         inline=True,
                                         labelStyle={'marginRight': '20px'},
-                                        style={'marginBottom': '15px', 'paddingLeft': '10px'},
+                                        className='mb-3 ps-2',
                                     ),
                                 ],
                                 className='sim-layout__middle-header',
@@ -977,40 +961,27 @@ def create_home_layout():
                                     # Map
                                     dcc.Graph(
                                         id='spread-map',
-                                        style={'flex': '0 0 400px'},
+                                        className='sim-layout__map',
                                         config={'displayModeBar': False},
                                     ),
                                     # Line Chart
                                     dcc.Graph(
                                         id='line-chart',
-                                        style={'flex': '1 1 auto'},
+                                        className='sim-layout__chart',
                                         config={'displayModeBar': False},
                                     ),
                                 ],
                                 className='sim-layout__viz',
-                                style={
-                                    'display': 'flex',
-                                    'flexDirection': 'column',
-                                    'height': '100%',
-                                    'minHeight': 0,
-                                    'overflow': 'hidden',
-                                },
                             ),
                         ],
-                        className='col-lg-7',
-                        style={
-                            'flex': '0 0 52%',
-                            'maxWidth': '52%',
-                            'height': '100%',
-                            'minHeight': 0,
-                        },
+                        className='col-lg-7 sim-layout__col--middle',
                     ),
                     # Right Panel - Table
                     html.Div(
                         [
                             html.Div(
                                 [
-                                    html.H6('County Data', style={'marginBottom': '10px'}),
+                                    html.H6('County Data', className='mb-2'),
                                     dbc.Input(
                                         id='county-search',
                                         type='text',
@@ -1033,40 +1004,16 @@ def create_home_layout():
                                     ),
                                     html.Div(
                                         id='spread-table',
-                                        style={
-                                            'flex': '1 1 auto',
-                                            'minHeight': 0,
-                                            'overflowY': 'auto',
-                                        },
+                                        className='sim-layout__table',
                                     ),
                                 ],
                                 className='sim-layout__right',
-                                style={
-                                    'height': '100%',
-                                    'minHeight': 0,
-                                    'display': 'flex',
-                                    'flexDirection': 'column',
-                                    'overflow': 'hidden',
-                                },
                             )
                         ],
-                        className='col-lg-3',
-                        style={
-                            'flex': '0 0 28%',
-                            'maxWidth': '28%',
-                            'height': '100%',
-                            'minHeight': 0,
-                        },
+                        className='col-lg-3 sim-layout__col--right',
                     ),
                 ],
-                className='row',
-                style={
-                    'display': 'flex',
-                    'height': 'calc(100vh - 80px)',  # subtract fixed header (80px)
-                    'paddingBottom': '70px',  # reserve fixed footer height
-                    'boxSizing': 'border-box',
-                    'overflow': 'hidden',
-                },
+                className='row sim-layout__row',
             ),
             # Footer - OUTSIDE the row, always visible at bottom
             html.Div(

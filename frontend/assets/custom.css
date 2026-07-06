@@ -44,11 +44,44 @@ body {
    sim-layout
    ============================================ */
 
+.sim-layout__row {
+    display: flex;
+    height: calc(100vh - 80px);
+    padding-bottom: 70px;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.sim-layout__col--left {
+    flex: 0 0 20%;
+    max-width: 20%;
+    height: 100%;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.sim-layout__col--middle {
+    flex: 0 0 52%;
+    max-width: 52%;
+    height: 100%;
+    min-height: 0;
+}
+
+.sim-layout__col--right {
+    flex: 0 0 28%;
+    max-width: 28%;
+    height: 100%;
+    min-height: 0;
+}
+
 .sim-layout__left {
     background-color: #f8f9fa;
     padding: 15px;
     border-radius: 8px;
-    height: fit-content;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 10px;
     scrollbar-width: thin;
     scrollbar-color: #888 #f1f1f1;
 }
@@ -75,7 +108,17 @@ body {
     background-color: #f8f9fa;
     padding: 15px;
     border-radius: 8px;
-    height: fit-content;
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.sim-layout__table {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
 }
 
 .sim-layout__middle-header {
@@ -91,6 +134,19 @@ body {
     border-radius: 8px;
     padding: 15px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.sim-layout__map {
+    flex: 0 0 400px;
+}
+
+.sim-layout__chart {
+    flex: 1 1 auto;
 }
 
 /* ============================================
@@ -161,6 +217,11 @@ body {
     padding: 15px;
     background-color: white;
     min-height: 200px;
+}
+
+.param-display__empty-state {
+    color: #6c757d;
+    font-style: italic;
 }
 
 /* ============================================
