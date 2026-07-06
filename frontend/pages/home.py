@@ -1512,6 +1512,115 @@ def create_disease_param_number_input(label: str, subtitle: str, inputs: list):
     return html.Div(input_elems)
 
 
+def create_scenario_display(disease_params, initial_cases):
+    """Create scenario tab display content"""
+    if not disease_params and not initial_cases:
+        return html.P('No scenario set yet.', style={'color': '#6c757d', 'fontStyle': 'italic'})
+
+    content = []
+
+    # Disease parameters section
+    if disease_params:
+        if disease_params['model_type'].startswith('seatird-'):
+            content.extend(
+                [
+                    html.H6(
+                        'Disease Parameters', style={'fontWeight': 'bold', 'marginBottom': '10px'}
+                    ),
+                    html.P(f'Scenario: {disease_params.get("scenario_name", "Custom")}'),
+                    html.P(f'Reproduction Number: {disease_params.get("R0", 0)}'),
+                    html.P(f'Latent Period: {disease_params.get("tau", 0)} days'),
+                    html.P(f'Asymptomatic Period: {disease_params.get("kappa", 0)} days'),
+                    html.P(f'Symptomatic Period: {disease_params.get("gamma", 0)} days'),
+                    html.P('Case Fatality Rate:'),
+                    html.Ul(
+                        [
+                            html.Li(f'0-4: {disease_params.get("nu", [0, 0, 0, 0, 0])[0]:.9f}'),
+                            html.Li(f'5-24: {disease_params.get("nu", [0, 0, 0, 0, 0])[1]:.9f}'),
+                            html.Li(f'25-49: {disease_params.get("nu", [0, 0, 0, 0, 0])[2]:.9f}'),
+                            html.Li(f'50-64: {disease_params.get("nu", [0, 0, 0, 0, 0])[3]:.9f}'),
+                            html.Li(f'65+: {disease_params.get("nu", [0, 0, 0, 0, 0])[4]:.9f}'),
+                        ],
+                        style={'marginLeft': '20px', 'marginBottom': '15px'},
+                    ),
+                ]
+            )
+        if disease_params['model_type'].startswith('seirs-'):
+            content.extend(
+                [
+                    html.H6(
+                        'Disease Parameters', style={'fontWeight': 'bold', 'marginBottom': '10px'}
+                    ),
+                    html.P(f'Scenario: {disease_params.get("scenario_name", "Custom")}'),
+                    html.P(f'Reproduction Number: {disease_params.get("R0", 0)}'),
+                    html.P(f'Latent Period: {disease_params.get("tau", 0)} days'),
+                    html.P(f'Infectious Period: {disease_params.get("infectious_period", 0)} days'),
+                    html.P(f'Immune Period: {disease_params.get("immune_period", 0)} days'),
+                ]
+            )
+
+    # Initial cases section
+    if initial_cases:
+        content.extend(
+            [
+                html.H6('Initial Cases', style={'fontWeight': 'bold', 'marginBottom': '10px'}),
+                html.Ul(
+                    [
+                        html.Li(f'{case["cases"]} aged {case["age_group"]} in {case["location"]}')
+                        for case in initial_cases
+                    ],
+                    style={'marginLeft': '20px'},
+                ),
+            ]
+        )
+
+    if not content:
+        return html.P('No scenario set yet.', style={'color': '#6c757d', 'fontStyle': 'italic'})
+
+    return html.Div(content)
+
+
+def _render_npi_table(npi_list):
+    if not npi_list:
+        return dash.html.P('No NPIs added yet.', style={'color': '#6c757d', 'fontStyle': 'italic'})
+
+    rows = []
+    for i, npi in enumerate(npi_list):
+        rows.append(
+            dash.html.Tr(
+                [
+                    dash.html.Td(npi.get('name', '')),
+                    dash.html.Td(f'Day {npi.get("start", "")} for {npi.get("duration", "")} days'),
+                    dash.html.Td(', '.join(npi.get('location', []))),
+                    dash.html.Td(
+                        dash.html.Button(
+                            'Remove',
+                            id={'type': 'remove-npi-btn', 'index': i},
+                            className='btn btn-sm btn-danger',
+                        )
+                    ),
+                ]
+            )
+        )
+
+    return dash.html.Table(
+        [
+            dash.html.Thead(
+                dash.html.Tr(
+                    [
+                        dash.html.Th('NPI'),
+                        dash.html.Th('Timing'),
+                        dash.html.Th('Location'),
+                        dash.html.Th('Action'),
+                    ]
+                )
+            ),
+            dash.html.Tbody(rows),
+        ],
+        className='table table-striped',
+    )
+
+
 # ============================================================================
 # LAYOUT
 # ============================================================================
@@ -2386,75 +2495,6 @@ def switch_displayed_tab(
         return content, 'tab-btn active-tab', 'tab-btn', 'scenario'
 
 
-# TODO: move this out of callbacks section
-def create_scenario_display(disease_params, initial_cases):
-    """Create scenario tab display content"""
-    if not disease_params and not initial_cases:
-        return html.P('No scenario set yet.', style={'color': '#6c757d', 'fontStyle': 'italic'})
-
-    content = []
-
-    # Disease parameters section
-    if disease_params:
-        if disease_params['model_type'].startswith('seatird-'):
-            content.extend(
-                [
-                    html.H6(
-                        'Disease Parameters', style={'fontWeight': 'bold', 'marginBottom': '10px'}
-                    ),
-                    html.P(f'Scenario: {disease_params.get("scenario_name", "Custom")}'),
-                    html.P(f'Reproduction Number: {disease_params.get("R0", 0)}'),
-                    html.P(f'Latent Period: {disease_params.get("tau", 0)} days'),
-                    html.P(f'Asymptomatic Period: {disease_params.get("kappa", 0)} days'),
-                    html.P(f'Symptomatic Period: {disease_params.get("gamma", 0)} days'),
-                    html.P('Case Fatality Rate:'),
-                    html.Ul(
-                        [
-                            html.Li(f'0-4: {disease_params.get("nu", [0, 0, 0, 0, 0])[0]:.9f}'),
-                            html.Li(f'5-24: {disease_params.get("nu", [0, 0, 0, 0, 0])[1]:.9f}'),
-                            html.Li(f'25-49: {disease_params.get("nu", [0, 0, 0, 0, 0])[2]:.9f}'),
-                            html.Li(f'50-64: {disease_params.get("nu", [0, 0, 0, 0, 0])[3]:.9f}'),
-                            html.Li(f'65+: {disease_params.get("nu", [0, 0, 0, 0, 0])[4]:.9f}'),
-                        ],
-                        style={'marginLeft': '20px', 'marginBottom': '15px'},
-                    ),
-                ]
-            )
-        if disease_params['model_type'].startswith('seirs-'):
-            content.extend(
-                [
-                    html.H6(
-                        'Disease Parameters', style={'fontWeight': 'bold', 'marginBottom': '10px'}
-                    ),
-                    html.P(f'Scenario: {disease_params.get("scenario_name", "Custom")}'),
-                    html.P(f'Reproduction Number: {disease_params.get("R0", 0)}'),
-                    html.P(f'Latent Period: {disease_params.get("tau", 0)} days'),
-                    html.P(f'Infectious Period: {disease_params.get("infectious_period", 0)} days'),
-                    html.P(f'Immune Period: {disease_params.get("immune_period", 0)} days'),
-                ]
-            )
-
-    # Initial cases section
-    if initial_cases:
-        content.extend(
-            [
-                html.H6('Initial Cases', style={'fontWeight': 'bold', 'marginBottom': '10px'}),
-                html.Ul(
-                    [
-                        html.Li(f'{case["cases"]} aged {case["age_group"]} in {case["location"]}')
-                        for case in initial_cases
-                    ],
-                    style={'marginLeft': '20px'},
-                ),
-            ]
-        )
-
-    if not content:
-        return html.P('No scenario set yet.', style={'color': '#6c757d', 'fontStyle': 'italic'})
-
-    return html.Div(content)
-
-
 # Save intervention callbacks
 # NPI callback
 @callback(
@@ -2540,48 +2580,6 @@ def manage_npis(
 
     # Fallback: nothing changed
     return current_npi_data, _render_npi_table(current_npi_data)
-
-
-# TODO: move this out of callbacks section
-def _render_npi_table(npi_list):
-    if not npi_list:
-        return dash.html.P('No NPIs added yet.', style={'color': '#6c757d', 'fontStyle': 'italic'})
-
-    rows = []
-    for i, npi in enumerate(npi_list):
-        rows.append(
-            dash.html.Tr(
-                [
-                    dash.html.Td(npi.get('name', '')),
-                    dash.html.Td(f'Day {npi.get("start", "")} for {npi.get("duration", "")} days'),
-                    dash.html.Td(', '.join(npi.get('location', []))),
-                    dash.html.Td(
-                        dash.html.Button(
-                            'Remove',
-                            id={'type': 'remove-npi-btn', 'index': i},
-                            className='btn btn-sm btn-danger',
-                        )
-                    ),
-                ]
-            )
-        )
-
-    return dash.html.Table(
-        [
-            dash.html.Thead(
-                dash.html.Tr(
-                    [
-                        dash.html.Th('NPI'),
-                        dash.html.Th('Timing'),
-                        dash.html.Th('Location'),
-                        dash.html.Th('Action'),
-                    ]
-                )
-            ),
-            dash.html.Tbody(rows),
-        ],
-        className='table table-striped',
-    )
 
 
 @callback(
