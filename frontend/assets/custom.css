@@ -228,14 +228,29 @@ body {
    sim-footer
    ============================================ */
 
+.sim-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: white;
+    border-top: 1px solid #dee2e6;
+    z-index: 999;
+    height: 70px;
+}
+
 .sim-footer__controls {
     display: flex;
     align-items: center;
-    justify-content: center;
-    padding: 20px;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    justify-content: flex-start;
+    padding: 15px 20px;
+    height: 100%;
+}
+
+.sim-footer__slider {
+    width: 100%;
+    display: inline-block;
+    vertical-align: middle;
 }
 
 .sim-footer__play-btn {
