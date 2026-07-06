@@ -150,6 +150,51 @@ body {
 }
 
 /* ============================================
+   model-setup
+   ============================================ */
+
+.model-setup {
+    padding: 15px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 15px;
+}
+
+.model-setup__title {
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #102c41;
+    color: #102c41;
+    font-weight: bold;
+}
+
+.model-setup__desc {
+    font-size: 12px;
+    color: #666;
+    padding: 8px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+.model-setup__apply-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #102c41;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.model-setup__apply-btn:hover {
+    background-color: #1a3f5c;
+}
+
+/* ============================================
    scenario-menu
    ============================================ */
 

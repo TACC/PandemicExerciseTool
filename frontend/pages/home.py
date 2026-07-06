@@ -720,16 +720,7 @@ def create_model_state_selection_panel():
             # Panel Header
             html.Div(
                 [
-                    html.H6(
-                        'Simulation Setup',
-                        style={
-                            'marginBottom': '15px',
-                            'paddingBottom': '10px',
-                            'borderBottom': '2px solid #102c41',
-                            'color': '#102c41',
-                            'fontWeight': 'bold',
-                        },
-                    )
+                    html.H6('Simulation Setup', className='model-setup__title')
                 ]
             ),
             # FEATURE 1: Model Selection Dropdown
@@ -742,19 +733,12 @@ def create_model_state_selection_panel():
                         value='seirs-deterministic',
                         clearable=True,
                         placeholder='Select a disease model...',
-                        style={'marginBottom': '8px'},
+                        className='mb-2',
                     ),
                     # Model description display
                     html.Div(
                         id='model-description-display',
-                        style={
-                            'fontSize': '12px',
-                            'color': '#666',
-                            'padding': '8px',
-                            'backgroundColor': '#f8f9fa',
-                            'borderRadius': '4px',
-                            'marginBottom': '15px',
-                        },
+                        className='model-setup__desc',
                     ),
                 ]
             ),
@@ -769,7 +753,7 @@ def create_model_state_selection_panel():
                         clearable=True,
                         searchable=True,
                         placeholder='Select a state...',
-                        style={'marginBottom': '15px'},
+                        className='mb-3',
                     ),
                 ]
             ),
@@ -778,28 +762,12 @@ def create_model_state_selection_panel():
                 '✓ Apply Selection',
                 id='apply-model-state-btn',
                 n_clicks=0,
-                style={
-                    'width': '100%',
-                    'padding': '10px',
-                    'backgroundColor': '#102c41',
-                    'color': 'white',
-                    'border': 'none',
-                    'borderRadius': '5px',
-                    'cursor': 'pointer',
-                    'fontWeight': 'bold',
-                    'marginBottom': '10px',
-                },
+                className='model-setup__apply-btn',
             ),
             # Status message area
-            html.Div(id='model-state-status-message', style={'marginBottom': '15px'}),
+            html.Div(id='model-state-status-message', className='mb-3'),
         ],
-        style={
-            'padding': '15px',
-            'backgroundColor': 'white',
-            'borderRadius': '8px',
-            'boxShadow': '0 2px 4px rgba(0,0,0,0.1)',
-            'marginBottom': '15px',
-        },
+        className='model-setup',
     )
 
 
