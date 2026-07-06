@@ -445,9 +445,10 @@ initial_cases_modal = dbc.Modal(
                             id='initial-location',
                             options=[],
                             placeholder='Search for a location...',
-                            style={'marginBottom': '10px'},
+                            className='mb-2',
                         ),
-                    ]
+                    ],
+                    className='modal-form__field',
                 ),
                 create_labeled_input('Number of Cases', 'initial-cases-count', type='number', value=100, min=1),
                 html.Div(
@@ -457,15 +458,15 @@ initial_cases_modal = dbc.Modal(
                             id='initial-age-group',
                             options=AGE_GROUPS,
                             value='18-49 years',
-                            style={'marginBottom': '15px'},
+                            className='mb-3',
                         ),
-                    ]
+                    ],
+                    className='modal-form__field',
                 ),
                 html.Button(
                     'Add Initial Case',
                     id='add-initial-case-btn',
-                    className='btn btn-secondary',
-                    style={'marginBottom': '15px'},
+                    className='btn btn-secondary mb-3',
                 ),
                 # Table showing added initial cases
                 html.Div(id='initial-cases-table'),
@@ -509,15 +510,15 @@ npi_modal = dbc.Modal(
                             options=[],
                             value=['Statewide'],
                             multi=True,
-                            style={'marginBottom': '15px'},
+                            className='mb-3',
                         ),
-                    ]
+                    ],
+                    className='modal-form__field',
                 ),
                 html.Button(
                     'Add NPI',
                     id='add-npi-btn',
-                    className='btn btn-secondary',
-                    style={'marginBottom': '15px'},
+                    className='btn btn-secondary mb-3',
                 ),
                 # Table showing added NPIs
                 html.Div(id='npi-table'),
@@ -538,9 +539,7 @@ antivirals_modal = dbc.Modal(
             [
                 create_labeled_input('Antiviral Effectiveness', 'antiviral-effectiveness', type='number', value=0.15, min=0, max=1, step=0.01),
                 create_labeled_input('Antiviral Wastage Factor (days)', 'antiviral-wastage', type='number', value=60, min=0, max=1000, step=1),
-                html.H6(
-                    'Stockpile Management', style={'fontWeight': 'bold', 'marginBottom': '10px'}
-                ),
+                html.H6('Stockpile Management', className='fw-bold mb-2'),
                 create_labeled_input('New Stockpile Day', 'antiviral-stockpile-day', type='number', value=50, min=1, max=1000, step=1),
                 create_labeled_input('New Stockpile Amount', 'antiviral-stockpile-amount', type='number', value=10000, min=0, step=1),
             ]
@@ -568,10 +567,11 @@ vaccines_modal = dbc.Modal(
                             ],
                             placeholder='Select a vaccine model...',
                             clearable=True,
-                            style={'marginBottom': '15px'},
+                            className='mb-3',
                             id='vaccine-model-dropdown',
                         ),
-                    ]
+                    ],
+                    className='modal-form__field',
                 ),
                 html.Hr(),
                 html.Div(
@@ -584,7 +584,7 @@ vaccines_modal = dbc.Modal(
                                 dbc.Label('Vaccine Priority Groups', class_name='fw-bold'),
                                 html.Small(
                                     'Select age specific priority groups for vaccine distribution',
-                                    style={'color': '#6c757d', 'display': 'block', 'marginBottom': '10px'},
+                                    className='modal-form__subtitle',
                                 ),
                                 dcc.Checklist(
                                     id='vaccine-age-risk-priority-groups',
@@ -604,7 +604,7 @@ vaccines_modal = dbc.Modal(
                                     },
                                 ),
                             ],
-                            style={'marginBottom': '15px'},
+                            className='modal-form__field mb-3',
                         ),
                         html.Div(
                             [
@@ -686,15 +686,14 @@ vaccines_modal = dbc.Modal(
                         dbc.Label('Vaccine Stockpile', class_name='fw-bold'),
                         html.Small(
                             'Vaccine reserves available beginning on a specified day. Negative days are allowed to vaccinate people before epidemic begins on day 0.',
-                            style={'color': '#6c757d', 'display': 'block', 'marginBottom': '10px'},
+                            className='modal-form__subtitle',
                         ),
                         create_labeled_input('Stockpile Day', 'vac-stockpile-day', type='number', min=-300, max=300, placeholder='Specify stockpile day...'),
                         create_labeled_input('Stockpile Amount', 'vac-stockpile-amount', type='number', min=1, placeholder='Specify stockpile amount...'),
                         html.Button(
                             'Add Vaccine Stockpile',
                             id='add-vac-stockpile-btn',
-                            className='btn btn-secondary',
-                            style={'marginBottom': '15px'},
+                            className='btn btn-secondary mb-3',
                         ),
                         html.Div(id='vac-stockpile-table'),
                     ],
