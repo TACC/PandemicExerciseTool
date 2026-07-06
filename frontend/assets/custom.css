@@ -231,6 +231,21 @@ body {
 }
 
 /* ============================================
+   modal-form
+   ============================================ */
+
+.modal-form__field {
+    margin-bottom: 0;
+}
+
+.modal-form__subtitle {
+    font-size: 12px;
+    color: #6c757d;
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* ============================================
    Dash component overrides
    ============================================ */
 

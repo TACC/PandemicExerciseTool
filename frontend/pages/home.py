@@ -379,10 +379,11 @@ def create_modal_footer(prefix: str):
 def create_labeled_input(label: str, input_id: str, **kwargs):
     """Create a plain Label + full-width Input wrapped in a Div."""
     return html.Div(
-        [
+        className='modal-form__field',
+        children=[
             dbc.Label(label),
             dbc.Input(id=input_id, class_name='mb-3', **kwargs),
-        ]
+        ],
     )
 
 
@@ -401,12 +402,18 @@ def create_bold_label_subtitle_number_input(label: str, subtitle: str, inputs: l
             class_name='mb-2',
         )
         if spec['input_label'] is not None:
-            return html.Div([dbc.Label(spec['input_label'], class_name='small'), field])
+            return html.Div(
+                [dbc.Label(spec['input_label'], class_name='modal-form__label small'), field],
+            )
         return field
 
     return html.Div(
-        [dbc.Label(label, class_name='fw-bold'), html.Small(subtitle, style={'color': '#6c757d'})]
-        + [make_input(spec) for spec in inputs]
+        className='modal-form__field',
+        children=[
+            dbc.Label(label, class_name='modal-form__label fw-bold'),
+            html.Small(subtitle, className='modal-form__subtitle'),
+        ]
+        + [make_input(spec) for spec in inputs],
     )
 
 
