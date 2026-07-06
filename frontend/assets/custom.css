@@ -159,50 +159,6 @@ body {
     margin: 10px 0;
 }
 
-/* Bootstrap table override -- commented out to test Bootstrap defaults
-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
-}
-
-table th, table td {
-    padding: 8px 12px;
-    text-align: left;
-    border-bottom: 1px solid #dee2e6;
-}
-
-table th {
-    background-color: #f8f9fa;
-    font-weight: 600;
-}
-*/
-
-/* Bootstrap modal override -- commented out to test Bootstrap defaults
-.modal-content {
-    border-radius: 8px;
-}
-
-.modal-header {
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #dee2e6;
-}
-
-.modal-body {
-    padding: 20px;
-}
-*/
-
-/* Bootstrap responsive grid override -- commented out to test Bootstrap defaults
-@media (max-width: 992px) {
-    .col-lg-2, .col-lg-3, .col-lg-7 {
-        flex: 0 0 100%;
-        max-width: 100%;
-        margin-bottom: 20px;
-    }
-}
-*/
-
 /* Graph container styles */
 .js-plotly-plot, .plotly {
     border-radius: 8px;
@@ -310,13 +266,6 @@ table th {
     background-color: white;
     min-height: 200px;
 }
-
-/* Bootstrap modal-lg override -- commented out to test Bootstrap defaults
-.modal-lg {
-    max-width: 800px !important;
-}
-*/
-
 
 /* Age group specific styling */
 .age-group-inputs {
@@ -441,4 +390,14 @@ small {
 .left-panel {
     scrollbar-width: thin;
     scrollbar-color: #888 #f1f1f1;
+}
+
+/* Hide inner scrollbar on county table */
+#spread-table::-webkit-scrollbar {
+    display: none;
+}
+
+#spread-table {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }

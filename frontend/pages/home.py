@@ -993,8 +993,8 @@ def create_home_layout():
                         ],
                         className='col-lg-7',
                         style={
-                            'flex': '0 0 58%',
-                            'maxWidth': '58%',
+                            'flex': '0 0 52%',
+                            'maxWidth': '52%',
                             'height': '100%',
                             'minHeight': 0,
                         },
@@ -1046,8 +1046,8 @@ def create_home_layout():
                         ],
                         className='col-lg-3',
                         style={
-                            'flex': '0 0 22%',
-                            'maxWidth': '22%',
+                            'flex': '0 0 28%',
+                            'maxWidth': '28%',
                             'height': '100%',
                             'minHeight': 0,
                         },
