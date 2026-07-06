@@ -144,7 +144,7 @@ def _add_county_polygon(lons, lats, color, county_name, infections=None):
     if not infections:
         text = f'{county_name} - No data yet - click PLAY to start simulation'
     else:
-        text = f'{county_name}<br>Infectious: {infections.infected:,} ({infections.infected_pct:.1f}%)<br>Recovered: {infections.deceased:,} ({infections.deceased_pct:.1f}%)'
+        text = f'{county_name}<br>Infectious: {infections["infected"]:,} ({infections["infected_pct"]:.1f}%)<br>Recovered: {infections["deceased"]:,} ({infections["deceased_pct"]:.1f}%)'
     return go.Scatter(
         x=lons,
         y=lats,
@@ -708,7 +708,186 @@ vaccines_modal = dbc.Modal(
                     ]
                 ),
                 html.Hr(),
-                html.Div(id='vaccine-parameter-body'),
+                html.Div(
+                    id='vaccine-parameter-body',
+                    style={'display': 'none'},
+                    children=[
+                        # Vaccine priority groups
+                        html.Div(
+                            [
+                                html.Label('Vaccine Priority Groups', style={'fontWeight': 'bold'}),
+                                html.Small(
+                                    'Select age specific priority groups for vaccine distribution',
+                                    style={'color': '#6c757d', 'display': 'block', 'marginBottom': '10px'},
+                                ),
+                                dcc.Checklist(
+                                    id='vaccine-age-risk-priority-groups',
+                                    options=[
+                                        {'label': '0-4 years', 'value': 'vac-arpg-0-4'},
+                                        {'label': '5-17 years', 'value': 'vac-arpg-5-17'},
+                                        {'label': '18-49 years', 'value': 'vac-arpg-18-49'},
+                                        {'label': '50-64 years', 'value': 'vac-arpg-50-64'},
+                                        {'label': '65+ years', 'value': 'vac-arpg-65-plus'},
+                                    ],
+                                    value=['vac-arpg-18-49'],
+                                    inputStyle={'marginRight': '10px'},
+                                    labelStyle={
+                                        'display': 'flex',
+                                        'align-items': 'center',
+                                        'fontSize': '14px',
+                                    },
+                                ),
+                            ],
+                            style={'marginBottom': '15px'},
+                        ),
+                        html.Div(
+                            [
+                                html.Label('Vaccine Half Life (days)', style={'fontWeight': 'bold'}),
+                                html.Small(
+                                    'Number of days required to clear half the vaccine from the body'
+                                ),
+                                dcc.Input(
+                                    id='vaccine-half-life',
+                                    type='number',
+                                    value=60,
+                                    min=0,
+                                    max=1000,
+                                    step=1,
+                                    style={'width': '100%', 'marginBottom': '15px'},
+                                ),
+                            ],
+                            style={'display': 'none'},
+                        ),  ### This is currently hidden ###
+                        html.Div(
+                            [
+                                html.Label('Vaccine Capacity (proportion)', style={'fontWeight': 'bold'}),
+                                html.Small(
+                                    'Proportion of population the jurisdiction has the capacity to vaccinate per day, from 0 to 1'
+                                ),
+                                dcc.Input(
+                                    id='vaccine-capacity',
+                                    type='number',
+                                    value=0.5,
+                                    min=0,
+                                    max=1,
+                                    step=0.01,
+                                    style={'width': '100%', 'marginBottom': '15px'},
+                                ),
+                            ]
+                        ),
+                        html.Div(
+                            [
+                                html.Label('Vaccine Effectiveness Lag (days)', style={'fontWeight': 'bold'}),
+                                html.Small(
+                                    'Number of days before vaccine starts to take effect. You can change this to alter your vaccine release time series as well.'
+                                ),
+                                dcc.Input(
+                                    id='vaccine-effectiveness-lag',
+                                    type='number',
+                                    value=14,
+                                    min=0,
+                                    max=100,
+                                    step=1,
+                                    style={'width': '100%', 'marginBottom': '15px'},
+                                ),
+                            ]
+                        ),
+                        # Age-specific effectiveness
+                        html.Div(
+                            [
+                                html.Label('Vaccine effectiveness (proportion)', style={'fontWeight': 'bold'}),
+                                html.Small(
+                                    'Age-specific effectiveness of vaccine against infection. 0 is not effective and 1 is completely effective',
+                                    style={'color': '#6c757d', 'display': 'block', 'marginBottom': '10px'},
+                                ),
+                                html.Div([
+                                    html.Label('0-4 years', style={'fontSize': '14px'}),
+                                    dcc.Input(id='vac-eff-0-4', type='number', value=0.4, step=0.01, min=0, max=1, style={'width': '100%', 'marginBottom': '5px'}),
+                                ]),
+                                html.Div([
+                                    html.Label('5-17 years', style={'fontSize': '14px'}),
+                                    dcc.Input(id='vac-eff-5-17', type='number', value=0.35, step=0.01, min=0, max=1, style={'width': '100%', 'marginBottom': '5px'}),
+                                ]),
+                                html.Div([
+                                    html.Label('18-49 years', style={'fontSize': '14px'}),
+                                    dcc.Input(id='vac-eff-18-49', type='number', value=0.2, step=0.01, min=0, max=1, style={'width': '100%', 'marginBottom': '5px'}),
+                                ]),
+                                html.Div([
+                                    html.Label('50-64 years', style={'fontSize': '14px'}),
+                                    dcc.Input(id='vac-eff-50-64', type='number', value=0.25, step=0.01, min=0, max=1, style={'width': '100%', 'marginBottom': '5px'}),
+                                ]),
+                                html.Div([
+                                    html.Label('65+ years', style={'fontSize': '14px'}),
+                                    dcc.Input(id='vac-eff-65-plus', type='number', value=0.1, step=0.01, min=0, max=1, style={'width': '100%', 'marginBottom': '15px'}),
+                                ]),
+                            ]
+                        ),
+                        # Age-specific adherence
+                        html.Div(
+                            [
+                                html.Label('Vaccine adherence (proportion)', style={'fontWeight': 'bold'}),
+                                html.Small(
+                                    'Age-specific proportion of the population that will seek vaccination. 0 is no one and 1 is completely adherent',
+                                    style={'color': '#6c757d', 'display': 'block', 'marginBottom': '10px'},
+                                ),
+                                html.Div([
+                                    html.Label('0-4 years', style={'fontSize': '14px'}),
+                                    dcc.Input(id='vac-adh-0-4', type='number', value=0.4, step=0.01, min=0, max=1, style={'width': '100%', 'marginBottom': '5px'}),
+                                ]),
+                                html.Div([
+                                    html.Label('5-17 years', style={'fontSize': '14px'}),
+                                    dcc.Input(id='vac-adh-5-17', type='number', value=0.35, step=0.01, min=0, max=1, style={'width': '100%', 'marginBottom': '5px'}),
+                                ]),
+                                html.Div([
+                                    html.Label('18-49 years', style={'fontSize': '14px'}),
+                                    dcc.Input(id='vac-adh-18-49', type='number', value=0.2, step=0.01, min=0, max=1, style={'width': '100%', 'marginBottom': '5px'}),
+                                ]),
+                                html.Div([
+                                    html.Label('50-64 years', style={'fontSize': '14px'}),
+                                    dcc.Input(id='vac-adh-50-64', type='number', value=0.25, step=0.01, min=0, max=1, style={'width': '100%', 'marginBottom': '5px'}),
+                                ]),
+                                html.Div([
+                                    html.Label('65+ years', style={'fontSize': '14px'}),
+                                    dcc.Input(id='vac-adh-65-plus', type='number', value=0.1, step=0.01, min=0, max=1, style={'width': '100%', 'marginBottom': '15px'}),
+                                ]),
+                            ]
+                        ),
+                        # Vaccine stockpile section
+                        html.Label(['Vaccine Stockpile'], style={'fontWeight': 'bold'}),
+                        html.Small(
+                            'Vaccine reserves available beginning on a specified day. Negative days are allowed to vaccinate people before epidemic begins on day 0.',
+                            style={'color': '#6c757d', 'display': 'block', 'marginBottom': '10px'},
+                        ),
+                        html.Div([
+                            html.Label('Stockpile Day'),
+                            dcc.Input(
+                                id='vac-stockpile-day',
+                                type='number',
+                                min=-300,
+                                max=300,
+                                placeholder='Specify stockpile day...',
+                                style={'width': '100%', 'marginBottom': '10px'},
+                            ),
+                        ]),
+                        html.Div([
+                            html.Label('Stockpile Amount'),
+                            dcc.Input(
+                                id='vac-stockpile-amount',
+                                type='number',
+                                min=1,
+                                placeholder='Specify stockpile amount...',
+                                style={'width': '100%', 'marginBottom': '10px'},
+                            ),
+                        ]),
+                        html.Button(
+                            'Add Vaccine Stockpile',
+                            id='add-vac-stockpile-btn',
+                            className='btn btn-secondary',
+                            style={'marginBottom': '15px'},
+                        ),
+                        html.Div(id='vac-stockpile-table'),
+                    ],
+                ),
             ]
         ),
         dbc.ModalFooter(
@@ -1853,301 +2032,14 @@ def update_disease_param_modal_body(selected_value, preset, is_open):
 
 
 @callback(
-    Output('vaccine-parameter-body', 'children'),
+    Output('vaccine-parameter-body', 'style'),
     Input('vaccine-model-dropdown', 'value'),
     prevent_initial_call=True,
 )
 def update_vaccines_modal_body(selected_value):
     if selected_value == 'stockpile-age-risk':
-        return html.Div(
-            [
-                # Vaccine priority groups
-                html.Div(
-                    [
-                        html.Label('Vaccine Priority Groups', style={'fontWeight': 'bold'}),
-                        html.Small(
-                            'Select age specific priority groups for vaccine distribution',
-                            style={'color': '#6c757d', 'display': 'block', 'marginBottom': '10px'},
-                        ),
-                        dcc.Checklist(
-                            id='vaccine-age-risk-priority-groups',
-                            options=[
-                                {'label': '0-4 years', 'value': 'vac-arpg-0-4'},
-                                {'label': '5-17 years', 'value': 'vac-arpg-5-17'},
-                                {'label': '18-49 years', 'value': 'vac-arpg-18-49'},
-                                {'label': '50-64 years', 'value': 'vac-arpg-50-64'},
-                                {'label': '65+ years', 'value': 'vac-arpg-65-plus'},
-                            ],
-                            value=['vac-arpg-18-49'],
-                            inputStyle={'marginRight': '10px'},
-                            labelStyle={
-                                'display': 'flex',
-                                'align-items': 'center',
-                                'fontSize': '14px',
-                            },
-                        ),
-                    ],
-                    style={'marginBottom': '15px'},
-                ),
-                html.Div(
-                    [
-                        html.Label('Vaccine Half Life (days)', style={'fontWeight': 'bold'}),
-                        html.Small(
-                            'Number of days required to clear half the vaccine from the body'
-                        ),
-                        dcc.Input(
-                            id='vaccine-half-life',
-                            type='number',
-                            value=60,
-                            min=0,
-                            max=1000,
-                            step=1,
-                            style={'width': '100%', 'marginBottom': '15px'},
-                        ),
-                    ],
-                    style={'display': 'none'},
-                ),  ### This is currently hidden ###
-                html.Div(
-                    [
-                        html.Label('Vaccine Capacity (proportion)', style={'fontWeight': 'bold'}),
-                        html.Small(
-                            'Proportion of population the jurisdiction has the capacity to vaccinate per day, from 0 to 1'
-                        ),
-                        dcc.Input(
-                            id='vaccine-capacity',
-                            type='number',
-                            value=0.5,
-                            min=0,
-                            max=1,
-                            step=0.01,
-                            style={'width': '100%', 'marginBottom': '15px'},
-                        ),
-                    ]
-                ),
-                html.Div(
-                    [
-                        html.Label(
-                            'Vaccine Effectiveness Lag (days)', style={'fontWeight': 'bold'}
-                        ),
-                        html.Small(
-                            'Number of days before vaccine starts to take effect. You can change this to alter your vaccine release time series as well.'
-                        ),
-                        dcc.Input(
-                            id='vaccine-effectiveness-lag',
-                            type='number',
-                            value=14,
-                            min=0,
-                            max=100,
-                            step=1,
-                            style={'width': '100%', 'marginBottom': '15px'},
-                        ),
-                    ]
-                ),
-                # Age-specific effectiveness
-                html.Div(
-                    [
-                        html.Label(
-                            'Vaccine effectiveness (proportion)', style={'fontWeight': 'bold'}
-                        ),
-                        html.Small(
-                            'Age-specific effectiveness of vaccine against infection. 0 is not effective and 1 is completely effective',
-                            style={'color': '#6c757d', 'display': 'block', 'marginBottom': '10px'},
-                        ),
-                        html.Div(
-                            [
-                                html.Label('0-4 years', style={'fontSize': '14px'}),
-                                dcc.Input(
-                                    id='vac-eff-0-4',
-                                    type='number',
-                                    value=0.4,
-                                    step=0.01,
-                                    min=0,
-                                    max=1,
-                                    style={'width': '100%', 'marginBottom': '5px'},
-                                ),
-                            ]
-                        ),
-                        html.Div(
-                            [
-                                html.Label('5-17 years', style={'fontSize': '14px'}),
-                                dcc.Input(
-                                    id='vac-eff-5-17',
-                                    type='number',
-                                    value=0.35,
-                                    step=0.01,
-                                    min=0,
-                                    max=1,
-                                    style={'width': '100%', 'marginBottom': '5px'},
-                                ),
-                            ]
-                        ),
-                        html.Div(
-                            [
-                                html.Label('18-49 years', style={'fontSize': '14px'}),
-                                dcc.Input(
-                                    id='vac-eff-18-49',
-                                    type='number',
-                                    value=0.2,
-                                    step=0.01,
-                                    min=0,
-                                    max=1,
-                                    style={'width': '100%', 'marginBottom': '5px'},
-                                ),
-                            ]
-                        ),
-                        html.Div(
-                            [
-                                html.Label('50-64 years', style={'fontSize': '14px'}),
-                                dcc.Input(
-                                    id='vac-eff-50-64',
-                                    type='number',
-                                    value=0.25,
-                                    step=0.01,
-                                    min=0,
-                                    max=1,
-                                    style={'width': '100%', 'marginBottom': '5px'},
-                                ),
-                            ]
-                        ),
-                        html.Div(
-                            [
-                                html.Label('65+ years', style={'fontSize': '14px'}),
-                                dcc.Input(
-                                    id='vac-eff-65-plus',
-                                    type='number',
-                                    value=0.1,
-                                    step=0.01,
-                                    min=0,
-                                    max=1,
-                                    style={'width': '100%', 'marginBottom': '15px'},
-                                ),
-                            ]
-                        ),
-                    ]
-                ),
-                # Age-specific adherence
-                html.Div(
-                    [
-                        html.Label('Vaccine adherence (proportion)', style={'fontWeight': 'bold'}),
-                        html.Small(
-                            'Age-specific proportion of the population that will seek vaccination. 0 is no one and 1 is completely adherent',
-                            style={'color': '#6c757d', 'display': 'block', 'marginBottom': '10px'},
-                        ),
-                        html.Div(
-                            [
-                                html.Label('0-4 years', style={'fontSize': '14px'}),
-                                dcc.Input(
-                                    id='vac-adh-0-4',
-                                    type='number',
-                                    value=0.4,
-                                    step=0.01,
-                                    min=0,
-                                    max=1,
-                                    style={'width': '100%', 'marginBottom': '5px'},
-                                ),
-                            ]
-                        ),
-                        html.Div(
-                            [
-                                html.Label('5-17 years', style={'fontSize': '14px'}),
-                                dcc.Input(
-                                    id='vac-adh-5-17',
-                                    type='number',
-                                    value=0.35,
-                                    step=0.01,
-                                    min=0,
-                                    max=1,
-                                    style={'width': '100%', 'marginBottom': '5px'},
-                                ),
-                            ]
-                        ),
-                        html.Div(
-                            [
-                                html.Label('18-49 years', style={'fontSize': '14px'}),
-                                dcc.Input(
-                                    id='vac-adh-18-49',
-                                    type='number',
-                                    value=0.2,
-                                    step=0.01,
-                                    min=0,
-                                    max=1,
-                                    style={'width': '100%', 'marginBottom': '5px'},
-                                ),
-                            ]
-                        ),
-                        html.Div(
-                            [
-                                html.Label('50-64 years', style={'fontSize': '14px'}),
-                                dcc.Input(
-                                    id='vac-adh-50-64',
-                                    type='number',
-                                    value=0.25,
-                                    step=0.01,
-                                    min=0,
-                                    max=1,
-                                    style={'width': '100%', 'marginBottom': '5px'},
-                                ),
-                            ]
-                        ),
-                        html.Div(
-                            [
-                                html.Label('65+ years', style={'fontSize': '14px'}),
-                                dcc.Input(
-                                    id='vac-adh-65-plus',
-                                    type='number',
-                                    value=0.1,
-                                    step=0.01,
-                                    min=0,
-                                    max=1,
-                                    style={'width': '100%', 'marginBottom': '15px'},
-                                ),
-                            ]
-                        ),
-                    ]
-                ),
-                # Vaccine stockpile section
-                html.Label(['Vaccine Stockpile'], style={'fontWeight': 'bold'}),
-                html.Small(
-                    'Vaccine reserves available beginning on a specified day. Negative days are allowed to vaccinate people before epidemic begins on day 0.',
-                    style={'color': '#6c757d', 'display': 'block', 'marginBottom': '10px'},
-                ),
-                html.Div(
-                    [
-                        html.Label('Stockpile Day'),
-                        dcc.Input(
-                            id='vac-stockpile-day',
-                            type='number',
-                            min=-300,
-                            max=300,
-                            placeholder='Specify stockpile day...',
-                            style={'width': '100%', 'marginBottom': '10px'},
-                        ),
-                    ]
-                ),
-                html.Div(
-                    [
-                        html.Label('Stockpile Amount'),
-                        dcc.Input(
-                            id='vac-stockpile-amount',
-                            type='number',
-                            min=1,
-                            placeholder='Specify stockpile amount...',
-                            style={'width': '100%', 'marginBottom': '10px'},
-                        ),
-                    ]
-                ),
-                html.Button(
-                    'Add Vaccine Stockpile',
-                    id='add-vac-stockpile-btn',
-                    className='btn btn-secondary',
-                    style={'marginBottom': '15px'},
-                ),
-                # Table showing added vaccine stockpiles
-                html.Div(id='vac-stockpile-table'),
-            ]
-        )
-    else:
-        return html.Div([])
+        return {'display': 'block'}
+    return {'display': 'none'}
 
 
 # Vaccine stockpile management callbacks
@@ -3184,7 +3076,7 @@ def save_vaccines(
     initial_cases,
 ):
     if not n_clicks:
-        return [dash.no_update] * 4
+        return [dash.no_update] * 3
 
     arpgs = [
         'vac-arpg-0-4',
