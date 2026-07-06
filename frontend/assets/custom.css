@@ -269,6 +269,13 @@ body {
     font-style: italic;
 }
 
+.param-display__card {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+}
+
 /* ============================================
    sim-footer
    ============================================ */

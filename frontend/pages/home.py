@@ -1039,9 +1039,7 @@ def create_home_layout():
 def create_interventions_display(npi_data, antiviral_data, vaccine_data, vaccine_stockpile):
     """Create interventions tab display content"""
     if not npi_data and not antiviral_data and not vaccine_data:
-        return html.P(
-            'No interventions set yet.', style={'color': '#6c757d', 'fontStyle': 'italic'}
-        )
+        return html.P('No interventions set yet.', className='param-display__empty-state')
 
     content = []
 
@@ -1049,10 +1047,7 @@ def create_interventions_display(npi_data, antiviral_data, vaccine_data, vaccine
     if npi_data:
         content.extend(
             [
-                html.H6(
-                    'Non-Pharmaceutical Interventions',
-                    style={'fontWeight': 'bold', 'marginBottom': '10px'},
-                ),
+                html.H6('Non-Pharmaceutical Interventions', className='fw-bold mb-2'),
             ]
         )
         for npi in npi_data:
@@ -1071,15 +1066,10 @@ def create_interventions_display(npi_data, antiviral_data, vaccine_data, vaccine
                                 html.Li(f'50-64: {npi["effectiveness"][3]:.2f}'),
                                 html.Li(f'65+: {npi["effectiveness"][4]:.2f}'),
                             ],
-                            style={'marginLeft': '20px'},
+                            className='ms-3',
                         ),
                     ],
-                    style={
-                        'marginBottom': '15px',
-                        'padding': '10px',
-                        'border': '1px solid #dee2e6',
-                        'borderRadius': '4px',
-                    },
+                    className='param-display__card',
                 )
             )
 
@@ -1087,7 +1077,7 @@ def create_interventions_display(npi_data, antiviral_data, vaccine_data, vaccine
     if antiviral_data:
         content.extend(
             [
-                html.H6('Antivirals', style={'fontWeight': 'bold', 'marginBottom': '10px'}),
+                html.H6('Antivirals', className='fw-bold mb-2'),
                 html.P(f'Effectiveness: {antiviral_data["effectiveness"]:.2f}'),
                 html.P(f'Wastage Factor: {antiviral_data["wastage_factor"]} days'),
                 html.P(
@@ -1103,7 +1093,7 @@ def create_interventions_display(npi_data, antiviral_data, vaccine_data, vaccine
             if vaccine_data['vaccine_model'] == 'stockpile-age-risk'
             else 'Undefined'
         )
-        content.extend([html.H6('Vaccines', style={'fontWeight': 'bold', 'marginBottom': '10px'})])
+        content.extend([html.H6('Vaccines', className='fw-bold mb-2')])
         content.append(
             html.Div(
                 [
@@ -1120,7 +1110,7 @@ def create_interventions_display(npi_data, antiviral_data, vaccine_data, vaccine
                             html.Li(f'50-64: {vaccine_data["effectiveness"][3]:.2f}'),
                             html.Li(f'65+: {vaccine_data["effectiveness"][4]:.2f}'),
                         ],
-                        style={'marginLeft': '20px'},
+                        className='ms-3',
                     ),
                     html.P('Adherence:'),
                     html.Ul(
@@ -1131,7 +1121,7 @@ def create_interventions_display(npi_data, antiviral_data, vaccine_data, vaccine
                             html.Li(f'50-64: {vaccine_data["adherence"][3]:.2f}'),
                             html.Li(f'65+: {vaccine_data["adherence"][4]:.2f}'),
                         ],
-                        style={'marginLeft': '20px'},
+                        className='ms-3',
                     ),
                     html.P('Stockpile:'),
                     html.Ul(
@@ -1139,15 +1129,10 @@ def create_interventions_display(npi_data, antiviral_data, vaccine_data, vaccine
                             html.Li(f'day={i["day"]} , amt={i["amount"]}')
                             for i in vaccine_stockpile
                         ],
-                        style={'marginLeft': '20px'},
+                        className='ms-3',
                     ),
                 ],
-                style={
-                    'marginBottom': '15px',
-                    'padding': '10px',
-                    'border': '1px solid #dee2e6',
-                    'borderRadius': '4px',
-                },
+                className='param-display__card',
             )
         )
 
@@ -1157,7 +1142,7 @@ def create_interventions_display(npi_data, antiviral_data, vaccine_data, vaccine
 def create_scenario_display(disease_params, initial_cases):
     """Create scenario tab display content"""
     if not disease_params and not initial_cases:
-        return html.P('No scenario set yet.', style={'color': '#6c757d', 'fontStyle': 'italic'})
+        return html.P('No scenario set yet.', className='param-display__empty-state')
 
     content = []
 
@@ -1166,9 +1151,7 @@ def create_scenario_display(disease_params, initial_cases):
         if disease_params['model_type'].startswith('seatird-'):
             content.extend(
                 [
-                    html.H6(
-                        'Disease Parameters', style={'fontWeight': 'bold', 'marginBottom': '10px'}
-                    ),
+                    html.H6('Disease Parameters', className='fw-bold mb-2'),
                     html.P(f'Scenario: {disease_params.get("scenario_name", "Custom")}'),
                     html.P(f'Reproduction Number: {disease_params.get("R0", 0)}'),
                     html.P(f'Latent Period: {disease_params.get("tau", 0)} days'),
@@ -1183,16 +1166,14 @@ def create_scenario_display(disease_params, initial_cases):
                             html.Li(f'50-64: {disease_params.get("nu", [0, 0, 0, 0, 0])[3]:.9f}'),
                             html.Li(f'65+: {disease_params.get("nu", [0, 0, 0, 0, 0])[4]:.9f}'),
                         ],
-                        style={'marginLeft': '20px', 'marginBottom': '15px'},
+                        className='ms-3 mb-3',
                     ),
                 ]
             )
         if disease_params['model_type'].startswith('seirs-'):
             content.extend(
                 [
-                    html.H6(
-                        'Disease Parameters', style={'fontWeight': 'bold', 'marginBottom': '10px'}
-                    ),
+                    html.H6('Disease Parameters', className='fw-bold mb-2'),
                     html.P(f'Scenario: {disease_params.get("scenario_name", "Custom")}'),
                     html.P(f'Reproduction Number: {disease_params.get("R0", 0)}'),
                     html.P(f'Latent Period: {disease_params.get("tau", 0)} days'),
@@ -1205,26 +1186,26 @@ def create_scenario_display(disease_params, initial_cases):
     if initial_cases:
         content.extend(
             [
-                html.H6('Initial Cases', style={'fontWeight': 'bold', 'marginBottom': '10px'}),
+                html.H6('Initial Cases', className='fw-bold mb-2'),
                 html.Ul(
                     [
                         html.Li(f'{case["cases"]} aged {case["age_group"]} in {case["location"]}')
                         for case in initial_cases
                     ],
-                    style={'marginLeft': '20px'},
+                    className='ms-3',
                 ),
             ]
         )
 
     if not content:
-        return html.P('No scenario set yet.', style={'color': '#6c757d', 'fontStyle': 'italic'})
+        return html.P('No scenario set yet.', className='param-display__empty-state')
 
     return html.Div(content)
 
 
 def _render_npi_table(npi_list):
     if not npi_list:
-        return dash.html.P('No NPIs added yet.', style={'color': '#6c757d', 'fontStyle': 'italic'})
+        return dash.html.P('No NPIs added yet.', className='param-display__empty-state')
 
     rows = []
     for i, npi in enumerate(npi_list):
@@ -1305,7 +1286,7 @@ def update_disease_param_modal_body(selected_value, preset, is_open):
                         for key, scenario in PRESET_SCENARIOS[scenario_prefix].items()
                     ],
                     placeholder='Select a preset scenario...',
-                    style={'marginBottom': '15px'},
+                    className='mb-3',
                 ),
             ]
         ),
