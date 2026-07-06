@@ -817,12 +817,12 @@ def create_home_layout():
                                             html.Button(
                                                 [
                                                     html.Span(
-                                                        'Set Scenario', className='dropdown-text'
+                                                        'Set Scenario', className='scenario-menu__trigger-text'
                                                     ),
-                                                    html.Span('▾', className='dropdown-arrow'),
+                                                    html.Span('▾', className='scenario-menu__trigger-arrow'),
                                                 ],
                                                 id='set-scenario-btn',
-                                                className='parameters-button',
+                                                className='scenario-menu__trigger',
                                             ),
                                             # Dropdown menu
                                             html.Div(
@@ -830,14 +830,14 @@ def create_home_layout():
                                                     html.Button(
                                                         'Disease Parameters',
                                                         id='disease-params-btn',
-                                                        className='dropdown-items',
+                                                        className='scenario-menu__item',
                                                         n_clicks=0,
                                                     ),
                                                     # html.Div(),
                                                     html.Button(
                                                         'Initial Cases',
                                                         id='initial-cases-btn',
-                                                        className='dropdown-items',
+                                                        className='scenario-menu__item',
                                                         n_clicks=0,
                                                     ),
                                                 ],
@@ -853,12 +853,12 @@ def create_home_layout():
                                             html.Button(
                                                 [
                                                     html.Span(
-                                                        'Interventions', className='dropdown-text'
+                                                        'Interventions', className='scenario-menu__trigger-text'
                                                     ),
-                                                    html.Span('▾', className='dropdown-arrow'),
+                                                    html.Span('▾', className='scenario-menu__trigger-arrow'),
                                                 ],
                                                 id='interventions-btn',
-                                                className='parameters-button',
+                                                className='scenario-menu__trigger',
                                             ),
                                             # Dropdown menu
                                             html.Div(
@@ -866,20 +866,20 @@ def create_home_layout():
                                                     html.Button(
                                                         'Non-Pharmaceutical',
                                                         id='npi-btn',
-                                                        className='dropdown-items',
+                                                        className='scenario-menu__item',
                                                         n_clicks=0,
                                                     ),
                                                     html.Button(
                                                         'Antivirals',
                                                         id='antivirals-btn',
-                                                        className='dropdown-items',
+                                                        className='scenario-menu__item',
                                                         n_clicks=0,
                                                         style={'display': 'none'},
                                                     ),  ### Remove this style to show Antiviral button ###
                                                     html.Button(
                                                         'Vaccines',
                                                         id='vaccines-btn',
-                                                        className='dropdown-items',
+                                                        className='scenario-menu__item',
                                                         n_clicks=0,
                                                     ),
                                                 ],
@@ -898,13 +898,13 @@ def create_home_layout():
                                                     html.Button(
                                                         'Scenario',
                                                         id='scenario-tab-btn',
-                                                        className='tab-btn active-tab',
+                                                        className='param-display__tab param-display__tab--active',
                                                         style={'marginRight': '5px'},
                                                     ),
                                                     html.Button(
                                                         'Interventions',
                                                         id='interventions-tab-btn',
-                                                        className='tab-btn',
+                                                        className='param-display__tab',
                                                     ),
                                                 ],
                                                 style={'marginBottom': '10px'},
@@ -923,10 +923,10 @@ def create_home_layout():
                                                 ],
                                             ),
                                         ],
-                                        className='displayed-parameters-panel',
+                                        className='param-display__content',
                                     ),
                                 ],
-                                className='left-panel',
+                                className='sim-layout__left',
                                 style={
                                     'height': '100%',
                                     'overflowY': 'auto',
@@ -963,7 +963,7 @@ def create_home_layout():
                                         style={'marginBottom': '15px', 'paddingLeft': '10px'},
                                     ),
                                 ],
-                                className='top-middle-panel',
+                                className='sim-layout__middle-header',
                             ),
                             # Map and Chart container
                             html.Div(
@@ -981,7 +981,7 @@ def create_home_layout():
                                         config={'displayModeBar': False},
                                     ),
                                 ],
-                                className='map-and-chart-container',
+                                className='sim-layout__viz',
                                 style={
                                     'display': 'flex',
                                     'flexDirection': 'column',
@@ -1034,7 +1034,7 @@ def create_home_layout():
                                         },
                                     ),
                                 ],
-                                className='right-panel',
+                                className='sim-layout__right',
                                 style={
                                     'height': '100%',
                                     'minHeight': 0,
@@ -1073,7 +1073,7 @@ def create_home_layout():
                                     'Reset',
                                     id='reset-btn',
                                     disabled=False,
-                                    className='reset-button',
+                                    className='sim-footer__reset-btn',
                                 ),
                                 href='/',
                             ),
@@ -1082,17 +1082,7 @@ def create_home_layout():
                                 'Play',
                                 id='play-pause-btn',
                                 disabled=True,
-                                className='play-pause-button',
-                                style={
-                                    'padding': '10px 30px',
-                                    'fontSize': '16px',
-                                    'backgroundColor': '#28a745',
-                                    'color': 'white',
-                                    'border': 'none',
-                                    'borderRadius': '4px',
-                                    'cursor': 'pointer',
-                                    'marginRight': '20px',
-                                },
+                                className='sim-footer__play-btn',
                             ),
                             # Timeline Slider
                             html.Div(
@@ -1790,7 +1780,7 @@ def update_npi_location_options(location_assets):
     [
         Output('play-pause-btn', 'disabled', allow_duplicate=True),
         Output('play-pause-btn', 'children', allow_duplicate=True),
-        Output('play-pause-btn', 'style', allow_duplicate=True),
+        Output('play-pause-btn', 'className', allow_duplicate=True),
         Output('timeline-slider', 'disabled', allow_duplicate=True),
         Output('timeline-slider', 'max', allow_duplicate=True),
         Output('timeline-slider', 'value', allow_duplicate=True),
@@ -1824,28 +1814,10 @@ def restore_ui_after_navigation(content, sim_state, disease_params, event_data):
 
     if is_running:
         play_text = 'Pause'
-        play_style = {
-            'padding': '10px 30px',
-            'fontSize': '16px',
-            'backgroundColor': '#ffc107',
-            'color': 'black',
-            'border': 'none',
-            'borderRadius': '4px',
-            'cursor': 'pointer',
-            'marginRight': '20px',
-        }
+        play_style = 'sim-footer__play-btn sim-footer__play-btn--running'
     else:
         play_text = 'Play'
-        play_style = {
-            'padding': '10px 30px',
-            'fontSize': '16px',
-            'backgroundColor': '#28a745',
-            'color': 'white',
-            'border': 'none',
-            'borderRadius': '4px',
-            'cursor': 'pointer',
-            'marginRight': '20px',
-        }
+        play_style = 'sim-footer__play-btn'
 
     # Restore timeline state
     timeline_disabled = not bool(event_data)
@@ -2236,10 +2208,10 @@ def switch_displayed_tab(
         content = create_interventions_display(
             npi_data, antiviral_data, vaccine_data, vaccine_stockpile
         )
-        return content, 'tab-btn', 'tab-btn active-tab', 'interventions'
+        return content, 'param-display__tab', 'param-display__tab param-display__tab--active', 'interventions'
     else:
         content = create_scenario_display(disease_params, initial_cases)
-        return content, 'tab-btn active-tab', 'tab-btn', 'scenario'
+        return content, 'param-display__tab param-display__tab--active', 'param-display__tab', 'scenario'
 
 
 # Save intervention callbacks
@@ -2568,7 +2540,7 @@ def reset_simulation(n_clicks, sim_state):
     [
         Output('simulation-state', 'data'),
         Output('play-pause-btn', 'children'),
-        Output('play-pause-btn', 'style'),
+        Output('play-pause-btn', 'className'),
         Output('play-pause-btn', 'disabled', allow_duplicate=True),
         Output('simulation-interval', 'disabled'),
         Output('timeline-slider', 'disabled', allow_duplicate=True),
@@ -2722,17 +2694,7 @@ def toggle_simulation(
                             'taskId': task_id,
                         }
 
-                        button_style = {
-                            'padding': '10px 30px',
-                            'fontSize': '16px',
-                            'backgroundColor': '#ffc107',
-                            'color': 'black',
-                            'border': 'none',
-                            'borderRadius': '4px',
-                            'cursor': 'pointer',
-                            'marginRight': '20px',
-                        }
-                        return new_state, 'Pause', button_style, False, False, False
+                        return new_state, 'Pause', 'sim-footer__play-btn sim-footer__play-btn--running', False, False, False
                     else:
                         logger.error(f'Failed to start simulation run: {run_response.status_code}')
                 else:
@@ -2754,17 +2716,7 @@ def toggle_simulation(
                 pass
 
             new_state = {**sim_state, 'isRunning': False}
-            button_style = {
-                'padding': '10px 30px',
-                'fontSize': '16px',
-                'backgroundColor': '#28a745',
-                'color': 'white',
-                'border': 'none',
-                'borderRadius': '4px',
-                'cursor': 'pointer',
-                'marginRight': '20px',
-            }
-            return new_state, 'Play', button_style, False, True, False
+            return new_state, 'Play', 'sim-footer__play-btn', False, True, False
 
     return (
         dash.no_update,

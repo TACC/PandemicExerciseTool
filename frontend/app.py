@@ -75,14 +75,7 @@ app.layout = html.Div(
                                         ),
                                         html.Span(
                                             'epiENGAGE',
-                                            className='header-name',
-                                            style={
-                                                'color': 'white',
-                                                'fontSize': '24px',
-                                                'fontWeight': 'bold',
-                                                'marginLeft': '10px',
-                                                'marginRight': '20px',
-                                            },
+                                            className='app-header__name',
                                         ),
                                     ],
                                     style={'display': 'flex', 'alignItems': 'center'},
@@ -97,13 +90,7 @@ app.layout = html.Div(
                                                             'Home',
                                                             id='nav-home',
                                                             href='/',
-                                                            className='tab-button active',
-                                                            style={
-                                                                'cursor': 'pointer',
-                                                                'color': 'white',
-                                                                'textDecoration': 'none',
-                                                                'padding': '10px 20px',
-                                                            },
+                                                            className='app-header__nav-link app-header__nav-link--active',
                                                         )
                                                     ]
                                                 ),
@@ -113,13 +100,7 @@ app.layout = html.Div(
                                                             'User Guide',
                                                             id='nav-userguide',
                                                             href='/guide',
-                                                            className='tab-button',
-                                                            style={
-                                                                'cursor': 'pointer',
-                                                                'color': 'white',
-                                                                'textDecoration': 'none',
-                                                                'padding': '10px 20px',
-                                                            },
+                                                            className='app-header__nav-link',
                                                         )
                                                     ]
                                                 ),
@@ -129,13 +110,7 @@ app.layout = html.Div(
                                                             'About Us',
                                                             id='nav-about',
                                                             href='/about',
-                                                            className='tab-button',
-                                                            style={
-                                                                'cursor': 'pointer',
-                                                                'color': 'white',
-                                                                'textDecoration': 'none',
-                                                                'padding': '10px 20px',
-                                                            },
+                                                            className='app-header__nav-link',
                                                         )
                                                     ]
                                                 ),
