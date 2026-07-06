@@ -363,6 +363,35 @@ def _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojs
 # ============================================================================
 # MODALS
 # ============================================================================
+
+
+# Input helper
+def create_bold_label_subtitle_number_input(label: str, subtitle: str, inputs: list):
+    """
+    Each element in inputs: {input_label, input_id, input_value, input_step, input_min}
+    Set input_label to None for a single unlabelled input.
+    """
+    input_style = {'width': '100%', 'marginBottom': '5px' if len(inputs) > 1 else '10px'}
+
+    def make_input(spec):
+        field = dcc.Input(
+            id=spec['input_id'],
+            type='number',
+            value=spec['input_value'],
+            step=spec['input_step'],
+            min=spec['input_min'],
+            style=input_style,
+        )
+        if spec['input_label'] is not None:
+            return html.Div([html.Label(spec['input_label'], style={'fontSize': '14px'}), field])
+        return field
+
+    return html.Div(
+        [html.Label(label, style={'fontWeight': 'bold'}), html.Small(subtitle, style={'color': '#6c757d'})]
+        + [make_input(spec) for spec in inputs]
+    )
+
+
 # Disease Parameters Modal Component
 disease_params_modal = dbc.Modal(
     [
@@ -492,84 +521,16 @@ npi_modal = dbc.Modal(
                     ]
                 ),
                 # Age-specific effectiveness section
-                html.Div(
-                    [
-                        html.Label('NPI effectiveness (proportion)', style={'fontWeight': 'bold'}),
-                        html.Small(
-                            'Age-specific effectiveness values',
-                            style={'color': '#6c757d', 'display': 'block', 'marginBottom': '10px'},
-                        ),
-                        html.Div(
-                            [
-                                html.Label('0-4 years', style={'fontSize': '14px'}),
-                                dcc.Input(
-                                    id='npi-eff-0-4',
-                                    type='number',
-                                    value=0.4,
-                                    step=0.01,
-                                    min=0,
-                                    max=1,
-                                    style={'width': '100%', 'marginBottom': '5px'},
-                                ),
-                            ]
-                        ),
-                        html.Div(
-                            [
-                                html.Label('5-17 years', style={'fontSize': '14px'}),
-                                dcc.Input(
-                                    id='npi-eff-5-24',
-                                    type='number',
-                                    value=0.35,
-                                    step=0.01,
-                                    min=0,
-                                    max=1,
-                                    style={'width': '100%', 'marginBottom': '5px'},
-                                ),
-                            ]
-                        ),
-                        html.Div(
-                            [
-                                html.Label('18-49 years', style={'fontSize': '14px'}),
-                                dcc.Input(
-                                    id='npi-eff-25-49',
-                                    type='number',
-                                    value=0.2,
-                                    step=0.01,
-                                    min=0,
-                                    max=1,
-                                    style={'width': '100%', 'marginBottom': '5px'},
-                                ),
-                            ]
-                        ),
-                        html.Div(
-                            [
-                                html.Label('50-64 years', style={'fontSize': '14px'}),
-                                dcc.Input(
-                                    id='npi-eff-50-64',
-                                    type='number',
-                                    value=0.25,
-                                    step=0.01,
-                                    min=0,
-                                    max=1,
-                                    style={'width': '100%', 'marginBottom': '5px'},
-                                ),
-                            ]
-                        ),
-                        html.Div(
-                            [
-                                html.Label('65+ years', style={'fontSize': '14px'}),
-                                dcc.Input(
-                                    id='npi-eff-65-plus',
-                                    type='number',
-                                    value=0.1,
-                                    step=0.01,
-                                    min=0,
-                                    max=1,
-                                    style={'width': '100%', 'marginBottom': '15px'},
-                                ),
-                            ]
-                        ),
-                    ]
+                create_bold_label_subtitle_number_input(
+                    label='NPI effectiveness (proportion)',
+                    subtitle='Age-specific effectiveness values',
+                    inputs=[
+                        {'input_label': '0-4 years',   'input_id': 'npi-eff-0-4',    'input_value': 0.4,  'input_step': 0.01, 'input_min': 0},
+                        {'input_label': '5-17 years',  'input_id': 'npi-eff-5-24',   'input_value': 0.35, 'input_step': 0.01, 'input_min': 0},
+                        {'input_label': '18-49 years', 'input_id': 'npi-eff-25-49',  'input_value': 0.2,  'input_step': 0.01, 'input_min': 0},
+                        {'input_label': '50-64 years', 'input_id': 'npi-eff-50-64',  'input_value': 0.25, 'input_step': 0.01, 'input_min': 0},
+                        {'input_label': '65+ years',   'input_id': 'npi-eff-65-plus','input_value': 0.1,  'input_step': 0.01, 'input_min': 0},
+                    ],
                 ),
                 # Location selection
                 html.Div(
@@ -793,64 +754,28 @@ vaccines_modal = dbc.Modal(
                             ]
                         ),
                         # Age-specific effectiveness
-                        html.Div(
-                            [
-                                html.Label('Vaccine effectiveness (proportion)', style={'fontWeight': 'bold'}),
-                                html.Small(
-                                    'Age-specific effectiveness of vaccine against infection. 0 is not effective and 1 is completely effective',
-                                    style={'color': '#6c757d', 'display': 'block', 'marginBottom': '10px'},
-                                ),
-                                html.Div([
-                                    html.Label('0-4 years', style={'fontSize': '14px'}),
-                                    dcc.Input(id='vac-eff-0-4', type='number', value=0.4, step=0.01, min=0, max=1, style={'width': '100%', 'marginBottom': '5px'}),
-                                ]),
-                                html.Div([
-                                    html.Label('5-17 years', style={'fontSize': '14px'}),
-                                    dcc.Input(id='vac-eff-5-17', type='number', value=0.35, step=0.01, min=0, max=1, style={'width': '100%', 'marginBottom': '5px'}),
-                                ]),
-                                html.Div([
-                                    html.Label('18-49 years', style={'fontSize': '14px'}),
-                                    dcc.Input(id='vac-eff-18-49', type='number', value=0.2, step=0.01, min=0, max=1, style={'width': '100%', 'marginBottom': '5px'}),
-                                ]),
-                                html.Div([
-                                    html.Label('50-64 years', style={'fontSize': '14px'}),
-                                    dcc.Input(id='vac-eff-50-64', type='number', value=0.25, step=0.01, min=0, max=1, style={'width': '100%', 'marginBottom': '5px'}),
-                                ]),
-                                html.Div([
-                                    html.Label('65+ years', style={'fontSize': '14px'}),
-                                    dcc.Input(id='vac-eff-65-plus', type='number', value=0.1, step=0.01, min=0, max=1, style={'width': '100%', 'marginBottom': '15px'}),
-                                ]),
-                            ]
+                        create_bold_label_subtitle_number_input(
+                            label='Vaccine effectiveness (proportion)',
+                            subtitle='Age-specific effectiveness of vaccine against infection. 0 is not effective and 1 is completely effective',
+                            inputs=[
+                                {'input_label': '0-4 years',   'input_id': 'vac-eff-0-4',    'input_value': 0.4,  'input_step': 0.01, 'input_min': 0},
+                                {'input_label': '5-17 years',  'input_id': 'vac-eff-5-17',   'input_value': 0.35, 'input_step': 0.01, 'input_min': 0},
+                                {'input_label': '18-49 years', 'input_id': 'vac-eff-18-49',  'input_value': 0.2,  'input_step': 0.01, 'input_min': 0},
+                                {'input_label': '50-64 years', 'input_id': 'vac-eff-50-64',  'input_value': 0.25, 'input_step': 0.01, 'input_min': 0},
+                                {'input_label': '65+ years',   'input_id': 'vac-eff-65-plus','input_value': 0.1,  'input_step': 0.01, 'input_min': 0},
+                            ],
                         ),
                         # Age-specific adherence
-                        html.Div(
-                            [
-                                html.Label('Vaccine adherence (proportion)', style={'fontWeight': 'bold'}),
-                                html.Small(
-                                    'Age-specific proportion of the population that will seek vaccination. 0 is no one and 1 is completely adherent',
-                                    style={'color': '#6c757d', 'display': 'block', 'marginBottom': '10px'},
-                                ),
-                                html.Div([
-                                    html.Label('0-4 years', style={'fontSize': '14px'}),
-                                    dcc.Input(id='vac-adh-0-4', type='number', value=0.4, step=0.01, min=0, max=1, style={'width': '100%', 'marginBottom': '5px'}),
-                                ]),
-                                html.Div([
-                                    html.Label('5-17 years', style={'fontSize': '14px'}),
-                                    dcc.Input(id='vac-adh-5-17', type='number', value=0.35, step=0.01, min=0, max=1, style={'width': '100%', 'marginBottom': '5px'}),
-                                ]),
-                                html.Div([
-                                    html.Label('18-49 years', style={'fontSize': '14px'}),
-                                    dcc.Input(id='vac-adh-18-49', type='number', value=0.2, step=0.01, min=0, max=1, style={'width': '100%', 'marginBottom': '5px'}),
-                                ]),
-                                html.Div([
-                                    html.Label('50-64 years', style={'fontSize': '14px'}),
-                                    dcc.Input(id='vac-adh-50-64', type='number', value=0.25, step=0.01, min=0, max=1, style={'width': '100%', 'marginBottom': '5px'}),
-                                ]),
-                                html.Div([
-                                    html.Label('65+ years', style={'fontSize': '14px'}),
-                                    dcc.Input(id='vac-adh-65-plus', type='number', value=0.1, step=0.01, min=0, max=1, style={'width': '100%', 'marginBottom': '15px'}),
-                                ]),
-                            ]
+                        create_bold_label_subtitle_number_input(
+                            label='Vaccine adherence (proportion)',
+                            subtitle='Age-specific proportion of the population that will seek vaccination. 0 is no one and 1 is completely adherent',
+                            inputs=[
+                                {'input_label': '0-4 years',   'input_id': 'vac-adh-0-4',    'input_value': 0.4,  'input_step': 0.01, 'input_min': 0},
+                                {'input_label': '5-17 years',  'input_id': 'vac-adh-5-17',   'input_value': 0.35, 'input_step': 0.01, 'input_min': 0},
+                                {'input_label': '18-49 years', 'input_id': 'vac-adh-18-49',  'input_value': 0.2,  'input_step': 0.01, 'input_min': 0},
+                                {'input_label': '50-64 years', 'input_id': 'vac-adh-50-64',  'input_value': 0.25, 'input_step': 0.01, 'input_min': 0},
+                                {'input_label': '65+ years',   'input_id': 'vac-adh-65-plus','input_value': 0.1,  'input_step': 0.01, 'input_min': 0},
+                            ],
                         ),
                         # Vaccine stockpile section
                         html.Label(['Vaccine Stockpile'], style={'fontWeight': 'bold'}),
@@ -1014,7 +939,6 @@ def create_model_state_selection_panel():
     )
 
 
-# [disease_params_modal, initial_cases_modal, npi_modal, antivirals_modal, vaccines_modal]
 # Home page layout
 def create_home_layout():
     return html.Div(
@@ -1479,39 +1403,6 @@ def create_interventions_display(npi_data, antiviral_data, vaccine_data, vaccine
     return html.Div(content)
 
 
-def create_disease_param_number_input(label: str, subtitle: str, inputs: list):
-    """
-    each element in the inputs list should be structured like
-    {input_label, input_id, input_value, input_step, input_min}
-    """
-    label_elem = html.Label(label, style={'fontWeight': 'bold'})
-    subtitle_elem = html.Small(subtitle, style={'color': '#6c757d'})
-    input_elems = [label_elem, subtitle_elem]
-    if len(inputs) > 1:
-        input_style = {'width': '100%', 'marginBottom': '5px'}
-    else:
-        input_style = {'width': '100%', 'marginBottom': '10px'}
-    print(inputs)
-    for i in range(len(inputs)):
-        input_elem = dcc.Input(
-            id=inputs[i]['input_id'],
-            type='number',
-            value=inputs[i]['input_value'],
-            step=inputs[i]['input_step'],
-            min=inputs[i]['input_min'],
-            style=input_style,
-        )
-        if inputs[i]['input_label'] is not None:
-            input_elems.append(
-                html.Div(
-                    [html.Label(inputs[i]['input_label'], style={'fontSize': '14px'}), input_elem]
-                )
-            )
-        else:
-            input_elems.append(input_elem)
-    return html.Div(input_elems)
-
-
 def create_scenario_display(disease_params, initial_cases):
     """Create scenario tab display content"""
     if not disease_params and not initial_cases:
@@ -1681,7 +1572,7 @@ def update_disease_param_modal_body(selected_value, preset, is_open):
                 ),
             ]
         ),
-        create_disease_param_number_input(
+        create_bold_label_subtitle_number_input(
             label='Reproduction Number (R₀)',
             subtitle=' - Average number of secondary infections in a susceptible population',
             inputs=[
@@ -1694,7 +1585,7 @@ def update_disease_param_modal_body(selected_value, preset, is_open):
                 }
             ],
         ),
-        create_disease_param_number_input(
+        create_bold_label_subtitle_number_input(
             label='Latent period (days)',
             subtitle=' - Average number of days from infection to infectiousness',
             inputs=[
@@ -1712,7 +1603,7 @@ def update_disease_param_modal_body(selected_value, preset, is_open):
     if scenario_prefix == 'seatird':
         modal_elems.extend(
             [
-                create_disease_param_number_input(
+                create_bold_label_subtitle_number_input(
                     label='Asymptomatic period (days)',
                     subtitle=' - Average number of days spent infectious, but not yet symptomatic',
                     inputs=[
@@ -1725,7 +1616,7 @@ def update_disease_param_modal_body(selected_value, preset, is_open):
                         }
                     ],
                 ),
-                create_disease_param_number_input(
+                create_bold_label_subtitle_number_input(
                     label='Symptomatic period (days)',
                     subtitle=' - Average number of days spent symptomatic and infectious',
                     inputs=[
@@ -1738,7 +1629,7 @@ def update_disease_param_modal_body(selected_value, preset, is_open):
                         }
                     ],
                 ),
-                create_disease_param_number_input(
+                create_bold_label_subtitle_number_input(
                     label='Mortality rate (1/days)',
                     subtitle=' - Inverse average number of days spent asymptomatic/treatable/infectious to deceased',
                     inputs=[
@@ -1758,7 +1649,7 @@ def update_disease_param_modal_body(selected_value, preset, is_open):
                         ])
                     ],
                 ),
-                create_disease_param_number_input(
+                create_bold_label_subtitle_number_input(
                     label='Relative susceptibility (ratio)',
                     subtitle=' - How susceptible each age group is relative to a reference group (e.g. 0-4yro)',
                     inputs=[
@@ -1783,7 +1674,7 @@ def update_disease_param_modal_body(selected_value, preset, is_open):
     elif scenario_prefix == 'seirs':
         modal_elems.extend(
             [
-                create_disease_param_number_input(
+                create_bold_label_subtitle_number_input(
                     label='Infectious period (days)',
                     subtitle=' - Average number of days spent infectious',
                     inputs=[
@@ -1796,7 +1687,7 @@ def update_disease_param_modal_body(selected_value, preset, is_open):
                         }
                     ],
                 ),
-                create_disease_param_number_input(
+                create_bold_label_subtitle_number_input(
                     label='Immune period (days)',
                     subtitle=' - Average number of days before returning to susceptible (set to 0 to make this an SEIR model)',
                     inputs=[
