@@ -36,7 +36,7 @@ body {
     border-radius: 4px;
 }
 
-/* Layout styles */
+/* Bootstrap grid override -- commented out to test Bootstrap defaults
 .row {
     display: flex;
     flex-wrap: wrap;
@@ -60,6 +60,7 @@ body {
     max-width: 25%;
     padding: 0 15px;
 }
+*/
 
 /* Left panel styles */
 .left-panel {
@@ -125,37 +126,6 @@ body {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* Input styles */
-input[type="number"], input[type="text"] {
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    padding: 6px 12px;
-    font-size: 14px;
-}
-
-input[type="number"]:focus, input[type="text"]:focus {
-    border-color: #80bdff;
-    outline: 0;
-    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
-}
-
-/* Label styles */
-label {
-    font-weight: 500;
-    margin-bottom: 5px;
-    display: block;
-    font-size: 14px;
-}
-
-/* Button styles */
-button {
-    font-size: 14px;
-    border-radius: 4px;
-    border: 1px solid transparent;
-    padding: 6px 12px;
-    cursor: pointer;
-}
-
 /* Checklist styles */
 .dash-checklist {
     margin-bottom: 15px;
@@ -189,7 +159,7 @@ button {
     margin: 10px 0;
 }
 
-/* Table styles */
+/* Bootstrap table override -- commented out to test Bootstrap defaults
 table {
     width: 100%;
     border-collapse: collapse;
@@ -206,8 +176,9 @@ table th {
     background-color: #f8f9fa;
     font-weight: 600;
 }
+*/
 
-/* Modal styles */
+/* Bootstrap modal override -- commented out to test Bootstrap defaults
 .modal-content {
     border-radius: 8px;
 }
@@ -220,8 +191,9 @@ table th {
 .modal-body {
     padding: 20px;
 }
+*/
 
-/* Responsive design */
+/* Bootstrap responsive grid override -- commented out to test Bootstrap defaults
 @media (max-width: 992px) {
     .col-lg-2, .col-lg-3, .col-lg-7 {
         flex: 0 0 100%;
@@ -229,6 +201,7 @@ table th {
         margin-bottom: 20px;
     }
 }
+*/
 
 /* Graph container styles */
 .js-plotly-plot, .plotly {
@@ -338,36 +311,12 @@ table th {
     min-height: 200px;
 }
 
-/* Modal improvements */
+/* Bootstrap modal-lg override -- commented out to test Bootstrap defaults
 .modal-lg {
     max-width: 800px !important;
 }
+*/
 
-/* Form styling improvements */
-.form-group {
-    margin-bottom: 15px;
-}
-
-.form-label {
-    font-weight: 500;
-    margin-bottom: 5px;
-    display: block;
-    color: #495057;
-}
-
-.form-control {
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    padding: 6px 12px;
-    font-size: 14px;
-    width: 100%;
-}
-
-.form-control:focus {
-    border-color: #80bdff;
-    outline: 0;
-    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
-}
 
 /* Age group specific styling */
 .age-group-inputs {
@@ -432,19 +381,6 @@ small {
 
 .intervention-form .form-group {
     margin-bottom: 15px;
-}
-
-/* Success/warning states */
-.text-success {
-    color: #28a745 !important;
-}
-
-.text-warning {
-    color: #ffc107 !important;
-}
-
-.text-danger {
-    color: #dc3545 !important;
 }
 
 /* Responsive dropdown positioning */

@@ -376,16 +376,12 @@ def create_modal_footer(prefix: str):
     )
 
 
-def create_labeled_input(label: str, input_id: str, margin_bottom: str = '10px', **kwargs):
-    """Create a plain html.Label + full-width dcc.Input wrapped in a Div."""
+def create_labeled_input(label: str, input_id: str, **kwargs):
+    """Create a plain Label + full-width Input wrapped in a Div."""
     return html.Div(
         [
-            html.Label(label),
-            dcc.Input(
-                id=input_id,
-                style={'width': '100%', 'marginBottom': margin_bottom},
-                **kwargs,
-            ),
+            dbc.Label(label),
+            dbc.Input(id=input_id, class_name='mb-3', **kwargs),
         ]
     )
 
@@ -395,23 +391,21 @@ def create_bold_label_subtitle_number_input(label: str, subtitle: str, inputs: l
     Each element in inputs: {input_label, input_id, input_value, input_step, input_min}
     Set input_label to None for a single unlabelled input.
     """
-    input_style = {'width': '100%', 'marginBottom': '5px' if len(inputs) > 1 else '10px'}
-
     def make_input(spec):
-        field = dcc.Input(
+        field = dbc.Input(
             id=spec['input_id'],
             type='number',
             value=spec['input_value'],
             step=spec['input_step'],
             min=spec['input_min'],
-            style=input_style,
+            class_name='mb-2',
         )
         if spec['input_label'] is not None:
-            return html.Div([html.Label(spec['input_label'], style={'fontSize': '14px'}), field])
+            return html.Div([dbc.Label(spec['input_label'], class_name='small'), field])
         return field
 
     return html.Div(
-        [html.Label(label, style={'fontWeight': 'bold'}), html.Small(subtitle, style={'color': '#6c757d'})]
+        [dbc.Label(label, class_name='fw-bold'), html.Small(subtitle, style={'color': '#6c757d'})]
         + [make_input(spec) for spec in inputs]
     )
 
@@ -439,7 +433,7 @@ initial_cases_modal = dbc.Modal(
             [
                 html.Div(
                     [
-                        html.Label('Location'),
+                        dbc.Label('Location'),
                         dcc.Dropdown(
                             id='initial-location',
                             options=[],
@@ -451,7 +445,7 @@ initial_cases_modal = dbc.Modal(
                 create_labeled_input('Number of Cases', 'initial-cases-count', type='number', value=100, min=1),
                 html.Div(
                     [
-                        html.Label('Age Group'),
+                        dbc.Label('Age Group'),
                         dcc.Dropdown(
                             id='initial-age-group',
                             options=AGE_GROUPS,
@@ -486,7 +480,7 @@ npi_modal = dbc.Modal(
             [
                 create_labeled_input('NPI Name', 'npi-name', type='text', value='School Closures'),
                 create_labeled_input('NPI start (simulation day)', 'npi-start', type='number', value=5, min=0, max=1000, step=1),
-                create_labeled_input('NPI duration (days)', 'npi-duration', margin_bottom='15px', type='number', value=30, min=1, max=1000, step=1),
+                create_labeled_input('NPI duration (days)', 'npi-duration', type='number', value=30, min=1, max=1000, step=1),
                 # Age-specific effectiveness section
                 create_bold_label_subtitle_number_input(
                     label='NPI effectiveness (proportion)',
@@ -502,7 +496,7 @@ npi_modal = dbc.Modal(
                 # Location selection
                 html.Div(
                     [
-                        html.Label('Location'),
+                        dbc.Label('Location'),
                         dcc.Dropdown(
                             id='npi-location',
                             options=[],
@@ -536,12 +530,12 @@ antivirals_modal = dbc.Modal(
         dbc.ModalBody(
             [
                 create_labeled_input('Antiviral Effectiveness', 'antiviral-effectiveness', type='number', value=0.15, min=0, max=1, step=0.01),
-                create_labeled_input('Antiviral Wastage Factor (days)', 'antiviral-wastage', margin_bottom='15px', type='number', value=60, min=0, max=1000, step=1),
+                create_labeled_input('Antiviral Wastage Factor (days)', 'antiviral-wastage', type='number', value=60, min=0, max=1000, step=1),
                 html.H6(
                     'Stockpile Management', style={'fontWeight': 'bold', 'marginBottom': '10px'}
                 ),
                 create_labeled_input('New Stockpile Day', 'antiviral-stockpile-day', type='number', value=50, min=1, max=1000, step=1),
-                create_labeled_input('New Stockpile Amount', 'antiviral-stockpile-amount', margin_bottom='15px', type='number', value=10000, min=0, step=1),
+                create_labeled_input('New Stockpile Amount', 'antiviral-stockpile-amount', type='number', value=10000, min=0, step=1),
             ]
         ),
         create_modal_footer('antivirals'),
@@ -559,9 +553,7 @@ vaccines_modal = dbc.Modal(
             [
                 html.Div(
                     [
-                        html.Label(
-                            'Vaccine Model', style={'fontWeight': 'bold', 'marginBottom': '5px'}
-                        ),
+                        dbc.Label('Vaccine Model', class_name='fw-bold'),
                         dcc.Dropdown(
                             options=[
                                 {'label': model, 'value': key}
@@ -582,7 +574,7 @@ vaccines_modal = dbc.Modal(
                         # Vaccine priority groups
                         html.Div(
                             [
-                                html.Label('Vaccine Priority Groups', style={'fontWeight': 'bold'}),
+                                dbc.Label('Vaccine Priority Groups', class_name='fw-bold'),
                                 html.Small(
                                     'Select age specific priority groups for vaccine distribution',
                                     style={'color': '#6c757d', 'display': 'block', 'marginBottom': '10px'},
@@ -609,53 +601,53 @@ vaccines_modal = dbc.Modal(
                         ),
                         html.Div(
                             [
-                                html.Label('Vaccine Half Life (days)', style={'fontWeight': 'bold'}),
+                                dbc.Label('Vaccine Half Life (days)', class_name='fw-bold'),
                                 html.Small(
                                     'Number of days required to clear half the vaccine from the body'
                                 ),
-                                dcc.Input(
+                                dbc.Input(
                                     id='vaccine-half-life',
                                     type='number',
                                     value=60,
                                     min=0,
                                     max=1000,
                                     step=1,
-                                    style={'width': '100%', 'marginBottom': '15px'},
+                                    class_name='mb-3',
                                 ),
                             ],
                             style={'display': 'none'},
                         ),  ### This is currently hidden ###
                         html.Div(
                             [
-                                html.Label('Vaccine Capacity (proportion)', style={'fontWeight': 'bold'}),
+                                dbc.Label('Vaccine Capacity (proportion)', class_name='fw-bold'),
                                 html.Small(
                                     'Proportion of population the jurisdiction has the capacity to vaccinate per day, from 0 to 1'
                                 ),
-                                dcc.Input(
+                                dbc.Input(
                                     id='vaccine-capacity',
                                     type='number',
                                     value=0.5,
                                     min=0,
                                     max=1,
                                     step=0.01,
-                                    style={'width': '100%', 'marginBottom': '15px'},
+                                    class_name='mb-3',
                                 ),
                             ]
                         ),
                         html.Div(
                             [
-                                html.Label('Vaccine Effectiveness Lag (days)', style={'fontWeight': 'bold'}),
+                                dbc.Label('Vaccine Effectiveness Lag (days)', class_name='fw-bold'),
                                 html.Small(
                                     'Number of days before vaccine starts to take effect. You can change this to alter your vaccine release time series as well.'
                                 ),
-                                dcc.Input(
+                                dbc.Input(
                                     id='vaccine-effectiveness-lag',
                                     type='number',
                                     value=14,
                                     min=0,
                                     max=100,
                                     step=1,
-                                    style={'width': '100%', 'marginBottom': '15px'},
+                                    class_name='mb-3',
                                 ),
                             ]
                         ),
@@ -684,7 +676,7 @@ vaccines_modal = dbc.Modal(
                             ],
                         ),
                         # Vaccine stockpile section
-                        html.Label(['Vaccine Stockpile'], style={'fontWeight': 'bold'}),
+                        dbc.Label('Vaccine Stockpile', class_name='fw-bold'),
                         html.Small(
                             'Vaccine reserves available beginning on a specified day. Negative days are allowed to vaccinate people before epidemic begins on day 0.',
                             style={'color': '#6c757d', 'display': 'block', 'marginBottom': '10px'},
@@ -737,15 +729,7 @@ def create_model_state_selection_panel():
             # FEATURE 1: Model Selection Dropdown
             html.Div(
                 [
-                    html.Label(
-                        'Disease Model',
-                        style={
-                            'fontWeight': 'bold',
-                            'marginBottom': '5px',
-                            'display': 'block',
-                            'color': '#333',
-                        },
-                    ),
+                    dbc.Label('Disease Model', class_name='fw-bold'),
                     dcc.Dropdown(
                         id='model-selector-dropdown',
                         options=[{'label': m['label'], 'value': m['value']} for m in MODEL_OPTIONS],
@@ -771,15 +755,7 @@ def create_model_state_selection_panel():
             # FEATURE 2: State Selection Dropdown
             html.Div(
                 [
-                    html.Label(
-                        'State',
-                        style={
-                            'fontWeight': 'bold',
-                            'marginBottom': '5px',
-                            'display': 'block',
-                            'color': '#333',
-                        },
-                    ),
+                    dbc.Label('State', class_name='fw-bold'),
                     dcc.Dropdown(
                         id='state-selector-dropdown',
                         options=[{'label': s['label'], 'value': s['value']} for s in STATE_OPTIONS],
@@ -1029,12 +1005,12 @@ def create_home_layout():
                             html.Div(
                                 [
                                     html.H6('County Data', style={'marginBottom': '10px'}),
-                                    dcc.Input(
+                                    dbc.Input(
                                         id='county-search',
                                         type='text',
                                         placeholder='Search (county or number)…',
                                         debounce=True,
-                                        style={'width': '100%', 'marginBottom': '10px'},
+                                        class_name='mb-2',
                                     ),
                                     dcc.Store(
                                         id='county-table-sort',
@@ -1428,9 +1404,7 @@ def update_disease_param_modal_body(selected_value, preset, is_open):
     modal_elems = [
         html.Div(
             [
-                html.Label(
-                    'Load from Catalog', style={'fontWeight': 'bold', 'marginBottom': '5px'}
-                ),
+                dbc.Label('Load from Catalog', class_name='fw-bold'),
                 dcc.Dropdown(
                     id={'type': 'dp-dropdown', 'param': 'preset'},
                     options=[
@@ -1445,12 +1419,12 @@ def update_disease_param_modal_body(selected_value, preset, is_open):
         html.Hr(),
         html.Div(
             [
-                html.Label('Scenario Name', style={'fontWeight': 'bold'}),
-                dcc.Input(
+                dbc.Label('Scenario Name', class_name='fw-bold'),
+                dbc.Input(
                     id={'type': 'dp-input', 'param': 'scenario-name'},
                     type='text',
                     value=preset.get('disease_name', ''),
-                    style={'width': '100%', 'marginBottom': '10px'},
+                    class_name='mb-3',
                 ),
             ]
         ),
