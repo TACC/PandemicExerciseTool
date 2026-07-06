@@ -1677,9 +1677,12 @@ def layout(**kwargs):
     Output('disease-params-modal-body', 'children'),
     Input('model-selector-dropdown', 'value'),
     Input('disease-preset-store', 'data'),
+    Input('disease-params-modal', 'is_open'),
     prevent_initial_call=True,
 )
-def update_disease_param_modal_body(selected_value, preset):
+def update_disease_param_modal_body(selected_value, preset, is_open):
+    if not is_open:
+        return dash.no_update
     if selected_value is None:
         return dbc.ModalBody(['Select a valid disease model to set parameters.'])
 
