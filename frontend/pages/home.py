@@ -1676,80 +1676,168 @@ def layout(**kwargs):
 @callback(
     Output('disease-params-modal-body', 'children'),
     Input('model-selector-dropdown', 'value'),
+    Input('disease-preset-store', 'data'),
     prevent_initial_call=True,
 )
-def update_disease_param_modal_body(selected_value):
-    scenario_prefix = selected_value.split('-')[0]
+def update_disease_param_modal_body(selected_value, preset):
+    if selected_value is None:
+        return dbc.ModalBody(['Select a valid disease model to set parameters.'])
 
-    if selected_value is not None:
-        modal_elems = [
-            # Preset scenarios dropdown
-            html.Div(
-                [
-                    html.Label(
-                        'Load from Catalog', style={'fontWeight': 'bold', 'marginBottom': '5px'}
-                    ),
-                    dcc.Dropdown(
-                        id='preset-scenario-dropdown',
-                        options=[
-                            {'label': scenario['name'], 'value': key}
-                            for key, scenario in PRESET_SCENARIOS[scenario_prefix].items()
-                        ],
-                        placeholder='Select a preset scenario...',
-                        style={'marginBottom': '15px'},
-                    ),
-                ]
-            ),
-            html.Hr(),
-            # Currently all models expect scenario name, R0, and latent period
-            html.Div(
-                [
-                    html.Label('Scenario Name', style={'fontWeight': 'bold'}),
-                    dcc.Input(
-                        id='scenario-name',
-                        type='text',
-                        value='',
-                        style={'width': '100%', 'marginBottom': '10px'},
-                    ),
-                ]
-            ),
-        ]
+    scenario_prefix = selected_value.split('-')[0]
+    preset = preset or {}
+
+    modal_elems = [
+        html.Div(
+            [
+                html.Label(
+                    'Load from Catalog', style={'fontWeight': 'bold', 'marginBottom': '5px'}
+                ),
+                dcc.Dropdown(
+                    id={'type': 'dp-dropdown', 'param': 'preset'},
+                    options=[
+                        {'label': scenario['name'], 'value': key}
+                        for key, scenario in PRESET_SCENARIOS[scenario_prefix].items()
+                    ],
+                    placeholder='Select a preset scenario...',
+                    style={'marginBottom': '15px'},
+                ),
+            ]
+        ),
+        html.Hr(),
+        html.Div(
+            [
+                html.Label('Scenario Name', style={'fontWeight': 'bold'}),
+                dcc.Input(
+                    id={'type': 'dp-input', 'param': 'scenario-name'},
+                    type='text',
+                    value=preset.get('disease_name', ''),
+                    style={'width': '100%', 'marginBottom': '10px'},
+                ),
+            ]
+        ),
+        create_disease_param_number_input(
+            label='Reproduction Number (R₀)',
+            subtitle=' - Average number of secondary infections in a susceptible population',
+            inputs=[
+                {
+                    'input_label': None,
+                    'input_id': {'type': 'dp-input', 'param': 'reproduction-number'},
+                    'input_value': preset.get('R0', 1.2),
+                    'input_step': 0.1,
+                    'input_min': 0,
+                }
+            ],
+        ),
+        create_disease_param_number_input(
+            label='Latent period (days)',
+            subtitle=' - Average number of days from infection to infectiousness',
+            inputs=[
+                {
+                    'input_label': None,
+                    'input_id': {'type': 'dp-input', 'param': 'latent-period'},
+                    'input_value': preset.get('tau', preset.get('latent_period', 1.2)),
+                    'input_step': 0.1,
+                    'input_min': 0,
+                }
+            ],
+        ),
+    ]
+
+    if scenario_prefix == 'seatird':
         modal_elems.extend(
             [
-                create_disease_param_number_input(
-                    label='Reproduction Number (R₀)',
-                    subtitle=' - Average number of secondary infections in a susceptible population',
-                    inputs=[
-                        {
-                            'input_label': None,
-                            'input_id': 'reproduction-number',
-                            'input_value': 1.2,
-                            'input_step': 0.1,
-                            'input_min': 0,
-                        }
-                    ],
-                ),
-                create_disease_param_number_input(
-                    label='Latent period (days)',
-                    subtitle=' - Average number of days from infection to infectiousness',
-                    inputs=[
-                        {
-                            'input_label': None,
-                            'input_id': 'latent-period',
-                            'input_value': 1.2,
-                            'input_step': 0.1,
-                            'input_min': 0,
-                        }
-                    ],
-                ),
                 create_disease_param_number_input(
                     label='Asymptomatic period (days)',
                     subtitle=' - Average number of days spent infectious, but not yet symptomatic',
                     inputs=[
                         {
                             'input_label': None,
-                            'input_id': 'asymptomatic-period',
-                            'input_value': 1.9,
+                            'input_id': {'type': 'dp-input', 'param': 'asymptomatic-period'},
+                            'input_value': preset.get('kappa', 1.9),
+                            'input_step': 0.1,
+                            'input_min': 0,
+                        }
+                    ],
+                ),
+                create_disease_param_number_input(
+                    label='Symptomatic period (days)',
+                    subtitle=' - Average number of days spent symptomatic and infectious',
+                    inputs=[
+                        {
+                            'input_label': None,
+                            'input_id': {'type': 'dp-input', 'param': 'symptomatic-period'},
+                            'input_value': preset.get('gamma', 4.1),
+                            'input_step': 0.1,
+                            'input_min': 0,
+                        }
+                    ],
+                ),
+                create_disease_param_number_input(
+                    label='Mortality rate (1/days)',
+                    subtitle=' - Inverse average number of days spent asymptomatic/treatable/infectious to deceased',
+                    inputs=[
+                        {
+                            'input_label': label,
+                            'input_id': {'type': 'dp-input', 'param': param},
+                            'input_value': preset.get('nu', [0.000022319, 0.000040975, 0.000083729, 0.000061809, 0.000008978])[i],
+                            'input_step': 0.000000001,
+                            'input_min': 0,
+                        }
+                        for i, (label, param) in enumerate([
+                            ('0-4 years', 'cfr-0-4'),
+                            ('5-17 years', 'cfr-5-24'),
+                            ('18-49 years', 'cfr-25-49'),
+                            ('50-64 years', 'cfr-50-64'),
+                            ('65+ years', 'cfr-65-plus'),
+                        ])
+                    ],
+                ),
+                create_disease_param_number_input(
+                    label='Relative susceptibility (ratio)',
+                    subtitle=' - How susceptible each age group is relative to a reference group (e.g. 0-4yro)',
+                    inputs=[
+                        {
+                            'input_label': label,
+                            'input_id': {'type': 'dp-input', 'param': param},
+                            'input_value': preset.get('sigma', [1.0, 1.0, 1.0, 1.0, 1.0])[i],
+                            'input_step': 0.000000001,
+                            'input_min': 0,
+                        }
+                        for i, (label, param) in enumerate([
+                            ('0-4 years', 'sigma-0-4'),
+                            ('5-17 years', 'sigma-5-24'),
+                            ('18-49 years', 'sigma-25-49'),
+                            ('50-64 years', 'sigma-50-64'),
+                            ('65+ years', 'sigma-65-plus'),
+                        ])
+                    ],
+                ),
+            ]
+        )
+    elif scenario_prefix == 'seirs':
+        modal_elems.extend(
+            [
+                create_disease_param_number_input(
+                    label='Infectious period (days)',
+                    subtitle=' - Average number of days spent infectious',
+                    inputs=[
+                        {
+                            'input_label': None,
+                            'input_id': {'type': 'dp-input', 'param': 'infectious-period'},
+                            'input_value': preset.get('infectious_period', 1.9),
+                            'input_step': 0.1,
+                            'input_min': 0,
+                        }
+                    ],
+                ),
+                create_disease_param_number_input(
+                    label='Immune period (days)',
+                    subtitle=' - Average number of days before returning to susceptible (set to 0 to make this an SEIR model)',
+                    inputs=[
+                        {
+                            'input_label': None,
+                            'input_id': {'type': 'dp-input', 'param': 'immune-period'},
+                            'input_value': preset.get('immune_period', 0),
                             'input_step': 0.1,
                             'input_min': 0,
                         }
@@ -1757,9 +1845,8 @@ def update_disease_param_modal_body(selected_value):
                 ),
             ]
         )
-        return dbc.ModalBody(modal_elems)
-    else:
-        return dbc.ModalBody(['Select a valid disease model to set parameters.'])
+
+    return dbc.ModalBody(modal_elems)
 
 
 @callback(
@@ -2507,100 +2594,19 @@ def toggle_vaccines_modal(open_click, close_click, save_click, is_open):
 
 # Preset scenario loading callback
 @callback(
-    [
-        Output('scenario-name', 'value'),
-        Output('reproduction-number', 'value'),
-        Output('latent-period', 'value'),
-        Output('asymptomatic-period', 'value'),
-        Output('symptomatic-period', 'value'),
-        Output('cfr-0-4', 'value'),
-        Output('cfr-5-24', 'value'),
-        Output('cfr-25-49', 'value'),
-        Output('cfr-50-64', 'value'),
-        Output('cfr-65-plus', 'value'),
-        Output('infectious-period', 'value'),
-        Output('immune-period', 'value'),
-    ],
-    Input('preset-scenario-dropdown', 'value'),
+    Output('disease-preset-store', 'data'),
+    Input({'type': 'dp-dropdown', 'param': 'preset'}, 'value'),
     State('model-selector-dropdown', 'value'),
     prevent_initial_call=True,
 )
 def load_preset_scenario(preset_key, selected_value):
+    if not preset_key or not selected_value:
+        return {}
     scenario_prefix = selected_value.split('-')[0]
+    if preset_key in PRESET_SCENARIOS.get(scenario_prefix, {}):
+        return PRESET_SCENARIOS[scenario_prefix][preset_key]
+    return {}
 
-    if preset_key and preset_key in PRESET_SCENARIOS[scenario_prefix]:
-        scenario = PRESET_SCENARIOS[scenario_prefix][preset_key]
-
-        if scenario_prefix == 'seatird':
-            return (
-                scenario.get('disease_name', None),
-                scenario.get('R0', None),
-                scenario.get('tau', None),
-                scenario.get('kappa', None),
-                scenario.get('gamma', None),
-                scenario.get('nu', [])[0],
-                scenario.get('nu', [])[1],
-                scenario.get('nu', [])[2],
-                scenario.get('nu', [])[3],
-                scenario.get('nu', [])[4],
-                dash.no_update,
-                dash.no_update,
-            )
-        elif scenario_prefix == 'seirs':
-            return (
-                scenario.get('disease_name', None),
-                scenario.get('R0', None),
-                scenario.get('latent_period', None),
-                dash.no_update,
-                dash.no_update,
-                dash.no_update,
-                dash.no_update,
-                dash.no_update,
-                dash.no_update,
-                dash.no_update,
-                scenario.get('infectious_period', None),
-                scenario.get('immune_period', None),
-            )
-    return [dash.no_update] * 12
-
-
-# Load the correct disease parameters in the modal
-@callback(
-    [
-        Output('disease-param-modal-display-asymptomatic', 'style'),
-        Output('disease-param-modal-display-symptomatic', 'style'),
-        Output('disease-param-modal-display-cfr', 'style'),
-        Output('disease-param-modal-display-sigma', 'style'),
-        Output('disease-param-modal-display-infectious', 'style'),
-        Output('disease-param-modal-display-immune', 'style'),
-    ],
-    Input('disease-params-modal', 'is_open'),
-    State('model-selector-dropdown', 'value'),
-    prevent_initial_call=True,
-)
-def display_correct_disease_parameters(modal_is_open, selected_value):
-    scenario_prefix = selected_value.split('-')[0]
-
-    if scenario_prefix == 'seatird':
-        return (
-            {'display': 'block'},
-            {'display': 'block'},
-            {'display': 'block'},
-            {'display': 'block'},
-            {'display': 'none'},
-            {'display': 'none'},
-        )
-    elif scenario_prefix == 'seirs':
-        return (
-            {'display': 'none'},
-            {'display': 'none'},
-            {'display': 'none'},
-            {'display': 'none'},
-            {'display': 'block'},
-            {'display': 'block'},
-        )
-
-    return [dash.no_update] * 6
 
 
 # Initial cases management callbacks
@@ -2708,94 +2714,63 @@ def manage_initial_cases(
     ],
     Input('disease-params-save', 'n_clicks'),
     [
-        State('scenario-name', 'value'),
-        State('reproduction-number', 'value'),
-        State('latent-period', 'value'),
-        State('asymptomatic-period', 'value'),
-        State('symptomatic-period', 'value'),
-        State('cfr-0-4', 'value'),
-        State('cfr-5-24', 'value'),
-        State('cfr-25-49', 'value'),
-        State('cfr-50-64', 'value'),
-        State('cfr-65-plus', 'value'),
-        State('sigma-0-4', 'value'),
-        State('sigma-5-24', 'value'),
-        State('sigma-25-49', 'value'),
-        State('sigma-50-64', 'value'),
-        State('sigma-65-plus', 'value'),
-        State('infectious-period', 'value'),
-        State('immune-period', 'value'),
+        State({'type': 'dp-input', 'param': ALL}, 'value'),
         State('initial-cases-data', 'data'),
         State('displayed-tab', 'data'),
         State('selected-model-store', 'data'),
     ],
     prevent_initial_call=True,
 )
-def save_disease_parameters(
-    n_clicks,
-    scenario_name,
-    r0,
-    tau,
-    kappa,
-    gamma,
-    cfr_0_4,
-    cfr_5_24,
-    cfr_25_49,
-    cfr_50_64,
-    cfr_65_plus,
-    sigma_0_4,
-    sigma_5_24,
-    sigma_25_49,
-    sigma_50_64,
-    sigma_65_plus,
-    infectious_period,
-    immune_period,
-    initial_cases,
-    displayed_tab,
-    selected_model,
-):
-    if n_clicks:
-        # Save disease parameters
-        disease_params = {
-            'scenario_name': scenario_name or 'Custom Scenario',
-            'R0': r0 or 1.2,
-            'tau': tau or 1.2,
-            'kappa': kappa or 1.9,
-            'gamma': gamma or 4.1,
-            'chi': 1.0,  # Default therapeutic window
-            'rho': 0.39,  # Default treatment seeking rate
-            'nu': [cfr_0_4 or 0, cfr_5_24 or 0, cfr_25_49 or 0, cfr_50_64 or 0, cfr_65_plus or 0],
-            'sigma': [
-                sigma_0_4 or 1,
-                sigma_5_24 or 1,
-                sigma_25_49 or 1,
-                sigma_50_64 or 1,
-                sigma_65_plus or 1,
-            ],
-            'infectious_period': infectious_period or 7,
-            'immune_period': immune_period or 0,
-            'model_type': selected_model,
-        }
+def save_disease_parameters(n_clicks, dp_input_values, initial_cases, displayed_tab, selected_model):
+    if not n_clicks:
+        return dash.no_update, dash.no_update, dash.no_update
 
-        logger.info('saved disease parameters = ')
-        logger.info(disease_params)
-        # TODO fix this to only display relevant parameters for disease model selected
-        # Update displayed parameters
-        if displayed_tab == 'scenario':
-            content = create_scenario_display(disease_params, initial_cases)
-        else:
-            content = html.P(
-                'No interventions set yet.', style={'color': '#6c757d', 'fontStyle': 'italic'}
-            )
+    # Build a dict of param -> value from the pattern-matched inputs
+    p = {}
+    for state_info, value in zip(ctx.states_list[0], dp_input_values):
+        p[state_info['id']['param']] = value
 
-        # Enable play button ONLY if we have BOTH disease parameters AND initial cases
-        play_disabled = not (
-            bool(disease_params) and bool(initial_cases) and len(initial_cases) > 0
+    nu_defaults = [0.000022319, 0.000040975, 0.000083729, 0.000061809, 0.000008978]
+    disease_params = {
+        'scenario_name': p.get('scenario-name') or 'Custom Scenario',
+        'R0': p.get('reproduction-number') or 1.2,
+        'tau': p.get('latent-period') or 1.2,
+        'kappa': p.get('asymptomatic-period') or 1.9,
+        'gamma': p.get('symptomatic-period') or 4.1,
+        'chi': 1.0,
+        'rho': 0.39,
+        'nu': [
+            p.get('cfr-0-4') or nu_defaults[0],
+            p.get('cfr-5-24') or nu_defaults[1],
+            p.get('cfr-25-49') or nu_defaults[2],
+            p.get('cfr-50-64') or nu_defaults[3],
+            p.get('cfr-65-plus') or nu_defaults[4],
+        ],
+        'sigma': [
+            p.get('sigma-0-4') or 1,
+            p.get('sigma-5-24') or 1,
+            p.get('sigma-25-49') or 1,
+            p.get('sigma-50-64') or 1,
+            p.get('sigma-65-plus') or 1,
+        ],
+        'infectious_period': p.get('infectious-period') or 7,
+        'immune_period': p.get('immune-period') or 0,
+        'model_type': selected_model,
+    }
+
+    logger.info('saved disease parameters = ')
+    logger.info(disease_params)
+
+    if displayed_tab == 'scenario':
+        content = create_scenario_display(disease_params, initial_cases)
+    else:
+        content = html.P(
+            'No interventions set yet.', style={'color': '#6c757d', 'fontStyle': 'italic'}
         )
 
-        return disease_params, content, play_disabled
+    play_disabled = not (bool(disease_params) and bool(initial_cases) and len(initial_cases) > 0)
 
-    return dash.no_update, dash.no_update, dash.no_update
+    return disease_params, content, play_disabled
 
 
 # Tab switching callback
