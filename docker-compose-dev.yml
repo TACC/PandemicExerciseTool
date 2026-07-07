@@ -58,18 +58,19 @@ services:
       - pandemic-network
 
   dash-frontend:
+    command: "uv run app.py"
     build:
       context: .
       dockerfile: Dockerfile-dash
     container_name: dash-frontend
     ports:
-      - "8050:8050"
+      - "8051:8051"
     depends_on:
       - django-backend
     environment:
       - API_BASE_URL=http://django-backend:8000
     volumes:
-      - ./frontend:/app
+      - ./frontend:/app/frontend
     networks:
       - pandemic-network
 

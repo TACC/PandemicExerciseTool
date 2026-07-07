@@ -1,4 +1,4 @@
-FROM python:3.12
+FROM ghcr.io/astral-sh/uv:python3.12-trixie
 
 WORKDIR /app
 
@@ -8,8 +8,8 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements and install Python dependencies
-COPY frontend/requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY frontend/pyproject.toml .
+RUN uv sync --no-dev
 
 # Copy application code
 COPY frontend /app/frontend
@@ -20,4 +20,4 @@ WORKDIR /app/frontend
 EXPOSE 8050
 
 # Run the application
-CMD ["gunicorn", "--bind", "0.0.0.0:8050", "--workers", "1", "--timeout", "120", "app:server"]
+CMD ["uv", "run", "gunicorn", "--bind", "0.0.0.0:8050", "--workers", "1", "--timeout", "120", "app:server"]

@@ -9,5 +9,8 @@ play:
 kill:
 	ansible-playbook --key-file ~/.ssh/jetstream -u ubuntu -i inventory.ini kill.yaml
 
+prune:
+	ansible-playbook --key-file ~/.ssh/jetstream -u ubuntu -i inventory.ini prune.yaml
+
 fix:
 	ansible-playbook --key-file ~/.ssh/jetstream -u ubuntu -i inventory.ini -l $(IP) -t dash playbook.yaml
