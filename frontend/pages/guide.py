@@ -1,8 +1,10 @@
-from dash import html, dcc
+from dash import register_page
+import dash_core_components as dcc
+
+register_page(__name__, title='epiENGAGE User Guide')
 
 
-def create_userguide_layout():
-
+def layout(**kwargs):
     return dcc.Markdown(
         """
 
