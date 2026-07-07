@@ -787,9 +787,7 @@ def create_home_layout():
                                         [
                                             html.Button(
                                                 [
-                                                    html.Span(
-                                                        'Set Scenario', className='scenario-menu__trigger-text'
-                                                    ),
+                                                    html.Span('Set Scenario'),
                                                     html.Span('▾', className='scenario-menu__trigger-arrow'),
                                                 ],
                                                 id='set-scenario-btn',
@@ -826,7 +824,7 @@ def create_home_layout():
                                                     html.Span(
                                                         'Interventions', className='scenario-menu__trigger-text'
                                                     ),
-                                                    html.Span('▾', className='scenario-menu__trigger-arrow'),
+                                                    html.Span('▾'),
                                                 ],
                                                 id='interventions-btn',
                                                 className='scenario-menu__trigger',
