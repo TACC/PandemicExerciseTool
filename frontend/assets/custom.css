@@ -198,6 +198,11 @@ body {
    scenario-menu
    ============================================ */
 
+.scenario-menu__wrapper {
+    position: relative;
+    margin-bottom: 10px;
+}
+
 .scenario-menu__trigger {
     width: 100% !important;
     padding: 10px !important;
@@ -233,6 +238,10 @@ body {
 /* ============================================
    param-display
    ============================================ */
+
+.param-display__tabs {
+    margin-bottom: 10px;
+}
 
 .param-display__tab {
     padding: 8px 16px !important;
@@ -375,6 +384,10 @@ body {
 
 .modal-form__checklist-label {
     font-size: 14px;
+}
+
+.view-toggle__label {
+    margin-right: 20px;
 }
 
 /* ============================================

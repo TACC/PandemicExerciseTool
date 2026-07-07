@@ -815,7 +815,7 @@ def create_home_layout():
                                                 style={'display': 'none'},
                                             ),
                                         ],
-                                        style={'position': 'relative', 'marginBottom': '10px'},
+                                        className='scenario-menu__wrapper',
                                     ),
                                     # Interventions dropdown
                                     html.Div(
@@ -857,7 +857,7 @@ def create_home_layout():
                                                 style={'display': 'none'},
                                             ),
                                         ],
-                                        style={'position': 'relative', 'marginBottom': '10px'},
+                                        className='scenario-menu__wrapper',
                                     ),
                                     # DisplayedParameters section
                                     html.Div(
@@ -869,7 +869,6 @@ def create_home_layout():
                                                         'Scenario',
                                                         id='scenario-tab-btn',
                                                         className='param-display__tab param-display__tab--active',
-                                                        style={'marginRight': '5px'},
                                                     ),
                                                     html.Button(
                                                         'Interventions',
@@ -877,7 +876,7 @@ def create_home_layout():
                                                         className='param-display__tab',
                                                     ),
                                                 ],
-                                                style={'marginBottom': '10px'},
+                                                className='param-display__tabs',
                                             ),
                                             # Tab content
                                             html.Div(
@@ -905,7 +904,7 @@ def create_home_layout():
                             html.Div(
                                 [
                                     html.H6('Show values as:', className='mb-2'),
-                                    dcc.RadioItems(
+                                    dbc.RadioItems(
                                         id='view-toggle',
                                         options=[
                                             {'label': ' Percentage', 'value': 'percent'},
@@ -913,8 +912,8 @@ def create_home_layout():
                                         ],
                                         value='count',
                                         inline=True,
-                                        labelStyle={'marginRight': '20px'},
-                                        className='mb-3 ps-2',
+                                        label_class_name='view-toggle__label',
+                                        class_name='mb-3 ps-2',
                                     ),
                                 ],
                                 className='sim-layout__middle-header',
