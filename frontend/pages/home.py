@@ -1508,7 +1508,7 @@ def manage_vaccine_stockpile(add_clicks, remove_clicks, day, amount, current_dat
         )
     else:
         table = html.P(
-            'No stockpiles added yet.', style={'color': '#6c757d', 'fontStyle': 'italic'}
+            'No stockpiles added yet.', className='param-display__empty-state'
         )
 
     logger.info(f'current_data = {current_data}')
@@ -1529,7 +1529,7 @@ def update_model_description(selected_model):
     for model in MODEL_OPTIONS:
         if model['value'] == selected_model:
             return html.Div(
-                [html.Span('ℹ️ ', style={'marginRight': '5px'}), html.Span(model['description'])]
+                [html.Span('ℹ️ ', className='model-setup__desc-icon'), html.Span(model['description'])]
             )
 
     return 'Description not available.'
@@ -1557,16 +1557,10 @@ def apply_model_state_selection(n_clicks, selected_model, selected_state):
     if not selected_model or not selected_state:
         error_msg = html.Div(
             [
-                html.Span('⚠️ ', style={'color': '#dc3545'}),
+                html.Span('⚠️ ', className='model-setup__status-icon--error'),
                 'Please select both a model and a state.',
             ],
-            style={
-                'padding': '10px',
-                'backgroundColor': '#f8d7da',
-                'color': '#721c24',
-                'borderRadius': '5px',
-                'fontSize': '13px',
-            },
+            className='model-setup__status--error',
         )
         return error_msg, dash.no_update, dash.no_update
 
@@ -1583,26 +1577,20 @@ def apply_model_state_selection(n_clicks, selected_model, selected_state):
         [
             html.Div(
                 [
-                    html.Span('✓ ', style={'color': '#28a745', 'fontWeight': 'bold'}),
-                    html.Span('Selection Applied!', style={'fontWeight': 'bold'}),
+                    html.Span('✓ ', className='model-setup__status-icon--success'),
+                    html.Span('Selection Applied!', className='fw-bold'),
                 ]
             ),
             html.Div(
-                [html.Span('Model: ', style={'fontWeight': 'bold'}), html.Span(model_name)],
-                style={'fontSize': '12px', 'marginTop': '5px'},
+                [html.Span('Model: ', className='fw-bold'), html.Span(model_name)],
+                className='model-setup__status-detail mt-1',
             ),
             html.Div(
-                [html.Span('State: ', style={'fontWeight': 'bold'}), html.Span(state_name)],
-                style={'fontSize': '12px'},
+                [html.Span('State: ', className='fw-bold'), html.Span(state_name)],
+                className='model-setup__status-detail',
             ),
         ],
-        style={
-            'padding': '10px',
-            'backgroundColor': '#d4edda',
-            'color': '#155724',
-            'borderRadius': '5px',
-            'border': '1px solid #c3e6cb',
-        },
+        className='model-setup__status--success',
     )
 
     logger.info(
@@ -1974,7 +1962,7 @@ def manage_initial_cases(
         )
     else:
         table = html.P(
-            'No initial cases added yet.', style={'color': '#6c757d', 'fontStyle': 'italic'}
+            'No initial cases added yet.', className='param-display__empty-state'
         )
 
     play_disabled = not (bool(disease_params) and bool(current_data) and len(current_data) > 0)
@@ -2042,7 +2030,7 @@ def save_disease_parameters(n_clicks, dp_input_values, initial_cases, displayed_
         content = create_scenario_display(disease_params, initial_cases)
     else:
         content = html.P(
-            'No interventions set yet.', style={'color': '#6c757d', 'fontStyle': 'italic'}
+            'No interventions set yet.', className='param-display__empty-state'
         )
 
     play_disabled = not (bool(disease_params) and bool(initial_cases) and len(initial_cases) > 0)
@@ -2891,14 +2879,14 @@ def update_table(
 
     if not event_data or timeline_value is None or timeline_value >= len(event_data):
         return html.P(
-            'No data available', style={'color': '#6c757d', 'fontStyle': 'italic'}
+            'No data available', className='param-display__empty-state'
         ), sort_state
 
     current_data = event_data[timeline_value]
     counties_data = current_data.get('counties', [])
     if not counties_data:
         return html.P(
-            'No county data available', style={'color': '#6c757d', 'fontStyle': 'italic'}
+            'No county data available', className='param-display__empty-state'
         ), sort_state
 
     trig = ctx.triggered_id
@@ -2978,7 +2966,7 @@ def update_table(
 
     if not table_data:
         return html.P(
-            'No county data available', style={'color': '#6c757d', 'fontStyle': 'italic'}
+            'No county data available', className='param-display__empty-state'
         ), sort_state
 
     # --- sort
