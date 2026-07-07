@@ -7,6 +7,7 @@ import os
 import dash
 from dash import dcc, html, Input, Output, State, callback, ctx, ALL, register_page
 import dash_bootstrap_components as dbc
+import pandas as pd
 import plotly.graph_objects as go
 import requests
 
@@ -2912,69 +2913,53 @@ def update_table(
     # Invert mapping once: geoid -> name
     id_to_name = {str(geoid): name for name, geoid in mapping.items() if str(name).lower() != 'all'}
 
-    # Create table data
-    table_data = []
+    # Build DataFrame
+    inf_key = 'infectedPercent' if view_type == 'percent' else 'infected'
+    dec_key = 'deceasedPercent' if view_type == 'percent' else 'deceased'
+
+    records = []
     for county in counties_data:
         geoid = str(county.get('fips', '')).strip()
         if not geoid:
             continue
-
-        # Ensure FIPS format matches GeoJSON geoid (5-digit county format)
-        if len(geoid) == 4:  # Leading 0s of states are getting lost
+        if len(geoid) == 4:  # leading zero lost for some states
             geoid = geoid.zfill(5)
+        records.append({
+            'name': id_to_name.get(geoid) or geoid,
+            'infected_num': float(county.get(inf_key, 0)),
+            'deceased_num': float(county.get(dec_key, 0)),
+        })
 
-        county_name = id_to_name.get(geoid) or geoid  # final fallback: show id
+    df = pd.DataFrame(records)
 
-        # keep numeric for sorting + searching
-        infected_num = (
-            float(county.get('infectedPercent', 0))
-            if view_type == 'percent'
-            else float(county.get('infected', 0))
+    if df.empty:
+        return html.P('No county data available', className='param-display__empty-state'), sort_state
+
+    # --- search
+    if search_text:
+        q = search_text.strip().lower()
+        mask = df.apply(
+            lambda r: q in f'{r["name"]} {r["infected_num"]} {r["deceased_num"]}'.lower(),
+            axis=1,
         )
-        deceased_num = (
-            float(county.get('deceasedPercent', 0))
-            if view_type == 'percent'
-            else float(county.get('deceased', 0))
-        )
+        df = df[mask]
 
-        if view_type == 'percent':
-            infected_disp = f'{infected_num:.1f}%'
-            deceased_disp = f'{deceased_num:.1f}%'
-        else:
-            infected_disp = f'{math.floor(infected_num):,}'
-            deceased_disp = f'{math.floor(deceased_num):,}'
-
-        table_data.append(
-            {
-                'name': county_name,
-                'infected_num': infected_num,
-                'deceased_num': deceased_num,
-                'infected_disp': infected_disp,
-                'deceased_disp': deceased_disp,
-            }
-        )
-
-        # --- search (works for numbers because we search stringified values too)
-        if search_text:
-            q = search_text.strip().lower()
-
-            def matches(r):
-                hay = f'{r["name"]} {r["infected_num"]} {r["deceased_num"]} {r["infected_disp"]} {r["deceased_disp"]}'.lower()
-                return q in hay
-
-            table_data = [r for r in table_data if matches(r)]
-
-    if not table_data:
-        return html.P(
-            'No county data available', className='param-display__empty-state'
-        ), sort_state
+    if df.empty:
+        return html.P('No county data available', className='param-display__empty-state'), sort_state
 
     # --- sort
-    key = {'name': 'name', 'infected': 'infected_num', 'deceased': 'deceased_num'}[
+    sort_col = {'name': 'name', 'infected': 'infected_num', 'deceased': 'deceased_num'}[
         sort_state['col']
     ]
-    reverse = sort_state['dir'] == 'desc'
-    table_data.sort(key=lambda r: r[key], reverse=reverse)
+    df = df.sort_values(sort_col, ascending=(sort_state['dir'] == 'asc'))
+
+    # --- format display columns
+    if view_type == 'percent':
+        df['infected_disp'] = df['infected_num'].map(lambda x: f'{x:.1f}%')
+        df['deceased_disp'] = df['deceased_num'].map(lambda x: f'{x:.1f}%')
+    else:
+        df['infected_disp'] = df['infected_num'].map(lambda x: f'{math.floor(x):,}')
+        df['deceased_disp'] = df['deceased_num'].map(lambda x: f'{math.floor(x):,}')
 
     # --- header with clickable sort buttons (minimal styling)
     arrow_loc = (
@@ -3026,8 +3011,8 @@ def update_table(
 
     body = html.Tbody(
         [
-            html.Tr([html.Td(r['name']), html.Td(r['infected_disp']), html.Td(r['deceased_disp'])])
-            for r in table_data
+            html.Tr([html.Td(r.name), html.Td(r.infected_disp), html.Td(r.deceased_disp)])
+            for r in df.itertuples()
         ]
     )
 
