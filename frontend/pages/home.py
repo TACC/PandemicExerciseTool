@@ -586,7 +586,7 @@ vaccines_modal = dbc.Modal(
                                     'Select age specific priority groups for vaccine distribution',
                                     className='modal-form__subtitle',
                                 ),
-                                dcc.Checklist(
+                                dbc.Checklist(
                                     id='vaccine-age-risk-priority-groups',
                                     options=[
                                         {'label': '0-4 years', 'value': 'vac-arpg-0-4'},
@@ -596,12 +596,8 @@ vaccines_modal = dbc.Modal(
                                         {'label': '65+ years', 'value': 'vac-arpg-65-plus'},
                                     ],
                                     value=['vac-arpg-18-49'],
-                                    inputStyle={'marginRight': '10px'},
-                                    labelStyle={
-                                        'display': 'flex',
-                                        'align-items': 'center',
-                                        'fontSize': '14px',
-                                    },
+                                    input_class_name='me-2',
+                                    label_class_name='modal-form__checklist-label',
                                 ),
                             ],
                             className='modal-form__field mb-3',

@@ -373,19 +373,13 @@ body {
     margin-bottom: 5px;
 }
 
+.modal-form__checklist-label {
+    font-size: 14px;
+}
+
 /* ============================================
    Dash component overrides
    ============================================ */
-
-.dash-checklist {
-    margin-bottom: 15px;
-}
-
-.dash-checklist label {
-    font-weight: normal;
-    font-size: 14px;
-    margin-bottom: 5px;
-}
 
 .dash-radioitems {
     margin-bottom: 15px;
