@@ -121,6 +121,21 @@ body {
     overflow-y: auto;
 }
 
+.sim-layout__sort-btn {
+    border: none;
+    background: transparent;
+    padding: 0;
+    font-weight: bold;
+    min-width: 90px;
+}
+
+.sim-layout__county-table {
+    max-height: 800px;
+    overflow-y: auto;
+    display: block;
+    table-layout: fixed;
+}
+
 .sim-layout__middle-header {
     background-color: white;
     border-radius: 8px;

@@ -3001,13 +3001,7 @@ def update_table(
                         f'Location {arrow_loc}',
                         id='sort-location',
                         n_clicks=0,
-                        style={
-                            'border': 'none',
-                            'background': 'transparent',
-                            'padding': 0,
-                            'fontWeight': 'bold',
-                            'minWidth': '90px',
-                        },
+                        className='sim-layout__sort-btn',
                     )
                 ),
                 html.Th(
@@ -3015,13 +3009,7 @@ def update_table(
                         f'Infectious {arrow_inf}',
                         id='sort-infected',
                         n_clicks=0,
-                        style={
-                            'border': 'none',
-                            'background': 'transparent',
-                            'padding': 0,
-                            'fontWeight': 'bold',
-                            'minWidth': '90px',
-                        },
+                        className='sim-layout__sort-btn',
                     )
                 ),
                 html.Th(
@@ -3029,13 +3017,7 @@ def update_table(
                         f'{right_col_label} {arrow_dec}',
                         id='sort-deceased',
                         n_clicks=0,
-                        style={
-                            'border': 'none',
-                            'background': 'transparent',
-                            'padding': 0,
-                            'fontWeight': 'bold',
-                            'minWidth': '90px',
-                        },
+                        className='sim-layout__sort-btn',
                     )
                 ),
             ]
@@ -3055,13 +3037,7 @@ def update_table(
         hover=True,
         striped=True,
         responsive=False,
-        className='w-100',
-        style={
-            'maxHeight': '800px',
-            'overflowY': 'auto',
-            'display': 'block',
-            'tableLayout': 'fixed',
-        },
+        className='w-100 sim-layout__county-table',
     )
 
     return table, sort_state
