@@ -203,12 +203,12 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "dash", specifier = ">=4.0.0" },
-    { name = "dash-bootstrap-components", specifier = ">=2.0.0" },
-    { name = "gunicorn" },
-    { name = "pandas" },
-    { name = "plotly" },
-    { name = "requests" },
+    { name = "dash", specifier = "==4.4.1" },
+    { name = "dash-bootstrap-components", specifier = "==2.0.4" },
+    { name = "gunicorn", specifier = "==21.2.0" },
+    { name = "pandas", specifier = "==2.1.4" },
+    { name = "plotly", specifier = "==6.9.0" },
+    { name = "requests", specifier = "==2.31.0" },
 ]
 
 [package.metadata.requires-dev]
