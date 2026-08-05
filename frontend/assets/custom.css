@@ -1,3 +1,9 @@
+:root {
+    --secondary-gray: #E2E1E1;
+    --tertiary-gray: #F8F9FA;
+    --info-blue: #E9F6FF;
+}
+
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
         'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
@@ -53,6 +59,7 @@ body {
 .sim-layout__col--left {
     flex: 0 0 20%;
     max-width: 20%;
+    min-width: 340px;
     height: 100%;
     min-height: 0;
     overflow-y: auto;
@@ -73,7 +80,7 @@ body {
 }
 
 .sim-layout__left {
-    background-color: #f8f9fa;
+    background-color: white;
     padding: 15px;
     border-radius: 8px;
     height: 100%;
@@ -174,6 +181,29 @@ body {
     margin-bottom: 15px;
 }
 
+.model-setup__header-bg {
+    background-color: var(--secondary-gray);
+    font-weight: 700;
+    height: 48px;
+}
+
+.model-setup__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%
+}
+
+.model-setup__header-btn {
+    flex: 1; 
+    text-align: right; 
+    white-space: nowrap;
+}
+
+.model-setup__body {
+    background-color: var(--tertiary-gray);
+}
+
 .model-setup__title {
     margin-bottom: 15px;
     padding-bottom: 10px;
@@ -185,9 +215,9 @@ body {
 .model-setup__desc {
     font-size: 12px;
     color: #666;
-    padding: 8px;
-    background-color: #f8f9fa;
-    border-radius: 4px;
+    padding: 10px;
+    background-color: var(--info-blue);
+    border-radius: 5px;
     margin-bottom: 15px;
 }
 

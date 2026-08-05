@@ -27,7 +27,7 @@ result = subprocess.run(
 version = result.stdout.decode('utf-8').strip() if result.stdout else 'Unknown'
 
 # Initialize Dash app with external CSS
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], use_pages=True)
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP], use_pages=True)
 app.title = f'epiENGAGE - Interactive Outbreak Simulator v-{version}'
 app.config.suppress_callback_exceptions = True
 

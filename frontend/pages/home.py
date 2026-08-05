@@ -710,63 +710,232 @@ vaccines_modal = dbc.Modal(
 def create_model_state_selection_panel():
     """
     Creates the Model and State selection dropdowns.
-    This is the core UI for Features 1 and 2.
     """
-    return html.Div(
+    return dbc.Card(
         [
-            # Panel Header
-            html.Div(
+            dbc.CardHeader(
+                html.Div(
+                    [
+                        html.Span([
+                            html.I(className="bi bi-1-circle-fill me-2"),
+                            html.Span("Start Simulation Setup"),
+                        ]),
+                        html.Span(
+                            html.I(className="bi bi-caret-up-fill"),
+                            className="model-setup__header-btn"
+                        )
+                    ],
+                    id="sim-setup-header",
+                    n_clicks=0,
+                    className="model-setup__header"
+                ),
+                className="model-setup__header-bg"
+            ),
+            dbc.Collapse(
                 [
-                    html.H6('Simulation Setup', className='model-setup__title')
-                ]
-            ),
-            # FEATURE 1: Model Selection Dropdown
-            html.Div(
-                [
-                    dbc.Label('Disease Model', class_name='fw-bold'),
-                    dcc.Dropdown(
-                        id='model-selector-dropdown',
-                        options=[{'label': m['label'], 'value': m['value']} for m in MODEL_OPTIONS],
-                        value='seirs-deterministic',
-                        clearable=True,
-                        placeholder='Select a disease model...',
-                        className='mb-2',
-                    ),
-                    # Model description display
-                    html.Div(
-                        id='model-description-display',
-                        className='model-setup__desc',
-                    ),
-                ]
-            ),
-            # FEATURE 2: State Selection Dropdown
-            html.Div(
-                [
-                    dbc.Label('State', class_name='fw-bold'),
-                    dcc.Dropdown(
-                        id='state-selector-dropdown',
-                        options=[{'label': s['label'], 'value': s['value']} for s in STATE_OPTIONS],
-                        value='Alabama',
-                        clearable=True,
-                        searchable=True,
-                        placeholder='Select a state...',
-                        className='mb-3',
-                    ),
-                ]
-            ),
-            # Apply Button
-            html.Button(
-                '✓ Apply Selection',
-                id='apply-model-state-btn',
-                n_clicks=0,
-                className='model-setup__apply-btn',
-            ),
-            # Status message area
-            html.Div(id='model-state-status-message', className='mb-3'),
+                    dbc.CardBody([
+                        # Model Selection Dropdown
+                        html.Div(
+                            [
+                                dbc.Label('Disease Model', class_name='fw-bold'),
+                                dcc.Dropdown(
+                                    id='model-selector-dropdown',
+                                    options=[{'label': m['label'], 'value': m['value']} for m in MODEL_OPTIONS],
+                                    value='seirs-deterministic',
+                                    clearable=True,
+                                    placeholder='Select a disease model...',
+                                    className='mb-2',
+                                ),
+                                # Model description display
+                                html.Div(
+                                    id='model-description-display',
+                                    className='model-setup__desc',
+                                ),
+                            ]
+                        ),
+                        # State Selection Dropdown
+                        html.Div(
+                            [
+                                dbc.Label('State', class_name='fw-bold'),
+                                dcc.Dropdown(
+                                    id='state-selector-dropdown',
+                                    options=[{'label': s['label'], 'value': s['value']} for s in STATE_OPTIONS],
+                                    value='Alabama',
+                                    clearable=True,
+                                    searchable=True,
+                                    placeholder='Select a state...',
+                                    className='mb-3',
+                                ),
+                            ]
+                        ),
+                        # Apply Button
+                        html.Button(
+                            'APPLY SELECTION',
+                            id='apply-model-state-btn',
+                            n_clicks=0,
+                            className='model-setup__apply-btn',
+                        ),
+                        # Status message area
+                        html.Div(id='model-state-status-message', className='mb-3'),
+                    ],
+                    class_name="model-setup__body"
+                    )
+                ],
+                id="sim-setup-collapse",
+                is_open=True
+            )
         ],
-        className='model-setup',
+        class_name='mb-3',
     )
 
+def create_set_scenario_panel():
+    return dbc.Card(
+        [
+            dbc.CardHeader(
+                html.Div(
+                    [
+                        html.Span([
+                            html.I(className="bi bi-2-circle-fill me-2"),
+                            html.Span("Set Scenario"),
+                        ]),
+                        html.Span(
+                            html.I(className="bi bi-caret-down-fill"),
+                            className="model-setup__header-btn",
+                        ),
+                    ],
+                    id="sim-scenario-header",
+                    n_clicks=0,
+                    className="model-setup__header",
+                ),
+                className="model-setup__header-bg",
+            ),
+            dbc.Collapse(
+                dbc.CardBody(
+                    html.Div(
+                        [
+                            dbc.Button(
+                                'Set Disease Parameters',
+                                id='disease-params-btn',
+                                outline=True,
+                                color='dark',
+                                n_clicks=0,
+                            ),
+                            dbc.Button(
+                                'Set Initial Cases',
+                                id='initial-cases-btn',
+                                outline=True,
+                                color='dark',
+                                n_clicks=0,
+                            ),
+                        ],
+                        className='d-grid gap-2',
+                    ),
+                    class_name="model-setup__body",
+                ),
+                id="sim-scenario-collapse",
+                is_open=False,
+            ),
+        ],
+        class_name='mb-3',
+    )
+
+
+def create_set_interventions_panel():
+    return dbc.Card(
+        [
+            dbc.CardHeader(
+                html.Div(
+                    [
+                        html.Span([
+                            html.I(className="bi bi-3-circle-fill me-2"),
+                            html.Span(
+                                    ["Interventions ",
+                                    html.Span("(optional)", className="fw-light")] 
+                                ),
+                        ]),
+                        html.Span(
+                            html.I(className="bi bi-caret-down-fill"),
+                            className="model-setup__header-btn",
+                        ),
+                    ],
+                    id="sim-interventions-header",
+                    n_clicks=0,
+                    className="model-setup__header",
+                ),
+                className="model-setup__header-bg",
+            ),
+            dbc.Collapse(
+                dbc.CardBody(
+                    html.Div(
+                        [
+                            dbc.Button(
+                                'Select Non-Pharmaceutical',
+                                id='npi-btn',
+                                outline=True,
+                                color='dark',
+                                n_clicks=0,
+                            ),
+                            dbc.Button(
+                                'Select Antivirals',
+                                id='antivirals-btn',
+                                outline=True,
+                                color='dark',
+                                n_clicks=0,
+                                style={'display': 'none'},
+                            ),  ### Remove this style to show Antiviral button ###
+                            dbc.Button(
+                                'Select Vaccines',
+                                id='vaccines-btn',
+                                outline=True,
+                                color='dark',
+                                n_clicks=0,
+                            ),
+                        ],
+                        className='d-grid gap-2',
+                    ),
+                    class_name="model-setup__body",
+                ),
+                id="sim-interventions-collapse",
+                is_open=False,
+            ),
+        ],
+        class_name='mb-3',
+    )
+
+
+def create_displayed_parameters_panel():
+    # DisplayedParameters section
+    return html.Div(
+        [
+            # Tab buttons
+            html.Div(
+                [
+                    html.Button(
+                        'Scenario',
+                        id='scenario-tab-btn',
+                        className='param-display__tab param-display__tab--active',
+                    ),
+                    html.Button(
+                        'Interventions',
+                        id='interventions-tab-btn',
+                        className='param-display__tab',
+                    ),
+                ],
+                className='param-display__tabs',
+            ),
+            # Tab content
+            html.Div(
+                id='displayed-parameters-content',
+                children=[
+                    html.P(
+                        'No scenario set yet.',
+                        className='param-display__empty-state',
+                    )
+                ],
+            ),
+        ],
+        className='param-display__content',
+    )
 
 # Home page layout
 def create_home_layout():
@@ -780,116 +949,10 @@ def create_home_layout():
                         [
                             html.Div(
                                 [
-                                    # Model and State Selection Panel
                                     create_model_state_selection_panel(),
-                                    # Set Scenario dropdown
-                                    html.Div(
-                                        [
-                                            html.Button(
-                                                [
-                                                    html.Span('Set Scenario'),
-                                                    html.Span('▾', className='scenario-menu__trigger-arrow'),
-                                                ],
-                                                id='set-scenario-btn',
-                                                className='scenario-menu__trigger',
-                                            ),
-                                            # Dropdown menu
-                                            html.Div(
-                                                [
-                                                    html.Button(
-                                                        'Disease Parameters',
-                                                        id='disease-params-btn',
-                                                        className='scenario-menu__item',
-                                                        n_clicks=0,
-                                                    ),
-                                                    # html.Div(),
-                                                    html.Button(
-                                                        'Initial Cases',
-                                                        id='initial-cases-btn',
-                                                        className='scenario-menu__item',
-                                                        n_clicks=0,
-                                                    ),
-                                                ],
-                                                id='scenario-dropdown',
-                                                style={'display': 'none'},
-                                            ),
-                                        ],
-                                        className='scenario-menu__wrapper',
-                                    ),
-                                    # Interventions dropdown
-                                    html.Div(
-                                        [
-                                            html.Button(
-                                                [
-                                                    html.Span(
-                                                        'Interventions', className='scenario-menu__trigger-text'
-                                                    ),
-                                                    html.Span('▾'),
-                                                ],
-                                                id='interventions-btn',
-                                                className='scenario-menu__trigger',
-                                            ),
-                                            # Dropdown menu
-                                            html.Div(
-                                                [
-                                                    html.Button(
-                                                        'Non-Pharmaceutical',
-                                                        id='npi-btn',
-                                                        className='scenario-menu__item',
-                                                        n_clicks=0,
-                                                    ),
-                                                    html.Button(
-                                                        'Antivirals',
-                                                        id='antivirals-btn',
-                                                        className='scenario-menu__item',
-                                                        n_clicks=0,
-                                                        style={'display': 'none'},
-                                                    ),  ### Remove this style to show Antiviral button ###
-                                                    html.Button(
-                                                        'Vaccines',
-                                                        id='vaccines-btn',
-                                                        className='scenario-menu__item',
-                                                        n_clicks=0,
-                                                    ),
-                                                ],
-                                                id='interventions-dropdown',
-                                                style={'display': 'none'},
-                                            ),
-                                        ],
-                                        className='scenario-menu__wrapper',
-                                    ),
-                                    # DisplayedParameters section
-                                    html.Div(
-                                        [
-                                            # Tab buttons
-                                            html.Div(
-                                                [
-                                                    html.Button(
-                                                        'Scenario',
-                                                        id='scenario-tab-btn',
-                                                        className='param-display__tab param-display__tab--active',
-                                                    ),
-                                                    html.Button(
-                                                        'Interventions',
-                                                        id='interventions-tab-btn',
-                                                        className='param-display__tab',
-                                                    ),
-                                                ],
-                                                className='param-display__tabs',
-                                            ),
-                                            # Tab content
-                                            html.Div(
-                                                id='displayed-parameters-content',
-                                                children=[
-                                                    html.P(
-                                                        'No scenario set yet.',
-                                                        className='param-display__empty-state',
-                                                    )
-                                                ],
-                                            ),
-                                        ],
-                                        className='param-display__content',
-                                    ),
+                                    create_set_scenario_panel(),
+                                    create_set_interventions_panel(),
+                                    create_displayed_parameters_panel()
                                 ],
                                 className='sim-layout__left',
                             )
@@ -1254,6 +1317,16 @@ def layout(**kwargs):
 
 
 @callback(
+    Output("sim-setup-collapse", "is_open"),
+    [Input("sim-setup-header", "n_clicks")],
+    [State("sim-setup-collapse", "is_open")],
+)
+def toggle_collapse(n, is_open):
+    if n:
+        return not is_open
+    return is_open
+
+@callback(
     Output('disease-params-modal-body', 'children'),
     Input('model-selector-dropdown', 'value'),
     Input('disease-preset-store', 'data'),
@@ -1528,7 +1601,7 @@ def update_model_description(selected_model):
     for model in MODEL_OPTIONS:
         if model['value'] == selected_model:
             return html.Div(
-                [html.Span('ℹ️ ', className='model-setup__desc-icon'), html.Span(model['description'])]
+                [html.Span('ℹ️ ', className='model-setup__desc-icon'), html.Span(model['description'])],
             )
 
     return 'Description not available.'
@@ -1697,31 +1770,26 @@ def restore_ui_after_navigation(content, sim_state, disease_params, event_data):
     return play_disabled, play_text, play_style, timeline_disabled, timeline_max, timeline_value
 
 
-# Dropdown toggle callbacks
 @callback(
-    Output('scenario-dropdown', 'style'),
-    Input('set-scenario-btn', 'n_clicks'),
-    State('scenario-dropdown', 'style'),
-    prevent_initial_call=True,
+    Output("sim-scenario-collapse", "is_open"),
+    Input("sim-scenario-header", "n_clicks"),
+    State("sim-scenario-collapse", "is_open"),
 )
-def toggle_scenario_dropdown(n_clicks, current_style):
-    if n_clicks:
-        display = 'none' if current_style.get('display') == 'block' else 'block'
-        return {**current_style, 'display': display}
-    return current_style
+def toggle_scenario_collapse(n, is_open):
+    if n:
+        return not is_open
+    return is_open
 
 
 @callback(
-    Output('interventions-dropdown', 'style'),
-    Input('interventions-btn', 'n_clicks'),
-    State('interventions-dropdown', 'style'),
-    prevent_initial_call=True,
+    Output("sim-interventions-collapse", "is_open"),
+    Input("sim-interventions-header", "n_clicks"),
+    State("sim-interventions-collapse", "is_open"),
 )
-def toggle_interventions_dropdown(n_clicks, current_style):
-    if n_clicks:
-        display = 'none' if current_style.get('display') == 'block' else 'block'
-        return {**current_style, 'display': display}
-    return current_style
+def toggle_interventions_collapse(n, is_open):
+    if n:
+        return not is_open
+    return is_open
 
 
 # Modal toggle callbacks - Fixed to prevent auto-opening
