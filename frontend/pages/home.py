@@ -1089,7 +1089,6 @@ def create_home_layout():
             antivirals_modal,
             vaccines_modal,
         ],
-        # id='main-content',
     )
 
 
@@ -1104,17 +1103,17 @@ def create_interventions_display(npi_data, antiviral_data, vaccine_data, vaccine
     if npi_data:
         content.extend(
             [
-                html.H6('Non-Pharmaceutical Interventions', className='fw-bold mb-2'),
+                html.H6('Non-Pharmaceutical Interventions', className='fw-light mb-2'),
             ]
         )
         for npi in npi_data:
             content.append(
                 html.Div(
                     [
-                        html.P(f'Name: {npi["name"]}'),
-                        html.P(f'Start Day: {npi["start"]}, Duration: {npi["duration"]} days'),
-                        html.P(f'Location: {", ".join(npi["location"])}'),
-                        html.P('Age-specific effectiveness:'),
+                        html.P([html.Span('Name: ', className='fw-bold'), npi["name"]]),
+                        html.P([html.Span('Start Day: ', className='fw-bold'), f'{npi["start"]}, ', html.Span('Duration: ', className='fw-bold'), f'{npi["duration"]} days']),
+                        html.P([html.Span('Location: ', className='fw-bold'), ", ".join(npi["location"])]),
+                        html.P(html.Span('Age-specific effectiveness:', className='fw-bold')),
                         html.Ul(
                             [
                                 html.Li(f'0-4: {npi["effectiveness"][0]:.2f}'),
@@ -1134,12 +1133,10 @@ def create_interventions_display(npi_data, antiviral_data, vaccine_data, vaccine
     if antiviral_data:
         content.extend(
             [
-                html.H6('Antivirals', className='fw-bold mb-2'),
-                html.P(f'Effectiveness: {antiviral_data["effectiveness"]:.2f}'),
-                html.P(f'Wastage Factor: {antiviral_data["wastage_factor"]} days'),
-                html.P(
-                    f'Stockpile: {antiviral_data["stockpile_amount"]} on day {antiviral_data["stockpile_day"]}'
-                ),
+                html.H6('Antivirals', className='fw-light mb-2'),
+                html.P([html.Span('Effectiveness: ', className='fw-bold'), f'{antiviral_data["effectiveness"]:.2f}']),
+                html.P([html.Span('Wastage Factor: ', className='fw-bold'), f'{antiviral_data["wastage_factor"]} days']),
+                html.P([html.Span('Stockpile: ', className='fw-bold'), f'{antiviral_data["stockpile_amount"]} on day {antiviral_data["stockpile_day"]}']),
             ]
         )
 
@@ -1150,15 +1147,15 @@ def create_interventions_display(npi_data, antiviral_data, vaccine_data, vaccine
             if vaccine_data['vaccine_model'] == 'stockpile-age-risk'
             else 'Undefined'
         )
-        content.extend([html.H6('Vaccines', className='fw-bold mb-2')])
+        content.extend([html.H6('Vaccines', className='fw-light mb-2')])
         content.append(
             html.Div(
                 [
-                    html.P(f'Vaccine Model: {model_label}'),
-                    html.P(f'Priority Groups: {vaccine_data["priority_groups"]}'),
-                    html.P(f'Capacity: {vaccine_data["capacity"]} (proportion)'),
-                    html.P(f'Effectiveness Lag: {vaccine_data["effectiveness_lag"]} days'),
-                    html.P('Effectiveness:'),
+                    html.P([html.Span('Vaccine Model: ', className='fw-bold'), model_label]),
+                    html.P([html.Span('Priority Groups: ', className='fw-bold'), f'{vaccine_data["priority_groups"]}']),
+                    html.P([html.Span('Capacity: ', className='fw-bold'), f'{vaccine_data["capacity"]} (proportion)']),
+                    html.P([html.Span('Effectiveness Lag: ', className='fw-bold'), f'{vaccine_data["effectiveness_lag"]} days']),
+                    html.P(html.Span('Effectiveness:', className='fw-bold')),
                     html.Ul(
                         [
                             html.Li(f'0-4: {vaccine_data["effectiveness"][0]:.2f}'),
@@ -1169,7 +1166,7 @@ def create_interventions_display(npi_data, antiviral_data, vaccine_data, vaccine
                         ],
                         className='ms-3',
                     ),
-                    html.P('Adherence:'),
+                    html.P(html.Span('Adherence:', className='fw-bold')),
                     html.Ul(
                         [
                             html.Li(f'0-4: {vaccine_data["adherence"][0]:.2f}'),
@@ -1180,7 +1177,7 @@ def create_interventions_display(npi_data, antiviral_data, vaccine_data, vaccine
                         ],
                         className='ms-3',
                     ),
-                    html.P('Stockpile:'),
+                    html.P(html.Span('Stockpile:', className='fw-bold')),
                     html.Ul(
                         children=[
                             html.Li(f'day={i["day"]} , amt={i["amount"]}')
@@ -1203,18 +1200,21 @@ def create_scenario_display(disease_params, initial_cases):
 
     content = []
 
+    title_class = 'mb-2 text-muted'
+
     # Disease parameters section
     if disease_params:
         if disease_params['model_type'].startswith('seatird-'):
             content.extend(
                 [
-                    html.H6('Disease Parameters', className='fw-bold mb-2'),
-                    html.P(f'Scenario: {disease_params.get("scenario_name", "Custom")}'),
-                    html.P(f'Reproduction Number: {disease_params.get("R0", 0)}'),
-                    html.P(f'Latent Period: {disease_params.get("tau", 0)} days'),
-                    html.P(f'Asymptomatic Period: {disease_params.get("kappa", 0)} days'),
-                    html.P(f'Symptomatic Period: {disease_params.get("gamma", 0)} days'),
-                    html.P('Case Fatality Rate:'),
+                    html.H6('Disease Parameters', className=title_class),
+                    html.Hr(),
+                    html.P([html.Span('Scenario: ', className='fw-bold'), disease_params.get('scenario_name', 'Custom')]),
+                    html.P([html.Span('Reproduction Number: ', className='fw-bold'), disease_params.get('R0', 0)]),
+                    html.P([html.Span('Latent Period: ', className='fw-bold'), f'{disease_params.get("tau", 0)} days']),
+                    html.P([html.Span('Asymptomatic Period: ', className='fw-bold'), f'{disease_params.get("kappa", 0)} days']),
+                    html.P([html.Span('Symptomatic Period: ', className='fw-bold'), f'{disease_params.get("gamma", 0)} days']),
+                    html.P(html.Span('Case Fatality Rate:', className='fw-bold')),
                     html.Ul(
                         [
                             html.Li(f'0-4: {disease_params.get("nu", [0, 0, 0, 0, 0])[0]:.9f}'),
@@ -1230,12 +1230,13 @@ def create_scenario_display(disease_params, initial_cases):
         if disease_params['model_type'].startswith('seirs-'):
             content.extend(
                 [
-                    html.H6('Disease Parameters', className='fw-bold mb-2'),
-                    html.P(f'Scenario: {disease_params.get("scenario_name", "Custom")}'),
-                    html.P(f'Reproduction Number: {disease_params.get("R0", 0)}'),
-                    html.P(f'Latent Period: {disease_params.get("tau", 0)} days'),
-                    html.P(f'Infectious Period: {disease_params.get("infectious_period", 0)} days'),
-                    html.P(f'Immune Period: {disease_params.get("immune_period", 0)} days'),
+                    html.H6('Disease Parameters', className=title_class),
+                    html.Hr(),
+                    html.P([html.Span('Scenario: ', className='fw-bold'), disease_params.get('scenario_name', 'Custom')]),
+                    html.P([html.Span('Reproduction Number: ', className='fw-bold'), disease_params.get('R0', 0)]),
+                    html.P([html.Span('Latent Period: ', className='fw-bold'), f'{disease_params.get("tau", 0)} days']),
+                    html.P([html.Span('Infectious Period: ', className='fw-bold'), f'{disease_params.get("infectious_period", 0)} days']),
+                    html.P([html.Span('Immune Period: ', className='fw-bold'), f'{disease_params.get("immune_period", 0)} days']),
                 ]
             )
 
@@ -1257,7 +1258,7 @@ def create_scenario_display(disease_params, initial_cases):
     if not content:
         return html.P('No scenario set yet.', className='param-display__empty-state')
 
-    return html.Div(content)
+    return html.Div(content, className='mt-3')
 
 
 def _render_npi_table(npi_list):
@@ -1653,14 +1654,7 @@ def apply_model_state_selection(n_clicks, selected_model, selected_state):
                     html.Span('Selection Applied!', className='fw-bold'),
                 ]
             ),
-            html.Div(
-                [html.Span('Model: ', className='fw-bold'), html.Span(model_name)],
-                className='model-setup__status-detail mt-1',
-            ),
-            html.Div(
-                [html.Span('State: ', className='fw-bold'), html.Span(state_name)],
-                className='model-setup__status-detail',
-            ),
+            html.Span("Proceed to Step 2 to set your scenario.", className='model-setup__status-detail mt-1'),
         ],
         className='model-setup__status--success',
     )
