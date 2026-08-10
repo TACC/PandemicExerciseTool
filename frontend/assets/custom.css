@@ -315,30 +315,15 @@ body {
    param-display
    ============================================ */
 
-.param-display__tabs {
-    margin-bottom: 10px;
+.param-display__tabs .nav-link {
+    color: #495057;
 }
 
-.param-display__tab {
-    padding: 8px 16px !important;
-    margin-right: 5px !important;
-    border: 1px solid #dee2e6 !important;
-    background-color: #f8f9fa !important;
-    color: #495057 !important;
-    border-radius: 4px 4px 0 0 !important;
-    cursor: pointer !important;
-    font-size: 14px !important;
-}
-
-.param-display__tab--active {
-    background-color: white !important;
-    border-bottom: 1px solid white !important;
-    color: #495057 !important;
-    font-weight: 600 !important;
-}
-
-.param-display__tab:hover {
-    background-color: #e9ecef !important;
+.param-display__tabs .nav-link.active {
+    background-color: #102c41 !important;
+    color: white !important;
+    font-weight: 600;
+    border-color: #102c41 #102c41 transparent !important;
 }
 
 .param-display__content {

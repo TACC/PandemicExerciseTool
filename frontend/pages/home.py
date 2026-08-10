@@ -904,37 +904,30 @@ def create_set_interventions_panel():
 
 
 def create_displayed_parameters_panel():
-    # DisplayedParameters section
-    return html.Div(
+    return dbc.Tabs(
         [
-            # Tab buttons
-            html.Div(
-                [
-                    html.Button(
-                        'Scenario',
-                        id='scenario-tab-btn',
-                        className='param-display__tab param-display__tab--active',
-                    ),
-                    html.Button(
-                        'Interventions',
-                        id='interventions-tab-btn',
-                        className='param-display__tab',
-                    ),
-                ],
-                className='param-display__tabs',
+            dbc.Tab(
+                html.Div(
+                    id='scenario-content',
+                    children=[html.P('No scenario set yet.', className='param-display__empty-state')],
+                    className='param-display__content',
+                ),
+                label='Scenario',
+                tab_id='tab-scenario',
             ),
-            # Tab content
-            html.Div(
-                id='displayed-parameters-content',
-                children=[
-                    html.P(
-                        'No scenario set yet.',
-                        className='param-display__empty-state',
-                    )
-                ],
+            dbc.Tab(
+                html.Div(
+                    id='interventions-content',
+                    children=[html.P('No interventions set yet.', className='param-display__empty-state')],
+                    className='param-display__content',
+                ),
+                label='Interventions',
+                tab_id='tab-interventions',
             ),
         ],
-        className='param-display__content',
+        id='param-tabs',
+        active_tab='tab-scenario',
+        class_name='param-display__tabs',
     )
 
 # Home page layout
@@ -2035,19 +2028,18 @@ def manage_initial_cases(
 @callback(
     [
         Output('disease-parameters', 'data'),
-        Output('displayed-parameters-content', 'children', allow_duplicate=True),
+        Output('scenario-content', 'children', allow_duplicate=True),
         Output('play-pause-btn', 'disabled', allow_duplicate=True),
     ],
     Input('disease-params-save', 'n_clicks'),
     [
         State({'type': 'dp-input', 'param': ALL}, 'value'),
         State('initial-cases-data', 'data'),
-        State('displayed-tab', 'data'),
         State('selected-model-store', 'data'),
     ],
     prevent_initial_call=True,
 )
-def save_disease_parameters(n_clicks, dp_input_values, initial_cases, displayed_tab, selected_model):
+def save_disease_parameters(n_clicks, dp_input_values, initial_cases, selected_model):
     if not n_clicks:
         return dash.no_update, dash.no_update, dash.no_update
 
@@ -2087,59 +2079,11 @@ def save_disease_parameters(n_clicks, dp_input_values, initial_cases, displayed_
     logger.info('saved disease parameters = ')
     logger.info(disease_params)
 
-    if displayed_tab == 'scenario':
-        content = create_scenario_display(disease_params, initial_cases)
-    else:
-        content = html.P(
-            'No interventions set yet.', className='param-display__empty-state'
-        )
-
+    content = create_scenario_display(disease_params, initial_cases)
     play_disabled = not (bool(disease_params) and bool(initial_cases) and len(initial_cases) > 0)
 
     return disease_params, content, play_disabled
 
-
-# Tab switching callback
-@callback(
-    [
-        Output('displayed-parameters-content', 'children', allow_duplicate=True),
-        Output('scenario-tab-btn', 'className'),
-        Output('interventions-tab-btn', 'className'),
-        Output('displayed-tab', 'data'),
-    ],
-    [Input('scenario-tab-btn', 'n_clicks'), Input('interventions-tab-btn', 'n_clicks')],
-    [
-        State('disease-parameters', 'data'),
-        State('initial-cases-data', 'data'),
-        State('npi-data', 'data'),
-        State('antiviral-data', 'data'),
-        State('vaccine-data', 'data'),
-        State('vaccine-stockpile', 'data'),
-    ],
-    prevent_initial_call=True,
-)
-def switch_displayed_tab(
-    scenario_clicks,
-    interventions_clicks,
-    disease_params,
-    initial_cases,
-    npi_data,
-    antiviral_data,
-    vaccine_data,
-    vaccine_stockpile,
-):
-    triggered_id = (
-        ctx.triggered[0]['prop_id'].split('.')[0] if ctx.triggered else 'scenario-tab-btn'
-    )
-
-    if triggered_id == 'interventions-tab-btn':
-        content = create_interventions_display(
-            npi_data, antiviral_data, vaccine_data, vaccine_stockpile
-        )
-        return content, 'param-display__tab', 'param-display__tab param-display__tab--active', 'interventions'
-    else:
-        content = create_scenario_display(disease_params, initial_cases)
-        return content, 'param-display__tab param-display__tab--active', 'param-display__tab', 'scenario'
 
 
 # Save intervention callbacks
@@ -2230,9 +2174,11 @@ def manage_npis(
 
 
 @callback(
-    Output('displayed-parameters-content', 'children', allow_duplicate=True),
     [
-        Input('displayed-tab', 'data'),
+        Output('scenario-content', 'children', allow_duplicate=True),
+        Output('interventions-content', 'children', allow_duplicate=True),
+    ],
+    [
         Input('disease-parameters', 'data'),
         Input('initial-cases-data', 'data'),
         Input('npi-data', 'data'),
@@ -2243,7 +2189,6 @@ def manage_npis(
     prevent_initial_call=True,
 )
 def refresh_displayed_parameters(
-    displayed_tab,
     disease_params,
     initial_cases,
     npi_data,
@@ -2251,15 +2196,11 @@ def refresh_displayed_parameters(
     vaccine_data,
     vaccine_stockpile,
 ):
-    """
-    Keeps the Displayed Parameters panel in sync.
-    This replaces the "refresh" behavior that used to live inside save_npi.
-    """
-    if displayed_tab == 'interventions':
-        return create_interventions_display(
-            npi_data or [], antiviral_data or {}, vaccine_data or {}, vaccine_stockpile or []
-        )
-    return create_scenario_display(disease_params or {}, initial_cases or [])
+    scenario = create_scenario_display(disease_params or {}, initial_cases or [])
+    interventions = create_interventions_display(
+        npi_data or [], antiviral_data or {}, vaccine_data or {}, vaccine_stockpile or []
+    )
+    return scenario, interventions
 
 
 # Antiviral callback
@@ -2291,7 +2232,7 @@ def prefill_antivirals_modal(is_open, antiviral_data):
     [
         Output('antiviral-data', 'data'),
         Output('antivirals-enabled', 'data'),
-        Output('displayed-parameters-content', 'children', allow_duplicate=True),
+        Output('interventions-content', 'children', allow_duplicate=True),
     ],
     Input('antivirals-save', 'n_clicks'),
     [
@@ -2299,9 +2240,6 @@ def prefill_antivirals_modal(is_open, antiviral_data):
         State('antiviral-wastage', 'value'),
         State('antiviral-stockpile-day', 'value'),
         State('antiviral-stockpile-amount', 'value'),
-        State('displayed-tab', 'data'),
-        State('disease-parameters', 'data'),
-        State('initial-cases-data', 'data'),
         State('npi-data', 'data'),
         State('vaccine-data', 'data'),
         State('vaccine-stockpile', 'data'),
@@ -2314,9 +2252,6 @@ def save_antivirals(
     wastage,
     stockpile_day,
     stockpile_amount,
-    displayed_tab,
-    disease_params,
-    initial_cases,
     npi_data,
     vaccine_data,
     vaccine_stockpile,
@@ -2331,13 +2266,9 @@ def save_antivirals(
         'stockpile_amount': 10000 if stockpile_amount is None else stockpile_amount,
     }
 
-    if displayed_tab == 'interventions':
-        content = create_interventions_display(
-            npi_data or [], antiviral_data, vaccine_data or {}, vaccine_stockpile or []
-        )
-    else:
-        content = create_scenario_display(disease_params or {}, initial_cases or [])
-
+    content = create_interventions_display(
+        npi_data or [], antiviral_data, vaccine_data or {}, vaccine_stockpile or []
+    )
     return antiviral_data, True, content
 
 
@@ -2345,7 +2276,7 @@ def save_antivirals(
     [
         Output('vaccine-data', 'data'),
         Output('vaccines-enabled', 'data'),
-        Output('displayed-parameters-content', 'children', allow_duplicate=True),
+        Output('interventions-content', 'children', allow_duplicate=True),
     ],
     Input('vaccines-save', 'n_clicks'),
     [
@@ -2364,11 +2295,8 @@ def save_antivirals(
         State('vac-adh-50-64', 'value'),
         State('vac-adh-65-plus', 'value'),
         State('vaccine-stockpile', 'data'),
-        State('displayed-tab', 'data'),
         State('npi-data', 'data'),
         State('antiviral-data', 'data'),
-        State('disease-parameters', 'data'),
-        State('initial-cases-data', 'data'),
     ],
     prevent_initial_call=True,
 )
@@ -2389,11 +2317,8 @@ def save_vaccines(
     vac_adh_3,
     vac_adh_4,
     vaccine_stockpile,
-    displayed_tab,
     npi_data,
     antiviral_data,
-    disease_params,
-    initial_cases,
 ):
     if not n_clicks:
         return [dash.no_update] * 3
@@ -2418,13 +2343,9 @@ def save_vaccines(
     logger.info(f'vaccine_data = {vaccine_data}')
     logger.info(f'vaccine_stockpile = {vaccine_stockpile}')
 
-    if displayed_tab == 'interventions':
-        content = create_interventions_display(
-            npi_data or [], antiviral_data or {}, vaccine_data, vaccine_stockpile
-        )
-    else:
-        content = create_scenario_display(disease_params or {}, initial_cases or [])
-
+    content = create_interventions_display(
+        npi_data or [], antiviral_data or {}, vaccine_data, vaccine_stockpile
+    )
     return vaccine_data, True, content
 
 

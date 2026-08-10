@@ -52,7 +52,6 @@ app.layout = html.Div(
         dcc.Store(id='vaccine-stockpile', data=[]),
         dcc.Store(id='antivirals-enabled', data=False),
         dcc.Store(id='vaccines-enabled', data=False),
-        dcc.Store(id='displayed-tab', data='scenario'),
         dcc.Store(id='disease-preset-store', data={}),
         dcc.Interval(id='simulation-interval', interval=1000, disabled=True),
         # Stores for Model and State Selection
