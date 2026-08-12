@@ -776,7 +776,7 @@ def create_model_state_selection_panel():
                             className='model-setup__apply-btn',
                         ),
                         # Status message area
-                        html.Div(id='model-state-status-message', className='mb-3'),
+                        html.Div(id='model-state-status-message'),
                     ],
                     class_name="model-setup__body"
                     )
