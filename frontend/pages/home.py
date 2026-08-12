@@ -960,7 +960,7 @@ def create_home_layout():
                                 className='sim-layout__left',
                             )
                         ],
-                        className='col-lg-2 sim-layout__col--left',
+                        className='sim-layout__col--left',
                     ),
                     # Middle Panel - Map and Chart
                     html.Div(
@@ -1002,7 +1002,7 @@ def create_home_layout():
                                 className='sim-layout__viz',
                             ),
                         ],
-                        className='col-lg-7 sim-layout__col--middle',
+                        className='sim-layout__col--middle',
                     ),
                     # Right Panel - Table
                     html.Div(
@@ -1021,15 +1021,6 @@ def create_home_layout():
                                         id='county-table-sort',
                                         data={'col': 'infected', 'dir': 'desc'},
                                     ),
-                                    html.Button(
-                                        id='sort-location', n_clicks=0, style={'display': 'none'}
-                                    ),
-                                    html.Button(
-                                        id='sort-infected', n_clicks=0, style={'display': 'none'}
-                                    ),
-                                    html.Button(
-                                        id='sort-deceased', n_clicks=0, style={'display': 'none'}
-                                    ),
                                     html.Div(
                                         id='spread-table',
                                         className='sim-layout__table',
@@ -1038,10 +1029,10 @@ def create_home_layout():
                                 className='sim-layout__right',
                             )
                         ],
-                        className='col-lg-3 sim-layout__col--right',
+                        className='sim-layout__col--right',
                     ),
                 ],
-                className='row sim-layout__row',
+                className='sim-layout__row',
             ),
             # Footer - OUTSIDE the row, always visible at bottom
             html.Div(
@@ -2832,18 +2823,34 @@ def update_chart(event_data, timeline_value, selected_model):
 
 
 @callback(
-    [Output('spread-table', 'children'), Output('county-table-sort', 'data')],
+    Output('county-table-sort', 'data', allow_duplicate=True),
+    Input({'type': 'sort-btn', 'col': ALL}, 'n_clicks'),
+    State('county-table-sort', 'data'),
+    prevent_initial_call=True,
+)
+def handle_sort_click(sort_clicks, sort_state):
+    sort_state = sort_state or {'col': 'infected', 'dir': 'desc'}
+    trig = ctx.triggered_id
+    if isinstance(trig, dict) and trig.get('type') == 'sort-btn':
+        col = trig['col']
+        if sort_state.get('col') == col:
+            sort_state['dir'] = 'asc' if sort_state['dir'] == 'desc' else 'desc'
+        else:
+            sort_state = {'col': col, 'dir': 'desc'}
+    return sort_state
+
+
+@callback(
+    Output('spread-table', 'children'),
     [
         Input('event-data', 'data'),
         Input('timeline-slider', 'value'),
         Input('view-toggle', 'value'),
         Input('location-assets-store', 'data'),
         Input('county-search', 'value'),
-        Input('sort-location', 'n_clicks'),
-        Input('sort-infected', 'n_clicks'),
-        Input('sort-deceased', 'n_clicks'),
+        Input('county-table-sort', 'data'),
     ],
-    [State('county-table-sort', 'data'), State('selected-model-store', 'data')],
+    State('selected-model-store', 'data'),
 )
 def update_table(
     event_data,
@@ -2851,13 +2858,9 @@ def update_table(
     view_type,
     location_assets,
     search_text,
-    location_clicks,
-    infected_clicks,
-    deceased_clicks,
     sort_state,
     selected_model,
 ):
-    # --- sort state update based on which header was clicked
     sort_state = sort_state or {'col': 'infected', 'dir': 'desc'}
 
     model = (selected_model or '').lower()
@@ -2866,33 +2869,12 @@ def update_table(
     )
 
     if not event_data or timeline_value is None or timeline_value >= len(event_data):
-        return html.P(
-            'No data available', className='param-display__empty-state'
-        ), sort_state
+        return html.P('No data available', className='param-display__empty-state')
 
     current_data = event_data[timeline_value]
     counties_data = current_data.get('counties', [])
     if not counties_data:
-        return html.P(
-            'No county data available', className='param-display__empty-state'
-        ), sort_state
-
-    trig = ctx.triggered_id
-    if trig == 'sort-location':
-        if sort_state.get('col') == 'name':
-            sort_state['dir'] = 'asc' if sort_state['dir'] == 'desc' else 'desc'
-        else:
-            sort_state = {'col': 'name', 'dir': 'desc'}
-    elif trig == 'sort-infected':
-        if sort_state.get('col') == 'infected':
-            sort_state['dir'] = 'asc' if sort_state.get('dir') == 'desc' else 'desc'
-        else:
-            sort_state = {'col': 'infected', 'dir': 'desc'}
-    elif trig == 'sort-deceased':
-        if sort_state.get('col') == 'deceased':
-            sort_state['dir'] = 'asc' if sort_state.get('dir') == 'desc' else 'desc'
-        else:
-            sort_state = {'col': 'deceased', 'dir': 'desc'}
+        return html.P('No county data available', className='param-display__empty-state')
 
     location_assets = location_assets or {}
     mapping = location_assets.get('mapping', {})  # name -> geoid (string)
@@ -2920,7 +2902,7 @@ def update_table(
     df = pd.DataFrame(records)
 
     if df.empty:
-        return html.P('No county data available', className='param-display__empty-state'), sort_state
+        return html.P('No county data available', className='param-display__empty-state')
 
     # --- search
     if search_text:
@@ -2932,7 +2914,7 @@ def update_table(
         df = df[mask]
 
     if df.empty:
-        return html.P('No county data available', className='param-display__empty-state'), sort_state
+        return html.P('No county data available', className='param-display__empty-state')
 
     # --- sort
     sort_col = {'name': 'name', 'infected': 'infected_num', 'deceased': 'deceased_num'}[
@@ -2971,7 +2953,7 @@ def update_table(
                 html.Th(
                     html.Button(
                         f'Location {arrow_loc}',
-                        id='sort-location',
+                        id={'type': 'sort-btn', 'col': 'name'},
                         n_clicks=0,
                         className='sim-layout__sort-btn',
                     )
@@ -2979,7 +2961,7 @@ def update_table(
                 html.Th(
                     html.Button(
                         f'Infectious {arrow_inf}',
-                        id='sort-infected',
+                        id={'type': 'sort-btn', 'col': 'infected'},
                         n_clicks=0,
                         className='sim-layout__sort-btn',
                     )
@@ -2987,7 +2969,7 @@ def update_table(
                 html.Th(
                     html.Button(
                         f'{right_col_label} {arrow_dec}',
-                        id='sort-deceased',
+                        id={'type': 'sort-btn', 'col': 'deceased'},
                         n_clicks=0,
                         className='sim-layout__sort-btn',
                     )
@@ -3012,4 +2994,4 @@ def update_table(
         className='w-100 sim-layout__county-table',
     )
 
-    return table, sort_state
+    return table

@@ -51,6 +51,7 @@ body {
 
 .sim-layout__row {
     display: flex;
+    flex-wrap: nowrap;
     height: calc(100vh - 80px);
     padding-bottom: 70px;
     box-sizing: border-box;
@@ -58,24 +59,23 @@ body {
 }
 
 .sim-layout__col--left {
-    flex: 0 0 20%;
-    max-width: 20%;
-    min-width: 340px;
+    flex: 0 0 340px;
+    width: 340px;
     height: 100%;
     min-height: 0;
     overflow-y: auto;
 }
 
 .sim-layout__col--middle {
-    flex: 0 0 52%;
-    max-width: 52%;
+    flex: 1 1 auto;
+    min-width: 0;
     height: 100%;
     min-height: 0;
 }
 
 .sim-layout__col--right {
-    flex: 0 0 28%;
-    max-width: 28%;
+    flex: 0 0 340px;
+    width: 340px;
     height: 100%;
     min-height: 0;
 }
