@@ -415,57 +415,14 @@ body {
     vertical-align: middle;
 }
 
-.sim-footer__play-btn {
-    padding: 10px 30px !important;
-    font-size: 16px !important;
-    background-color: #28a745 !important;
-    color: white !important;
-    border: none !important;
-    border-radius: 4px !important;
-    cursor: pointer !important;
-    margin-right: 20px !important;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.sim-footer__play-btn--running {
-    background-color: #ffc107 !important;
-    color: black !important;
-}
-
-.sim-footer__play-btn:disabled {
-    opacity: 0.6 !important;
-    cursor: not-allowed !important;
-    background-color: var(--bs-secondary) !important;
-}
-
-.sim-footer__play-btn:hover:not(:disabled) {
-    background-color: #218838 !important;
-}
-
+.sim-footer__play-btn,
 .sim-footer__reset-btn {
     padding: 10px 30px !important;
     font-size: 16px !important;
-    background-color: #a72a28 !important;
-    color: white !important;
-    border: none !important;
-    border-radius: 4px !important;
-    cursor: pointer !important;
     margin-right: 20px !important;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-}
-
-.sim-footer__reset-btn:disabled {
-    opacity: 0.6 !important;
-    cursor: not-allowed !important;
-    background-color: var(--bs-secondary) !important;
-}
-
-.sim-footer__reset-btn:hover:not(:disabled) {
-    background-color: #8f2523 !important;
 }
 
 /* ============================================

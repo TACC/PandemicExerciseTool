@@ -943,6 +943,7 @@ def create_displayed_parameters_panel():
 def create_home_layout():
     return html.Div(
         [
+            dcc.Location(id='url', refresh=True),
             # Main content row with fixed height
             html.Div(
                 [
@@ -1048,21 +1049,19 @@ def create_home_layout():
                     html.Div(
                         [
                             # Reset Button
-                            html.A(
-                                html.Button(
-                                    'Reset',
-                                    id='reset-btn',
-                                    disabled=False,
-                                    className='sim-footer__reset-btn',
-                                ),
-                                href='/',
+                            dbc.Button(
+                                'Reset',
+                                id='reset-btn',
+                                color='danger',
+                                class_name='sim-footer__reset-btn',
                             ),
                             # Play/Pause Button
-                            html.Button(
+                            dbc.Button(
                                 'Play',
                                 id='play-pause-btn',
+                                color='success',
                                 disabled=True,
-                                className='sim-footer__play-btn',
+                                class_name='sim-footer__play-btn',
                             ),
                             # Timeline Slider
                             html.Div(
@@ -1715,7 +1714,7 @@ def update_npi_location_options(location_assets):
     [
         Output('play-pause-btn', 'disabled', allow_duplicate=True),
         Output('play-pause-btn', 'children', allow_duplicate=True),
-        Output('play-pause-btn', 'className', allow_duplicate=True),
+        Output('play-pause-btn', 'color', allow_duplicate=True),
         Output('timeline-slider', 'disabled', allow_duplicate=True),
         Output('timeline-slider', 'max', allow_duplicate=True),
         Output('timeline-slider', 'value', allow_duplicate=True),
@@ -1749,10 +1748,10 @@ def restore_ui_after_navigation(content, sim_state, disease_params, event_data):
 
     if is_running:
         play_text = 'Pause'
-        play_style = 'sim-footer__play-btn sim-footer__play-btn--running'
+        play_color = 'warning'
     else:
         play_text = 'Play'
-        play_style = 'sim-footer__play-btn'
+        play_color = 'success'
 
     # Restore timeline state
     timeline_disabled = not bool(event_data)
@@ -1763,7 +1762,7 @@ def restore_ui_after_navigation(content, sim_state, disease_params, event_data):
         f'Restoring UI after navigation: play_disabled={play_disabled}, play_text={play_text}, timeline_value={timeline_value}'
     )
 
-    return play_disabled, play_text, play_style, timeline_disabled, timeline_max, timeline_value
+    return play_disabled, play_text, play_color, timeline_disabled, timeline_max, timeline_value
 
 
 @callback(
@@ -2360,7 +2359,7 @@ def save_vaccines(
 
 # Reset callback - connects to Django backend
 @callback(
-    Output('simulation-state', 'data', allow_duplicate=True),
+    Output('url', 'href'),
     Input('reset-btn', 'n_clicks'),
     State('simulation-state', 'data'),
     prevent_initial_call=True,
@@ -2377,18 +2376,13 @@ def reset_simulation(n_clicks, sim_state):
             except:
                 pass
 
-            new_state = {**sim_state, 'isRunning': False}
-
-        else:
-            new_state = {**sim_state}
-
-        response = requests.get(f'{API_BASE_URL}/api/reset')
-        logger.info(f'Reset response status: {response.status_code}')
-        if response.status_code == 200:
+        try:
+            response = requests.get(f'{API_BASE_URL}/api/reset')
+            logger.info(f'Reset response status: {response.status_code}')
+        except:
             pass
-            logger.info('Simulation reset successfully on backend.')
 
-        return new_state
+        return '/'
 
     return dash.no_update
 
@@ -2398,7 +2392,7 @@ def reset_simulation(n_clicks, sim_state):
     [
         Output('simulation-state', 'data'),
         Output('play-pause-btn', 'children'),
-        Output('play-pause-btn', 'className'),
+        Output('play-pause-btn', 'color'),
         Output('play-pause-btn', 'disabled', allow_duplicate=True),
         Output('simulation-interval', 'disabled'),
         Output('timeline-slider', 'disabled', allow_duplicate=True),
@@ -2552,7 +2546,7 @@ def toggle_simulation(
                             'taskId': task_id,
                         }
 
-                        return new_state, 'Pause', 'sim-footer__play-btn sim-footer__play-btn--running', False, False, False
+                        return new_state, 'Pause', 'warning', False, False, False
                     else:
                         logger.error(f'Failed to start simulation run: {run_response.status_code}')
                 else:
@@ -2574,7 +2568,7 @@ def toggle_simulation(
                 pass
 
             new_state = {**sim_state, 'isRunning': False}
-            return new_state, 'Play', 'sim-footer__play-btn', False, True, False
+            return new_state, 'Play', 'success', False, True, False
 
     return (
         dash.no_update,
