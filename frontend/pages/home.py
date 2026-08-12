@@ -721,7 +721,7 @@ def create_model_state_selection_panel():
                             html.Span("Start Simulation Setup"),
                         ]),
                         html.Span(
-                            html.I(className="bi bi-caret-up-fill"),
+                            html.I(className="bi bi-caret-up-fill", id="sim-setup-caret"),
                             className="model-setup__header-btn"
                         )
                     ],
@@ -799,7 +799,7 @@ def create_set_scenario_panel():
                             html.Span("Set Scenario"),
                         ]),
                         html.Span(
-                            html.I(className="bi bi-caret-down-fill"),
+                            html.I(className="bi bi-caret-down-fill", id="sim-scenario-caret"),
                             className="model-setup__header-btn",
                         ),
                     ],
@@ -856,7 +856,7 @@ def create_set_interventions_panel():
                                 ),
                         ]),
                         html.Span(
-                            html.I(className="bi bi-caret-down-fill"),
+                            html.I(className="bi bi-caret-down-fill", id="sim-interventions-caret"),
                             className="model-setup__header-btn",
                         ),
                     ],
@@ -1320,13 +1320,14 @@ def layout(**kwargs):
 
 @callback(
     Output("sim-setup-collapse", "is_open"),
+    Output("sim-setup-caret", "className"),
     [Input("sim-setup-header", "n_clicks")],
     [State("sim-setup-collapse", "is_open")],
 )
 def toggle_collapse(n, is_open):
-    if n:
-        return not is_open
-    return is_open
+    new_open = (not is_open) if n else is_open
+    caret = "bi bi-caret-up-fill" if new_open else "bi bi-caret-down-fill"
+    return new_open, caret
 
 @callback(
     Output('disease-params-modal-body', 'children'),
@@ -1767,24 +1768,26 @@ def restore_ui_after_navigation(content, sim_state, disease_params, event_data):
 
 @callback(
     Output("sim-scenario-collapse", "is_open"),
+    Output("sim-scenario-caret", "className"),
     Input("sim-scenario-header", "n_clicks"),
     State("sim-scenario-collapse", "is_open"),
 )
 def toggle_scenario_collapse(n, is_open):
-    if n:
-        return not is_open
-    return is_open
+    new_open = (not is_open) if n else is_open
+    caret = "bi bi-caret-up-fill" if new_open else "bi bi-caret-down-fill"
+    return new_open, caret
 
 
 @callback(
     Output("sim-interventions-collapse", "is_open"),
+    Output("sim-interventions-caret", "className"),
     Input("sim-interventions-header", "n_clicks"),
     State("sim-interventions-collapse", "is_open"),
 )
 def toggle_interventions_collapse(n, is_open):
-    if n:
-        return not is_open
-    return is_open
+    new_open = (not is_open) if n else is_open
+    caret = "bi bi-caret-up-fill" if new_open else "bi bi-caret-down-fill"
+    return new_open, caret
 
 
 # Modal toggle callbacks - Fixed to prevent auto-opening
