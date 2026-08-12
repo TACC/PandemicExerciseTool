@@ -729,7 +729,7 @@ def create_model_state_selection_panel():
                     n_clicks=0,
                     className="model-setup__header"
                 ),
-                className="model-setup__header-bg"
+                className="model-setup__header-bg model-setup__header-height"
             ),
             dbc.Collapse(
                 [
@@ -807,7 +807,7 @@ def create_set_scenario_panel():
                     n_clicks=0,
                     className="model-setup__header",
                 ),
-                className="model-setup__header-bg",
+                className="model-setup__header-bg model-setup__header-height",
             ),
             dbc.Collapse(
                 dbc.CardBody(
@@ -819,6 +819,7 @@ def create_set_scenario_panel():
                                 outline=True,
                                 color='dark',
                                 n_clicks=0,
+                                class_name='model-setup__set-content-btn'
                             ),
                             dbc.Button(
                                 'Set Initial Cases',
@@ -826,6 +827,7 @@ def create_set_scenario_panel():
                                 outline=True,
                                 color='dark',
                                 n_clicks=0,
+                                class_name='model-setup__set-content-btn'
                             ),
                         ],
                         className='d-grid gap-2',
@@ -862,7 +864,7 @@ def create_set_interventions_panel():
                     n_clicks=0,
                     className="model-setup__header",
                 ),
-                className="model-setup__header-bg",
+                className="model-setup__header-bg model-setup__header-height",
             ),
             dbc.Collapse(
                 dbc.CardBody(
@@ -874,6 +876,7 @@ def create_set_interventions_panel():
                                 outline=True,
                                 color='dark',
                                 n_clicks=0,
+                                class_name='model-setup__set-content-btn'
                             ),
                             dbc.Button(
                                 'Select Antivirals',
@@ -889,6 +892,7 @@ def create_set_interventions_panel():
                                 outline=True,
                                 color='dark',
                                 n_clicks=0,
+                                class_name='model-setup__set-content-btn'
                             ),
                         ],
                         className='d-grid gap-2',
@@ -914,6 +918,8 @@ def create_displayed_parameters_panel():
                 ),
                 label='Scenario',
                 tab_id='tab-scenario',
+                tab_class_name='param-display__tab-item',
+                label_class_name='param-display__tab-left'
             ),
             dbc.Tab(
                 html.Div(
@@ -923,11 +929,14 @@ def create_displayed_parameters_panel():
                 ),
                 label='Interventions',
                 tab_id='tab-interventions',
+                tab_class_name='param-display__tab-item',
+                label_class_name='param-display__tab-right'
             ),
         ],
         id='param-tabs',
         active_tab='tab-scenario',
-        class_name='param-display__tabs',
+        class_name='param-display__tabs model-setup__header-height',
+        # model-setup__header-bg
     )
 
 # Home page layout
@@ -1193,7 +1202,7 @@ def create_scenario_display(disease_params, initial_cases):
 
     content = []
 
-    title_class = 'mb-2 text-muted'
+    title_class = 'text-muted'
 
     # Disease parameters section
     if disease_params:
@@ -1251,7 +1260,7 @@ def create_scenario_display(disease_params, initial_cases):
     if not content:
         return html.P('No scenario set yet.', className='param-display__empty-state')
 
-    return html.Div(content, className='mt-3')
+    return html.Div(content, className='mt-0')
 
 
 def _render_npi_table(npi_list):
