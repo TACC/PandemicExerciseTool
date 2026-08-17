@@ -710,68 +710,240 @@ vaccines_modal = dbc.Modal(
 def create_model_state_selection_panel():
     """
     Creates the Model and State selection dropdowns.
-    This is the core UI for Features 1 and 2.
     """
-    return html.Div(
+    return dbc.Card(
         [
-            # Panel Header
-            html.Div(
+            dbc.CardHeader(
+                html.Div(
+                    [
+                        html.Span([
+                            html.I(className="bi bi-1-circle-fill me-2"),
+                            html.Span("Start Simulation Setup"),
+                        ]),
+                        html.Span(
+                            html.I(className="bi bi-caret-up-fill", id="sim-setup-caret"),
+                            className="model-setup__header-btn"
+                        )
+                    ],
+                    id="sim-setup-header",
+                    n_clicks=0,
+                    className="model-setup__header"
+                ),
+                className="model-setup__header-bg model-setup__header-height"
+            ),
+            dbc.Collapse(
                 [
-                    html.H6('Simulation Setup', className='model-setup__title')
-                ]
-            ),
-            # FEATURE 1: Model Selection Dropdown
-            html.Div(
-                [
-                    dbc.Label('Disease Model', class_name='fw-bold'),
-                    dcc.Dropdown(
-                        id='model-selector-dropdown',
-                        options=[{'label': m['label'], 'value': m['value']} for m in MODEL_OPTIONS],
-                        value='seirs-deterministic',
-                        clearable=True,
-                        placeholder='Select a disease model...',
-                        className='mb-2',
-                    ),
-                    # Model description display
-                    html.Div(
-                        id='model-description-display',
-                        className='model-setup__desc',
-                    ),
-                ]
-            ),
-            # FEATURE 2: State Selection Dropdown
-            html.Div(
-                [
-                    dbc.Label('State', class_name='fw-bold'),
-                    dcc.Dropdown(
-                        id='state-selector-dropdown',
-                        options=[{'label': s['label'], 'value': s['value']} for s in STATE_OPTIONS],
-                        value='Alabama',
-                        clearable=True,
-                        searchable=True,
-                        placeholder='Select a state...',
-                        className='mb-3',
-                    ),
-                ]
-            ),
-            # Apply Button
-            html.Button(
-                '✓ Apply Selection',
-                id='apply-model-state-btn',
-                n_clicks=0,
-                className='model-setup__apply-btn',
-            ),
-            # Status message area
-            html.Div(id='model-state-status-message', className='mb-3'),
+                    dbc.CardBody([
+                        # Model Selection Dropdown
+                        html.Div(
+                            [
+                                dbc.Label('Disease Model', class_name='fw-bold'),
+                                dcc.Dropdown(
+                                    id='model-selector-dropdown',
+                                    options=[{'label': m['label'], 'value': m['value']} for m in MODEL_OPTIONS],
+                                    value='seirs-deterministic',
+                                    clearable=True,
+                                    placeholder='Select a disease model...',
+                                    className='mb-2',
+                                ),
+                                # Model description display
+                                html.Div(
+                                    id='model-description-display',
+                                    className='model-setup__desc',
+                                ),
+                            ]
+                        ),
+                        # State Selection Dropdown
+                        html.Div(
+                            [
+                                dbc.Label('State', class_name='fw-bold'),
+                                dcc.Dropdown(
+                                    id='state-selector-dropdown',
+                                    options=[{'label': s['label'], 'value': s['value']} for s in STATE_OPTIONS],
+                                    value='Alabama',
+                                    clearable=True,
+                                    searchable=True,
+                                    placeholder='Select a state...',
+                                    className='mb-3',
+                                ),
+                            ]
+                        ),
+                        # Apply Button
+                        html.Button(
+                            'APPLY SELECTION',
+                            id='apply-model-state-btn',
+                            n_clicks=0,
+                            className='model-setup__apply-btn',
+                        ),
+                        # Status message area
+                        html.Div(id='model-state-status-message'),
+                    ],
+                    class_name="model-setup__body"
+                    )
+                ],
+                id="sim-setup-collapse",
+                is_open=True
+            )
         ],
-        className='model-setup',
+        class_name='mb-3',
     )
 
+def create_set_scenario_panel():
+    return dbc.Card(
+        [
+            dbc.CardHeader(
+                html.Div(
+                    [
+                        html.Span([
+                            html.I(className="bi bi-2-circle-fill me-2"),
+                            html.Span("Set Scenario"),
+                        ]),
+                        html.Span(
+                            html.I(className="bi bi-caret-down-fill", id="sim-scenario-caret"),
+                            className="model-setup__header-btn",
+                        ),
+                    ],
+                    id="sim-scenario-header",
+                    n_clicks=0,
+                    className="model-setup__header",
+                ),
+                className="model-setup__header-bg model-setup__header-height",
+            ),
+            dbc.Collapse(
+                dbc.CardBody(
+                    html.Div(
+                        [
+                            dbc.Button(
+                                'Set Disease Parameters',
+                                id='disease-params-btn',
+                                outline=True,
+                                color='dark',
+                                n_clicks=0,
+                                class_name='model-setup__set-content-btn'
+                            ),
+                            dbc.Button(
+                                'Set Initial Cases',
+                                id='initial-cases-btn',
+                                outline=True,
+                                color='dark',
+                                n_clicks=0,
+                                class_name='model-setup__set-content-btn'
+                            ),
+                        ],
+                        className='d-grid gap-2',
+                    ),
+                    class_name="model-setup__body",
+                ),
+                id="sim-scenario-collapse",
+                is_open=False,
+            ),
+        ],
+        class_name='mb-3',
+    )
+
+
+def create_set_interventions_panel():
+    return dbc.Card(
+        [
+            dbc.CardHeader(
+                html.Div(
+                    [
+                        html.Span([
+                            html.I(className="bi bi-3-circle-fill me-2"),
+                            html.Span(
+                                    ["Interventions ",
+                                    html.Span("(optional)", className="fw-light")] 
+                                ),
+                        ]),
+                        html.Span(
+                            html.I(className="bi bi-caret-down-fill", id="sim-interventions-caret"),
+                            className="model-setup__header-btn",
+                        ),
+                    ],
+                    id="sim-interventions-header",
+                    n_clicks=0,
+                    className="model-setup__header",
+                ),
+                className="model-setup__header-bg model-setup__header-height",
+            ),
+            dbc.Collapse(
+                dbc.CardBody(
+                    html.Div(
+                        [
+                            dbc.Button(
+                                'Select Non-Pharmaceutical',
+                                id='npi-btn',
+                                outline=True,
+                                color='dark',
+                                n_clicks=0,
+                                class_name='model-setup__set-content-btn'
+                            ),
+                            dbc.Button(
+                                'Select Antivirals',
+                                id='antivirals-btn',
+                                outline=True,
+                                color='dark',
+                                n_clicks=0,
+                                style={'display': 'none'},
+                            ),  ### Remove this style to show Antiviral button ###
+                            dbc.Button(
+                                'Select Vaccines',
+                                id='vaccines-btn',
+                                outline=True,
+                                color='dark',
+                                n_clicks=0,
+                                class_name='model-setup__set-content-btn'
+                            ),
+                        ],
+                        className='d-grid gap-2',
+                    ),
+                    class_name="model-setup__body",
+                ),
+                id="sim-interventions-collapse",
+                is_open=False,
+            ),
+        ],
+        class_name='mb-3',
+    )
+
+
+def create_displayed_parameters_panel():
+    return dbc.Tabs(
+        [
+            dbc.Tab(
+                html.Div(
+                    id='scenario-content',
+                    children=[html.P('No scenario set yet.', className='param-display__empty-state')],
+                    className='param-display__content',
+                ),
+                label='Scenario',
+                tab_id='tab-scenario',
+                tab_class_name='param-display__tab-item',
+                label_class_name='param-display__tab-left'
+            ),
+            dbc.Tab(
+                html.Div(
+                    id='interventions-content',
+                    children=[html.P('No interventions set yet.', className='param-display__empty-state')],
+                    className='param-display__content',
+                ),
+                label='Interventions',
+                tab_id='tab-interventions',
+                tab_class_name='param-display__tab-item',
+                label_class_name='param-display__tab-right'
+            ),
+        ],
+        id='param-tabs',
+        active_tab='tab-scenario',
+        class_name='param-display__tabs model-setup__header-height',
+        # model-setup__header-bg
+    )
 
 # Home page layout
 def create_home_layout():
     return html.Div(
         [
+            dcc.Location(id='url', refresh=True),
             # Main content row with fixed height
             html.Div(
                 [
@@ -780,121 +952,15 @@ def create_home_layout():
                         [
                             html.Div(
                                 [
-                                    # Model and State Selection Panel
                                     create_model_state_selection_panel(),
-                                    # Set Scenario dropdown
-                                    html.Div(
-                                        [
-                                            html.Button(
-                                                [
-                                                    html.Span('Set Scenario'),
-                                                    html.Span('▾', className='scenario-menu__trigger-arrow'),
-                                                ],
-                                                id='set-scenario-btn',
-                                                className='scenario-menu__trigger',
-                                            ),
-                                            # Dropdown menu
-                                            html.Div(
-                                                [
-                                                    html.Button(
-                                                        'Disease Parameters',
-                                                        id='disease-params-btn',
-                                                        className='scenario-menu__item',
-                                                        n_clicks=0,
-                                                    ),
-                                                    # html.Div(),
-                                                    html.Button(
-                                                        'Initial Cases',
-                                                        id='initial-cases-btn',
-                                                        className='scenario-menu__item',
-                                                        n_clicks=0,
-                                                    ),
-                                                ],
-                                                id='scenario-dropdown',
-                                                style={'display': 'none'},
-                                            ),
-                                        ],
-                                        className='scenario-menu__wrapper',
-                                    ),
-                                    # Interventions dropdown
-                                    html.Div(
-                                        [
-                                            html.Button(
-                                                [
-                                                    html.Span(
-                                                        'Interventions', className='scenario-menu__trigger-text'
-                                                    ),
-                                                    html.Span('▾'),
-                                                ],
-                                                id='interventions-btn',
-                                                className='scenario-menu__trigger',
-                                            ),
-                                            # Dropdown menu
-                                            html.Div(
-                                                [
-                                                    html.Button(
-                                                        'Non-Pharmaceutical',
-                                                        id='npi-btn',
-                                                        className='scenario-menu__item',
-                                                        n_clicks=0,
-                                                    ),
-                                                    html.Button(
-                                                        'Antivirals',
-                                                        id='antivirals-btn',
-                                                        className='scenario-menu__item',
-                                                        n_clicks=0,
-                                                        style={'display': 'none'},
-                                                    ),  ### Remove this style to show Antiviral button ###
-                                                    html.Button(
-                                                        'Vaccines',
-                                                        id='vaccines-btn',
-                                                        className='scenario-menu__item',
-                                                        n_clicks=0,
-                                                    ),
-                                                ],
-                                                id='interventions-dropdown',
-                                                style={'display': 'none'},
-                                            ),
-                                        ],
-                                        className='scenario-menu__wrapper',
-                                    ),
-                                    # DisplayedParameters section
-                                    html.Div(
-                                        [
-                                            # Tab buttons
-                                            html.Div(
-                                                [
-                                                    html.Button(
-                                                        'Scenario',
-                                                        id='scenario-tab-btn',
-                                                        className='param-display__tab param-display__tab--active',
-                                                    ),
-                                                    html.Button(
-                                                        'Interventions',
-                                                        id='interventions-tab-btn',
-                                                        className='param-display__tab',
-                                                    ),
-                                                ],
-                                                className='param-display__tabs',
-                                            ),
-                                            # Tab content
-                                            html.Div(
-                                                id='displayed-parameters-content',
-                                                children=[
-                                                    html.P(
-                                                        'No scenario set yet.',
-                                                        className='param-display__empty-state',
-                                                    )
-                                                ],
-                                            ),
-                                        ],
-                                        className='param-display__content',
-                                    ),
+                                    create_set_scenario_panel(),
+                                    create_set_interventions_panel(),
+                                    create_displayed_parameters_panel()
                                 ],
                                 className='sim-layout__left',
                             )
                         ],
-                        className='col-lg-2 sim-layout__col--left',
+                        className='sim-layout__col--left',
                     ),
                     # Middle Panel - Map and Chart
                     html.Div(
@@ -936,7 +1002,7 @@ def create_home_layout():
                                 className='sim-layout__viz',
                             ),
                         ],
-                        className='col-lg-7 sim-layout__col--middle',
+                        className='sim-layout__col--middle',
                     ),
                     # Right Panel - Table
                     html.Div(
@@ -955,15 +1021,6 @@ def create_home_layout():
                                         id='county-table-sort',
                                         data={'col': 'infected', 'dir': 'desc'},
                                     ),
-                                    html.Button(
-                                        id='sort-location', n_clicks=0, style={'display': 'none'}
-                                    ),
-                                    html.Button(
-                                        id='sort-infected', n_clicks=0, style={'display': 'none'}
-                                    ),
-                                    html.Button(
-                                        id='sort-deceased', n_clicks=0, style={'display': 'none'}
-                                    ),
                                     html.Div(
                                         id='spread-table',
                                         className='sim-layout__table',
@@ -972,10 +1029,10 @@ def create_home_layout():
                                 className='sim-layout__right',
                             )
                         ],
-                        className='col-lg-3 sim-layout__col--right',
+                        className='sim-layout__col--right',
                     ),
                 ],
-                className='row sim-layout__row',
+                className='sim-layout__row',
             ),
             # Footer - OUTSIDE the row, always visible at bottom
             html.Div(
@@ -983,21 +1040,19 @@ def create_home_layout():
                     html.Div(
                         [
                             # Reset Button
-                            html.A(
-                                html.Button(
-                                    'Reset',
-                                    id='reset-btn',
-                                    disabled=False,
-                                    className='sim-footer__reset-btn',
-                                ),
-                                href='/',
+                            dbc.Button(
+                                'Reset',
+                                id='reset-btn',
+                                color='danger',
+                                class_name='sim-footer__reset-btn',
                             ),
                             # Play/Pause Button
-                            html.Button(
+                            dbc.Button(
                                 'Play',
                                 id='play-pause-btn',
+                                color='success',
                                 disabled=True,
-                                className='sim-footer__play-btn',
+                                class_name='sim-footer__play-btn',
                             ),
                             # Timeline Slider
                             html.Div(
@@ -1026,7 +1081,6 @@ def create_home_layout():
             antivirals_modal,
             vaccines_modal,
         ],
-        # id='main-content',
     )
 
 
@@ -1041,17 +1095,17 @@ def create_interventions_display(npi_data, antiviral_data, vaccine_data, vaccine
     if npi_data:
         content.extend(
             [
-                html.H6('Non-Pharmaceutical Interventions', className='fw-bold mb-2'),
+                html.H6('Non-Pharmaceutical Interventions', className='fw-light mb-2'),
             ]
         )
         for npi in npi_data:
             content.append(
                 html.Div(
                     [
-                        html.P(f'Name: {npi["name"]}'),
-                        html.P(f'Start Day: {npi["start"]}, Duration: {npi["duration"]} days'),
-                        html.P(f'Location: {", ".join(npi["location"])}'),
-                        html.P('Age-specific effectiveness:'),
+                        html.P([html.Span('Name: ', className='fw-bold'), npi["name"]]),
+                        html.P([html.Span('Start Day: ', className='fw-bold'), f'{npi["start"]}, ', html.Span('Duration: ', className='fw-bold'), f'{npi["duration"]} days']),
+                        html.P([html.Span('Location: ', className='fw-bold'), ", ".join(npi["location"])]),
+                        html.P(html.Span('Age-specific effectiveness:', className='fw-bold')),
                         html.Ul(
                             [
                                 html.Li(f'0-4: {npi["effectiveness"][0]:.2f}'),
@@ -1071,12 +1125,10 @@ def create_interventions_display(npi_data, antiviral_data, vaccine_data, vaccine
     if antiviral_data:
         content.extend(
             [
-                html.H6('Antivirals', className='fw-bold mb-2'),
-                html.P(f'Effectiveness: {antiviral_data["effectiveness"]:.2f}'),
-                html.P(f'Wastage Factor: {antiviral_data["wastage_factor"]} days'),
-                html.P(
-                    f'Stockpile: {antiviral_data["stockpile_amount"]} on day {antiviral_data["stockpile_day"]}'
-                ),
+                html.H6('Antivirals', className='fw-light mb-2'),
+                html.P([html.Span('Effectiveness: ', className='fw-bold'), f'{antiviral_data["effectiveness"]:.2f}']),
+                html.P([html.Span('Wastage Factor: ', className='fw-bold'), f'{antiviral_data["wastage_factor"]} days']),
+                html.P([html.Span('Stockpile: ', className='fw-bold'), f'{antiviral_data["stockpile_amount"]} on day {antiviral_data["stockpile_day"]}']),
             ]
         )
 
@@ -1087,15 +1139,15 @@ def create_interventions_display(npi_data, antiviral_data, vaccine_data, vaccine
             if vaccine_data['vaccine_model'] == 'stockpile-age-risk'
             else 'Undefined'
         )
-        content.extend([html.H6('Vaccines', className='fw-bold mb-2')])
+        content.extend([html.H6('Vaccines', className='fw-light mb-2')])
         content.append(
             html.Div(
                 [
-                    html.P(f'Vaccine Model: {model_label}'),
-                    html.P(f'Priority Groups: {vaccine_data["priority_groups"]}'),
-                    html.P(f'Capacity: {vaccine_data["capacity"]} (proportion)'),
-                    html.P(f'Effectiveness Lag: {vaccine_data["effectiveness_lag"]} days'),
-                    html.P('Effectiveness:'),
+                    html.P([html.Span('Vaccine Model: ', className='fw-bold'), model_label]),
+                    html.P([html.Span('Priority Groups: ', className='fw-bold'), f'{vaccine_data["priority_groups"]}']),
+                    html.P([html.Span('Capacity: ', className='fw-bold'), f'{vaccine_data["capacity"]} (proportion)']),
+                    html.P([html.Span('Effectiveness Lag: ', className='fw-bold'), f'{vaccine_data["effectiveness_lag"]} days']),
+                    html.P(html.Span('Effectiveness:', className='fw-bold')),
                     html.Ul(
                         [
                             html.Li(f'0-4: {vaccine_data["effectiveness"][0]:.2f}'),
@@ -1106,7 +1158,7 @@ def create_interventions_display(npi_data, antiviral_data, vaccine_data, vaccine
                         ],
                         className='ms-3',
                     ),
-                    html.P('Adherence:'),
+                    html.P(html.Span('Adherence:', className='fw-bold')),
                     html.Ul(
                         [
                             html.Li(f'0-4: {vaccine_data["adherence"][0]:.2f}'),
@@ -1117,7 +1169,7 @@ def create_interventions_display(npi_data, antiviral_data, vaccine_data, vaccine
                         ],
                         className='ms-3',
                     ),
-                    html.P('Stockpile:'),
+                    html.P(html.Span('Stockpile:', className='fw-bold')),
                     html.Ul(
                         children=[
                             html.Li(f'day={i["day"]} , amt={i["amount"]}')
@@ -1140,18 +1192,21 @@ def create_scenario_display(disease_params, initial_cases):
 
     content = []
 
+    title_class = 'text-muted'
+
     # Disease parameters section
     if disease_params:
         if disease_params['model_type'].startswith('seatird-'):
             content.extend(
                 [
-                    html.H6('Disease Parameters', className='fw-bold mb-2'),
-                    html.P(f'Scenario: {disease_params.get("scenario_name", "Custom")}'),
-                    html.P(f'Reproduction Number: {disease_params.get("R0", 0)}'),
-                    html.P(f'Latent Period: {disease_params.get("tau", 0)} days'),
-                    html.P(f'Asymptomatic Period: {disease_params.get("kappa", 0)} days'),
-                    html.P(f'Symptomatic Period: {disease_params.get("gamma", 0)} days'),
-                    html.P('Case Fatality Rate:'),
+                    html.H6('Disease Parameters', className=title_class),
+                    html.Hr(),
+                    html.P([html.Span('Scenario: ', className='fw-bold'), disease_params.get('scenario_name', 'Custom')]),
+                    html.P([html.Span('Reproduction Number: ', className='fw-bold'), disease_params.get('R0', 0)]),
+                    html.P([html.Span('Latent Period: ', className='fw-bold'), f'{disease_params.get("tau", 0)} days']),
+                    html.P([html.Span('Asymptomatic Period: ', className='fw-bold'), f'{disease_params.get("kappa", 0)} days']),
+                    html.P([html.Span('Symptomatic Period: ', className='fw-bold'), f'{disease_params.get("gamma", 0)} days']),
+                    html.P(html.Span('Case Fatality Rate:', className='fw-bold')),
                     html.Ul(
                         [
                             html.Li(f'0-4: {disease_params.get("nu", [0, 0, 0, 0, 0])[0]:.9f}'),
@@ -1167,12 +1222,13 @@ def create_scenario_display(disease_params, initial_cases):
         if disease_params['model_type'].startswith('seirs-'):
             content.extend(
                 [
-                    html.H6('Disease Parameters', className='fw-bold mb-2'),
-                    html.P(f'Scenario: {disease_params.get("scenario_name", "Custom")}'),
-                    html.P(f'Reproduction Number: {disease_params.get("R0", 0)}'),
-                    html.P(f'Latent Period: {disease_params.get("tau", 0)} days'),
-                    html.P(f'Infectious Period: {disease_params.get("infectious_period", 0)} days'),
-                    html.P(f'Immune Period: {disease_params.get("immune_period", 0)} days'),
+                    html.H6('Disease Parameters', className=title_class),
+                    html.Hr(),
+                    html.P([html.Span('Scenario: ', className='fw-bold'), disease_params.get('scenario_name', 'Custom')]),
+                    html.P([html.Span('Reproduction Number: ', className='fw-bold'), disease_params.get('R0', 0)]),
+                    html.P([html.Span('Latent Period: ', className='fw-bold'), f'{disease_params.get("tau", 0)} days']),
+                    html.P([html.Span('Infectious Period: ', className='fw-bold'), f'{disease_params.get("infectious_period", 0)} days']),
+                    html.P([html.Span('Immune Period: ', className='fw-bold'), f'{disease_params.get("immune_period", 0)} days']),
                 ]
             )
 
@@ -1194,7 +1250,7 @@ def create_scenario_display(disease_params, initial_cases):
     if not content:
         return html.P('No scenario set yet.', className='param-display__empty-state')
 
-    return html.Div(content)
+    return html.Div(content, className='mt-0')
 
 
 def _render_npi_table(npi_list):
@@ -1252,6 +1308,17 @@ def layout(**kwargs):
 # CALLBACKS
 # ============================================================================
 
+
+@callback(
+    Output("sim-setup-collapse", "is_open"),
+    Output("sim-setup-caret", "className"),
+    [Input("sim-setup-header", "n_clicks")],
+    [State("sim-setup-collapse", "is_open")],
+)
+def toggle_collapse(n, is_open):
+    new_open = (not is_open) if n else is_open
+    caret = "bi bi-caret-up-fill" if new_open else "bi bi-caret-down-fill"
+    return new_open, caret
 
 @callback(
     Output('disease-params-modal-body', 'children'),
@@ -1528,7 +1595,7 @@ def update_model_description(selected_model):
     for model in MODEL_OPTIONS:
         if model['value'] == selected_model:
             return html.Div(
-                [html.Span('ℹ️ ', className='model-setup__desc-icon'), html.Span(model['description'])]
+                [html.Span('ℹ️ ', className='model-setup__desc-icon'), html.Span(model['description'])],
             )
 
     return 'Description not available.'
@@ -1580,14 +1647,7 @@ def apply_model_state_selection(n_clicks, selected_model, selected_state):
                     html.Span('Selection Applied!', className='fw-bold'),
                 ]
             ),
-            html.Div(
-                [html.Span('Model: ', className='fw-bold'), html.Span(model_name)],
-                className='model-setup__status-detail mt-1',
-            ),
-            html.Div(
-                [html.Span('State: ', className='fw-bold'), html.Span(state_name)],
-                className='model-setup__status-detail',
-            ),
+            html.Span("Proceed to Step 2 to set your scenario.", className='model-setup__status-detail mt-1'),
         ],
         className='model-setup__status--success',
     )
@@ -1646,7 +1706,7 @@ def update_npi_location_options(location_assets):
     [
         Output('play-pause-btn', 'disabled', allow_duplicate=True),
         Output('play-pause-btn', 'children', allow_duplicate=True),
-        Output('play-pause-btn', 'className', allow_duplicate=True),
+        Output('play-pause-btn', 'color', allow_duplicate=True),
         Output('timeline-slider', 'disabled', allow_duplicate=True),
         Output('timeline-slider', 'max', allow_duplicate=True),
         Output('timeline-slider', 'value', allow_duplicate=True),
@@ -1680,10 +1740,10 @@ def restore_ui_after_navigation(content, sim_state, disease_params, event_data):
 
     if is_running:
         play_text = 'Pause'
-        play_style = 'sim-footer__play-btn sim-footer__play-btn--running'
+        play_color = 'warning'
     else:
         play_text = 'Play'
-        play_style = 'sim-footer__play-btn'
+        play_color = 'success'
 
     # Restore timeline state
     timeline_disabled = not bool(event_data)
@@ -1694,34 +1754,31 @@ def restore_ui_after_navigation(content, sim_state, disease_params, event_data):
         f'Restoring UI after navigation: play_disabled={play_disabled}, play_text={play_text}, timeline_value={timeline_value}'
     )
 
-    return play_disabled, play_text, play_style, timeline_disabled, timeline_max, timeline_value
-
-
-# Dropdown toggle callbacks
-@callback(
-    Output('scenario-dropdown', 'style'),
-    Input('set-scenario-btn', 'n_clicks'),
-    State('scenario-dropdown', 'style'),
-    prevent_initial_call=True,
-)
-def toggle_scenario_dropdown(n_clicks, current_style):
-    if n_clicks:
-        display = 'none' if current_style.get('display') == 'block' else 'block'
-        return {**current_style, 'display': display}
-    return current_style
+    return play_disabled, play_text, play_color, timeline_disabled, timeline_max, timeline_value
 
 
 @callback(
-    Output('interventions-dropdown', 'style'),
-    Input('interventions-btn', 'n_clicks'),
-    State('interventions-dropdown', 'style'),
-    prevent_initial_call=True,
+    Output("sim-scenario-collapse", "is_open"),
+    Output("sim-scenario-caret", "className"),
+    Input("sim-scenario-header", "n_clicks"),
+    State("sim-scenario-collapse", "is_open"),
 )
-def toggle_interventions_dropdown(n_clicks, current_style):
-    if n_clicks:
-        display = 'none' if current_style.get('display') == 'block' else 'block'
-        return {**current_style, 'display': display}
-    return current_style
+def toggle_scenario_collapse(n, is_open):
+    new_open = (not is_open) if n else is_open
+    caret = "bi bi-caret-up-fill" if new_open else "bi bi-caret-down-fill"
+    return new_open, caret
+
+
+@callback(
+    Output("sim-interventions-collapse", "is_open"),
+    Output("sim-interventions-caret", "className"),
+    Input("sim-interventions-header", "n_clicks"),
+    State("sim-interventions-collapse", "is_open"),
+)
+def toggle_interventions_collapse(n, is_open):
+    new_open = (not is_open) if n else is_open
+    caret = "bi bi-caret-up-fill" if new_open else "bi bi-caret-down-fill"
+    return new_open, caret
 
 
 # Modal toggle callbacks - Fixed to prevent auto-opening
@@ -1973,19 +2030,18 @@ def manage_initial_cases(
 @callback(
     [
         Output('disease-parameters', 'data'),
-        Output('displayed-parameters-content', 'children', allow_duplicate=True),
+        Output('scenario-content', 'children', allow_duplicate=True),
         Output('play-pause-btn', 'disabled', allow_duplicate=True),
     ],
     Input('disease-params-save', 'n_clicks'),
     [
         State({'type': 'dp-input', 'param': ALL}, 'value'),
         State('initial-cases-data', 'data'),
-        State('displayed-tab', 'data'),
         State('selected-model-store', 'data'),
     ],
     prevent_initial_call=True,
 )
-def save_disease_parameters(n_clicks, dp_input_values, initial_cases, displayed_tab, selected_model):
+def save_disease_parameters(n_clicks, dp_input_values, initial_cases, selected_model):
     if not n_clicks:
         return dash.no_update, dash.no_update, dash.no_update
 
@@ -2025,59 +2081,11 @@ def save_disease_parameters(n_clicks, dp_input_values, initial_cases, displayed_
     logger.info('saved disease parameters = ')
     logger.info(disease_params)
 
-    if displayed_tab == 'scenario':
-        content = create_scenario_display(disease_params, initial_cases)
-    else:
-        content = html.P(
-            'No interventions set yet.', className='param-display__empty-state'
-        )
-
+    content = create_scenario_display(disease_params, initial_cases)
     play_disabled = not (bool(disease_params) and bool(initial_cases) and len(initial_cases) > 0)
 
     return disease_params, content, play_disabled
 
-
-# Tab switching callback
-@callback(
-    [
-        Output('displayed-parameters-content', 'children', allow_duplicate=True),
-        Output('scenario-tab-btn', 'className'),
-        Output('interventions-tab-btn', 'className'),
-        Output('displayed-tab', 'data'),
-    ],
-    [Input('scenario-tab-btn', 'n_clicks'), Input('interventions-tab-btn', 'n_clicks')],
-    [
-        State('disease-parameters', 'data'),
-        State('initial-cases-data', 'data'),
-        State('npi-data', 'data'),
-        State('antiviral-data', 'data'),
-        State('vaccine-data', 'data'),
-        State('vaccine-stockpile', 'data'),
-    ],
-    prevent_initial_call=True,
-)
-def switch_displayed_tab(
-    scenario_clicks,
-    interventions_clicks,
-    disease_params,
-    initial_cases,
-    npi_data,
-    antiviral_data,
-    vaccine_data,
-    vaccine_stockpile,
-):
-    triggered_id = (
-        ctx.triggered[0]['prop_id'].split('.')[0] if ctx.triggered else 'scenario-tab-btn'
-    )
-
-    if triggered_id == 'interventions-tab-btn':
-        content = create_interventions_display(
-            npi_data, antiviral_data, vaccine_data, vaccine_stockpile
-        )
-        return content, 'param-display__tab', 'param-display__tab param-display__tab--active', 'interventions'
-    else:
-        content = create_scenario_display(disease_params, initial_cases)
-        return content, 'param-display__tab param-display__tab--active', 'param-display__tab', 'scenario'
 
 
 # Save intervention callbacks
@@ -2168,9 +2176,11 @@ def manage_npis(
 
 
 @callback(
-    Output('displayed-parameters-content', 'children', allow_duplicate=True),
     [
-        Input('displayed-tab', 'data'),
+        Output('scenario-content', 'children', allow_duplicate=True),
+        Output('interventions-content', 'children', allow_duplicate=True),
+    ],
+    [
         Input('disease-parameters', 'data'),
         Input('initial-cases-data', 'data'),
         Input('npi-data', 'data'),
@@ -2181,7 +2191,6 @@ def manage_npis(
     prevent_initial_call=True,
 )
 def refresh_displayed_parameters(
-    displayed_tab,
     disease_params,
     initial_cases,
     npi_data,
@@ -2189,15 +2198,11 @@ def refresh_displayed_parameters(
     vaccine_data,
     vaccine_stockpile,
 ):
-    """
-    Keeps the Displayed Parameters panel in sync.
-    This replaces the "refresh" behavior that used to live inside save_npi.
-    """
-    if displayed_tab == 'interventions':
-        return create_interventions_display(
-            npi_data or [], antiviral_data or {}, vaccine_data or {}, vaccine_stockpile or []
-        )
-    return create_scenario_display(disease_params or {}, initial_cases or [])
+    scenario = create_scenario_display(disease_params or {}, initial_cases or [])
+    interventions = create_interventions_display(
+        npi_data or [], antiviral_data or {}, vaccine_data or {}, vaccine_stockpile or []
+    )
+    return scenario, interventions
 
 
 # Antiviral callback
@@ -2229,7 +2234,7 @@ def prefill_antivirals_modal(is_open, antiviral_data):
     [
         Output('antiviral-data', 'data'),
         Output('antivirals-enabled', 'data'),
-        Output('displayed-parameters-content', 'children', allow_duplicate=True),
+        Output('interventions-content', 'children', allow_duplicate=True),
     ],
     Input('antivirals-save', 'n_clicks'),
     [
@@ -2237,9 +2242,6 @@ def prefill_antivirals_modal(is_open, antiviral_data):
         State('antiviral-wastage', 'value'),
         State('antiviral-stockpile-day', 'value'),
         State('antiviral-stockpile-amount', 'value'),
-        State('displayed-tab', 'data'),
-        State('disease-parameters', 'data'),
-        State('initial-cases-data', 'data'),
         State('npi-data', 'data'),
         State('vaccine-data', 'data'),
         State('vaccine-stockpile', 'data'),
@@ -2252,9 +2254,6 @@ def save_antivirals(
     wastage,
     stockpile_day,
     stockpile_amount,
-    displayed_tab,
-    disease_params,
-    initial_cases,
     npi_data,
     vaccine_data,
     vaccine_stockpile,
@@ -2269,13 +2268,9 @@ def save_antivirals(
         'stockpile_amount': 10000 if stockpile_amount is None else stockpile_amount,
     }
 
-    if displayed_tab == 'interventions':
-        content = create_interventions_display(
-            npi_data or [], antiviral_data, vaccine_data or {}, vaccine_stockpile or []
-        )
-    else:
-        content = create_scenario_display(disease_params or {}, initial_cases or [])
-
+    content = create_interventions_display(
+        npi_data or [], antiviral_data, vaccine_data or {}, vaccine_stockpile or []
+    )
     return antiviral_data, True, content
 
 
@@ -2283,7 +2278,7 @@ def save_antivirals(
     [
         Output('vaccine-data', 'data'),
         Output('vaccines-enabled', 'data'),
-        Output('displayed-parameters-content', 'children', allow_duplicate=True),
+        Output('interventions-content', 'children', allow_duplicate=True),
     ],
     Input('vaccines-save', 'n_clicks'),
     [
@@ -2302,11 +2297,8 @@ def save_antivirals(
         State('vac-adh-50-64', 'value'),
         State('vac-adh-65-plus', 'value'),
         State('vaccine-stockpile', 'data'),
-        State('displayed-tab', 'data'),
         State('npi-data', 'data'),
         State('antiviral-data', 'data'),
-        State('disease-parameters', 'data'),
-        State('initial-cases-data', 'data'),
     ],
     prevent_initial_call=True,
 )
@@ -2327,11 +2319,8 @@ def save_vaccines(
     vac_adh_3,
     vac_adh_4,
     vaccine_stockpile,
-    displayed_tab,
     npi_data,
     antiviral_data,
-    disease_params,
-    initial_cases,
 ):
     if not n_clicks:
         return [dash.no_update] * 3
@@ -2356,19 +2345,15 @@ def save_vaccines(
     logger.info(f'vaccine_data = {vaccine_data}')
     logger.info(f'vaccine_stockpile = {vaccine_stockpile}')
 
-    if displayed_tab == 'interventions':
-        content = create_interventions_display(
-            npi_data or [], antiviral_data or {}, vaccine_data, vaccine_stockpile
-        )
-    else:
-        content = create_scenario_display(disease_params or {}, initial_cases or [])
-
+    content = create_interventions_display(
+        npi_data or [], antiviral_data or {}, vaccine_data, vaccine_stockpile
+    )
     return vaccine_data, True, content
 
 
 # Reset callback - connects to Django backend
 @callback(
-    Output('simulation-state', 'data', allow_duplicate=True),
+    Output('url', 'href'),
     Input('reset-btn', 'n_clicks'),
     State('simulation-state', 'data'),
     prevent_initial_call=True,
@@ -2385,18 +2370,13 @@ def reset_simulation(n_clicks, sim_state):
             except:
                 pass
 
-            new_state = {**sim_state, 'isRunning': False}
-
-        else:
-            new_state = {**sim_state}
-
-        response = requests.get(f'{API_BASE_URL}/api/reset')
-        logger.info(f'Reset response status: {response.status_code}')
-        if response.status_code == 200:
+        try:
+            response = requests.get(f'{API_BASE_URL}/api/reset')
+            logger.info(f'Reset response status: {response.status_code}')
+        except:
             pass
-            logger.info('Simulation reset successfully on backend.')
 
-        return new_state
+        return '/'
 
     return dash.no_update
 
@@ -2406,7 +2386,7 @@ def reset_simulation(n_clicks, sim_state):
     [
         Output('simulation-state', 'data'),
         Output('play-pause-btn', 'children'),
-        Output('play-pause-btn', 'className'),
+        Output('play-pause-btn', 'color'),
         Output('play-pause-btn', 'disabled', allow_duplicate=True),
         Output('simulation-interval', 'disabled'),
         Output('timeline-slider', 'disabled', allow_duplicate=True),
@@ -2560,7 +2540,7 @@ def toggle_simulation(
                             'taskId': task_id,
                         }
 
-                        return new_state, 'Pause', 'sim-footer__play-btn sim-footer__play-btn--running', False, False, False
+                        return new_state, 'Pause', 'warning', False, False, False
                     else:
                         logger.error(f'Failed to start simulation run: {run_response.status_code}')
                 else:
@@ -2582,7 +2562,7 @@ def toggle_simulation(
                 pass
 
             new_state = {**sim_state, 'isRunning': False}
-            return new_state, 'Play', 'sim-footer__play-btn', False, True, False
+            return new_state, 'Play', 'success', False, True, False
 
     return (
         dash.no_update,
@@ -2843,18 +2823,34 @@ def update_chart(event_data, timeline_value, selected_model):
 
 
 @callback(
-    [Output('spread-table', 'children'), Output('county-table-sort', 'data')],
+    Output('county-table-sort', 'data', allow_duplicate=True),
+    Input({'type': 'sort-btn', 'col': ALL}, 'n_clicks'),
+    State('county-table-sort', 'data'),
+    prevent_initial_call=True,
+)
+def handle_sort_click(sort_clicks, sort_state):
+    sort_state = sort_state or {'col': 'infected', 'dir': 'desc'}
+    trig = ctx.triggered_id
+    if isinstance(trig, dict) and trig.get('type') == 'sort-btn':
+        col = trig['col']
+        if sort_state.get('col') == col:
+            sort_state['dir'] = 'asc' if sort_state['dir'] == 'desc' else 'desc'
+        else:
+            sort_state = {'col': col, 'dir': 'desc'}
+    return sort_state
+
+
+@callback(
+    Output('spread-table', 'children'),
     [
         Input('event-data', 'data'),
         Input('timeline-slider', 'value'),
         Input('view-toggle', 'value'),
         Input('location-assets-store', 'data'),
         Input('county-search', 'value'),
-        Input('sort-location', 'n_clicks'),
-        Input('sort-infected', 'n_clicks'),
-        Input('sort-deceased', 'n_clicks'),
+        Input('county-table-sort', 'data'),
     ],
-    [State('county-table-sort', 'data'), State('selected-model-store', 'data')],
+    State('selected-model-store', 'data'),
 )
 def update_table(
     event_data,
@@ -2862,13 +2858,9 @@ def update_table(
     view_type,
     location_assets,
     search_text,
-    location_clicks,
-    infected_clicks,
-    deceased_clicks,
     sort_state,
     selected_model,
 ):
-    # --- sort state update based on which header was clicked
     sort_state = sort_state or {'col': 'infected', 'dir': 'desc'}
 
     model = (selected_model or '').lower()
@@ -2877,33 +2869,12 @@ def update_table(
     )
 
     if not event_data or timeline_value is None or timeline_value >= len(event_data):
-        return html.P(
-            'No data available', className='param-display__empty-state'
-        ), sort_state
+        return html.P('No data available', className='param-display__empty-state')
 
     current_data = event_data[timeline_value]
     counties_data = current_data.get('counties', [])
     if not counties_data:
-        return html.P(
-            'No county data available', className='param-display__empty-state'
-        ), sort_state
-
-    trig = ctx.triggered_id
-    if trig == 'sort-location':
-        if sort_state.get('col') == 'name':
-            sort_state['dir'] = 'asc' if sort_state['dir'] == 'desc' else 'desc'
-        else:
-            sort_state = {'col': 'name', 'dir': 'desc'}
-    elif trig == 'sort-infected':
-        if sort_state.get('col') == 'infected':
-            sort_state['dir'] = 'asc' if sort_state.get('dir') == 'desc' else 'desc'
-        else:
-            sort_state = {'col': 'infected', 'dir': 'desc'}
-    elif trig == 'sort-deceased':
-        if sort_state.get('col') == 'deceased':
-            sort_state['dir'] = 'asc' if sort_state.get('dir') == 'desc' else 'desc'
-        else:
-            sort_state = {'col': 'deceased', 'dir': 'desc'}
+        return html.P('No county data available', className='param-display__empty-state')
 
     location_assets = location_assets or {}
     mapping = location_assets.get('mapping', {})  # name -> geoid (string)
@@ -2931,7 +2902,7 @@ def update_table(
     df = pd.DataFrame(records)
 
     if df.empty:
-        return html.P('No county data available', className='param-display__empty-state'), sort_state
+        return html.P('No county data available', className='param-display__empty-state')
 
     # --- search
     if search_text:
@@ -2943,7 +2914,7 @@ def update_table(
         df = df[mask]
 
     if df.empty:
-        return html.P('No county data available', className='param-display__empty-state'), sort_state
+        return html.P('No county data available', className='param-display__empty-state')
 
     # --- sort
     sort_col = {'name': 'name', 'infected': 'infected_num', 'deceased': 'deceased_num'}[
@@ -2982,7 +2953,7 @@ def update_table(
                 html.Th(
                     html.Button(
                         f'Location {arrow_loc}',
-                        id='sort-location',
+                        id={'type': 'sort-btn', 'col': 'name'},
                         n_clicks=0,
                         className='sim-layout__sort-btn',
                     )
@@ -2990,7 +2961,7 @@ def update_table(
                 html.Th(
                     html.Button(
                         f'Infectious {arrow_inf}',
-                        id='sort-infected',
+                        id={'type': 'sort-btn', 'col': 'infected'},
                         n_clicks=0,
                         className='sim-layout__sort-btn',
                     )
@@ -2998,7 +2969,7 @@ def update_table(
                 html.Th(
                     html.Button(
                         f'{right_col_label} {arrow_dec}',
-                        id='sort-deceased',
+                        id={'type': 'sort-btn', 'col': 'deceased'},
                         n_clicks=0,
                         className='sim-layout__sort-btn',
                     )
@@ -3023,4 +2994,4 @@ def update_table(
         className='w-100 sim-layout__county-table',
     )
 
-    return table, sort_state
+    return table

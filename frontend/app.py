@@ -27,7 +27,7 @@ result = subprocess.run(
 version = result.stdout.decode('utf-8').strip() if result.stdout else 'Unknown'
 
 # Initialize Dash app with external CSS
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], use_pages=True)
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP], use_pages=True)
 app.title = f'epiENGAGE - Interactive Outbreak Simulator v-{version}'
 app.config.suppress_callback_exceptions = True
 
@@ -52,7 +52,6 @@ app.layout = html.Div(
         dcc.Store(id='vaccine-stockpile', data=[]),
         dcc.Store(id='antivirals-enabled', data=False),
         dcc.Store(id='vaccines-enabled', data=False),
-        dcc.Store(id='displayed-tab', data='scenario'),
         dcc.Store(id='disease-preset-store', data={}),
         dcc.Interval(id='simulation-interval', interval=1000, disabled=True),
         # Stores for Model and State Selection
