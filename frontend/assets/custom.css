@@ -15,6 +15,10 @@ body {
     padding: 0;
 }
 
+.base-container {
+    padding: 0px;
+}
+
 /* ============================================
    app-header
    ============================================ */
@@ -232,16 +236,7 @@ body {
 .model-setup__apply-btn {
     width: 100%;
     padding: 10px;
-    background-color: var(--brand-navy-blue);
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
     font-weight: bold;
-}
-
-.model-setup__apply-btn:hover {
-    background-color: var(--brand-navy-blue-light);
 }
 
 .model-setup__desc-icon {
@@ -387,6 +382,26 @@ body {
 }
 
 /* ============================================
+   btn-navy
+   ============================================ */
+
+.btn-navy {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: var(--brand-navy-blue);
+    --bs-btn-border-color: var(--brand-navy-blue);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: color-mix(in srgb, var(--brand-navy-blue) 85%, black);
+    --bs-btn-hover-border-color: color-mix(in srgb, var(--brand-navy-blue) 80%, black);
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: color-mix(in srgb, var(--brand-navy-blue) 70%, black);
+    --bs-btn-active-border-color: color-mix(in srgb, var(--brand-navy-blue) 65%, black);
+    --bs-btn-disabled-color: #fff;
+    --bs-btn-disabled-bg: var(--brand-navy-blue);
+    --bs-btn-disabled-border-color: var(--brand-navy-blue);
+    --bs-btn-focus-shadow-rgb: 16, 44, 65;
+}
+
+/* ============================================
    sim-footer
    ============================================ */
 
@@ -442,6 +457,19 @@ body {
 
 .modal-form__checklist-label {
     font-size: 14px;
+}
+
+.modal-form__footer-info {
+    font-size: 14px;
+}
+
+.modal-form__footer-button {
+    font-weight: 600;
+}
+
+.modal-form__footer-button-save {
+    background-color: var(--brand-navy-blue);
+    border-color: var(--brand-navy-blue);
 }
 
 .view-toggle__label {

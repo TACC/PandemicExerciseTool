@@ -155,11 +155,13 @@ app.layout = html.Div(
             },
         ),
         # Main content area
-        html.Div(
+        dbc.Container(
             [
                 html.Div(page_container, style={'marginTop': '80px'}),
                 # html.Div(id='main-content'),
-            ]
+            ],
+            fluid=True,
+            class_name='base-container'
         ),
     ]
 )

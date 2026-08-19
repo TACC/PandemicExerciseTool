@@ -367,13 +367,34 @@ def _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojs
 
 
 # Input helper
-def create_modal_footer(prefix: str):
+def create_modal_footer(prefix: str, note: bool):
     """Create a standard Save/Close modal footer. prefix is the modal name, e.g. 'npi'."""
-    return dbc.ModalFooter(
-        [
-            dbc.Button('Save',  id=f'{prefix}-save',  className='ms-auto', n_clicks=0),
-            dbc.Button('Close', id=f'{prefix}-close', className='ms-auto', n_clicks=0),
+    note_content = []
+    if note:
+        note_content = [
+            html.Span('ℹ️ ', className='model-setup__desc-icon'),
+            html.Span("Add at least 1 initial case to save."),
         ]
+    return dbc.ModalFooter(
+        html.Div([
+            html.Div([
+                dbc.Button(
+                    'SAVE',
+                    id=f'{prefix}-save',
+                    n_clicks=0,
+                    color='',
+                    class_name='me-2 modal-form__footer-button btn-navy',
+                ),
+                dbc.Button(
+                    'CLOSE', 
+                    id=f'{prefix}-close', 
+                    n_clicks=0, 
+                    class_name='modal-form__footer-button',
+                    color="danger",
+                )
+            ], className='d-flex justify-content-center mb-2'),
+            html.Div(note_content, id=f'{prefix}-footer-note', className='text-center modal-form__footer-info'),
+        ], className='w-100')
     )
 
 
@@ -425,7 +446,7 @@ disease_params_modal = dbc.Modal(
         dbc.ModalBody(
             id='disease-params-modal-body',
         ),
-        create_modal_footer('disease-params'),
+        create_modal_footer('disease-params', False),
     ],
     id='disease-params-modal',
     is_open=False,
@@ -467,16 +488,17 @@ initial_cases_modal = dbc.Modal(
                 html.Button(
                     'Add Initial Case',
                     id='add-initial-case-btn',
-                    className='btn btn-secondary mb-3',
+                    className='btn btn-primary mb-3',
                 ),
                 # Table showing added initial cases
                 html.Div(id='initial-cases-table'),
             ]
         ),
-        create_modal_footer('initial-cases'),
+        create_modal_footer('initial-cases', True),
     ],
     id='initial-cases-modal',
     is_open=False,
+    centered=True,
     size='lg',
 )
 
@@ -525,7 +547,7 @@ npi_modal = dbc.Modal(
                 html.Div(id='npi-table'),
             ]
         ),
-        create_modal_footer('npi'),
+        create_modal_footer('npi', False),
     ],
     id='npi-modal',
     is_open=False,
@@ -545,7 +567,7 @@ antivirals_modal = dbc.Modal(
                 create_labeled_input('New Stockpile Amount', 'antiviral-stockpile-amount', type='number', value=10000, min=0, step=1),
             ]
         ),
-        create_modal_footer('antivirals'),
+        create_modal_footer('antivirals', False),
     ],
     id='antivirals-modal',
     is_open=False,
@@ -697,7 +719,7 @@ vaccines_modal = dbc.Modal(
                 ),
             ]
         ),
-        create_modal_footer('vaccines'),
+        create_modal_footer('vaccines', False),
     ],
     id='vaccines-modal',
     is_open=False,
@@ -769,11 +791,11 @@ def create_model_state_selection_panel():
                             ]
                         ),
                         # Apply Button
-                        html.Button(
+                        dbc.Button(
                             'APPLY SELECTION',
                             id='apply-model-state-btn',
                             n_clicks=0,
-                            className='model-setup__apply-btn',
+                            class_name='model-setup__apply-btn btn-navy',
                         ),
                         # Status message area
                         html.Div(id='model-state-status-message'),
@@ -1930,6 +1952,16 @@ def load_preset_scenario(preset_key, selected_value):
 
 
 
+@callback(
+    Output('initial-cases-save', 'disabled'),
+    Output('initial-cases-footer-note', 'style'),
+    Input('initial-cases-data', 'data'),
+)
+def update_initial_cases_footer(cases):
+    has_cases = bool(cases)
+    return not has_cases, {} if not has_cases else {'display': 'none'}
+
+
 # Initial cases management callbacks
 @callback(
     [
@@ -1964,6 +1996,8 @@ def manage_initial_cases(
     triggered_id = ctx.triggered[0]['prop_id'] if ctx.triggered else None
 
     mapping = (location_assets or {}).get('mapping', {})
+
+    current_data = current_data or []
 
     if 'add-initial-case-btn' in triggered_id and location and cases_count:
         # Add new case
