@@ -402,6 +402,24 @@ body {
 }
 
 /* ============================================
+   Form validation
+   ============================================ */
+
+.dropdown-invalid .Select__control,
+.dropdown-invalid .Select-control,
+.dropdown-invalid .VirtualizedSelectFocusedOption,
+.dropdown-invalid [class$="-control"] {
+    border-color: var(--bs-danger) !important;
+    box-shadow: none !important;
+}
+
+.invalid-feedback {
+    font-size: 0.875em;
+    color: var(--bs-danger);
+    margin-top: 0.25rem;
+}
+
+/* ============================================
    sim-footer
    ============================================ */
 

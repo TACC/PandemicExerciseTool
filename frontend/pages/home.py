@@ -382,8 +382,8 @@ def create_modal_footer(prefix: str, note: bool):
                     'SAVE',
                     id=f'{prefix}-save',
                     n_clicks=0,
-                    color='',
-                    class_name='me-2 modal-form__footer-button btn-navy',
+                    color='success',
+                    class_name='me-2 modal-form__footer-button',
                 ),
                 dbc.Button(
                     'CLOSE', 
@@ -463,27 +463,50 @@ initial_cases_modal = dbc.Modal(
                 html.Div(
                     [
                         dbc.Label('Location'),
-                        dcc.Dropdown(
-                            id='initial-location',
-                            options=[],
-                            placeholder='Search for a location...',
-                            className='mb-2',
+                        html.Div(
+                            dcc.Dropdown(
+                                id='initial-location',
+                                options=[],
+                                placeholder='Search for a location...',
+                            ),
+                            id='initial-location-wrapper',
+                        ),
+                        html.Div(
+                            'Please select a location.',
+                            id='initial-location-feedback',
+                            className='invalid-feedback',
+                            style={'display': 'none'},
                         ),
                     ],
-                    className='modal-form__field',
+                    className='modal-form__field mb-3',
                 ),
-                create_labeled_input('Number of Cases', 'initial-cases-count', type='number', value=100, min=1),
+                html.Div(
+                    [
+                        dbc.Label('Number of Cases'),
+                        dbc.Input(id='initial-cases-count', type='number', value=100, min=1, class_name='mb-0'),
+                        dbc.FormFeedback('Please enter at least 1 case.', type='invalid'),
+                    ],
+                    className='modal-form__field mb-3',
+                ),
                 html.Div(
                     [
                         dbc.Label('Age Group'),
-                        dcc.Dropdown(
-                            id='initial-age-group',
-                            options=AGE_GROUPS,
-                            value='18-49 years',
-                            className='mb-3',
+                        html.Div(
+                            dcc.Dropdown(
+                                id='initial-age-group',
+                                options=AGE_GROUPS,
+                                value='18-49 years',
+                            ),
+                            id='initial-age-group-wrapper',
+                        ),
+                        html.Div(
+                            'Please select an age group.',
+                            id='initial-age-group-feedback',
+                            className='invalid-feedback',
+                            style={'display': 'none'},
                         ),
                     ],
-                    className='modal-form__field',
+                    className='modal-form__field mb-3',
                 ),
                 html.Button(
                     'Add Initial Case',
@@ -1962,12 +1985,72 @@ def update_initial_cases_footer(cases):
     return not has_cases, {} if not has_cases else {'display': 'none'}
 
 
+_NO_FEEDBACK = {'display': 'none'}
+_SHOW_FEEDBACK = {'display': 'block'}
+_CLEAR_VALIDATION = (
+    '',                  # initial-location-wrapper className
+    _NO_FEEDBACK,        # initial-location-feedback style
+    False,               # initial-cases-count invalid
+    '',                  # initial-age-group-wrapper className
+    _NO_FEEDBACK,        # initial-age-group-feedback style
+)
+
+
+@callback(
+    Output('initial-location-wrapper', 'className', allow_duplicate=True),
+    Output('initial-location-feedback', 'style', allow_duplicate=True),
+    Input('initial-location', 'value'),
+    prevent_initial_call=True,
+)
+def clear_location_validation(value):
+    return ('', _NO_FEEDBACK) if value else dash.no_update
+
+
+@callback(
+    Output('initial-cases-count', 'invalid', allow_duplicate=True),
+    Input('initial-cases-count', 'value'),
+    prevent_initial_call=True,
+)
+def clear_count_validation(value):
+    return False if (value and value >= 1) else dash.no_update
+
+
+@callback(
+    Output('initial-age-group-wrapper', 'className', allow_duplicate=True),
+    Output('initial-age-group-feedback', 'style', allow_duplicate=True),
+    Input('initial-age-group', 'value'),
+    prevent_initial_call=True,
+)
+def clear_age_group_validation(value):
+    return ('', _NO_FEEDBACK) if value else dash.no_update
+
+
+@callback(
+    Output('initial-location-wrapper', 'className', allow_duplicate=True),
+    Output('initial-location-feedback', 'style', allow_duplicate=True),
+    Output('initial-cases-count', 'invalid', allow_duplicate=True),
+    Output('initial-age-group-wrapper', 'className', allow_duplicate=True),
+    Output('initial-age-group-feedback', 'style', allow_duplicate=True),
+    Input('initial-cases-modal', 'is_open'),
+    prevent_initial_call=True,
+)
+def reset_validation_on_modal_open(is_open):
+    if is_open:
+        return '', _NO_FEEDBACK, False, '', _NO_FEEDBACK
+    return [dash.no_update] * 5
+
+
 # Initial cases management callbacks
 @callback(
     [
         Output('initial-cases-data', 'data'),
         Output('initial-cases-table', 'children'),
         Output('play-pause-btn', 'disabled', allow_duplicate=True),
+        Output('initial-location-wrapper', 'className'),
+        Output('initial-location-feedback', 'style'),
+        Output('initial-cases-count', 'invalid'),
+        Output('initial-age-group-wrapper', 'className'),
+        Output('initial-age-group-feedback', 'style'),
     ],
     [
         Input('add-initial-case-btn', 'n_clicks'),
@@ -1999,65 +2082,67 @@ def manage_initial_cases(
 
     current_data = current_data or []
 
-    if 'add-initial-case-btn' in triggered_id and location and cases_count:
-        # Add new case
+    if 'add-initial-case-btn' in triggered_id:
+        loc_invalid = not location
+        count_invalid = not cases_count or cases_count < 1
+        age_invalid = not age_group
+        if loc_invalid or count_invalid or age_invalid:
+            table = _build_cases_table(current_data)
+            play_disabled = not (bool(disease_params) and bool(current_data))
+            return (
+                current_data, table, play_disabled,
+                'dropdown-invalid' if loc_invalid else '',
+                _SHOW_FEEDBACK if loc_invalid else _NO_FEEDBACK,
+                count_invalid,
+                'dropdown-invalid' if age_invalid else '',
+                _SHOW_FEEDBACK if age_invalid else _NO_FEEDBACK,
+            )
+
+    if 'add-initial-case-btn' in triggered_id:
+        # Validation already returned early above if invalid; reaching here means valid.
         fips_id = mapping.get(location, '0')
         age_group_id = AGE_GROUP_MAPPING.get(age_group, '0')
-
-        new_case = {
+        current_data.append({
             'id': len(current_data),
             'location': location,
             'fips_id': fips_id,
             'cases': cases_count,
             'age_group': age_group,
             'age_group_id': age_group_id,
-        }
-        current_data.append(new_case)
+        })
 
     elif 'remove-case-btn' in triggered_id:
-        # Remove case by index
         import re
-
         match = re.search(r'"index":(\d+)', triggered_id)
         if match:
             remove_index = int(match.group(1))
             current_data = [case for case in current_data if case['id'] != remove_index]
 
-    # Create table
-    if current_data:
-        table_rows = []
-        for case in current_data:
-            table_rows.append(
-                html.Tr(
-                    [
-                        html.Td(case['location']),
-                        html.Td(f'{case["cases"]} aged {case["age_group"]}'),
-                        html.Td(
-                            html.Button(
-                                'Remove',
-                                id={'type': 'remove-case-btn', 'index': case['id']},
-                                className='btn btn-sm btn-danger',
-                            )
-                        ),
-                    ]
-                )
-            )
+    table = _build_cases_table(current_data)
+    play_disabled = not (bool(disease_params) and bool(current_data))
+    return (current_data, table, play_disabled, *_CLEAR_VALIDATION)
 
-        table = html.Table(
-            [
-                html.Thead([html.Tr([html.Th('Location'), html.Th('Cases'), html.Th('Action')])]),
-                html.Tbody(table_rows),
-            ],
-            className='table table-striped',
-        )
-    else:
-        table = html.P(
-            'No initial cases added yet.', className='param-display__empty-state'
-        )
 
-    play_disabled = not (bool(disease_params) and bool(current_data) and len(current_data) > 0)
-
-    return current_data, table, play_disabled
+def _build_cases_table(current_data):
+    if not current_data:
+        return html.P('No initial cases added yet.', className='param-display__empty-state')
+    rows = [
+        html.Tr([
+            html.Td(case['location']),
+            html.Td(f'{case["cases"]} aged {case["age_group"]}'),
+            html.Td(html.Button(
+                'Remove',
+                id={'type': 'remove-case-btn', 'index': case['id']},
+                className='btn btn-sm btn-danger',
+            )),
+        ])
+        for case in current_data
+    ]
+    return html.Table(
+        [html.Thead([html.Tr([html.Th('Location'), html.Th('Cases'), html.Th('Action')])]),
+         html.Tbody(rows)],
+        className='table table-striped',
+    )
 
 
 # Disease parameters save callback
