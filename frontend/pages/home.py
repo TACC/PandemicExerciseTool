@@ -1210,23 +1210,23 @@ def create_home_layout():
                     html.Div(
                         [
                             # View toggle (count/percent)
-                            html.Div(
-                                [
-                                    html.H6('Show values as:', className='mb-2'),
-                                    dbc.RadioItems(
-                                        id='view-toggle',
-                                        options=[
-                                            {'label': ' Percentage', 'value': 'percent'},
-                                            {'label': ' Count', 'value': 'count'},
-                                        ],
-                                        value='count',
-                                        inline=True,
-                                        label_class_name='view-toggle__label',
-                                        class_name='mb-3 ps-2',
-                                    ),
-                                ],
-                                className='sim-layout__middle-header',
-                            ),
+                            # html.Div(
+                            #     [
+                            #         html.H6('Show values as:', className='mb-2'),
+                            #         dbc.RadioItems(
+                            #             id='view-toggle',
+                            #             options=[
+                            #                 {'label': ' Percentage', 'value': 'percent'},
+                            #                 {'label': ' Count', 'value': 'count'},
+                            #             ],
+                            #             value='count',
+                            #             inline=True,
+                            #             label_class_name='view-toggle__label',
+                            #             class_name='mb-3 ps-2',
+                            #         ),
+                            #     ],
+                            #     className='sim-layout__middle-header',
+                            # ),
                             # Map and Chart container
                             html.Div(
                                 [
@@ -1260,6 +1260,17 @@ def create_home_layout():
                                         placeholder='Search (county or number)…',
                                         debounce=True,
                                         class_name='mb-2',
+                                    ),
+                                    dbc.RadioItems(
+                                        id='view-toggle',
+                                        options=[
+                                            {'label': ' Percentage', 'value': 'percent'},
+                                            {'label': ' Count', 'value': 'count'},
+                                        ],
+                                        value='count',
+                                        inline=True,
+                                        label_class_name='view-toggle__label',
+                                        class_name='mb-3 ps-2',
                                     ),
                                     dcc.Store(
                                         id='county-table-sort',
@@ -3273,6 +3284,8 @@ def handle_sort_click(sort_clicks, sort_state):
     sort_state = sort_state or {'col': 'infected', 'dir': 'desc'}
     trig = ctx.triggered_id
     if isinstance(trig, dict) and trig.get('type') == 'sort-btn':
+        if not ctx.triggered[0]['value']:
+            return sort_state
         col = trig['col']
         if sort_state.get('col') == col:
             sort_state['dir'] = 'asc' if sort_state['dir'] == 'desc' else 'desc'
@@ -3374,28 +3387,18 @@ def update_table(
         df['deceased_disp'] = df['deceased_num'].map(lambda x: f'{math.floor(x):,}')
 
     # --- header with clickable sort buttons (minimal styling)
-    arrow_loc = (
-        '▲'
-        if sort_state['col'] == 'name' and sort_state['dir'] == 'asc'
-        else ('▼' if sort_state['col'] == 'name' else '')
-    )
-    arrow_inf = (
-        '▼'
-        if sort_state['col'] == 'infected' and sort_state['dir'] == 'desc'
-        else ('▲' if sort_state['col'] == 'infected' else '')
-    )
-    arrow_dec = (
-        '▼'
-        if sort_state['col'] == 'deceased' and sort_state['dir'] == 'desc'
-        else ('▲' if sort_state['col'] == 'deceased' else '')
-    )
+    def sort_icon(col, asc_when):
+        active = sort_state['col'] == col
+        is_asc = sort_state['dir'] == 'asc'
+        icon = 'bi bi-caret-up-fill' if (active and is_asc == asc_when) else 'bi bi-caret-down-fill'
+        return html.I(className=icon, style={} if active else {'visibility': 'hidden'})
 
     header = html.Thead(
         html.Tr(
             [
                 html.Th(
                     html.Button(
-                        f'Location {arrow_loc}',
+                        ['Location ', sort_icon('name', True)],
                         id={'type': 'sort-btn', 'col': 'name'},
                         n_clicks=0,
                         className='sim-layout__sort-btn',
@@ -3403,7 +3406,7 @@ def update_table(
                 ),
                 html.Th(
                     html.Button(
-                        f'Infectious {arrow_inf}',
+                        ['Infectious ', sort_icon('infected', False)],
                         id={'type': 'sort-btn', 'col': 'infected'},
                         n_clicks=0,
                         className='sim-layout__sort-btn',
@@ -3411,7 +3414,7 @@ def update_table(
                 ),
                 html.Th(
                     html.Button(
-                        f'{right_col_label} {arrow_dec}',
+                        [f'{right_col_label} ', sort_icon('deceased', False)],
                         id={'type': 'sort-btn', 'col': 'deceased'},
                         n_clicks=0,
                         className='sim-layout__sort-btn',
