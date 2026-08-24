@@ -394,17 +394,18 @@ def create_modal_footer(prefix: str, note: bool):
                 )
             ], className='d-flex justify-content-center mb-2'),
             html.Div(note_content, id=f'{prefix}-footer-note', className='text-center modal-form__footer-info'),
-        ], className='w-100')
+        ], className='w-100'),
+        class_name='bg-light',
     )
 
 
 def create_labeled_input(label: str, input_id: str, **kwargs):
     """Create a plain Label + full-width Input wrapped in a Div."""
     return html.Div(
-        className='modal-form__field',
+        className='modal-form__field dbc',
         children=[
             dbc.Label(label),
-            dbc.Input(id=input_id, class_name='mb-3', **kwargs),
+            dbc.Input(id=input_id, className='mb-3', **kwargs),
         ],
     )
 
@@ -421,7 +422,7 @@ def create_bold_label_subtitle_number_input(label: str, subtitle: str, inputs: l
             value=spec['input_value'],
             step=spec['input_step'],
             min=spec['input_min'],
-            class_name='mb-2',
+            className='mb-2 dbc',
         )
         if spec['input_label'] is not None:
             return html.Div(
@@ -442,9 +443,10 @@ def create_bold_label_subtitle_number_input(label: str, subtitle: str, inputs: l
 # Disease Parameters Modal Component
 disease_params_modal = dbc.Modal(
     [
-        dbc.ModalHeader(dbc.ModalTitle('Disease Parameters')),
+        dbc.ModalHeader(dbc.ModalTitle('Disease Parameters'), class_name='modal-form__header'),
         dbc.ModalBody(
             id='disease-params-modal-body',
+            class_name='bg-light',
         ),
         create_modal_footer('disease-params', False),
     ],
@@ -457,7 +459,7 @@ disease_params_modal = dbc.Modal(
 # Initial Cases Modal Component
 initial_cases_modal = dbc.Modal(
     [
-        dbc.ModalHeader(dbc.ModalTitle('Initial Cases')),
+        dbc.ModalHeader(dbc.ModalTitle('Initial Cases'), class_name='modal-form__header'),
         dbc.ModalBody(
             [
                 html.Div(
@@ -468,6 +470,7 @@ initial_cases_modal = dbc.Modal(
                                 id='initial-location',
                                 options=[],
                                 placeholder='Search for a location...',
+                                className='dbc'
                             ),
                             id='initial-location-wrapper',
                         ),
@@ -478,15 +481,23 @@ initial_cases_modal = dbc.Modal(
                             style={'display': 'none'},
                         ),
                     ],
-                    className='modal-form__field mb-3',
+                    className='mb-3 dbc',
                 ),
                 html.Div(
                     [
                         dbc.Label('Number of Cases'),
-                        dbc.Input(id='initial-cases-count', type='number', value=100, min=1, class_name='mb-0'),
-                        dbc.FormFeedback('Please enter at least 1 case.', type='invalid'),
+                        html.Div(
+                            dbc.Input(id='initial-cases-count', type='number', value=100, min=1),
+                            id='initial-cases-count-wrapper',
+                        ),
+                        html.Div(
+                            'Please enter at least 1 case.',
+                            id='initial-cases-count-feedback',
+                            className='invalid-feedback',
+                            style={'display': 'none'},
+                        ),
                     ],
-                    className='modal-form__field mb-3',
+                    className='mb-3',
                 ),
                 html.Div(
                     [
@@ -506,7 +517,7 @@ initial_cases_modal = dbc.Modal(
                             style={'display': 'none'},
                         ),
                     ],
-                    className='modal-form__field mb-3',
+                    className='mb-4 dbc',
                 ),
                 html.Button(
                     'Add Initial Case',
@@ -515,7 +526,8 @@ initial_cases_modal = dbc.Modal(
                 ),
                 # Table showing added initial cases
                 html.Div(id='initial-cases-table'),
-            ]
+            ],
+            class_name='bg-light',
         ),
         create_modal_footer('initial-cases', True),
     ],
@@ -529,7 +541,7 @@ initial_cases_modal = dbc.Modal(
 # NPI (Non-Pharmaceutical Interventions) Modal Component
 npi_modal = dbc.Modal(
     [
-        dbc.ModalHeader(dbc.ModalTitle('Non-Pharmaceutical Interventions')),
+        dbc.ModalHeader(dbc.ModalTitle('Non-Pharmaceutical Interventions'), class_name='modal-form__header'),
         dbc.ModalBody(
             [
                 create_labeled_input('NPI Name', 'npi-name', type='text', value='School Closures'),
@@ -559,16 +571,17 @@ npi_modal = dbc.Modal(
                             className='mb-3',
                         ),
                     ],
-                    className='modal-form__field',
+                    className='modal-form__field dbc',
                 ),
                 html.Button(
                     'Add NPI',
                     id='add-npi-btn',
-                    className='btn btn-secondary mb-3',
+                    className='btn btn-primary mb-3',
                 ),
                 # Table showing added NPIs
                 html.Div(id='npi-table'),
-            ]
+            ],
+            class_name='bg-light',
         ),
         create_modal_footer('npi', False),
     ],
@@ -580,7 +593,7 @@ npi_modal = dbc.Modal(
 # Antivirals Modal Component
 antivirals_modal = dbc.Modal(
     [
-        dbc.ModalHeader(dbc.ModalTitle('Antivirals')),
+        dbc.ModalHeader(dbc.ModalTitle('Antivirals'), class_name='modal-form__header'),
         dbc.ModalBody(
             [
                 create_labeled_input('Antiviral Effectiveness', 'antiviral-effectiveness', type='number', value=0.15, min=0, max=1, step=0.01),
@@ -588,7 +601,8 @@ antivirals_modal = dbc.Modal(
                 html.H6('Stockpile Management', className='fw-bold mb-2'),
                 create_labeled_input('New Stockpile Day', 'antiviral-stockpile-day', type='number', value=50, min=1, max=1000, step=1),
                 create_labeled_input('New Stockpile Amount', 'antiviral-stockpile-amount', type='number', value=10000, min=0, step=1),
-            ]
+            ],
+            class_name='bg-light',
         ),
         create_modal_footer('antivirals', False),
     ],
@@ -600,7 +614,7 @@ antivirals_modal = dbc.Modal(
 # Vaccines Modal Component
 vaccines_modal = dbc.Modal(
     [
-        dbc.ModalHeader(dbc.ModalTitle('Vaccines')),
+        dbc.ModalHeader(dbc.ModalTitle('Vaccines'), class_name='modal-form__header'),
         dbc.ModalBody(
             [
                 html.Div(
@@ -617,7 +631,7 @@ vaccines_modal = dbc.Modal(
                             id='vaccine-model-dropdown',
                         ),
                     ],
-                    className='modal-form__field',
+                    className='modal-form__field dbc',
                 ),
                 html.Hr(),
                 html.Div(
@@ -661,7 +675,7 @@ vaccines_modal = dbc.Modal(
                                     min=0,
                                     max=1000,
                                     step=1,
-                                    class_name='mb-3',
+                                    className='mb-3',
                                 ),
                             ],
                             style={'display': 'none'},
@@ -679,7 +693,7 @@ vaccines_modal = dbc.Modal(
                                     min=0,
                                     max=1,
                                     step=0.01,
-                                    class_name='mb-3',
+                                    className='mb-3',
                                 ),
                             ]
                         ),
@@ -696,7 +710,7 @@ vaccines_modal = dbc.Modal(
                                     min=0,
                                     max=100,
                                     step=1,
-                                    class_name='mb-3',
+                                    className='mb-3',
                                 ),
                             ]
                         ),
@@ -735,12 +749,13 @@ vaccines_modal = dbc.Modal(
                         html.Button(
                             'Add Vaccine Stockpile',
                             id='add-vac-stockpile-btn',
-                            className='btn btn-secondary mb-3',
+                            className='btn btn-primary mb-3',
                         ),
                         html.Div(id='vac-stockpile-table'),
                     ],
                 ),
-            ]
+            ],
+            class_name='bg-light',
         ),
         create_modal_footer('vaccines', False),
     ],
@@ -1376,7 +1391,7 @@ def update_disease_param_modal_body(selected_value, preset, is_open):
     if not is_open:
         return dash.no_update
     if selected_value is None:
-        return dbc.ModalBody(['Select a valid disease model to set parameters.'])
+        return dbc.ModalBody(['Select a valid disease model to set parameters.'], class_name='bg-light')
 
     scenario_prefix = selected_value.split('-')[0]
     preset = preset or {}
@@ -1394,7 +1409,8 @@ def update_disease_param_modal_body(selected_value, preset, is_open):
                     placeholder='Select a preset scenario...',
                     className='mb-3',
                 ),
-            ]
+            ],
+            className='dbc',
         ),
         html.Hr(),
         html.Div(
@@ -1404,7 +1420,7 @@ def update_disease_param_modal_body(selected_value, preset, is_open):
                     id={'type': 'dp-input', 'param': 'scenario-name'},
                     type='text',
                     value=preset.get('disease_name', ''),
-                    class_name='mb-3',
+                    className='mb-3',
                 ),
             ]
         ),
@@ -1539,7 +1555,7 @@ def update_disease_param_modal_body(selected_value, preset, is_open):
             ]
         )
 
-    return dbc.ModalBody(modal_elems)
+    return dbc.ModalBody(modal_elems, class_name='bg-light')
 
 
 @callback(
@@ -1990,7 +2006,8 @@ _SHOW_FEEDBACK = {'display': 'block'}
 _CLEAR_VALIDATION = (
     '',                  # initial-location-wrapper className
     _NO_FEEDBACK,        # initial-location-feedback style
-    False,               # initial-cases-count invalid
+    '',                  # initial-cases-count-wrapper className
+    _NO_FEEDBACK,        # initial-cases-count-feedback style
     '',                  # initial-age-group-wrapper className
     _NO_FEEDBACK,        # initial-age-group-feedback style
 )
@@ -2007,12 +2024,15 @@ def clear_location_validation(value):
 
 
 @callback(
-    Output('initial-cases-count', 'invalid', allow_duplicate=True),
+    Output('initial-cases-count-wrapper', 'className', allow_duplicate=True),
+    Output('initial-cases-count-feedback', 'style', allow_duplicate=True),
     Input('initial-cases-count', 'value'),
     prevent_initial_call=True,
 )
 def clear_count_validation(value):
-    return False if (value and value >= 1) else dash.no_update
+    if value and value >= 1:
+        return '', _NO_FEEDBACK
+    return dash.no_update, dash.no_update
 
 
 @callback(
@@ -2028,7 +2048,8 @@ def clear_age_group_validation(value):
 @callback(
     Output('initial-location-wrapper', 'className', allow_duplicate=True),
     Output('initial-location-feedback', 'style', allow_duplicate=True),
-    Output('initial-cases-count', 'invalid', allow_duplicate=True),
+    Output('initial-cases-count-wrapper', 'className', allow_duplicate=True),
+    Output('initial-cases-count-feedback', 'style', allow_duplicate=True),
     Output('initial-age-group-wrapper', 'className', allow_duplicate=True),
     Output('initial-age-group-feedback', 'style', allow_duplicate=True),
     Input('initial-cases-modal', 'is_open'),
@@ -2036,8 +2057,8 @@ def clear_age_group_validation(value):
 )
 def reset_validation_on_modal_open(is_open):
     if is_open:
-        return '', _NO_FEEDBACK, False, '', _NO_FEEDBACK
-    return [dash.no_update] * 5
+        return '', _NO_FEEDBACK, '', _NO_FEEDBACK, '', _NO_FEEDBACK
+    return [dash.no_update] * 6
 
 
 # Initial cases management callbacks
@@ -2048,7 +2069,8 @@ def reset_validation_on_modal_open(is_open):
         Output('play-pause-btn', 'disabled', allow_duplicate=True),
         Output('initial-location-wrapper', 'className'),
         Output('initial-location-feedback', 'style'),
-        Output('initial-cases-count', 'invalid'),
+        Output('initial-cases-count-wrapper', 'className'),
+        Output('initial-cases-count-feedback', 'style'),
         Output('initial-age-group-wrapper', 'className'),
         Output('initial-age-group-feedback', 'style'),
     ],
@@ -2093,7 +2115,8 @@ def manage_initial_cases(
                 current_data, table, play_disabled,
                 'dropdown-invalid' if loc_invalid else '',
                 _SHOW_FEEDBACK if loc_invalid else _NO_FEEDBACK,
-                count_invalid,
+                'dropdown-invalid' if count_invalid else '',
+                _SHOW_FEEDBACK if count_invalid else _NO_FEEDBACK,
                 'dropdown-invalid' if age_invalid else '',
                 _SHOW_FEEDBACK if age_invalid else _NO_FEEDBACK,
             )

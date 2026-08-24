@@ -402,16 +402,23 @@ body {
 }
 
 /* ============================================
+   Modal tables
+   ============================================ */
+
+.modal .table > thead {
+    background-color: var(--bs-gray-100) !important;
+    --bs-table-bg: var(--bs-gray-100);
+    --bs-table-striped-bg: var(--bs-gray-100);
+}
+
+/* ============================================
    Form validation
    ============================================ */
 
-.dropdown-invalid .Select__control,
-.dropdown-invalid .Select-control,
-.dropdown-invalid .VirtualizedSelectFocusedOption,
-.dropdown-invalid [class$="-control"] {
+.dropdown-invalid .dash-dropdown,
+.dropdown-invalid .form-control {
     border-color: var(--bs-danger) !important;
-    box-shadow: none !important;
-}
+} 
 
 .invalid-feedback {
     font-size: 0.875em;
@@ -461,6 +468,11 @@ body {
 /* ============================================
    modal-form
    ============================================ */
+
+.modal-form__header {
+    background-color: var(--bs-gray-300);
+    height: 60px;
+}
 
 .modal-form__field {
     margin-bottom: 0;
