@@ -367,23 +367,55 @@ def _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojs
 
 
 # Input helper
-def create_modal_footer(prefix: str):
+def create_modal_footer(prefix: str, note: bool):
     """Create a standard Save/Close modal footer. prefix is the modal name, e.g. 'npi'."""
-    return dbc.ModalFooter(
-        [
-            dbc.Button('Save',  id=f'{prefix}-save',  className='ms-auto', n_clicks=0),
-            dbc.Button('Close', id=f'{prefix}-close', className='ms-auto', n_clicks=0),
+    note_content = []
+    if note:
+        note_content = [
+            html.Span('ℹ️ ', className='model-setup__desc-icon'),
+            html.Span('Add at least 1 initial case to save.'),
         ]
+    return dbc.ModalFooter(
+        html.Div(
+            [
+                html.Div(
+                    [
+                        dbc.Button(
+                            'SAVE',
+                            id=f'{prefix}-save',
+                            n_clicks=0,
+                            color='success',
+                            class_name='me-2 modal-form__footer-button',
+                        ),
+                        dbc.Button(
+                            'CLOSE',
+                            id=f'{prefix}-close',
+                            n_clicks=0,
+                            class_name='modal-form__footer-button',
+                            color='danger',
+                        ),
+                    ],
+                    className='d-flex justify-content-center mb-2',
+                ),
+                html.Div(
+                    note_content,
+                    id=f'{prefix}-footer-note',
+                    className='text-center modal-form__footer-info',
+                ),
+            ],
+            className='w-100',
+        ),
+        class_name='bg-light',
     )
 
 
 def create_labeled_input(label: str, input_id: str, **kwargs):
     """Create a plain Label + full-width Input wrapped in a Div."""
     return html.Div(
-        className='modal-form__field',
+        className='modal-form__field dbc',
         children=[
             dbc.Label(label),
-            dbc.Input(id=input_id, class_name='mb-3', **kwargs),
+            dbc.Input(id=input_id, className='mb-3', **kwargs),
         ],
     )
 
@@ -393,6 +425,7 @@ def create_bold_label_subtitle_number_input(label: str, subtitle: str, inputs: l
     Each element in inputs: {input_label, input_id, input_value, input_step, input_min}
     Set input_label to None for a single unlabelled input.
     """
+
     def make_input(spec):
         field = dbc.Input(
             id=spec['input_id'],
@@ -400,7 +433,7 @@ def create_bold_label_subtitle_number_input(label: str, subtitle: str, inputs: l
             value=spec['input_value'],
             step=spec['input_step'],
             min=spec['input_min'],
-            class_name='mb-2',
+            className='mb-2 dbc',
         )
         if spec['input_label'] is not None:
             return html.Div(
@@ -421,11 +454,12 @@ def create_bold_label_subtitle_number_input(label: str, subtitle: str, inputs: l
 # Disease Parameters Modal Component
 disease_params_modal = dbc.Modal(
     [
-        dbc.ModalHeader(dbc.ModalTitle('Disease Parameters')),
+        dbc.ModalHeader(dbc.ModalTitle('Disease Parameters'), class_name='modal-form__header'),
         dbc.ModalBody(
             id='disease-params-modal-body',
+            class_name='bg-light',
         ),
-        create_modal_footer('disease-params'),
+        create_modal_footer('disease-params', False),
     ],
     id='disease-params-modal',
     is_open=False,
@@ -436,47 +470,81 @@ disease_params_modal = dbc.Modal(
 # Initial Cases Modal Component
 initial_cases_modal = dbc.Modal(
     [
-        dbc.ModalHeader(dbc.ModalTitle('Initial Cases')),
+        dbc.ModalHeader(dbc.ModalTitle('Initial Cases'), class_name='modal-form__header'),
         dbc.ModalBody(
             [
                 html.Div(
                     [
                         dbc.Label('Location'),
-                        dcc.Dropdown(
-                            id='initial-location',
-                            options=[],
-                            placeholder='Search for a location...',
-                            className='mb-2',
+                        html.Div(
+                            dcc.Dropdown(
+                                id='initial-location',
+                                options=[],
+                                placeholder='Search for a location...',
+                                className='dbc',
+                            ),
+                            id='initial-location-wrapper',
+                        ),
+                        html.Div(
+                            'Please select a location.',
+                            id='initial-location-feedback',
+                            className='invalid-feedback',
+                            style={'display': 'none'},
                         ),
                     ],
-                    className='modal-form__field',
+                    className='mb-3 dbc',
                 ),
-                create_labeled_input('Number of Cases', 'initial-cases-count', type='number', value=100, min=1),
+                html.Div(
+                    [
+                        dbc.Label('Number of Cases'),
+                        html.Div(
+                            dbc.Input(id='initial-cases-count', type='number', value=100, min=1),
+                            id='initial-cases-count-wrapper',
+                        ),
+                        html.Div(
+                            'Please enter at least 1 case.',
+                            id='initial-cases-count-feedback',
+                            className='invalid-feedback',
+                            style={'display': 'none'},
+                        ),
+                    ],
+                    className='mb-3',
+                ),
                 html.Div(
                     [
                         dbc.Label('Age Group'),
-                        dcc.Dropdown(
-                            id='initial-age-group',
-                            options=AGE_GROUPS,
-                            value='18-49 years',
-                            className='mb-3',
+                        html.Div(
+                            dcc.Dropdown(
+                                id='initial-age-group',
+                                options=AGE_GROUPS,
+                                value='18-49 years',
+                            ),
+                            id='initial-age-group-wrapper',
+                        ),
+                        html.Div(
+                            'Please select an age group.',
+                            id='initial-age-group-feedback',
+                            className='invalid-feedback',
+                            style={'display': 'none'},
                         ),
                     ],
-                    className='modal-form__field',
+                    className='mb-4 dbc',
                 ),
                 html.Button(
                     'Add Initial Case',
                     id='add-initial-case-btn',
-                    className='btn btn-secondary mb-3',
+                    className='btn btn-primary mb-3',
                 ),
                 # Table showing added initial cases
                 html.Div(id='initial-cases-table'),
-            ]
+            ],
+            class_name='bg-light',
         ),
-        create_modal_footer('initial-cases'),
+        create_modal_footer('initial-cases', True),
     ],
     id='initial-cases-modal',
     is_open=False,
+    centered=True,
     size='lg',
 )
 
@@ -484,22 +552,70 @@ initial_cases_modal = dbc.Modal(
 # NPI (Non-Pharmaceutical Interventions) Modal Component
 npi_modal = dbc.Modal(
     [
-        dbc.ModalHeader(dbc.ModalTitle('Non-Pharmaceutical Interventions')),
+        dbc.ModalHeader(
+            dbc.ModalTitle('Non-Pharmaceutical Interventions'), class_name='modal-form__header'
+        ),
         dbc.ModalBody(
             [
                 create_labeled_input('NPI Name', 'npi-name', type='text', value='School Closures'),
-                create_labeled_input('NPI start (simulation day)', 'npi-start', type='number', value=5, min=0, max=1000, step=1),
-                create_labeled_input('NPI duration (days)', 'npi-duration', type='number', value=30, min=1, max=1000, step=1),
+                create_labeled_input(
+                    'NPI start (simulation day)',
+                    'npi-start',
+                    type='number',
+                    value=5,
+                    min=0,
+                    max=1000,
+                    step=1,
+                ),
+                create_labeled_input(
+                    'NPI duration (days)',
+                    'npi-duration',
+                    type='number',
+                    value=30,
+                    min=1,
+                    max=1000,
+                    step=1,
+                ),
                 # Age-specific effectiveness section
                 create_bold_label_subtitle_number_input(
                     label='NPI effectiveness (proportion)',
                     subtitle='Age-specific effectiveness values',
                     inputs=[
-                        {'input_label': '0-4 years',   'input_id': 'npi-eff-0-4',    'input_value': 0.4,  'input_step': 0.01, 'input_min': 0},
-                        {'input_label': '5-17 years',  'input_id': 'npi-eff-5-24',   'input_value': 0.35, 'input_step': 0.01, 'input_min': 0},
-                        {'input_label': '18-49 years', 'input_id': 'npi-eff-25-49',  'input_value': 0.2,  'input_step': 0.01, 'input_min': 0},
-                        {'input_label': '50-64 years', 'input_id': 'npi-eff-50-64',  'input_value': 0.25, 'input_step': 0.01, 'input_min': 0},
-                        {'input_label': '65+ years',   'input_id': 'npi-eff-65-plus','input_value': 0.1,  'input_step': 0.01, 'input_min': 0},
+                        {
+                            'input_label': '0-4 years',
+                            'input_id': 'npi-eff-0-4',
+                            'input_value': 0.4,
+                            'input_step': 0.01,
+                            'input_min': 0,
+                        },
+                        {
+                            'input_label': '5-17 years',
+                            'input_id': 'npi-eff-5-24',
+                            'input_value': 0.35,
+                            'input_step': 0.01,
+                            'input_min': 0,
+                        },
+                        {
+                            'input_label': '18-49 years',
+                            'input_id': 'npi-eff-25-49',
+                            'input_value': 0.2,
+                            'input_step': 0.01,
+                            'input_min': 0,
+                        },
+                        {
+                            'input_label': '50-64 years',
+                            'input_id': 'npi-eff-50-64',
+                            'input_value': 0.25,
+                            'input_step': 0.01,
+                            'input_min': 0,
+                        },
+                        {
+                            'input_label': '65+ years',
+                            'input_id': 'npi-eff-65-plus',
+                            'input_value': 0.1,
+                            'input_step': 0.01,
+                            'input_min': 0,
+                        },
                     ],
                 ),
                 # Location selection
@@ -514,18 +630,19 @@ npi_modal = dbc.Modal(
                             className='mb-3',
                         ),
                     ],
-                    className='modal-form__field',
+                    className='modal-form__field dbc',
                 ),
                 html.Button(
                     'Add NPI',
                     id='add-npi-btn',
-                    className='btn btn-secondary mb-3',
+                    className='btn btn-primary mb-3',
                 ),
                 # Table showing added NPIs
                 html.Div(id='npi-table'),
-            ]
+            ],
+            class_name='bg-light',
         ),
-        create_modal_footer('npi'),
+        create_modal_footer('npi', False),
     ],
     id='npi-modal',
     is_open=False,
@@ -535,17 +652,49 @@ npi_modal = dbc.Modal(
 # Antivirals Modal Component
 antivirals_modal = dbc.Modal(
     [
-        dbc.ModalHeader(dbc.ModalTitle('Antivirals')),
+        dbc.ModalHeader(dbc.ModalTitle('Antivirals'), class_name='modal-form__header'),
         dbc.ModalBody(
             [
-                create_labeled_input('Antiviral Effectiveness', 'antiviral-effectiveness', type='number', value=0.15, min=0, max=1, step=0.01),
-                create_labeled_input('Antiviral Wastage Factor (days)', 'antiviral-wastage', type='number', value=60, min=0, max=1000, step=1),
+                create_labeled_input(
+                    'Antiviral Effectiveness',
+                    'antiviral-effectiveness',
+                    type='number',
+                    value=0.15,
+                    min=0,
+                    max=1,
+                    step=0.01,
+                ),
+                create_labeled_input(
+                    'Antiviral Wastage Factor (days)',
+                    'antiviral-wastage',
+                    type='number',
+                    value=60,
+                    min=0,
+                    max=1000,
+                    step=1,
+                ),
                 html.H6('Stockpile Management', className='fw-bold mb-2'),
-                create_labeled_input('New Stockpile Day', 'antiviral-stockpile-day', type='number', value=50, min=1, max=1000, step=1),
-                create_labeled_input('New Stockpile Amount', 'antiviral-stockpile-amount', type='number', value=10000, min=0, step=1),
-            ]
+                create_labeled_input(
+                    'New Stockpile Day',
+                    'antiviral-stockpile-day',
+                    type='number',
+                    value=50,
+                    min=1,
+                    max=1000,
+                    step=1,
+                ),
+                create_labeled_input(
+                    'New Stockpile Amount',
+                    'antiviral-stockpile-amount',
+                    type='number',
+                    value=10000,
+                    min=0,
+                    step=1,
+                ),
+            ],
+            class_name='bg-light',
         ),
-        create_modal_footer('antivirals'),
+        create_modal_footer('antivirals', False),
     ],
     id='antivirals-modal',
     is_open=False,
@@ -555,7 +704,7 @@ antivirals_modal = dbc.Modal(
 # Vaccines Modal Component
 vaccines_modal = dbc.Modal(
     [
-        dbc.ModalHeader(dbc.ModalTitle('Vaccines')),
+        dbc.ModalHeader(dbc.ModalTitle('Vaccines'), class_name='modal-form__header'),
         dbc.ModalBody(
             [
                 html.Div(
@@ -572,7 +721,7 @@ vaccines_modal = dbc.Modal(
                             id='vaccine-model-dropdown',
                         ),
                     ],
-                    className='modal-form__field',
+                    className='modal-form__field dbc',
                 ),
                 html.Hr(),
                 html.Div(
@@ -616,7 +765,7 @@ vaccines_modal = dbc.Modal(
                                     min=0,
                                     max=1000,
                                     step=1,
-                                    class_name='mb-3',
+                                    className='mb-3',
                                 ),
                             ],
                             style={'display': 'none'},
@@ -634,7 +783,7 @@ vaccines_modal = dbc.Modal(
                                     min=0,
                                     max=1,
                                     step=0.01,
-                                    class_name='mb-3',
+                                    className='mb-3',
                                 ),
                             ]
                         ),
@@ -651,7 +800,7 @@ vaccines_modal = dbc.Modal(
                                     min=0,
                                     max=100,
                                     step=1,
-                                    class_name='mb-3',
+                                    className='mb-3',
                                 ),
                             ]
                         ),
@@ -660,11 +809,41 @@ vaccines_modal = dbc.Modal(
                             label='Vaccine effectiveness (proportion)',
                             subtitle='Age-specific effectiveness of vaccine against infection. 0 is not effective and 1 is completely effective',
                             inputs=[
-                                {'input_label': '0-4 years',   'input_id': 'vac-eff-0-4',    'input_value': 0.4,  'input_step': 0.01, 'input_min': 0},
-                                {'input_label': '5-17 years',  'input_id': 'vac-eff-5-17',   'input_value': 0.35, 'input_step': 0.01, 'input_min': 0},
-                                {'input_label': '18-49 years', 'input_id': 'vac-eff-18-49',  'input_value': 0.2,  'input_step': 0.01, 'input_min': 0},
-                                {'input_label': '50-64 years', 'input_id': 'vac-eff-50-64',  'input_value': 0.25, 'input_step': 0.01, 'input_min': 0},
-                                {'input_label': '65+ years',   'input_id': 'vac-eff-65-plus','input_value': 0.1,  'input_step': 0.01, 'input_min': 0},
+                                {
+                                    'input_label': '0-4 years',
+                                    'input_id': 'vac-eff-0-4',
+                                    'input_value': 0.4,
+                                    'input_step': 0.01,
+                                    'input_min': 0,
+                                },
+                                {
+                                    'input_label': '5-17 years',
+                                    'input_id': 'vac-eff-5-17',
+                                    'input_value': 0.35,
+                                    'input_step': 0.01,
+                                    'input_min': 0,
+                                },
+                                {
+                                    'input_label': '18-49 years',
+                                    'input_id': 'vac-eff-18-49',
+                                    'input_value': 0.2,
+                                    'input_step': 0.01,
+                                    'input_min': 0,
+                                },
+                                {
+                                    'input_label': '50-64 years',
+                                    'input_id': 'vac-eff-50-64',
+                                    'input_value': 0.25,
+                                    'input_step': 0.01,
+                                    'input_min': 0,
+                                },
+                                {
+                                    'input_label': '65+ years',
+                                    'input_id': 'vac-eff-65-plus',
+                                    'input_value': 0.1,
+                                    'input_step': 0.01,
+                                    'input_min': 0,
+                                },
                             ],
                         ),
                         # Age-specific adherence
@@ -672,11 +851,41 @@ vaccines_modal = dbc.Modal(
                             label='Vaccine adherence (proportion)',
                             subtitle='Age-specific proportion of the population that will seek vaccination. 0 is no one and 1 is completely adherent',
                             inputs=[
-                                {'input_label': '0-4 years',   'input_id': 'vac-adh-0-4',    'input_value': 0.4,  'input_step': 0.01, 'input_min': 0},
-                                {'input_label': '5-17 years',  'input_id': 'vac-adh-5-17',   'input_value': 0.35, 'input_step': 0.01, 'input_min': 0},
-                                {'input_label': '18-49 years', 'input_id': 'vac-adh-18-49',  'input_value': 0.2,  'input_step': 0.01, 'input_min': 0},
-                                {'input_label': '50-64 years', 'input_id': 'vac-adh-50-64',  'input_value': 0.25, 'input_step': 0.01, 'input_min': 0},
-                                {'input_label': '65+ years',   'input_id': 'vac-adh-65-plus','input_value': 0.1,  'input_step': 0.01, 'input_min': 0},
+                                {
+                                    'input_label': '0-4 years',
+                                    'input_id': 'vac-adh-0-4',
+                                    'input_value': 0.4,
+                                    'input_step': 0.01,
+                                    'input_min': 0,
+                                },
+                                {
+                                    'input_label': '5-17 years',
+                                    'input_id': 'vac-adh-5-17',
+                                    'input_value': 0.35,
+                                    'input_step': 0.01,
+                                    'input_min': 0,
+                                },
+                                {
+                                    'input_label': '18-49 years',
+                                    'input_id': 'vac-adh-18-49',
+                                    'input_value': 0.2,
+                                    'input_step': 0.01,
+                                    'input_min': 0,
+                                },
+                                {
+                                    'input_label': '50-64 years',
+                                    'input_id': 'vac-adh-50-64',
+                                    'input_value': 0.25,
+                                    'input_step': 0.01,
+                                    'input_min': 0,
+                                },
+                                {
+                                    'input_label': '65+ years',
+                                    'input_id': 'vac-adh-65-plus',
+                                    'input_value': 0.1,
+                                    'input_step': 0.01,
+                                    'input_min': 0,
+                                },
                             ],
                         ),
                         # Vaccine stockpile section
@@ -685,19 +894,33 @@ vaccines_modal = dbc.Modal(
                             'Vaccine reserves available beginning on a specified day. Negative days are allowed to vaccinate people before epidemic begins on day 0.',
                             className='modal-form__subtitle',
                         ),
-                        create_labeled_input('Stockpile Day', 'vac-stockpile-day', type='number', min=-300, max=300, placeholder='Specify stockpile day...'),
-                        create_labeled_input('Stockpile Amount', 'vac-stockpile-amount', type='number', min=1, placeholder='Specify stockpile amount...'),
+                        create_labeled_input(
+                            'Stockpile Day',
+                            'vac-stockpile-day',
+                            type='number',
+                            min=-300,
+                            max=300,
+                            placeholder='Specify stockpile day...',
+                        ),
+                        create_labeled_input(
+                            'Stockpile Amount',
+                            'vac-stockpile-amount',
+                            type='number',
+                            min=1,
+                            placeholder='Specify stockpile amount...',
+                        ),
                         html.Button(
                             'Add Vaccine Stockpile',
                             id='add-vac-stockpile-btn',
-                            className='btn btn-secondary mb-3',
+                            className='btn btn-primary mb-3',
                         ),
                         html.Div(id='vac-stockpile-table'),
                     ],
                 ),
-            ]
+            ],
+            class_name='bg-light',
         ),
-        create_modal_footer('vaccines'),
+        create_modal_footer('vaccines', False),
     ],
     id='vaccines-modal',
     is_open=False,
@@ -716,77 +939,87 @@ def create_model_state_selection_panel():
             dbc.CardHeader(
                 html.Div(
                     [
-                        html.Span([
-                            html.I(className="bi bi-1-circle-fill me-2"),
-                            html.Span("Start Simulation Setup"),
-                        ]),
                         html.Span(
-                            html.I(className="bi bi-caret-up-fill", id="sim-setup-caret"),
-                            className="model-setup__header-btn"
-                        )
+                            [
+                                html.I(className='bi bi-1-circle-fill me-2'),
+                                html.Span('Start Simulation Setup'),
+                            ]
+                        ),
+                        html.Span(
+                            html.I(className='bi bi-caret-up-fill', id='sim-setup-caret'),
+                            className='model-setup__header-btn',
+                        ),
                     ],
-                    id="sim-setup-header",
+                    id='sim-setup-header',
                     n_clicks=0,
-                    className="model-setup__header"
+                    className='model-setup__header',
                 ),
-                className="model-setup__header-bg model-setup__header-height"
+                className='model-setup__header-bg model-setup__header-height',
             ),
             dbc.Collapse(
                 [
-                    dbc.CardBody([
-                        # Model Selection Dropdown
-                        html.Div(
-                            [
-                                dbc.Label('Disease Model', class_name='fw-bold'),
-                                dcc.Dropdown(
-                                    id='model-selector-dropdown',
-                                    options=[{'label': m['label'], 'value': m['value']} for m in MODEL_OPTIONS],
-                                    value='seirs-deterministic',
-                                    clearable=True,
-                                    placeholder='Select a disease model...',
-                                    className='mb-2',
-                                ),
-                                # Model description display
-                                html.Div(
-                                    id='model-description-display',
-                                    className='model-setup__desc',
-                                ),
-                            ]
-                        ),
-                        # State Selection Dropdown
-                        html.Div(
-                            [
-                                dbc.Label('State', class_name='fw-bold'),
-                                dcc.Dropdown(
-                                    id='state-selector-dropdown',
-                                    options=[{'label': s['label'], 'value': s['value']} for s in STATE_OPTIONS],
-                                    value='Alabama',
-                                    clearable=True,
-                                    searchable=True,
-                                    placeholder='Select a state...',
-                                    className='mb-3',
-                                ),
-                            ]
-                        ),
-                        # Apply Button
-                        html.Button(
-                            'APPLY SELECTION',
-                            id='apply-model-state-btn',
-                            n_clicks=0,
-                            className='model-setup__apply-btn',
-                        ),
-                        # Status message area
-                        html.Div(id='model-state-status-message'),
-                    ],
-                    class_name="model-setup__body"
+                    dbc.CardBody(
+                        [
+                            # Model Selection Dropdown
+                            html.Div(
+                                [
+                                    dbc.Label('Disease Model', class_name='fw-bold'),
+                                    dcc.Dropdown(
+                                        id='model-selector-dropdown',
+                                        options=[
+                                            {'label': m['label'], 'value': m['value']}
+                                            for m in MODEL_OPTIONS
+                                        ],
+                                        value='seirs-deterministic',
+                                        clearable=True,
+                                        placeholder='Select a disease model...',
+                                        className='mb-2',
+                                    ),
+                                    # Model description display
+                                    html.Div(
+                                        id='model-description-display',
+                                        className='model-setup__desc',
+                                    ),
+                                ]
+                            ),
+                            # State Selection Dropdown
+                            html.Div(
+                                [
+                                    dbc.Label('State', class_name='fw-bold'),
+                                    dcc.Dropdown(
+                                        id='state-selector-dropdown',
+                                        options=[
+                                            {'label': s['label'], 'value': s['value']}
+                                            for s in STATE_OPTIONS
+                                        ],
+                                        value='Alabama',
+                                        clearable=True,
+                                        searchable=True,
+                                        placeholder='Select a state...',
+                                        className='mb-3',
+                                    ),
+                                ]
+                            ),
+                            # Apply Button
+                            dbc.Button(
+                                'APPLY SELECTION',
+                                id='apply-model-state-btn',
+                                n_clicks=0,
+                                class_name='model-setup__apply-btn btn-navy',
+                            ),
+                            # Status message area
+                            html.Div(id='model-state-status-message'),
+                        ],
+                        class_name='model-setup__body',
                     )
                 ],
-                id="sim-setup-collapse",
-                is_open=True
-            )
+                id='sim-setup-collapse',
+                is_open=True,
+            ),
         ],
         class_name='mb-3',
     )
+
 
 def create_set_scenario_panel():
     return dbc.Card(
@@ -794,20 +1027,22 @@ def create_set_scenario_panel():
             dbc.CardHeader(
                 html.Div(
                     [
-                        html.Span([
-                            html.I(className="bi bi-2-circle-fill me-2"),
-                            html.Span("Set Scenario"),
-                        ]),
                         html.Span(
-                            html.I(className="bi bi-caret-down-fill", id="sim-scenario-caret"),
-                            className="model-setup__header-btn",
+                            [
+                                html.I(className='bi bi-2-circle-fill me-2'),
+                                html.Span('Set Scenario'),
+                            ]
+                        ),
+                        html.Span(
+                            html.I(className='bi bi-caret-down-fill', id='sim-scenario-caret'),
+                            className='model-setup__header-btn',
                         ),
                     ],
-                    id="sim-scenario-header",
+                    id='sim-scenario-header',
                     n_clicks=0,
-                    className="model-setup__header",
+                    className='model-setup__header',
                 ),
-                className="model-setup__header-bg model-setup__header-height",
+                className='model-setup__header-bg model-setup__header-height',
             ),
             dbc.Collapse(
                 dbc.CardBody(
@@ -819,7 +1054,7 @@ def create_set_scenario_panel():
                                 outline=True,
                                 color='dark',
                                 n_clicks=0,
-                                class_name='model-setup__set-content-btn'
+                                class_name='model-setup__set-content-btn',
                             ),
                             dbc.Button(
                                 'Set Initial Cases',
@@ -827,14 +1062,14 @@ def create_set_scenario_panel():
                                 outline=True,
                                 color='dark',
                                 n_clicks=0,
-                                class_name='model-setup__set-content-btn'
+                                class_name='model-setup__set-content-btn',
                             ),
                         ],
                         className='d-grid gap-2',
                     ),
-                    class_name="model-setup__body",
+                    class_name='model-setup__body',
                 ),
-                id="sim-scenario-collapse",
+                id='sim-scenario-collapse',
                 is_open=False,
             ),
         ],
@@ -848,23 +1083,27 @@ def create_set_interventions_panel():
             dbc.CardHeader(
                 html.Div(
                     [
-                        html.Span([
-                            html.I(className="bi bi-3-circle-fill me-2"),
-                            html.Span(
-                                    ["Interventions ",
-                                    html.Span("(optional)", className="fw-light")] 
-                                ),
-                        ]),
                         html.Span(
-                            html.I(className="bi bi-caret-down-fill", id="sim-interventions-caret"),
-                            className="model-setup__header-btn",
+                            [
+                                html.I(className='bi bi-3-circle-fill me-2'),
+                                html.Span(
+                                    [
+                                        'Interventions ',
+                                        html.Span('(optional)', className='fw-light'),
+                                    ]
+                                ),
+                            ]
+                        ),
+                        html.Span(
+                            html.I(className='bi bi-caret-down-fill', id='sim-interventions-caret'),
+                            className='model-setup__header-btn',
                         ),
                     ],
-                    id="sim-interventions-header",
+                    id='sim-interventions-header',
                     n_clicks=0,
-                    className="model-setup__header",
+                    className='model-setup__header',
                 ),
-                className="model-setup__header-bg model-setup__header-height",
+                className='model-setup__header-bg model-setup__header-height',
             ),
             dbc.Collapse(
                 dbc.CardBody(
@@ -876,7 +1115,7 @@ def create_set_interventions_panel():
                                 outline=True,
                                 color='dark',
                                 n_clicks=0,
-                                class_name='model-setup__set-content-btn'
+                                class_name='model-setup__set-content-btn',
                             ),
                             dbc.Button(
                                 'Select Antivirals',
@@ -892,14 +1131,14 @@ def create_set_interventions_panel():
                                 outline=True,
                                 color='dark',
                                 n_clicks=0,
-                                class_name='model-setup__set-content-btn'
+                                class_name='model-setup__set-content-btn',
                             ),
                         ],
                         className='d-grid gap-2',
                     ),
-                    class_name="model-setup__body",
+                    class_name='model-setup__body',
                 ),
-                id="sim-interventions-collapse",
+                id='sim-interventions-collapse',
                 is_open=False,
             ),
         ],
@@ -913,24 +1152,28 @@ def create_displayed_parameters_panel():
             dbc.Tab(
                 html.Div(
                     id='scenario-content',
-                    children=[html.P('No scenario set yet.', className='param-display__empty-state')],
+                    children=[
+                        html.P('No scenario set yet.', className='param-display__empty-state')
+                    ],
                     className='param-display__content',
                 ),
                 label='Scenario',
                 tab_id='tab-scenario',
                 tab_class_name='param-display__tab-item',
-                label_class_name='param-display__tab-left'
+                label_class_name='param-display__tab-left',
             ),
             dbc.Tab(
                 html.Div(
                     id='interventions-content',
-                    children=[html.P('No interventions set yet.', className='param-display__empty-state')],
+                    children=[
+                        html.P('No interventions set yet.', className='param-display__empty-state')
+                    ],
                     className='param-display__content',
                 ),
                 label='Interventions',
                 tab_id='tab-interventions',
                 tab_class_name='param-display__tab-item',
-                label_class_name='param-display__tab-right'
+                label_class_name='param-display__tab-right',
             ),
         ],
         id='param-tabs',
@@ -938,6 +1181,7 @@ def create_displayed_parameters_panel():
         class_name='param-display__tabs model-setup__header-height',
         # model-setup__header-bg
     )
+
 
 # Home page layout
 def create_home_layout():
@@ -955,7 +1199,7 @@ def create_home_layout():
                                     create_model_state_selection_panel(),
                                     create_set_scenario_panel(),
                                     create_set_interventions_panel(),
-                                    create_displayed_parameters_panel()
+                                    create_displayed_parameters_panel(),
                                 ],
                                 className='sim-layout__left',
                             )
@@ -1102,9 +1346,21 @@ def create_interventions_display(npi_data, antiviral_data, vaccine_data, vaccine
             content.append(
                 html.Div(
                     [
-                        html.P([html.Span('Name: ', className='fw-bold'), npi["name"]]),
-                        html.P([html.Span('Start Day: ', className='fw-bold'), f'{npi["start"]}, ', html.Span('Duration: ', className='fw-bold'), f'{npi["duration"]} days']),
-                        html.P([html.Span('Location: ', className='fw-bold'), ", ".join(npi["location"])]),
+                        html.P([html.Span('Name: ', className='fw-bold'), npi['name']]),
+                        html.P(
+                            [
+                                html.Span('Start Day: ', className='fw-bold'),
+                                f'{npi["start"]}, ',
+                                html.Span('Duration: ', className='fw-bold'),
+                                f'{npi["duration"]} days',
+                            ]
+                        ),
+                        html.P(
+                            [
+                                html.Span('Location: ', className='fw-bold'),
+                                ', '.join(npi['location']),
+                            ]
+                        ),
                         html.P(html.Span('Age-specific effectiveness:', className='fw-bold')),
                         html.Ul(
                             [
@@ -1126,9 +1382,24 @@ def create_interventions_display(npi_data, antiviral_data, vaccine_data, vaccine
         content.extend(
             [
                 html.H6('Antivirals', className='fw-light mb-2'),
-                html.P([html.Span('Effectiveness: ', className='fw-bold'), f'{antiviral_data["effectiveness"]:.2f}']),
-                html.P([html.Span('Wastage Factor: ', className='fw-bold'), f'{antiviral_data["wastage_factor"]} days']),
-                html.P([html.Span('Stockpile: ', className='fw-bold'), f'{antiviral_data["stockpile_amount"]} on day {antiviral_data["stockpile_day"]}']),
+                html.P(
+                    [
+                        html.Span('Effectiveness: ', className='fw-bold'),
+                        f'{antiviral_data["effectiveness"]:.2f}',
+                    ]
+                ),
+                html.P(
+                    [
+                        html.Span('Wastage Factor: ', className='fw-bold'),
+                        f'{antiviral_data["wastage_factor"]} days',
+                    ]
+                ),
+                html.P(
+                    [
+                        html.Span('Stockpile: ', className='fw-bold'),
+                        f'{antiviral_data["stockpile_amount"]} on day {antiviral_data["stockpile_day"]}',
+                    ]
+                ),
             ]
         )
 
@@ -1144,9 +1415,24 @@ def create_interventions_display(npi_data, antiviral_data, vaccine_data, vaccine
             html.Div(
                 [
                     html.P([html.Span('Vaccine Model: ', className='fw-bold'), model_label]),
-                    html.P([html.Span('Priority Groups: ', className='fw-bold'), f'{vaccine_data["priority_groups"]}']),
-                    html.P([html.Span('Capacity: ', className='fw-bold'), f'{vaccine_data["capacity"]} (proportion)']),
-                    html.P([html.Span('Effectiveness Lag: ', className='fw-bold'), f'{vaccine_data["effectiveness_lag"]} days']),
+                    html.P(
+                        [
+                            html.Span('Priority Groups: ', className='fw-bold'),
+                            f'{vaccine_data["priority_groups"]}',
+                        ]
+                    ),
+                    html.P(
+                        [
+                            html.Span('Capacity: ', className='fw-bold'),
+                            f'{vaccine_data["capacity"]} (proportion)',
+                        ]
+                    ),
+                    html.P(
+                        [
+                            html.Span('Effectiveness Lag: ', className='fw-bold'),
+                            f'{vaccine_data["effectiveness_lag"]} days',
+                        ]
+                    ),
                     html.P(html.Span('Effectiveness:', className='fw-bold')),
                     html.Ul(
                         [
@@ -1201,11 +1487,36 @@ def create_scenario_display(disease_params, initial_cases):
                 [
                     html.H6('Disease Parameters', className=title_class),
                     html.Hr(),
-                    html.P([html.Span('Scenario: ', className='fw-bold'), disease_params.get('scenario_name', 'Custom')]),
-                    html.P([html.Span('Reproduction Number: ', className='fw-bold'), disease_params.get('R0', 0)]),
-                    html.P([html.Span('Latent Period: ', className='fw-bold'), f'{disease_params.get("tau", 0)} days']),
-                    html.P([html.Span('Asymptomatic Period: ', className='fw-bold'), f'{disease_params.get("kappa", 0)} days']),
-                    html.P([html.Span('Symptomatic Period: ', className='fw-bold'), f'{disease_params.get("gamma", 0)} days']),
+                    html.P(
+                        [
+                            html.Span('Scenario: ', className='fw-bold'),
+                            disease_params.get('scenario_name', 'Custom'),
+                        ]
+                    ),
+                    html.P(
+                        [
+                            html.Span('Reproduction Number: ', className='fw-bold'),
+                            disease_params.get('R0', 0),
+                        ]
+                    ),
+                    html.P(
+                        [
+                            html.Span('Latent Period: ', className='fw-bold'),
+                            f'{disease_params.get("tau", 0)} days',
+                        ]
+                    ),
+                    html.P(
+                        [
+                            html.Span('Asymptomatic Period: ', className='fw-bold'),
+                            f'{disease_params.get("kappa", 0)} days',
+                        ]
+                    ),
+                    html.P(
+                        [
+                            html.Span('Symptomatic Period: ', className='fw-bold'),
+                            f'{disease_params.get("gamma", 0)} days',
+                        ]
+                    ),
                     html.P(html.Span('Case Fatality Rate:', className='fw-bold')),
                     html.Ul(
                         [
@@ -1224,11 +1535,36 @@ def create_scenario_display(disease_params, initial_cases):
                 [
                     html.H6('Disease Parameters', className=title_class),
                     html.Hr(),
-                    html.P([html.Span('Scenario: ', className='fw-bold'), disease_params.get('scenario_name', 'Custom')]),
-                    html.P([html.Span('Reproduction Number: ', className='fw-bold'), disease_params.get('R0', 0)]),
-                    html.P([html.Span('Latent Period: ', className='fw-bold'), f'{disease_params.get("tau", 0)} days']),
-                    html.P([html.Span('Infectious Period: ', className='fw-bold'), f'{disease_params.get("infectious_period", 0)} days']),
-                    html.P([html.Span('Immune Period: ', className='fw-bold'), f'{disease_params.get("immune_period", 0)} days']),
+                    html.P(
+                        [
+                            html.Span('Scenario: ', className='fw-bold'),
+                            disease_params.get('scenario_name', 'Custom'),
+                        ]
+                    ),
+                    html.P(
+                        [
+                            html.Span('Reproduction Number: ', className='fw-bold'),
+                            disease_params.get('R0', 0),
+                        ]
+                    ),
+                    html.P(
+                        [
+                            html.Span('Latent Period: ', className='fw-bold'),
+                            f'{disease_params.get("tau", 0)} days',
+                        ]
+                    ),
+                    html.P(
+                        [
+                            html.Span('Infectious Period: ', className='fw-bold'),
+                            f'{disease_params.get("infectious_period", 0)} days',
+                        ]
+                    ),
+                    html.P(
+                        [
+                            html.Span('Immune Period: ', className='fw-bold'),
+                            f'{disease_params.get("immune_period", 0)} days',
+                        ]
+                    ),
                 ]
             )
 
@@ -1310,15 +1646,16 @@ def layout(**kwargs):
 
 
 @callback(
-    Output("sim-setup-collapse", "is_open"),
-    Output("sim-setup-caret", "className"),
-    [Input("sim-setup-header", "n_clicks")],
-    [State("sim-setup-collapse", "is_open")],
+    Output('sim-setup-collapse', 'is_open'),
+    Output('sim-setup-caret', 'className'),
+    [Input('sim-setup-header', 'n_clicks')],
+    [State('sim-setup-collapse', 'is_open')],
 )
 def toggle_collapse(n, is_open):
     new_open = (not is_open) if n else is_open
-    caret = "bi bi-caret-up-fill" if new_open else "bi bi-caret-down-fill"
+    caret = 'bi bi-caret-up-fill' if new_open else 'bi bi-caret-down-fill'
     return new_open, caret
+
 
 @callback(
     Output('disease-params-modal-body', 'children'),
@@ -1331,7 +1668,9 @@ def update_disease_param_modal_body(selected_value, preset, is_open):
     if not is_open:
         return dash.no_update
     if selected_value is None:
-        return dbc.ModalBody(['Select a valid disease model to set parameters.'])
+        return dbc.ModalBody(
+            ['Select a valid disease model to set parameters.'], class_name='bg-light'
+        )
 
     scenario_prefix = selected_value.split('-')[0]
     preset = preset or {}
@@ -1349,7 +1688,8 @@ def update_disease_param_modal_body(selected_value, preset, is_open):
                     placeholder='Select a preset scenario...',
                     className='mb-3',
                 ),
-            ]
+            ],
+            className='dbc',
         ),
         html.Hr(),
         html.Div(
@@ -1359,7 +1699,7 @@ def update_disease_param_modal_body(selected_value, preset, is_open):
                     id={'type': 'dp-input', 'param': 'scenario-name'},
                     type='text',
                     value=preset.get('disease_name', ''),
-                    class_name='mb-3',
+                    className='mb-3',
                 ),
             ]
         ),
@@ -1427,17 +1767,22 @@ def update_disease_param_modal_body(selected_value, preset, is_open):
                         {
                             'input_label': label,
                             'input_id': {'type': 'dp-input', 'param': param},
-                            'input_value': preset.get('nu', [0.000022319, 0.000040975, 0.000083729, 0.000061809, 0.000008978])[i],
+                            'input_value': preset.get(
+                                'nu',
+                                [0.000022319, 0.000040975, 0.000083729, 0.000061809, 0.000008978],
+                            )[i],
                             'input_step': 0.000000001,
                             'input_min': 0,
                         }
-                        for i, (label, param) in enumerate([
-                            ('0-4 years', 'cfr-0-4'),
-                            ('5-17 years', 'cfr-5-24'),
-                            ('18-49 years', 'cfr-25-49'),
-                            ('50-64 years', 'cfr-50-64'),
-                            ('65+ years', 'cfr-65-plus'),
-                        ])
+                        for i, (label, param) in enumerate(
+                            [
+                                ('0-4 years', 'cfr-0-4'),
+                                ('5-17 years', 'cfr-5-24'),
+                                ('18-49 years', 'cfr-25-49'),
+                                ('50-64 years', 'cfr-50-64'),
+                                ('65+ years', 'cfr-65-plus'),
+                            ]
+                        )
                     ],
                 ),
                 create_bold_label_subtitle_number_input(
@@ -1451,13 +1796,15 @@ def update_disease_param_modal_body(selected_value, preset, is_open):
                             'input_step': 0.000000001,
                             'input_min': 0,
                         }
-                        for i, (label, param) in enumerate([
-                            ('0-4 years', 'sigma-0-4'),
-                            ('5-17 years', 'sigma-5-24'),
-                            ('18-49 years', 'sigma-25-49'),
-                            ('50-64 years', 'sigma-50-64'),
-                            ('65+ years', 'sigma-65-plus'),
-                        ])
+                        for i, (label, param) in enumerate(
+                            [
+                                ('0-4 years', 'sigma-0-4'),
+                                ('5-17 years', 'sigma-5-24'),
+                                ('18-49 years', 'sigma-25-49'),
+                                ('50-64 years', 'sigma-50-64'),
+                                ('65+ years', 'sigma-65-plus'),
+                            ]
+                        )
                     ],
                 ),
             ]
@@ -1494,7 +1841,7 @@ def update_disease_param_modal_body(selected_value, preset, is_open):
             ]
         )
 
-    return dbc.ModalBody(modal_elems)
+    return dbc.ModalBody(modal_elems, class_name='bg-light')
 
 
 @callback(
@@ -1573,9 +1920,7 @@ def manage_vaccine_stockpile(add_clicks, remove_clicks, day, amount, current_dat
             className='table table-striped',
         )
     else:
-        table = html.P(
-            'No stockpiles added yet.', className='param-display__empty-state'
-        )
+        table = html.P('No stockpiles added yet.', className='param-display__empty-state')
 
     logger.info(f'current_data = {current_data}')
     return current_data, table
@@ -1595,7 +1940,10 @@ def update_model_description(selected_model):
     for model in MODEL_OPTIONS:
         if model['value'] == selected_model:
             return html.Div(
-                [html.Span('ℹ️ ', className='model-setup__desc-icon'), html.Span(model['description'])],
+                [
+                    html.Span('ℹ️ ', className='model-setup__desc-icon'),
+                    html.Span(model['description']),
+                ],
             )
 
     return 'Description not available.'
@@ -1647,7 +1995,10 @@ def apply_model_state_selection(n_clicks, selected_model, selected_state):
                     html.Span('Selection Applied!', className='fw-bold'),
                 ]
             ),
-            html.Span("Proceed to Step 2 to set your scenario.", className='model-setup__status-detail mt-1'),
+            html.Span(
+                'Proceed to Step 2 to set your scenario.',
+                className='model-setup__status-detail mt-1',
+            ),
         ],
         className='model-setup__status--success',
     )
@@ -1758,26 +2109,26 @@ def restore_ui_after_navigation(content, sim_state, disease_params, event_data):
 
 
 @callback(
-    Output("sim-scenario-collapse", "is_open"),
-    Output("sim-scenario-caret", "className"),
-    Input("sim-scenario-header", "n_clicks"),
-    State("sim-scenario-collapse", "is_open"),
+    Output('sim-scenario-collapse', 'is_open'),
+    Output('sim-scenario-caret', 'className'),
+    Input('sim-scenario-header', 'n_clicks'),
+    State('sim-scenario-collapse', 'is_open'),
 )
 def toggle_scenario_collapse(n, is_open):
     new_open = (not is_open) if n else is_open
-    caret = "bi bi-caret-up-fill" if new_open else "bi bi-caret-down-fill"
+    caret = 'bi bi-caret-up-fill' if new_open else 'bi bi-caret-down-fill'
     return new_open, caret
 
 
 @callback(
-    Output("sim-interventions-collapse", "is_open"),
-    Output("sim-interventions-caret", "className"),
-    Input("sim-interventions-header", "n_clicks"),
-    State("sim-interventions-collapse", "is_open"),
+    Output('sim-interventions-collapse', 'is_open'),
+    Output('sim-interventions-caret', 'className'),
+    Input('sim-interventions-header', 'n_clicks'),
+    State('sim-interventions-collapse', 'is_open'),
 )
 def toggle_interventions_collapse(n, is_open):
     new_open = (not is_open) if n else is_open
-    caret = "bi bi-caret-up-fill" if new_open else "bi bi-caret-down-fill"
+    caret = 'bi bi-caret-up-fill' if new_open else 'bi bi-caret-down-fill'
     return new_open, caret
 
 
@@ -1929,6 +2280,75 @@ def load_preset_scenario(preset_key, selected_value):
     return {}
 
 
+@callback(
+    Output('initial-cases-save', 'disabled'),
+    Output('initial-cases-footer-note', 'style'),
+    Input('initial-cases-data', 'data'),
+)
+def update_initial_cases_footer(cases):
+    has_cases = bool(cases)
+    return not has_cases, {} if not has_cases else {'display': 'none'}
+
+
+_NO_FEEDBACK = {'display': 'none'}
+_SHOW_FEEDBACK = {'display': 'block'}
+_CLEAR_VALIDATION = (
+    '',  # initial-location-wrapper className
+    _NO_FEEDBACK,  # initial-location-feedback style
+    '',  # initial-cases-count-wrapper className
+    _NO_FEEDBACK,  # initial-cases-count-feedback style
+    '',  # initial-age-group-wrapper className
+    _NO_FEEDBACK,  # initial-age-group-feedback style
+)
+
+
+@callback(
+    Output('initial-location-wrapper', 'className', allow_duplicate=True),
+    Output('initial-location-feedback', 'style', allow_duplicate=True),
+    Input('initial-location', 'value'),
+    prevent_initial_call=True,
+)
+def clear_location_validation(value):
+    return ('', _NO_FEEDBACK) if value else dash.no_update
+
+
+@callback(
+    Output('initial-cases-count-wrapper', 'className', allow_duplicate=True),
+    Output('initial-cases-count-feedback', 'style', allow_duplicate=True),
+    Input('initial-cases-count', 'value'),
+    prevent_initial_call=True,
+)
+def clear_count_validation(value):
+    if value and value >= 1:
+        return '', _NO_FEEDBACK
+    return dash.no_update, dash.no_update
+
+
+@callback(
+    Output('initial-age-group-wrapper', 'className', allow_duplicate=True),
+    Output('initial-age-group-feedback', 'style', allow_duplicate=True),
+    Input('initial-age-group', 'value'),
+    prevent_initial_call=True,
+)
+def clear_age_group_validation(value):
+    return ('', _NO_FEEDBACK) if value else dash.no_update
+
+
+@callback(
+    Output('initial-location-wrapper', 'className', allow_duplicate=True),
+    Output('initial-location-feedback', 'style', allow_duplicate=True),
+    Output('initial-cases-count-wrapper', 'className', allow_duplicate=True),
+    Output('initial-cases-count-feedback', 'style', allow_duplicate=True),
+    Output('initial-age-group-wrapper', 'className', allow_duplicate=True),
+    Output('initial-age-group-feedback', 'style', allow_duplicate=True),
+    Input('initial-cases-modal', 'is_open'),
+    prevent_initial_call=True,
+)
+def reset_validation_on_modal_open(is_open):
+    if is_open:
+        return '', _NO_FEEDBACK, '', _NO_FEEDBACK, '', _NO_FEEDBACK
+    return [dash.no_update] * 6
+
 
 # Initial cases management callbacks
 @callback(
@@ -1936,6 +2356,12 @@ def load_preset_scenario(preset_key, selected_value):
         Output('initial-cases-data', 'data'),
         Output('initial-cases-table', 'children'),
         Output('play-pause-btn', 'disabled', allow_duplicate=True),
+        Output('initial-location-wrapper', 'className'),
+        Output('initial-location-feedback', 'style'),
+        Output('initial-cases-count-wrapper', 'className'),
+        Output('initial-cases-count-feedback', 'style'),
+        Output('initial-age-group-wrapper', 'className'),
+        Output('initial-age-group-feedback', 'style'),
     ],
     [
         Input('add-initial-case-btn', 'n_clicks'),
@@ -1965,23 +2391,43 @@ def manage_initial_cases(
 
     mapping = (location_assets or {}).get('mapping', {})
 
-    if 'add-initial-case-btn' in triggered_id and location and cases_count:
-        # Add new case
+    current_data = current_data or []
+
+    if 'add-initial-case-btn' in triggered_id:
+        loc_invalid = not location
+        count_invalid = not cases_count or cases_count < 1
+        age_invalid = not age_group
+        if loc_invalid or count_invalid or age_invalid:
+            table = _build_cases_table(current_data)
+            play_disabled = not (bool(disease_params) and bool(current_data))
+            return (
+                current_data,
+                table,
+                play_disabled,
+                'dropdown-invalid' if loc_invalid else '',
+                _SHOW_FEEDBACK if loc_invalid else _NO_FEEDBACK,
+                'dropdown-invalid' if count_invalid else '',
+                _SHOW_FEEDBACK if count_invalid else _NO_FEEDBACK,
+                'dropdown-invalid' if age_invalid else '',
+                _SHOW_FEEDBACK if age_invalid else _NO_FEEDBACK,
+            )
+
+    if 'add-initial-case-btn' in triggered_id:
+        # Validation already returned early above if invalid; reaching here means valid.
         fips_id = mapping.get(location, '0')
         age_group_id = AGE_GROUP_MAPPING.get(age_group, '0')
-
-        new_case = {
-            'id': len(current_data),
-            'location': location,
-            'fips_id': fips_id,
-            'cases': cases_count,
-            'age_group': age_group,
-            'age_group_id': age_group_id,
-        }
-        current_data.append(new_case)
+        current_data.append(
+            {
+                'id': len(current_data),
+                'location': location,
+                'fips_id': fips_id,
+                'cases': cases_count,
+                'age_group': age_group,
+                'age_group_id': age_group_id,
+            }
+        )
 
     elif 'remove-case-btn' in triggered_id:
-        # Remove case by index
         import re
 
         match = re.search(r'"index":(\d+)', triggered_id)
@@ -1989,41 +2435,37 @@ def manage_initial_cases(
             remove_index = int(match.group(1))
             current_data = [case for case in current_data if case['id'] != remove_index]
 
-    # Create table
-    if current_data:
-        table_rows = []
-        for case in current_data:
-            table_rows.append(
-                html.Tr(
-                    [
-                        html.Td(case['location']),
-                        html.Td(f'{case["cases"]} aged {case["age_group"]}'),
-                        html.Td(
-                            html.Button(
-                                'Remove',
-                                id={'type': 'remove-case-btn', 'index': case['id']},
-                                className='btn btn-sm btn-danger',
-                            )
-                        ),
-                    ]
-                )
-            )
+    table = _build_cases_table(current_data)
+    play_disabled = not (bool(disease_params) and bool(current_data))
+    return (current_data, table, play_disabled, *_CLEAR_VALIDATION)
 
-        table = html.Table(
+
+def _build_cases_table(current_data):
+    if not current_data:
+        return html.P('No initial cases added yet.', className='param-display__empty-state')
+    rows = [
+        html.Tr(
             [
-                html.Thead([html.Tr([html.Th('Location'), html.Th('Cases'), html.Th('Action')])]),
-                html.Tbody(table_rows),
-            ],
-            className='table table-striped',
+                html.Td(case['location']),
+                html.Td(f'{case["cases"]} aged {case["age_group"]}'),
+                html.Td(
+                    html.Button(
+                        'Remove',
+                        id={'type': 'remove-case-btn', 'index': case['id']},
+                        className='btn btn-sm btn-danger',
+                    )
+                ),
+            ]
         )
-    else:
-        table = html.P(
-            'No initial cases added yet.', className='param-display__empty-state'
-        )
-
-    play_disabled = not (bool(disease_params) and bool(current_data) and len(current_data) > 0)
-
-    return current_data, table, play_disabled
+        for case in current_data
+    ]
+    return html.Table(
+        [
+            html.Thead([html.Tr([html.Th('Location'), html.Th('Cases'), html.Th('Action')])]),
+            html.Tbody(rows),
+        ],
+        className='table table-striped',
+    )
 
 
 # Disease parameters save callback
@@ -2085,7 +2527,6 @@ def save_disease_parameters(n_clicks, dp_input_values, initial_cases, selected_m
     play_disabled = not (bool(disease_params) and bool(initial_cases) and len(initial_cases) > 0)
 
     return disease_params, content, play_disabled
-
 
 
 # Save intervention callbacks
@@ -2893,11 +3334,13 @@ def update_table(
             continue
         if len(geoid) == 4:  # leading zero lost for some states
             geoid = geoid.zfill(5)
-        records.append({
-            'name': id_to_name.get(geoid) or geoid,
-            'infected_num': float(county.get(inf_key, 0)),
-            'deceased_num': float(county.get(dec_key, 0)),
-        })
+        records.append(
+            {
+                'name': id_to_name.get(geoid) or geoid,
+                'infected_num': float(county.get(inf_key, 0)),
+                'deceased_num': float(county.get(dec_key, 0)),
+            }
+        )
 
     df = pd.DataFrame(records)
 

@@ -15,6 +15,10 @@ body {
     padding: 0;
 }
 
+.base-container {
+    padding: 0px;
+}
+
 /* ============================================
    app-header
    ============================================ */
@@ -232,16 +236,7 @@ body {
 .model-setup__apply-btn {
     width: 100%;
     padding: 10px;
-    background-color: var(--brand-navy-blue);
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
     font-weight: bold;
-}
-
-.model-setup__apply-btn:hover {
-    background-color: var(--brand-navy-blue-light);
 }
 
 .model-setup__desc-icon {
@@ -387,6 +382,51 @@ body {
 }
 
 /* ============================================
+   btn-navy
+   ============================================ */
+
+.btn-navy {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: var(--brand-navy-blue);
+    --bs-btn-border-color: var(--brand-navy-blue);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: color-mix(in srgb, var(--brand-navy-blue) 85%, black);
+    --bs-btn-hover-border-color: color-mix(in srgb, var(--brand-navy-blue) 80%, black);
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: color-mix(in srgb, var(--brand-navy-blue) 70%, black);
+    --bs-btn-active-border-color: color-mix(in srgb, var(--brand-navy-blue) 65%, black);
+    --bs-btn-disabled-color: #fff;
+    --bs-btn-disabled-bg: var(--brand-navy-blue);
+    --bs-btn-disabled-border-color: var(--brand-navy-blue);
+    --bs-btn-focus-shadow-rgb: 16, 44, 65;
+}
+
+/* ============================================
+   Modal tables
+   ============================================ */
+
+.modal .table > thead {
+    background-color: var(--bs-gray-100) !important;
+    --bs-table-bg: var(--bs-gray-100);
+    --bs-table-striped-bg: var(--bs-gray-100);
+}
+
+/* ============================================
+   Form validation
+   ============================================ */
+
+.dropdown-invalid .dash-dropdown,
+.dropdown-invalid .form-control {
+    border-color: var(--bs-danger) !important;
+} 
+
+.invalid-feedback {
+    font-size: 0.875em;
+    color: var(--bs-danger);
+    margin-top: 0.25rem;
+}
+
+/* ============================================
    sim-footer
    ============================================ */
 
@@ -429,6 +469,11 @@ body {
    modal-form
    ============================================ */
 
+.modal-form__header {
+    background-color: var(--bs-gray-300);
+    height: 60px;
+}
+
 .modal-form__field {
     margin-bottom: 0;
 }
@@ -442,6 +487,19 @@ body {
 
 .modal-form__checklist-label {
     font-size: 14px;
+}
+
+.modal-form__footer-info {
+    font-size: 14px;
+}
+
+.modal-form__footer-button {
+    font-weight: 600;
+}
+
+.modal-form__footer-button-save {
+    background-color: var(--brand-navy-blue);
+    border-color: var(--brand-navy-blue);
 }
 
 .view-toggle__label {

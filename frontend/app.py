@@ -27,7 +27,12 @@ result = subprocess.run(
 version = result.stdout.decode('utf-8').strip() if result.stdout else 'Unknown'
 
 # Initialize Dash app with external CSS
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP], use_pages=True)
+dbc_css = 'https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css'
+app = dash.Dash(
+    __name__,
+    external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP, dbc_css],
+    use_pages=True,
+)
 app.title = f'epiENGAGE - Interactive Outbreak Simulator v-{version}'
 app.config.suppress_callback_exceptions = True
 
@@ -155,56 +160,17 @@ app.layout = html.Div(
             },
         ),
         # Main content area
-        html.Div(
+        dbc.Container(
             [
                 html.Div(page_container, style={'marginTop': '80px'}),
                 # html.Div(id='main-content'),
-            ]
+            ],
+            fluid=True,
+            class_name='base-container',
         ),
-    ]
+    ],
+    className='dbc',
 )
-
-
-# Navigation callback
-# @callback(
-#     [
-#         Output('main-content', 'children'),
-#         Output('nav-home', 'className'),
-#         Output('nav-userguide', 'className'),
-#         Output('disease-params-modal', 'is_open', allow_duplicate=True),
-#         Output('initial-cases-modal', 'is_open', allow_duplicate=True),
-#         Output('npi-modal', 'is_open', allow_duplicate=True),
-#         Output('antivirals-modal', 'is_open', allow_duplicate=True),
-#         Output('vaccines-modal', 'is_open', allow_duplicate=True),
-#     ],
-#     [Input('nav-home', 'n_clicks'), Input('nav-userguide', 'n_clicks')],
-#     prevent_initial_call=True,
-# )
-# def navigate_pages(home_clicks, userguide_clicks):
-#     triggered_id = ctx.triggered[0]['prop_id'].split('.')[0] if ctx.triggered else 'nav-home'
-
-#     if triggered_id == 'nav-userguide':
-#         return (
-#             create_userguide_layout(),
-#             'tab-button',
-#             'tab-button active',
-#             False,
-#             False,
-#             False,
-#             False,
-#             False,
-#         )
-#     else:
-#         return (
-#             create_home_layout(),
-#             'tab-button active',
-#             'tab-button',
-#             False,
-#             False,
-#             False,
-#             False,
-#             False,
-#         )
 
 
 # Expose server for deployment
