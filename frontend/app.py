@@ -27,8 +27,12 @@ result = subprocess.run(
 version = result.stdout.decode('utf-8').strip() if result.stdout else 'Unknown'
 
 # Initialize Dash app with external CSS
-dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css"
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP, dbc_css], use_pages=True)
+dbc_css = 'https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css'
+app = dash.Dash(
+    __name__,
+    external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP, dbc_css],
+    use_pages=True,
+)
 app.title = f'epiENGAGE - Interactive Outbreak Simulator v-{version}'
 app.config.suppress_callback_exceptions = True
 
@@ -162,14 +166,11 @@ app.layout = html.Div(
                 # html.Div(id='main-content'),
             ],
             fluid=True,
-            class_name='base-container'
+            class_name='base-container',
         ),
     ],
     className='dbc',
 )
-
-
-
 
 
 # Expose server for deployment
