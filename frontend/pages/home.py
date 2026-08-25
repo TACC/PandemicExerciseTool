@@ -1209,24 +1209,6 @@ def create_home_layout():
                     # Middle Panel - Map and Chart
                     html.Div(
                         [
-                            # View toggle (count/percent)
-                            # html.Div(
-                            #     [
-                            #         html.H6('Show values as:', className='mb-2'),
-                            #         dbc.RadioItems(
-                            #             id='view-toggle',
-                            #             options=[
-                            #                 {'label': ' Percentage', 'value': 'percent'},
-                            #                 {'label': ' Count', 'value': 'count'},
-                            #             ],
-                            #             value='count',
-                            #             inline=True,
-                            #             label_class_name='view-toggle__label',
-                            #             class_name='mb-3 ps-2',
-                            #         ),
-                            #     ],
-                            #     className='sim-layout__middle-header',
-                            # ),
                             # Map and Chart container
                             html.Div(
                                 [
