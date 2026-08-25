@@ -366,6 +366,13 @@ def _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojs
 # ============================================================================
 
 
+def create_icon_empty_state(icon, message=None):
+    children = [html.Div(icon, className='icon-empty-state__circle')]
+    if message:
+        children.append(html.P(message, className='icon-empty-state__message'))
+    return html.Div(children, className='icon-empty-state')
+
+
 # Input helper
 def create_modal_footer(prefix: str, note: bool):
     """Create a standard Save/Close modal footer. prefix is the modal name, e.g. 'npi'."""
@@ -1235,24 +1242,30 @@ def create_home_layout():
                         [
                             html.Div(
                                 [
-                                    html.H6('County Data', className='mb-2'),
-                                    dbc.Input(
-                                        id='county-search',
-                                        type='text',
-                                        placeholder='Search (county or number)…',
-                                        debounce=True,
-                                        class_name='mb-2',
-                                    ),
-                                    dbc.RadioItems(
-                                        id='view-toggle',
-                                        options=[
-                                            {'label': ' Percentage', 'value': 'percent'},
-                                            {'label': ' Count', 'value': 'count'},
+                                    html.H6('County Data', className='mb-2 county-table__title'),
+                                    html.Div(
+                                        [
+                                            dbc.Input(
+                                                id='county-search',
+                                                type='text',
+                                                placeholder='Search (county or number)…',
+                                                debounce=True,
+                                                class_name='mb-2',
+                                            ),
+                                            dbc.RadioItems(
+                                                id='view-toggle',
+                                                options=[
+                                                    {'label': ' Percentage', 'value': 'percent'},
+                                                    {'label': ' Count', 'value': 'count'},
+                                                ],
+                                                value='count',
+                                                inline=True,
+                                                label_class_name='view-toggle__label',
+                                                class_name='mb-3 ps-2',
+                                            ),
                                         ],
-                                        value='count',
-                                        inline=True,
-                                        label_class_name='view-toggle__label',
-                                        class_name='mb-3 ps-2',
+                                        id='county-controls',
+                                        style={'display': 'none'},
                                     ),
                                     dcc.Store(
                                         id='county-table-sort',
@@ -3278,6 +3291,7 @@ def handle_sort_click(sort_clicks, sort_state):
 
 @callback(
     Output('spread-table', 'children'),
+    Output('county-controls', 'style'),
     [
         Input('event-data', 'data'),
         Input('timeline-slider', 'value'),
@@ -3304,13 +3318,19 @@ def update_table(
         'Recovered' if model.startswith('seir') or model.startswith('seirs') else 'Deceased'
     )
 
+    _hidden = {'display': 'none'}
+    _visible = {'display': 'block'}
+
     if not event_data or timeline_value is None or timeline_value >= len(event_data):
-        return html.P('No data available', className='param-display__empty-state')
+        return create_icon_empty_state(
+            html.I(className='bi bi-table'),
+            'County statistics will appear here once a simulation is run.',
+        ), _hidden
 
     current_data = event_data[timeline_value]
     counties_data = current_data.get('counties', [])
     if not counties_data:
-        return html.P('No county data available', className='param-display__empty-state')
+        return html.P('No county data available', className='param-display__empty-state'), _hidden
 
     location_assets = location_assets or {}
     mapping = location_assets.get('mapping', {})  # name -> geoid (string)
@@ -3340,7 +3360,7 @@ def update_table(
     df = pd.DataFrame(records)
 
     if df.empty:
-        return html.P('No county data available', className='param-display__empty-state')
+        return html.P('No county data available', className='param-display__empty-state'), _hidden
 
     # --- search
     if search_text:
@@ -3352,7 +3372,7 @@ def update_table(
         df = df[mask]
 
     if df.empty:
-        return html.P('No county data available', className='param-display__empty-state')
+        return html.P('No county data available', className='param-display__empty-state'), _hidden
 
     # --- sort
     sort_col = {'name': 'name', 'infected': 'infected_num', 'deceased': 'deceased_num'}[
@@ -3368,7 +3388,7 @@ def update_table(
         df['infected_disp'] = df['infected_num'].map(lambda x: f'{math.floor(x):,}')
         df['deceased_disp'] = df['deceased_num'].map(lambda x: f'{math.floor(x):,}')
 
-    # --- header with clickable sort buttons (minimal styling)
+    # --- header with clickable sort buttons
     def sort_icon(col, asc_when):
         active = sort_state['col'] == col
         is_asc = sort_state['dir'] == 'asc'
@@ -3422,4 +3442,4 @@ def update_table(
         className='w-100 sim-layout__county-table',
     )
 
-    return table
+    return table, _visible
