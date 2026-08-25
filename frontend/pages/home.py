@@ -366,10 +366,12 @@ def _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojs
 # ============================================================================
 
 
-def create_icon_empty_state(icon, message=None):
+def create_icon_empty_state(icon, message=None, subtitle=None):
     children = [html.Div(icon, className='icon-empty-state__circle')]
     if message:
         children.append(html.P(message, className='icon-empty-state__message'))
+    if subtitle:
+        children.append(html.P(subtitle, className='icon-empty-state__subtitle'))
     return html.Div(children, className='icon-empty-state')
 
 
@@ -1216,23 +1218,37 @@ def create_home_layout():
                     # Middle Panel - Map and Chart
                     html.Div(
                         [
-                            # Map and Chart container
-                            html.Div(
+                            dbc.Card(
                                 [
-                                    # Map
+                                    html.Div(
+                                        id='map-empty',
+                                        className='sim-layout__map-empty',
+                                    ),
                                     dcc.Graph(
                                         id='spread-map',
                                         className='sim-layout__map',
                                         config={'displayModeBar': False},
+                                        style={'display': 'none'},
                                     ),
-                                    # Line Chart
+                                ],
+                                className='sim-layout__card sim-layout__card--map',
+                                body=True,
+                            ),
+                            dbc.Card(
+                                [
+                                    html.Div(
+                                        id='chart-empty',
+                                        className='sim-layout__chart-empty',
+                                    ),
                                     dcc.Graph(
                                         id='line-chart',
                                         className='sim-layout__chart',
                                         config={'displayModeBar': False},
+                                        style={'display': 'none'},
                                     ),
                                 ],
-                                className='sim-layout__viz',
+                                className='sim-layout__card sim-layout__card--chart',
+                                body=True,
                             ),
                         ],
                         className='sim-layout__col--middle',
@@ -3147,45 +3163,7 @@ def fetch_simulation_data(n_intervals, sim_state, event_data):
 # Real data visualization callbacks
 
 
-@callback(
-    Output('spread-map', 'figure'),
-    [
-        Input('event-data', 'data'),
-        Input('timeline-slider', 'value'),
-        Input('view-toggle', 'value'),
-        Input('location-assets-store', 'data'),
-    ],
-    State('selected-model-store', 'data'),
-)
-def update_map(event_data, timeline_value, view_type, location_assets, selected_model):
-    """Update map with county-level choropleth visualization"""
-
-    geojson = location_assets.get('geojson') if location_assets else None
-
-    # Show empty map with state boundaries if no simulation data yet
-    if geojson and (not event_data or len(event_data) == 0):
-        logger.info('Displaying empty map with state boundaries')
-        return _create_empty_state_map(geojson)
-
-    # DEBUG LOGGING
-    logger.info(
-        f'map debug → '
-        f'event_days={len(event_data) if event_data else 0}, '
-        f'timeline={timeline_value}, '
-        f'geojson_loaded={bool(geojson)}'
-    )
-
-    return _create_jurisdiction_choropleth(
-        event_data, timeline_value, view_type, geojson, selected_model
-    )
-
-
-@callback(
-    Output('line-chart', 'figure'),
-    [Input('event-data', 'data'), Input('timeline-slider', 'value')],
-    State('selected-model-store', 'data'),
-)
-def update_chart(event_data, timeline_value, selected_model):
+def _build_chart_figure(event_data, timeline_value, selected_model):
     if not event_data:
         fig = go.Figure()
         fig.update_layout(
@@ -3205,7 +3183,6 @@ def update_chart(event_data, timeline_value, selected_model):
     recovered = [d.get('totalRecoveredCount', 0) for d in event_data]
     deceased = [d.get('totalDeceased', 0) for d in event_data]
 
-    # Decide which series to show
     model = (selected_model or '').lower()
     if model.startswith('seir') or model.startswith('seirs'):
         # SEIR
@@ -3252,12 +3229,7 @@ def update_chart(event_data, timeline_value, selected_model):
         )
 
     fig.update_layout(
-        title=dict(
-            # text="Epidemic Curve", # remove title to make space for legend
-            y=0.96,
-            yanchor='top',
-            pad=dict(t=5),
-        ),
+        title=dict(y=0.96, yanchor='top', pad=dict(t=5)),
         xaxis_title='Day',
         yaxis_title='Population Count',
         height=300,
@@ -3265,8 +3237,65 @@ def update_chart(event_data, timeline_value, selected_model):
         margin=dict(l=40, r=40, t=60, b=70),
         hovermode='x unified',
     )
-
     return fig
+
+
+@callback(
+    Output('spread-map', 'figure'),
+    Output('spread-map', 'style'),
+    Output('map-empty', 'children'),
+    Output('map-empty', 'style'),
+    [
+        Input('event-data', 'data'),
+        Input('timeline-slider', 'value'),
+        Input('view-toggle', 'value'),
+        Input('location-assets-store', 'data'),
+    ],
+    State('selected-model-store', 'data'),
+)
+def update_map(event_data, timeline_value, view_type, location_assets, selected_model):
+    geojson = location_assets.get('geojson') if location_assets else None
+
+    if not geojson:
+        empty = create_icon_empty_state(
+            html.I(className='bi bi-map'),
+            'No simulation results yet',
+            'Configure your disease model and scenario in the panel, then press Play to see county-level spread.',
+        )
+        return go.Figure(), {'display': 'none'}, empty, {'display': 'flex', 'flex': '1'}
+
+    map_figure = (
+        _create_empty_state_map(geojson)
+        if not event_data or len(event_data) == 0
+        else _create_jurisdiction_choropleth(
+            event_data, timeline_value, view_type, geojson, selected_model
+        )
+    )
+    return map_figure, {'flex': '1', 'minHeight': '0'}, None, {'display': 'none'}
+
+
+@callback(
+    Output('line-chart', 'figure'),
+    Output('line-chart', 'style'),
+    Output('chart-empty', 'children'),
+    Output('chart-empty', 'style'),
+    [Input('event-data', 'data'), Input('timeline-slider', 'value')],
+    State('selected-model-store', 'data'),
+)
+def update_chart(event_data, timeline_value, selected_model):
+    if not event_data:
+        empty = create_icon_empty_state(
+            html.I(className='bi bi-graph-up'),
+            'No simulation results yet',
+            'The epidemic curve will render here once you run a simulation.',
+        )
+        return go.Figure(), {'display': 'none'}, empty, {'display': 'flex', 'flex': '1'}
+    return (
+        _build_chart_figure(event_data, timeline_value, selected_model),
+        {'flex': '1', 'minHeight': '0'},
+        None,
+        {'display': 'none'},
+    )
 
 
 @callback(
@@ -3324,7 +3353,7 @@ def update_table(
     if not event_data or timeline_value is None or timeline_value >= len(event_data):
         return create_icon_empty_state(
             html.I(className='bi bi-table'),
-            'County statistics will appear here once a simulation is run.',
+            subtitle='County statistics will appear here once a simulation is run.',
         ), _hidden
 
     current_data = event_data[timeline_value]
