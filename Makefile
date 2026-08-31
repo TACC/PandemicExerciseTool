@@ -1,3 +1,5 @@
+GIT_BRANCH := $(shell git symbolic-ref -q --short HEAD || git describe --tags --exact-match 2>/dev/null || echo Unknown)
+
 .PHONY: help
 help:  ## Display this help screen
 	@grep -E '^([a-zA-Z_-]+):.*?## .*$$|^([a-zA-Z_-]+):' $(MAKEFILE_LIST) \
@@ -6,11 +8,11 @@ help:  ## Display this help screen
 .PHONY: reset
 reset: ## stop containers and delete volumes (FULL DB RESET)
 	docker compose -f docker-compose.yml down -v
-	docker compose -f docker-compose.yml up -d --build
+	GIT_BRANCH=$(GIT_BRANCH) docker compose -f docker-compose.yml up -d --build
 
 .PHONY: start
 start: ## start
-	docker compose -f docker-compose.yml up -d --build
+	GIT_BRANCH=$(GIT_BRANCH) docker compose -f docker-compose.yml up -d --build
 
 .PHONY: stop
 stop: ## stop
@@ -19,11 +21,11 @@ stop: ## stop
 .PHONY: reset-dev
 reset-dev: ## reset dev containers
 	docker compose -f docker-compose-dev.yml down -v
-	docker compose -f docker-compose-dev.yml up -d --build
+	GIT_BRANCH=$(GIT_BRANCH) docker compose -f docker-compose-dev.yml up -d --build
 
 .PHONY: start-dev
 start-dev: ## start dev environment where frontend components are mounted in container
-	docker compose -f docker-compose-dev.yml up -d --build
+	GIT_BRANCH=$(GIT_BRANCH) docker compose -f docker-compose-dev.yml up -d --build
 
 .PHONY: stop-dev
 stop-dev: ## stop dev environment
