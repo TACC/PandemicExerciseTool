@@ -31,6 +31,12 @@ ASSETS_DIR = 'assets'
 name_dir = os.path.join(ASSETS_DIR, 'fips_to_names')
 geo_dir = os.path.join(ASSETS_DIR, 'map_boundaries')
 
+# Max county population per state (for fixed choropleth color scale)
+_max_county_pop = pd.read_csv(
+    os.path.join(ASSETS_DIR, 'county_pop', 'max_county_population.csv'),
+    index_col='state',
+)['population'].to_dict()
+
 
 # ============================================================================
 # STATE OPTIONS
@@ -140,225 +146,151 @@ def _create_empty_map():
     return fig
 
 
-def _add_county_polygon(lons, lats, color, county_name, infections=None):
-    """Create a county to add to the state map"""
-    if not infections:
-        text = f'{county_name} - No data yet - click PLAY to start simulation'
-    else:
-        text = f'{county_name}<br>Infectious: {infections["infected"]:,} ({infections["infected_pct"]:.1f}%)<br>Recovered: {infections["deceased"]:,} ({infections["deceased_pct"]:.1f}%)'
-    return go.Scatter(
-        x=lons,
-        y=lats,
-        fill='toself',
-        fillcolor=color,
-        line=dict(color='darkgray', width=0.5),
-        mode='lines',
-        name=county_name,
-        showlegend=False,
-        text=text,
-        hoverinfo='text',
-    )
-
-
-def _create_empty_state_map(geojson):
-    """Create map showing state boundaries before simulation starts"""
+def _create_empty_state_map(geojson, selected_state=None, view_type='count'):
+    """Create map showing state county boundaries before simulation starts."""
     if not geojson or 'features' not in geojson:
         return _create_empty_map()
 
-    fig = go.Figure()
+    fips_list = [f['properties']['GEOID'] for f in geojson['features']]
+    name_list = [f['properties'].get('NAMELSAD', f['properties'].get('NAME', '')) for f in geojson['features']]
+    n = len(fips_list)
+    customdata = list(zip(name_list, [0] * n, [0.0] * n, [0] * n))
 
-    # Add each county as a light yellow shape with boundary
-    for feature in geojson['features']:
-        county_name = feature['properties'].get('NAME', 'Unknown')
-        coordinates = feature['geometry']['coordinates']
+    label = 'Infectious %' if view_type == 'percent' else 'Infectious'
+    raw_max = 100 if view_type == 'percent' else (_max_county_pop.get(selected_state, 0) or 1)
+    z, zmax, colorbar_kwargs = _log_scale([0] * n, raw_max, label)
 
-        # Handle MultiPolygon vs Polygon
-        if feature['geometry']['type'] == 'MultiPolygon':
-            for polygon in coordinates:
-                for ring in polygon:
-                    lons = [coord[0] for coord in ring]
-                    lats = [coord[1] for coord in ring]
-
-                    fig.add_trace(_add_county_polygon(lons, lats, '#FFEDA0', county_name))
-        else:
-            # Single Polygon
-            for ring in coordinates:
-                lons = [coord[0] for coord in ring]
-                lats = [coord[1] for coord in ring]
-
-                fig.add_trace(_add_county_polygon(lons, lats, '#FFEDA0', county_name))
-
-    fig.update_layout(
-        title='Map - No Data Available (Select disease parameters and click PLAY)',
-        height=400,
-        margin=dict(l=0, r=0, t=40, b=0),
-        paper_bgcolor='white',
-        plot_bgcolor='white',
-        xaxis=dict(showgrid=False, showticklabels=False, zeroline=False),
-        yaxis=dict(
-            showgrid=False, showticklabels=False, zeroline=False, scaleanchor='x', scaleratio=1
-        ),
-        hovermode='closest',
+    return _build_choropleth_figure(
+        geojson=geojson,
+        fips_list=fips_list,
+        z=z,
+        zmax=zmax,
+        colorbar_kwargs=colorbar_kwargs,
+        customdata=customdata,
+        title='Simulation Not Started',
     )
 
-    fig.update_xaxes(autorange=True)
-    fig.update_yaxes(autorange=True)
 
+def _compute_mapbox_viewport(geojson):
+    """Return (center, zoom) computed from GeoJSON bounding box."""
+    all_lons, all_lats = [], []
+    for f in geojson['features']:
+        coords = f['geometry']['coordinates']
+        polys = coords if f['geometry']['type'] == 'MultiPolygon' else [coords]
+        for poly in polys:
+            for ring in poly:
+                all_lons.extend(c[0] for c in ring)
+                all_lats.extend(c[1] for c in ring)
+    min_lat, max_lat = min(all_lats), max(all_lats)
+    min_lon, max_lon = min(all_lons), max(all_lons)
+    center = {'lat': (min_lat + max_lat) / 2, 'lon': (min_lon + max_lon) / 2}
+    lat_span = max_lat - min_lat
+    lon_span = max_lon - min_lon
+    mercator_lat_span = lat_span / math.cos(math.radians(center['lat']))
+    zoom = math.log2(360 / max(mercator_lat_span, lon_span)) - 1.0
+    return center, zoom
+
+
+def _log_scale(values, raw_max, label):
+    """Transform values to log1p scale and return (z, zmax, colorbar_kwargs) for Choroplethmapbox."""
+    z = [math.log1p(v) for v in values]
+    zmax = math.log1p(raw_max)
+    tick_vals, tick_text = [0], ['0']
+    magnitude = 1
+    while magnitude <= raw_max:
+        tick_vals.append(math.log1p(magnitude))
+        tick_text.append(f'{magnitude:,}')
+        magnitude *= 10
+    colorbar_kwargs = dict(
+        title=label,
+        thickness=15,
+        len=0.6,
+        tickvals=tick_vals,
+        ticktext=tick_text,
+    )
+    return z, zmax, colorbar_kwargs
+
+
+def _build_choropleth_figure(geojson, fips_list, z, zmax, colorbar_kwargs, customdata, title):
+    """Build a Choroplethmapbox figure."""
+    center, zoom = _compute_mapbox_viewport(geojson)
+    fig = go.Figure(go.Choroplethmapbox(
+        geojson=geojson,
+        locations=fips_list,
+        z=z,
+        featureidkey='properties.GEOID',
+        colorscale='YlOrRd',
+        zmin=0,
+        zmax=zmax,
+        marker_opacity=0.8,
+        marker_line_width=0.5,
+        marker_line_color='darkgray',
+        colorbar=colorbar_kwargs,
+        customdata=customdata,
+        hovertemplate=(
+            '<b>%{customdata[0]}</b><br>'
+            'Infectious: %{customdata[1]:,} (%{customdata[2]:.1f}%)<br>'
+            'Deceased: %{customdata[3]:,}<extra></extra>'
+        ),
+    ))
+    fig.update_layout(
+        title=title,
+        mapbox=dict(style='white-bg', center=center, zoom=zoom),
+        height=360,
+        margin=dict(l=0, r=0, t=40, b=0),
+        paper_bgcolor='white',
+    )
     return fig
 
 
-def _get_color_from_value(value, max_val):
-    """Define color function"""
-    if max_val == 0 or value == 0:
-        return '#FFEDA0'
-    ratio = math.log1p(value) / math.log1p(max_val)
-
-    if ratio >= 1.0:
-        return '#800026'
-    elif ratio >= 0.75:
-        return '#BD0026'
-    elif ratio >= 0.625:
-        return '#E31A1C'
-    elif ratio >= 0.5:
-        return '#FC4E2A'
-    elif ratio >= 0.375:
-        return '#FD8D3C'
-    elif ratio >= 0.25:
-        return '#FEB24C'
-    else:
-        return '#FED976'
-
-
-def _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojson, selected_model):
-    """Create map using boundary file provided in geojson"""
+def _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojson, selected_model, selected_state=None):
+    """Build a choropleth map for the current simulation day."""
     if not event_data or timeline_value is None or timeline_value >= len(event_data):
         return _create_empty_map()
 
     current_data = event_data[timeline_value]
     counties_data = current_data.get('counties', [])
 
-    logger.info(
-        f'Creating county map for day {current_data.get("day", 0)} with {len(counties_data)} counties'
-    )
-
     if not counties_data or not geojson:
         return _create_empty_map()
 
-    # Create data mapping from FIPS to values
-    county_values = {}
-    county_info = {}
+    state_fips_prefix = geojson['features'][0]['properties']['GEOID'][:2]
 
+    fips_list, value_list, infected_list, deceased_list, pct_list = [], [], [], [], []
     for county in counties_data:
         fips = county.get('fips', '').strip()
         if not fips:
             continue
-
-        # Ensure FIPS format matches GeoJSON geoid (48XXX format)
-        # Older versions of code allowed 3 char fips of county only
         if len(fips) == 3:
-            full_fips = f'48{fips}'
-        elif len(fips) == 4:  # Leading 0s of states are getting lost
-            full_fips = fips.zfill(5)
-        else:
-            full_fips = fips
+            fips = f'{state_fips_prefix}{fips}'
+        elif len(fips) == 4:
+            fips = fips.zfill(5)
 
-        if view_type == 'percent':
-            value = county.get('infectedPercent', 0)
-        else:
-            value = county.get('infected', 0)
+        value = county.get('infectedPercent', 0) if view_type == 'percent' else county.get('infected', 0)
+        fips_list.append(fips)
+        value_list.append(value)
+        infected_list.append(county.get('infected', 0))
+        deceased_list.append(county.get('deceased', 0))
+        pct_list.append(county.get('infectedPercent', 0))
 
-        county_values[full_fips] = value
-        county_info[full_fips] = {
-            'infected': county.get('infected', 0),
-            'deceased': county.get('deceased', 0),
-            'infectedPercent': county.get('infectedPercent', 0),
-            'deceasedPercent': county.get('deceasedPercent', 0),
-        }
+    fips_to_name = {f['properties']['GEOID']: f['properties'].get('NAMELSAD', f['properties'].get('NAME', '')) for f in geojson['features']}
+    name_list = [fips_to_name.get(f, f) for f in fips_list]
+    customdata = list(zip(name_list, infected_list, pct_list, deceased_list))
 
-        # Debug logging for first few counties
-        if len(county_values) <= 3:
-            pass
-            logger.info(
-                f'County {full_fips}: Infectious={county.get("infected", 0)}, percent={county.get("infectedPercent", 0)}'
-            )
+    label = 'Infectious %' if view_type == 'percent' else 'Infectious'
+    raw_max = 100 if view_type == 'percent' else (_max_county_pop.get(selected_state, 0) or 1)
+    z, zmax, colorbar_kwargs = _log_scale(value_list, raw_max, label)
 
-    logger.info(f'Mapped {len(county_values)} counties to FIPS codes')
-
-    # Get max value for color scale
-    max_value = max(county_values.values()) if county_values.values() else 1
-    if max_value == 0:
-        max_value = 1
-
-    # Create figure with individual county shapes
-    fig = go.Figure()
-
-    # Add each county as a separate trace
-    for feature in geojson['features']:
-        geoid = feature['properties']['GEOID']
-        county_name = feature['properties']['NAMELSAD']
-
-        value = county_values.get(geoid, 0)
-        color = _get_color_from_value(value, max_value)
-
-        info = county_info.get(geoid, {})
-        infected = info.get('infected', 0)
-        deceased = info.get('deceased', 0)
-        infected_pct = info.get('infectedPercent', 0)
-        deceased_pct = info.get('deceasedPercent', 0)
-
-        infections = {
-            'infected': infected,
-            'infected_pct': infected_pct,
-            'deceased': deceased,
-            'deceased_pct': deceased_pct,
-        }
-
-        # Extract coordinates for the county polygon
-        coordinates = feature['geometry']['coordinates']
-
-        # Handle MultiPolygon vs Polygon
-        if feature['geometry']['type'] == 'MultiPolygon':
-            for polygon in coordinates:
-                for ring in polygon:
-                    lons = [coord[0] for coord in ring]
-                    lats = [coord[1] for coord in ring]
-
-                    model = (selected_model or '').lower()
-                    if model.startswith('seir') or model.startswith('seirs'):
-                        fig.add_trace(
-                            _add_county_polygon(lons, lats, color, county_name, infections)
-                        )
-                    else:
-                        fig.add_trace(
-                            _add_county_polygon(lons, lats, color, county_name, infections)
-                        )
-        else:
-            # Single Polygon
-            for ring in coordinates:
-                lons = [coord[0] for coord in ring]
-                lats = [coord[1] for coord in ring]
-
-                fig.add_trace(_add_county_polygon(lons, lats, color, county_name, infections))
-
-    # Configure layout to match React version exactly
-    fig.update_layout(
-        title=f'Day {current_data.get("day", 0)} ({"Percentage" if view_type == "percent" else "Count"} View)',
-        height=400,
-        margin=dict(l=0, r=0, t=40, b=0),
-        paper_bgcolor='white',
-        plot_bgcolor='white',
-        xaxis=dict(showgrid=False, showticklabels=False, zeroline=False),
-        yaxis=dict(
-            showgrid=False, showticklabels=False, zeroline=False, scaleanchor='x', scaleratio=1
-        ),
-        hovermode='closest',
+    title = f'Day {current_data.get("day", 0)} ({"Percentage" if view_type == "percent" else "Count"} View)'
+    return _build_choropleth_figure(
+        geojson=geojson,
+        fips_list=fips_list,
+        z=z,
+        zmax=zmax,
+        colorbar_kwargs=colorbar_kwargs,
+        customdata=customdata,
+        title=title,
     )
-
-    fig.update_xaxes(autorange=True)
-    fig.update_yaxes(autorange=True)
-
-    logger.info('Successfully created county map with individual polygons')
-    return fig
 
 
 # ============================================================================
@@ -3252,8 +3184,9 @@ def _build_chart_figure(event_data, timeline_value, selected_model):
         Input('location-assets-store', 'data'),
     ],
     State('selected-model-store', 'data'),
+    State('selected-state-store', 'data'),
 )
-def update_map(event_data, timeline_value, view_type, location_assets, selected_model):
+def update_map(event_data, timeline_value, view_type, location_assets, selected_model, selected_state):
     geojson = location_assets.get('geojson') if location_assets else None
 
     if not geojson:
@@ -3265,10 +3198,10 @@ def update_map(event_data, timeline_value, view_type, location_assets, selected_
         return go.Figure(), {'display': 'none'}, empty, {'display': 'flex', 'flex': '1'}
 
     map_figure = (
-        _create_empty_state_map(geojson)
+        _create_empty_state_map(geojson, selected_state=selected_state, view_type=view_type)
         if not event_data or len(event_data) == 0
         else _create_jurisdiction_choropleth(
-            event_data, timeline_value, view_type, geojson, selected_model
+            event_data, timeline_value, view_type, geojson, selected_model, selected_state
         )
     )
     return map_figure, {'flex': '1', 'minHeight': '0'}, None, {'display': 'none'}
