@@ -168,6 +168,7 @@ def _create_empty_state_map(geojson, selected_state=None, view_type='count'):
         colorbar_kwargs=colorbar_kwargs,
         customdata=customdata,
         title='Simulation Not Started',
+        uirevision=selected_state,
     )
 
 
@@ -202,16 +203,21 @@ def _log_scale(values, raw_max, label):
         tick_text.append(f'{magnitude:,}')
         magnitude *= 10
     colorbar_kwargs = dict(
-        title=label,
+        title=dict(text=label, side='right'),
+        orientation='h',
         thickness=15,
-        len=0.6,
+        len=0.8,
+        x=0.5,
+        xanchor='center',
+        y=0,
+        yanchor='top',
         tickvals=tick_vals,
         ticktext=tick_text,
     )
     return z, zmax, colorbar_kwargs
 
 
-def _build_choropleth_figure(geojson, fips_list, z, zmax, colorbar_kwargs, customdata, title):
+def _build_choropleth_figure(geojson, fips_list, z, zmax, colorbar_kwargs, customdata, title, uirevision=None):
     """Build a Choroplethmapbox figure."""
     center, zoom = _compute_mapbox_viewport(geojson)
     fig = go.Figure(go.Choroplethmapbox(
@@ -236,8 +242,9 @@ def _build_choropleth_figure(geojson, fips_list, z, zmax, colorbar_kwargs, custo
     fig.update_layout(
         title=title,
         mapbox=dict(style='white-bg', center=center, zoom=zoom),
+        uirevision=uirevision,
         height=360,
-        margin=dict(l=0, r=0, t=40, b=0),
+        margin=dict(l=0, r=0, t=40, b=60),
         paper_bgcolor='white',
     )
     return fig
@@ -290,6 +297,7 @@ def _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojs
         colorbar_kwargs=colorbar_kwargs,
         customdata=customdata,
         title=title,
+        uirevision=selected_state,
     )
 
 
