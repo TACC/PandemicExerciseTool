@@ -167,7 +167,6 @@ def _create_empty_state_map(geojson, selected_state=None, view_type='count'):
         zmax=zmax,
         colorbar_kwargs=colorbar_kwargs,
         customdata=customdata,
-        title='Simulation Not Started',
         uirevision=selected_state,
     )
 
@@ -217,7 +216,7 @@ def _log_scale(values, raw_max, label):
     return z, zmax, colorbar_kwargs
 
 
-def _build_choropleth_figure(geojson, fips_list, z, zmax, colorbar_kwargs, customdata, title, uirevision=None):
+def _build_choropleth_figure(geojson, fips_list, z, zmax, colorbar_kwargs, customdata, uirevision=None):
     """Build a Choroplethmapbox figure."""
     center, zoom = _compute_mapbox_viewport(geojson)
     fig = go.Figure(go.Choroplethmapbox(
@@ -240,11 +239,9 @@ def _build_choropleth_figure(geojson, fips_list, z, zmax, colorbar_kwargs, custo
         ),
     ))
     fig.update_layout(
-        title=title,
         mapbox=dict(style='white-bg', center=center, zoom=zoom),
         uirevision=uirevision,
-        height=360,
-        margin=dict(l=0, r=0, t=40, b=60),
+        margin=dict(l=0, r=0, t=5, b=40),
         paper_bgcolor='white',
     )
     return fig
@@ -284,11 +281,10 @@ def _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojs
     name_list = [fips_to_name.get(f, f) for f in fips_list]
     customdata = list(zip(name_list, infected_list, pct_list, deceased_list))
 
-    label = 'Infectious %' if view_type == 'percent' else 'Infectious'
+    label = 'Infectious (Percent)' if view_type == 'percent' else 'Infectious (Count)'
     raw_max = 100 if view_type == 'percent' else (_max_county_pop.get(selected_state, 0) or 1)
     z, zmax, colorbar_kwargs = _log_scale(value_list, raw_max, label)
 
-    title = f'Day {current_data.get("day", 0)} ({"Percentage" if view_type == "percent" else "Count"} View)'
     return _build_choropleth_figure(
         geojson=geojson,
         fips_list=fips_list,
@@ -296,7 +292,6 @@ def _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojs
         zmax=zmax,
         colorbar_kwargs=colorbar_kwargs,
         customdata=customdata,
-        title=title,
         uirevision=selected_state,
     )
 
@@ -1158,6 +1153,7 @@ def create_home_layout():
                     # Middle Panel - Map and Chart
                     html.Div(
                         [
+                            html.Div(id='epidemic-progress-title', className='sim-layout__panel-title'),
                             dbc.Card(
                                 [
                                     html.Div(
@@ -1168,7 +1164,8 @@ def create_home_layout():
                                         id='spread-map',
                                         className='sim-layout__map',
                                         config={'displayModeBar': False},
-                                        style={'display': 'none'},
+                                        responsive=True,
+                                        style={'display': 'none', 'height': '100%'},
                                     ),
                                 ],
                                 className='sim-layout__card sim-layout__card--map',
@@ -1184,7 +1181,8 @@ def create_home_layout():
                                         id='line-chart',
                                         className='sim-layout__chart',
                                         config={'displayModeBar': False},
-                                        style={'display': 'none'},
+                                        responsive=True,
+                                        style={'display': 'none', 'height': '100%'},
                                     ),
                                 ],
                                 className='sim-layout__card sim-layout__card--chart',
@@ -3104,13 +3102,19 @@ def fetch_simulation_data(n_intervals, sim_state, event_data):
 
 
 def _build_chart_figure(event_data, timeline_value, selected_model):
+    shared_layout = dict(
+        yaxis_title='Population Count',
+        legend=dict(orientation='h', yanchor='top', y=-0.15, xanchor='center', x=0.5,
+                    font=dict(size=11), maxheight=0.2),
+        margin=dict(l=40, r=0, t=20, b=60),
+        uirevision=selected_model,
+    )
+
     if not event_data:
         fig = go.Figure()
         fig.update_layout(
             title='Epidemic Curve - No Data Available',
-            xaxis_title='Day',
-            yaxis_title='Population Count',
-            height=300,
+            **shared_layout,
         )
         return fig
 
@@ -3169,13 +3173,8 @@ def _build_chart_figure(event_data, timeline_value, selected_model):
         )
 
     fig.update_layout(
-        title=dict(y=0.96, yanchor='top', pad=dict(t=5)),
-        xaxis_title='Day',
-        yaxis_title='Population Count',
-        height=300,
-        legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='right', x=1),
-        margin=dict(l=40, r=40, t=60, b=70),
         hovermode='x unified',
+        **shared_layout,
     )
     return fig
 
@@ -3185,6 +3184,7 @@ def _build_chart_figure(event_data, timeline_value, selected_model):
     Output('spread-map', 'style'),
     Output('map-empty', 'children'),
     Output('map-empty', 'style'),
+    Output('epidemic-progress-title', 'children'),
     [
         Input('event-data', 'data'),
         Input('timeline-slider', 'value'),
@@ -3197,13 +3197,19 @@ def _build_chart_figure(event_data, timeline_value, selected_model):
 def update_map(event_data, timeline_value, view_type, location_assets, selected_model, selected_state):
     geojson = location_assets.get('geojson') if location_assets else None
 
+    if event_data and timeline_value is not None and timeline_value < len(event_data):
+        day = event_data[timeline_value].get('day', timeline_value)
+        panel_title = f'Epidemic Simulation (Day {day})'
+    else:
+        panel_title = 'Epidemic Simulation'
+
     if not geojson:
         empty = create_icon_empty_state(
             html.I(className='bi bi-map'),
             'No simulation results yet',
             'Configure your disease model and scenario in the panel, then press Play to see county-level spread.',
         )
-        return go.Figure(), {'display': 'none'}, empty, {'display': 'flex', 'flex': '1'}
+        return go.Figure(), {'display': 'none'}, empty, {'display': 'flex', 'flex': '1'}, panel_title
 
     map_figure = (
         _create_empty_state_map(geojson, selected_state=selected_state, view_type=view_type)
@@ -3212,7 +3218,7 @@ def update_map(event_data, timeline_value, view_type, location_assets, selected_
             event_data, timeline_value, view_type, geojson, selected_model, selected_state
         )
     )
-    return map_figure, {'flex': '1', 'minHeight': '0'}, None, {'display': 'none'}
+    return map_figure, {'flex': '1', 'minHeight': '0'}, None, {'display': 'none'}, panel_title
 
 
 @callback(
@@ -3233,7 +3239,7 @@ def update_chart(event_data, timeline_value, selected_model):
         return go.Figure(), {'display': 'none'}, empty, {'display': 'flex', 'flex': '1'}
     return (
         _build_chart_figure(event_data, timeline_value, selected_model),
-        {'flex': '1', 'minHeight': '0'},
+        {'flex': '1', 'minHeight': '0', 'height': '100%'},
         None,
         {'display': 'none'},
     )

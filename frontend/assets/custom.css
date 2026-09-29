@@ -164,6 +164,13 @@ body {
     padding: 15px;
 }
 
+.sim-layout__panel-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--bs-body-color);
+    flex: 0 0 auto;
+}
+
 .sim-layout__card {
     min-height: 0;
     overflow: hidden;
@@ -181,6 +188,10 @@ body {
     display: flex;
     flex-direction: column;
     height: 100%;
+}
+
+.sim-layout__card--map .card-body {
+    padding: 8px;
 }
 
 .sim-layout__map-empty,
@@ -401,6 +412,7 @@ body {
 .icon-empty-state__circle {
     width: 80px;
     height: 80px;
+    flex-shrink: 0;
     border-radius: 50%;
     background-color: var(--bs-gray-200);
     display: flex;
