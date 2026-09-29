@@ -1202,7 +1202,7 @@ def create_home_layout():
                                             dbc.Input(
                                                 id='county-search',
                                                 type='text',
-                                                placeholder='Search (county or number)…',
+                                                placeholder='Search (county name or value)…',
                                                 debounce=True,
                                                 class_name='mb-2',
                                             ),
@@ -3338,11 +3338,19 @@ def update_table(
     if df.empty:
         return html.P('No county data available', className='param-display__empty-state'), _hidden
 
+    # --- format display columns
+    if view_type == 'percent':
+        df['infected_disp'] = df['infected_num'].map(lambda x: f'{x:.1f}%')
+        df['deceased_disp'] = df['deceased_num'].map(lambda x: f'{x:.1f}%')
+    else:
+        df['infected_disp'] = df['infected_num'].map(lambda x: f'{math.floor(x):,}')
+        df['deceased_disp'] = df['deceased_num'].map(lambda x: f'{math.floor(x):,}')
+    
     # --- search
     if search_text:
         q = search_text.strip().lower()
         mask = df.apply(
-            lambda r: q in f'{r["name"]} {r["infected_num"]} {r["deceased_num"]}'.lower(),
+            lambda r: q in f'{r["name"]} {r["infected_disp"]} {r["deceased_disp"]}'.lower(),
             axis=1,
         )
         df = df[mask]
@@ -3355,14 +3363,6 @@ def update_table(
         sort_state['col']
     ]
     df = df.sort_values(sort_col, ascending=(sort_state['dir'] == 'asc'))
-
-    # --- format display columns
-    if view_type == 'percent':
-        df['infected_disp'] = df['infected_num'].map(lambda x: f'{x:.1f}%')
-        df['deceased_disp'] = df['deceased_num'].map(lambda x: f'{x:.1f}%')
-    else:
-        df['infected_disp'] = df['infected_num'].map(lambda x: f'{math.floor(x):,}')
-        df['deceased_disp'] = df['deceased_num'].map(lambda x: f'{math.floor(x):,}')
 
     # --- header with clickable sort buttons
     def sort_icon(col, asc_when):
@@ -3388,6 +3388,7 @@ def update_table(
                         id={'type': 'sort-btn', 'col': 'infected'},
                         n_clicks=0,
                         className='sim-layout__sort-btn',
+                        style={'textAlign': 'right'}
                     )
                 ),
                 html.Th(
@@ -3396,6 +3397,7 @@ def update_table(
                         id={'type': 'sort-btn', 'col': 'deceased'},
                         n_clicks=0,
                         className='sim-layout__sort-btn',
+                        style={'textAlign': 'right'}
                     )
                 ),
             ]
@@ -3404,7 +3406,7 @@ def update_table(
 
     body = html.Tbody(
         [
-            html.Tr([html.Td(r.name), html.Td(r.infected_disp), html.Td(r.deceased_disp)])
+            html.Tr([html.Td(r.name), html.Td(r.infected_disp, style={'textAlign': 'right'}), html.Td(r.deceased_disp, style={'textAlign': 'right'})])
             for r in df.itertuples()
         ]
     )
