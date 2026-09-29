@@ -3161,7 +3161,11 @@ def _build_chart_figure(event_data, timeline_value, selected_model):
     }
     fig = go.Figure()
     for name, y in series:
-        fig.add_trace(go.Scatter(x=days, y=y, name=name, line=dict(color=COLOR_MAP.get(name))))
+        fig.add_trace(go.Scatter(
+            x=days, y=y, name=name,
+            line=dict(color=COLOR_MAP.get(name)),
+            yhoverformat=',.0f',
+        ))
 
     # Add vertical line for current day
     if timeline_value is not None and timeline_value < len(days):
