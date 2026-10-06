@@ -31,6 +31,12 @@ ASSETS_DIR = 'assets'
 name_dir = os.path.join(ASSETS_DIR, 'fips_to_names')
 geo_dir = os.path.join(ASSETS_DIR, 'map_boundaries')
 
+# Max county population per state (for fixed choropleth color scale)
+_max_county_pop = pd.read_csv(
+    os.path.join(ASSETS_DIR, 'county_pop', 'max_county_population.csv'),
+    index_col='state',
+)['population'].to_dict()
+
 
 # ============================================================================
 # STATE OPTIONS
@@ -140,230 +146,168 @@ def _create_empty_map():
     return fig
 
 
-def _add_county_polygon(lons, lats, color, county_name, infections=None):
-    """Create a county to add to the state map"""
-    if not infections:
-        text = f'{county_name} - No data yet - click PLAY to start simulation'
-    else:
-        text = f'{county_name}<br>Infectious: {infections["infected"]:,} ({infections["infected_pct"]:.1f}%)<br>Recovered: {infections["deceased"]:,} ({infections["deceased_pct"]:.1f}%)'
-    return go.Scatter(
-        x=lons,
-        y=lats,
-        fill='toself',
-        fillcolor=color,
-        line=dict(color='darkgray', width=0.5),
-        mode='lines',
-        name=county_name,
-        showlegend=False,
-        text=text,
-        hoverinfo='text',
-    )
-
-
-def _create_empty_state_map(geojson):
-    """Create map showing state boundaries before simulation starts"""
+def _create_empty_state_map(geojson, selected_state=None, view_type='count'):
+    """Create map showing state county boundaries before simulation starts."""
     if not geojson or 'features' not in geojson:
         return _create_empty_map()
 
-    fig = go.Figure()
+    fips_list = [f['properties']['GEOID'] for f in geojson['features']]
+    name_list = [f['properties'].get('NAMELSAD', f['properties'].get('NAME', '')) for f in geojson['features']]
+    n = len(fips_list)
+    customdata = list(zip(name_list, [0] * n, [0.0] * n, [0] * n))
 
-    # Add each county as a light yellow shape with boundary
-    for feature in geojson['features']:
-        county_name = feature['properties'].get('NAME', 'Unknown')
-        coordinates = feature['geometry']['coordinates']
+    label = 'Infectious %' if view_type == 'percent' else 'Infectious'
+    raw_max = 100 if view_type == 'percent' else (_max_county_pop.get(selected_state, 0) or 1)
+    z, zmax, colorbar_kwargs = _log_scale([0] * n, raw_max, label)
 
-        # Handle MultiPolygon vs Polygon
-        if feature['geometry']['type'] == 'MultiPolygon':
-            for polygon in coordinates:
-                for ring in polygon:
-                    lons = [coord[0] for coord in ring]
-                    lats = [coord[1] for coord in ring]
-
-                    fig.add_trace(_add_county_polygon(lons, lats, '#FFEDA0', county_name))
-        else:
-            # Single Polygon
-            for ring in coordinates:
-                lons = [coord[0] for coord in ring]
-                lats = [coord[1] for coord in ring]
-
-                fig.add_trace(_add_county_polygon(lons, lats, '#FFEDA0', county_name))
-
-    fig.update_layout(
-        title='Map - No Data Available (Select disease parameters and click PLAY)',
-        height=400,
-        margin=dict(l=0, r=0, t=40, b=0),
-        paper_bgcolor='white',
-        plot_bgcolor='white',
-        xaxis=dict(showgrid=False, showticklabels=False, zeroline=False),
-        yaxis=dict(
-            showgrid=False, showticklabels=False, zeroline=False, scaleanchor='x', scaleratio=1
-        ),
-        hovermode='closest',
+    return _build_choropleth_figure(
+        geojson=geojson,
+        fips_list=fips_list,
+        z=z,
+        zmax=zmax,
+        colorbar_kwargs=colorbar_kwargs,
+        customdata=customdata,
+        uirevision=selected_state,
     )
 
-    fig.update_xaxes(autorange=True)
-    fig.update_yaxes(autorange=True)
 
+def _compute_mapbox_viewport(geojson):
+    """Return (center, zoom) computed from GeoJSON bounding box."""
+    all_lons, all_lats = [], []
+    for f in geojson['features']:
+        coords = f['geometry']['coordinates']
+        polys = coords if f['geometry']['type'] == 'MultiPolygon' else [coords]
+        for poly in polys:
+            for ring in poly:
+                all_lons.extend(c[0] for c in ring)
+                all_lats.extend(c[1] for c in ring)
+    min_lat, max_lat = min(all_lats), max(all_lats)
+    min_lon, max_lon = min(all_lons), max(all_lons)
+    center = {'lat': (min_lat + max_lat) / 2, 'lon': (min_lon + max_lon) / 2}
+    lat_span = max_lat - min_lat
+    lon_span = max_lon - min_lon
+    mercator_lat_span = lat_span / math.cos(math.radians(center['lat']))
+    zoom = math.log2(360 / max(mercator_lat_span, lon_span)) - 1.0
+    return center, zoom
+
+
+def _log_scale(values, raw_max, label):
+    """Transform values to log1p scale and return (z, zmax, colorbar_kwargs) for Choroplethmapbox."""
+    z = [math.log1p(v) for v in values]
+    zmax = math.log1p(raw_max)
+    tick_vals, tick_text = [0], ['0']
+    magnitude = 1
+    while magnitude <= raw_max:
+        tick_vals.append(math.log1p(magnitude))
+        tick_text.append(f'{magnitude:,}')
+        magnitude *= 10
+    colorbar_kwargs = dict(
+        title=dict(text=label, side='right'),
+        orientation='h',
+        thickness=15,
+        len=0.8,
+        x=0.5,
+        xanchor='center',
+        y=0,
+        yanchor='top',
+        tickvals=tick_vals,
+        ticktext=tick_text,
+    )
+    return z, zmax, colorbar_kwargs
+
+
+def _build_choropleth_figure(geojson, fips_list, z, zmax, colorbar_kwargs, customdata, uirevision=None):
+    """Build a Choroplethmapbox figure."""
+    center, zoom = _compute_mapbox_viewport(geojson)
+    fig = go.Figure(go.Choroplethmapbox(
+        geojson=geojson,
+        locations=fips_list,
+        z=z,
+        featureidkey='properties.GEOID',
+        colorscale='YlOrRd',
+        zmin=0,
+        zmax=zmax,
+        marker_opacity=0.8,
+        marker_line_width=0.5,
+        marker_line_color='darkgray',
+        colorbar=colorbar_kwargs,
+        customdata=customdata,
+        hovertemplate=(
+            '<b>%{customdata[0]}</b><br>'
+            'Infectious: %{customdata[1]:,} (%{customdata[2]:.1f}%)<br>'
+            'Deceased: %{customdata[3]:,}<extra></extra>'
+        ),
+    ))
+    fig.update_layout(
+        mapbox=dict(style='white-bg', center=center, zoom=zoom),
+        uirevision=uirevision,
+        margin=dict(l=0, r=0, t=5, b=40),
+        paper_bgcolor='white',
+    )
     return fig
 
 
-def _get_color_from_value(value, max_val):
-    """Define color function"""
-    if max_val == 0 or value == 0:
-        return '#FFEDA0'
-    ratio = math.log1p(value) / math.log1p(max_val)
-
-    if ratio >= 1.0:
-        return '#800026'
-    elif ratio >= 0.75:
-        return '#BD0026'
-    elif ratio >= 0.625:
-        return '#E31A1C'
-    elif ratio >= 0.5:
-        return '#FC4E2A'
-    elif ratio >= 0.375:
-        return '#FD8D3C'
-    elif ratio >= 0.25:
-        return '#FEB24C'
-    else:
-        return '#FED976'
-
-
-def _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojson, selected_model):
-    """Create map using boundary file provided in geojson"""
+def _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojson, selected_model, selected_state=None):
+    """Build a choropleth map for the current simulation day."""
     if not event_data or timeline_value is None or timeline_value >= len(event_data):
         return _create_empty_map()
 
     current_data = event_data[timeline_value]
     counties_data = current_data.get('counties', [])
 
-    logger.info(
-        f'Creating county map for day {current_data.get("day", 0)} with {len(counties_data)} counties'
-    )
-
     if not counties_data or not geojson:
         return _create_empty_map()
 
-    # Create data mapping from FIPS to values
-    county_values = {}
-    county_info = {}
+    state_fips_prefix = geojson['features'][0]['properties']['GEOID'][:2]
 
+    fips_list, value_list, infected_list, deceased_list, pct_list = [], [], [], [], []
     for county in counties_data:
         fips = county.get('fips', '').strip()
         if not fips:
             continue
-
-        # Ensure FIPS format matches GeoJSON geoid (48XXX format)
-        # Older versions of code allowed 3 char fips of county only
         if len(fips) == 3:
-            full_fips = f'48{fips}'
-        elif len(fips) == 4:  # Leading 0s of states are getting lost
-            full_fips = fips.zfill(5)
-        else:
-            full_fips = fips
+            fips = f'{state_fips_prefix}{fips}'
+        elif len(fips) == 4:
+            fips = fips.zfill(5)
 
-        if view_type == 'percent':
-            value = county.get('infectedPercent', 0)
-        else:
-            value = county.get('infected', 0)
+        value = county.get('infectedPercent', 0) if view_type == 'percent' else county.get('infected', 0)
+        fips_list.append(fips)
+        value_list.append(value)
+        infected_list.append(county.get('infected', 0))
+        deceased_list.append(county.get('deceased', 0))
+        pct_list.append(county.get('infectedPercent', 0))
 
-        county_values[full_fips] = value
-        county_info[full_fips] = {
-            'infected': county.get('infected', 0),
-            'deceased': county.get('deceased', 0),
-            'infectedPercent': county.get('infectedPercent', 0),
-            'deceasedPercent': county.get('deceasedPercent', 0),
-        }
+    fips_to_name = {f['properties']['GEOID']: f['properties'].get('NAMELSAD', f['properties'].get('NAME', '')) for f in geojson['features']}
+    name_list = [fips_to_name.get(f, f) for f in fips_list]
+    customdata = list(zip(name_list, infected_list, pct_list, deceased_list))
 
-        # Debug logging for first few counties
-        if len(county_values) <= 3:
-            pass
-            logger.info(
-                f'County {full_fips}: Infectious={county.get("infected", 0)}, percent={county.get("infectedPercent", 0)}'
-            )
+    label = 'Infectious (Percent)' if view_type == 'percent' else 'Infectious (Count)'
+    raw_max = 100 if view_type == 'percent' else (_max_county_pop.get(selected_state, 0) or 1)
+    z, zmax, colorbar_kwargs = _log_scale(value_list, raw_max, label)
 
-    logger.info(f'Mapped {len(county_values)} counties to FIPS codes')
-
-    # Get max value for color scale
-    max_value = max(county_values.values()) if county_values.values() else 1
-    if max_value == 0:
-        max_value = 1
-
-    # Create figure with individual county shapes
-    fig = go.Figure()
-
-    # Add each county as a separate trace
-    for feature in geojson['features']:
-        geoid = feature['properties']['GEOID']
-        county_name = feature['properties']['NAMELSAD']
-
-        value = county_values.get(geoid, 0)
-        color = _get_color_from_value(value, max_value)
-
-        info = county_info.get(geoid, {})
-        infected = info.get('infected', 0)
-        deceased = info.get('deceased', 0)
-        infected_pct = info.get('infectedPercent', 0)
-        deceased_pct = info.get('deceasedPercent', 0)
-
-        infections = {
-            'infected': infected,
-            'infected_pct': infected_pct,
-            'deceased': deceased,
-            'deceased_pct': deceased_pct,
-        }
-
-        # Extract coordinates for the county polygon
-        coordinates = feature['geometry']['coordinates']
-
-        # Handle MultiPolygon vs Polygon
-        if feature['geometry']['type'] == 'MultiPolygon':
-            for polygon in coordinates:
-                for ring in polygon:
-                    lons = [coord[0] for coord in ring]
-                    lats = [coord[1] for coord in ring]
-
-                    model = (selected_model or '').lower()
-                    if model.startswith('seir') or model.startswith('seirs'):
-                        fig.add_trace(
-                            _add_county_polygon(lons, lats, color, county_name, infections)
-                        )
-                    else:
-                        fig.add_trace(
-                            _add_county_polygon(lons, lats, color, county_name, infections)
-                        )
-        else:
-            # Single Polygon
-            for ring in coordinates:
-                lons = [coord[0] for coord in ring]
-                lats = [coord[1] for coord in ring]
-
-                fig.add_trace(_add_county_polygon(lons, lats, color, county_name, infections))
-
-    # Configure layout to match React version exactly
-    fig.update_layout(
-        title=f'Day {current_data.get("day", 0)} ({"Percentage" if view_type == "percent" else "Count"} View)',
-        height=400,
-        margin=dict(l=0, r=0, t=40, b=0),
-        paper_bgcolor='white',
-        plot_bgcolor='white',
-        xaxis=dict(showgrid=False, showticklabels=False, zeroline=False),
-        yaxis=dict(
-            showgrid=False, showticklabels=False, zeroline=False, scaleanchor='x', scaleratio=1
-        ),
-        hovermode='closest',
+    return _build_choropleth_figure(
+        geojson=geojson,
+        fips_list=fips_list,
+        z=z,
+        zmax=zmax,
+        colorbar_kwargs=colorbar_kwargs,
+        customdata=customdata,
+        uirevision=selected_state,
     )
-
-    fig.update_xaxes(autorange=True)
-    fig.update_yaxes(autorange=True)
-
-    logger.info('Successfully created county map with individual polygons')
-    return fig
 
 
 # ============================================================================
 # MODALS
 # ============================================================================
+
+
+def create_icon_empty_state(icon, message=None, subtitle=None):
+    children = [html.Div(icon, className='icon-empty-state__circle')]
+    if message:
+        children.append(html.P(message, className='icon-empty-state__message'))
+    if subtitle:
+        children.append(html.P(subtitle, className='icon-empty-state__subtitle'))
+    return html.Div(children, className='icon-empty-state')
 
 
 # Input helper
@@ -1209,41 +1153,40 @@ def create_home_layout():
                     # Middle Panel - Map and Chart
                     html.Div(
                         [
-                            # View toggle (count/percent)
-                            html.Div(
+                            html.Div(id='epidemic-progress-title', className='sim-layout__panel-title'),
+                            dbc.Card(
                                 [
-                                    html.H6('Show values as:', className='mb-2'),
-                                    dbc.RadioItems(
-                                        id='view-toggle',
-                                        options=[
-                                            {'label': ' Percentage', 'value': 'percent'},
-                                            {'label': ' Count', 'value': 'count'},
-                                        ],
-                                        value='count',
-                                        inline=True,
-                                        label_class_name='view-toggle__label',
-                                        class_name='mb-3 ps-2',
+                                    html.Div(
+                                        id='map-empty',
+                                        className='sim-layout__map-empty',
                                     ),
-                                ],
-                                className='sim-layout__middle-header',
-                            ),
-                            # Map and Chart container
-                            html.Div(
-                                [
-                                    # Map
                                     dcc.Graph(
                                         id='spread-map',
                                         className='sim-layout__map',
                                         config={'displayModeBar': False},
+                                        responsive=True,
+                                        style={'display': 'none', 'height': '100%'},
                                     ),
-                                    # Line Chart
+                                ],
+                                className='sim-layout__card sim-layout__card--map',
+                                body=True,
+                            ),
+                            dbc.Card(
+                                [
+                                    html.Div(
+                                        id='chart-empty',
+                                        className='sim-layout__chart-empty',
+                                    ),
                                     dcc.Graph(
                                         id='line-chart',
                                         className='sim-layout__chart',
                                         config={'displayModeBar': False},
+                                        responsive=True,
+                                        style={'display': 'none', 'height': '100%'},
                                     ),
                                 ],
-                                className='sim-layout__viz',
+                                className='sim-layout__card sim-layout__card--chart',
+                                body=True,
                             ),
                         ],
                         className='sim-layout__col--middle',
@@ -1253,13 +1196,30 @@ def create_home_layout():
                         [
                             html.Div(
                                 [
-                                    html.H6('County Data', className='mb-2'),
-                                    dbc.Input(
-                                        id='county-search',
-                                        type='text',
-                                        placeholder='Search (county or number)…',
-                                        debounce=True,
-                                        class_name='mb-2',
+                                    html.H6('County Data', className='mb-2 county-table__title'),
+                                    html.Div(
+                                        [
+                                            dbc.Input(
+                                                id='county-search',
+                                                type='text',
+                                                placeholder='Search (county name or value)…',
+                                                debounce=True,
+                                                class_name='mb-2',
+                                            ),
+                                            dbc.RadioItems(
+                                                id='view-toggle',
+                                                options=[
+                                                    {'label': ' Percentage', 'value': 'percent'},
+                                                    {'label': ' Count', 'value': 'count'},
+                                                ],
+                                                value='count',
+                                                inline=True,
+                                                label_class_name='view-toggle__label',
+                                                class_name='mb-3 ps-2',
+                                            ),
+                                        ],
+                                        id='county-controls',
+                                        style={'display': 'none'},
                                     ),
                                     dcc.Store(
                                         id='county-table-sort',
@@ -3141,52 +3101,20 @@ def fetch_simulation_data(n_intervals, sim_state, event_data):
 # Real data visualization callbacks
 
 
-@callback(
-    Output('spread-map', 'figure'),
-    [
-        Input('event-data', 'data'),
-        Input('timeline-slider', 'value'),
-        Input('view-toggle', 'value'),
-        Input('location-assets-store', 'data'),
-    ],
-    State('selected-model-store', 'data'),
-)
-def update_map(event_data, timeline_value, view_type, location_assets, selected_model):
-    """Update map with county-level choropleth visualization"""
-
-    geojson = location_assets.get('geojson') if location_assets else None
-
-    # Show empty map with state boundaries if no simulation data yet
-    if geojson and (not event_data or len(event_data) == 0):
-        logger.info('Displaying empty map with state boundaries')
-        return _create_empty_state_map(geojson)
-
-    # DEBUG LOGGING
-    logger.info(
-        f'map debug → '
-        f'event_days={len(event_data) if event_data else 0}, '
-        f'timeline={timeline_value}, '
-        f'geojson_loaded={bool(geojson)}'
+def _build_chart_figure(event_data, timeline_value, selected_model):
+    shared_layout = dict(
+        yaxis_title='Population Count',
+        legend=dict(orientation='h', yanchor='top', y=-0.15, xanchor='center', x=0.5,
+                    font=dict(size=11), maxheight=0.2),
+        margin=dict(l=40, r=0, t=20, b=60),
+        uirevision=selected_model,
     )
 
-    return _create_jurisdiction_choropleth(
-        event_data, timeline_value, view_type, geojson, selected_model
-    )
-
-
-@callback(
-    Output('line-chart', 'figure'),
-    [Input('event-data', 'data'), Input('timeline-slider', 'value')],
-    State('selected-model-store', 'data'),
-)
-def update_chart(event_data, timeline_value, selected_model):
     if not event_data:
         fig = go.Figure()
         fig.update_layout(
             title='Epidemic Curve - No Data Available',
-            xaxis_title='Day',
-            yaxis_title='Population Count',
-            height=300,
+            **shared_layout,
         )
         return fig
 
@@ -3199,7 +3127,6 @@ def update_chart(event_data, timeline_value, selected_model):
     recovered = [d.get('totalRecoveredCount', 0) for d in event_data]
     deceased = [d.get('totalDeceased', 0) for d in event_data]
 
-    # Decide which series to show
     model = (selected_model or '').lower()
     if model.startswith('seir') or model.startswith('seirs'):
         # SEIR
@@ -3234,7 +3161,11 @@ def update_chart(event_data, timeline_value, selected_model):
     }
     fig = go.Figure()
     for name, y in series:
-        fig.add_trace(go.Scatter(x=days, y=y, name=name, line=dict(color=COLOR_MAP.get(name))))
+        fig.add_trace(go.Scatter(
+            x=days, y=y, name=name,
+            line=dict(color=COLOR_MAP.get(name)),
+            yhoverformat=',.0f',
+        ))
 
     # Add vertical line for current day
     if timeline_value is not None and timeline_value < len(days):
@@ -3246,21 +3177,76 @@ def update_chart(event_data, timeline_value, selected_model):
         )
 
     fig.update_layout(
-        title=dict(
-            # text="Epidemic Curve", # remove title to make space for legend
-            y=0.96,
-            yanchor='top',
-            pad=dict(t=5),
-        ),
-        xaxis_title='Day',
-        yaxis_title='Population Count',
-        height=300,
-        legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='right', x=1),
-        margin=dict(l=40, r=40, t=60, b=70),
         hovermode='x unified',
+        **shared_layout,
     )
-
     return fig
+
+
+@callback(
+    Output('spread-map', 'figure'),
+    Output('spread-map', 'style'),
+    Output('map-empty', 'children'),
+    Output('map-empty', 'style'),
+    Output('epidemic-progress-title', 'children'),
+    [
+        Input('event-data', 'data'),
+        Input('timeline-slider', 'value'),
+        Input('view-toggle', 'value'),
+        Input('location-assets-store', 'data'),
+    ],
+    State('selected-model-store', 'data'),
+    State('selected-state-store', 'data'),
+)
+def update_map(event_data, timeline_value, view_type, location_assets, selected_model, selected_state):
+    geojson = location_assets.get('geojson') if location_assets else None
+
+    if event_data and timeline_value is not None and timeline_value < len(event_data):
+        day = event_data[timeline_value].get('day', timeline_value)
+        panel_title = f'Epidemic Simulation (Day {day})'
+    else:
+        panel_title = 'Epidemic Simulation'
+
+    if not geojson:
+        empty = create_icon_empty_state(
+            html.I(className='bi bi-map'),
+            'No simulation results yet',
+            'Configure your disease model and scenario in the panel, then press Play to see county-level spread.',
+        )
+        return go.Figure(), {'display': 'none'}, empty, {'display': 'flex', 'flex': '1'}, panel_title
+
+    map_figure = (
+        _create_empty_state_map(geojson, selected_state=selected_state, view_type=view_type)
+        if not event_data or len(event_data) == 0
+        else _create_jurisdiction_choropleth(
+            event_data, timeline_value, view_type, geojson, selected_model, selected_state
+        )
+    )
+    return map_figure, {'flex': '1', 'minHeight': '0'}, None, {'display': 'none'}, panel_title
+
+
+@callback(
+    Output('line-chart', 'figure'),
+    Output('line-chart', 'style'),
+    Output('chart-empty', 'children'),
+    Output('chart-empty', 'style'),
+    [Input('event-data', 'data'), Input('timeline-slider', 'value')],
+    State('selected-model-store', 'data'),
+)
+def update_chart(event_data, timeline_value, selected_model):
+    if not event_data:
+        empty = create_icon_empty_state(
+            html.I(className='bi bi-graph-up'),
+            'No simulation results yet',
+            'The epidemic curve will render here once you run a simulation.',
+        )
+        return go.Figure(), {'display': 'none'}, empty, {'display': 'flex', 'flex': '1'}
+    return (
+        _build_chart_figure(event_data, timeline_value, selected_model),
+        {'flex': '1', 'minHeight': '0', 'height': '100%'},
+        None,
+        {'display': 'none'},
+    )
 
 
 @callback(
@@ -3273,6 +3259,8 @@ def handle_sort_click(sort_clicks, sort_state):
     sort_state = sort_state or {'col': 'infected', 'dir': 'desc'}
     trig = ctx.triggered_id
     if isinstance(trig, dict) and trig.get('type') == 'sort-btn':
+        if not ctx.triggered[0]['value']:
+            return sort_state
         col = trig['col']
         if sort_state.get('col') == col:
             sort_state['dir'] = 'asc' if sort_state['dir'] == 'desc' else 'desc'
@@ -3283,6 +3271,7 @@ def handle_sort_click(sort_clicks, sort_state):
 
 @callback(
     Output('spread-table', 'children'),
+    Output('county-controls', 'style'),
     [
         Input('event-data', 'data'),
         Input('timeline-slider', 'value'),
@@ -3309,13 +3298,19 @@ def update_table(
         'Recovered' if model.startswith('seir') or model.startswith('seirs') else 'Deceased'
     )
 
+    _hidden = {'display': 'none'}
+    _visible = {'display': 'block'}
+
     if not event_data or timeline_value is None or timeline_value >= len(event_data):
-        return html.P('No data available', className='param-display__empty-state')
+        return create_icon_empty_state(
+            html.I(className='bi bi-table'),
+            subtitle='County statistics will appear here once a simulation is run.',
+        ), _hidden
 
     current_data = event_data[timeline_value]
     counties_data = current_data.get('counties', [])
     if not counties_data:
-        return html.P('No county data available', className='param-display__empty-state')
+        return html.P('No county data available', className='param-display__empty-state'), _hidden
 
     location_assets = location_assets or {}
     mapping = location_assets.get('mapping', {})  # name -> geoid (string)
@@ -3345,25 +3340,7 @@ def update_table(
     df = pd.DataFrame(records)
 
     if df.empty:
-        return html.P('No county data available', className='param-display__empty-state')
-
-    # --- search
-    if search_text:
-        q = search_text.strip().lower()
-        mask = df.apply(
-            lambda r: q in f'{r["name"]} {r["infected_num"]} {r["deceased_num"]}'.lower(),
-            axis=1,
-        )
-        df = df[mask]
-
-    if df.empty:
-        return html.P('No county data available', className='param-display__empty-state')
-
-    # --- sort
-    sort_col = {'name': 'name', 'infected': 'infected_num', 'deceased': 'deceased_num'}[
-        sort_state['col']
-    ]
-    df = df.sort_values(sort_col, ascending=(sort_state['dir'] == 'asc'))
+        return html.P('No county data available', className='param-display__empty-state'), _hidden
 
     # --- format display columns
     if view_type == 'percent':
@@ -3372,30 +3349,38 @@ def update_table(
     else:
         df['infected_disp'] = df['infected_num'].map(lambda x: f'{math.floor(x):,}')
         df['deceased_disp'] = df['deceased_num'].map(lambda x: f'{math.floor(x):,}')
+    
+    # --- search
+    if search_text:
+        q = search_text.strip().lower()
+        mask = df.apply(
+            lambda r: q in f'{r["name"]} {r["infected_disp"]} {r["deceased_disp"]}'.lower(),
+            axis=1,
+        )
+        df = df[mask]
 
-    # --- header with clickable sort buttons (minimal styling)
-    arrow_loc = (
-        '▲'
-        if sort_state['col'] == 'name' and sort_state['dir'] == 'asc'
-        else ('▼' if sort_state['col'] == 'name' else '')
-    )
-    arrow_inf = (
-        '▼'
-        if sort_state['col'] == 'infected' and sort_state['dir'] == 'desc'
-        else ('▲' if sort_state['col'] == 'infected' else '')
-    )
-    arrow_dec = (
-        '▼'
-        if sort_state['col'] == 'deceased' and sort_state['dir'] == 'desc'
-        else ('▲' if sort_state['col'] == 'deceased' else '')
-    )
+    if df.empty:
+        return html.P('No county data available', className='param-display__empty-state'), _hidden
+
+    # --- sort
+    sort_col = {'name': 'name', 'infected': 'infected_num', 'deceased': 'deceased_num'}[
+        sort_state['col']
+    ]
+    df = df.sort_values(sort_col, ascending=(sort_state['dir'] == 'asc'))
+
+    # --- header with clickable sort buttons
+    def sort_icon(col, asc_when):
+        active = sort_state['col'] == col
+        is_asc = sort_state['dir'] == 'asc'
+        icon = 'bi bi-caret-up-fill' if (active and is_asc == asc_when) else 'bi bi-caret-down-fill'
+        return html.I(className=icon, style={} if active else {'visibility': 'hidden'})
 
     header = html.Thead(
         html.Tr(
             [
                 html.Th(
                     html.Button(
-                        f'Location {arrow_loc}',
+                        ['Location ', sort_icon('name', True)],
                         id={'type': 'sort-btn', 'col': 'name'},
                         n_clicks=0,
                         className='sim-layout__sort-btn',
@@ -3403,18 +3388,20 @@ def update_table(
                 ),
                 html.Th(
                     html.Button(
-                        f'Infectious {arrow_inf}',
+                        ['Infectious ', sort_icon('infected', False)],
                         id={'type': 'sort-btn', 'col': 'infected'},
                         n_clicks=0,
                         className='sim-layout__sort-btn',
+                        style={'textAlign': 'right'}
                     )
                 ),
                 html.Th(
                     html.Button(
-                        f'{right_col_label} {arrow_dec}',
+                        [f'{right_col_label} ', sort_icon('deceased', False)],
                         id={'type': 'sort-btn', 'col': 'deceased'},
                         n_clicks=0,
                         className='sim-layout__sort-btn',
+                        style={'textAlign': 'right'}
                     )
                 ),
             ]
@@ -3423,7 +3410,7 @@ def update_table(
 
     body = html.Tbody(
         [
-            html.Tr([html.Td(r.name), html.Td(r.infected_disp), html.Td(r.deceased_disp)])
+            html.Tr([html.Td(r.name), html.Td(r.infected_disp, style={'textAlign': 'right'}), html.Td(r.deceased_disp, style={'textAlign': 'right'})])
             for r in df.itertuples()
         ]
     )
@@ -3437,4 +3424,4 @@ def update_table(
         className='w-100 sim-layout__county-table',
     )
 
-    return table
+    return table, _visible

@@ -3,8 +3,6 @@ import json
 import logging
 import math
 import os
-import subprocess
-
 import dash
 from dash import dcc, html, Input, Output, State, callback, ctx, ALL, page_container
 import dash_bootstrap_components as dbc
@@ -19,12 +17,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Get version from environment
-result = subprocess.run(
-    'git symbolic-ref -q --short HEAD || git describe --tags --exact-match',
-    shell=True,
-    capture_output=True,
-)
-version = result.stdout.decode('utf-8').strip() if result.stdout else 'Unknown'
+version = os.environ.get('GIT_BRANCH', 'Unknown')
+print(version)
 
 # Initialize Dash app with external CSS
 dbc_css = 'https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css'
