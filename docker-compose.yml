@@ -68,6 +68,7 @@ services:
       - django-backend
     environment:
       - API_BASE_URL=http://django-backend:8000
+      - GIT_BRANCH=${GIT_BRANCH:-Unknown}
     networks:
       - pandemic-network
 

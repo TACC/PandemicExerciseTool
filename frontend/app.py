@@ -3,8 +3,6 @@ import json
 import logging
 import math
 import os
-import subprocess
-
 import dash
 from dash import dcc, html, Input, Output, State, callback, ctx, ALL, page_container
 import dash_bootstrap_components as dbc
@@ -19,15 +17,16 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Get version from environment
-result = subprocess.run(
-    'git symbolic-ref -q --short HEAD || git describe --tags --exact-match',
-    shell=True,
-    capture_output=True,
-)
-version = result.stdout.decode('utf-8').strip() if result.stdout else 'Unknown'
+version = os.environ.get('GIT_BRANCH', 'Unknown')
+print(version)
 
 # Initialize Dash app with external CSS
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], use_pages=True)
+dbc_css = 'https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css'
+app = dash.Dash(
+    __name__,
+    external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP, dbc_css],
+    use_pages=True,
+)
 app.title = f'epiENGAGE - Interactive Outbreak Simulator v-{version}'
 app.config.suppress_callback_exceptions = True
 
@@ -52,7 +51,6 @@ app.layout = html.Div(
         dcc.Store(id='vaccine-stockpile', data=[]),
         dcc.Store(id='antivirals-enabled', data=False),
         dcc.Store(id='vaccines-enabled', data=False),
-        dcc.Store(id='displayed-tab', data='scenario'),
         dcc.Store(id='disease-preset-store', data={}),
         dcc.Interval(id='simulation-interval', interval=1000, disabled=True),
         # Stores for Model and State Selection
@@ -156,56 +154,17 @@ app.layout = html.Div(
             },
         ),
         # Main content area
-        html.Div(
+        dbc.Container(
             [
                 html.Div(page_container, style={'marginTop': '80px'}),
                 # html.Div(id='main-content'),
-            ]
+            ],
+            fluid=True,
+            class_name='base-container',
         ),
-    ]
+    ],
+    className='dbc',
 )
-
-
-# Navigation callback
-# @callback(
-#     [
-#         Output('main-content', 'children'),
-#         Output('nav-home', 'className'),
-#         Output('nav-userguide', 'className'),
-#         Output('disease-params-modal', 'is_open', allow_duplicate=True),
-#         Output('initial-cases-modal', 'is_open', allow_duplicate=True),
-#         Output('npi-modal', 'is_open', allow_duplicate=True),
-#         Output('antivirals-modal', 'is_open', allow_duplicate=True),
-#         Output('vaccines-modal', 'is_open', allow_duplicate=True),
-#     ],
-#     [Input('nav-home', 'n_clicks'), Input('nav-userguide', 'n_clicks')],
-#     prevent_initial_call=True,
-# )
-# def navigate_pages(home_clicks, userguide_clicks):
-#     triggered_id = ctx.triggered[0]['prop_id'].split('.')[0] if ctx.triggered else 'nav-home'
-
-#     if triggered_id == 'nav-userguide':
-#         return (
-#             create_userguide_layout(),
-#             'tab-button',
-#             'tab-button active',
-#             False,
-#             False,
-#             False,
-#             False,
-#             False,
-#         )
-#     else:
-#         return (
-#             create_home_layout(),
-#             'tab-button active',
-#             'tab-button',
-#             False,
-#             False,
-#             False,
-#             False,
-#             False,
-#         )
 
 
 # Expose server for deployment
