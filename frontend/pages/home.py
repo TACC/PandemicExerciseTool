@@ -146,7 +146,7 @@ def _create_empty_map():
     return fig
 
 
-def _create_empty_state_map(geojson, selected_state=None, view_type='count'):
+def _create_empty_state_map(geojson, selected_state=None, view_type='count', selected_county=None):
     """Create map showing state county boundaries before simulation starts."""
     if not geojson or 'features' not in geojson:
         return _create_empty_map()
@@ -168,6 +168,7 @@ def _create_empty_state_map(geojson, selected_state=None, view_type='count'):
         colorbar_kwargs=colorbar_kwargs,
         customdata=customdata,
         uirevision=selected_state,
+        selected_county=selected_county,
     )
 
 
@@ -216,7 +217,27 @@ def _log_scale(values, raw_max, label):
     return z, zmax, colorbar_kwargs
 
 
-def _build_choropleth_figure(geojson, fips_list, z, zmax, colorbar_kwargs, customdata, uirevision=None):
+def _county_boundary_lines(geojson, selected_county):
+    """Return (lons, lats) tracing a county's boundary ring(s) for Scattermapbox,
+    with None separators between disjoint rings (holes, multi-part polygons)."""
+    lons, lats = [], []
+    for feature in geojson['features']:
+        if feature['properties'].get('GEOID') != selected_county:
+            continue
+        geom = feature['geometry']
+        polys = geom['coordinates'] if geom['type'] == 'MultiPolygon' else [geom['coordinates']]
+        for poly in polys:
+            for ring in poly:  # exterior ring, then any interior holes
+                if lons:
+                    lons.append(None)
+                    lats.append(None)
+                lons.extend(pt[0] for pt in ring)
+                lats.extend(pt[1] for pt in ring)
+        break
+    return lons, lats
+
+
+def _build_choropleth_figure(geojson, fips_list, z, zmax, colorbar_kwargs, customdata, uirevision=None, selected_county=None):
     """Build a Choroplethmapbox figure."""
     center, zoom = _compute_mapbox_viewport(geojson)
     fig = go.Figure(go.Choroplethmapbox(
@@ -238,6 +259,25 @@ def _build_choropleth_figure(geojson, fips_list, z, zmax, colorbar_kwargs, custo
             'Deceased: %{customdata[3]:,}<extra></extra>'
         ),
     ))
+
+    # Highlight the selected county with a thick outline traced on top of the
+    # base trace. This has to be a Scattermapbox line rather than a second
+    # Choroplethmapbox: Choroplethmapbox ties marker.opacity to both fill AND
+    # line, so a transparent fill (to preserve the underlying data color)
+    # would also erase the border - there's no way to get an opaque border
+    # with a transparent fill from that trace type.
+    if selected_county and selected_county in fips_list:
+        hl_lons, hl_lats = _county_boundary_lines(geojson, selected_county)
+        if hl_lons:
+            fig.add_trace(go.Scattermapbox(
+                lon=hl_lons,
+                lat=hl_lats,
+                mode='lines',
+                line=dict(width=3, color='#000000'),
+                hoverinfo='skip',
+                showlegend=False,
+            ))
+
     fig.update_layout(
         mapbox=dict(style='white-bg', center=center, zoom=zoom),
         uirevision=uirevision,
@@ -247,7 +287,7 @@ def _build_choropleth_figure(geojson, fips_list, z, zmax, colorbar_kwargs, custo
     return fig
 
 
-def _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojson, selected_model, selected_state=None):
+def _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojson, selected_model, selected_state=None, selected_county=None):
     """Build a choropleth map for the current simulation day."""
     if not event_data or timeline_value is None or timeline_value >= len(event_data):
         return _create_empty_map()
@@ -293,6 +333,7 @@ def _create_jurisdiction_choropleth(event_data, timeline_value, view_type, geojs
         colorbar_kwargs=colorbar_kwargs,
         customdata=customdata,
         uirevision=selected_state,
+        selected_county=selected_county,
     )
 
 
@@ -3215,11 +3256,12 @@ def _build_chart_figure(event_data, timeline_value, selected_model):
         Input('timeline-slider', 'value'),
         Input('view-toggle', 'value'),
         Input('location-assets-store', 'data'),
+        Input('selected-county-store', 'data'),
     ],
     State('selected-model-store', 'data'),
     State('selected-state-store', 'data'),
 )
-def update_map(event_data, timeline_value, view_type, location_assets, selected_model, selected_state):
+def update_map(event_data, timeline_value, view_type, location_assets, selected_county, selected_model, selected_state):
     geojson = location_assets.get('geojson') if location_assets else None
 
     if event_data and timeline_value is not None and timeline_value < len(event_data):
@@ -3237,10 +3279,12 @@ def update_map(event_data, timeline_value, view_type, location_assets, selected_
         return go.Figure(), {'display': 'none'}, empty, {'display': 'flex', 'flex': '1'}, panel_title
 
     map_figure = (
-        _create_empty_state_map(geojson, selected_state=selected_state, view_type=view_type)
+        _create_empty_state_map(
+            geojson, selected_state=selected_state, view_type=view_type, selected_county=selected_county
+        )
         if not event_data or len(event_data) == 0
         else _create_jurisdiction_choropleth(
-            event_data, timeline_value, view_type, geojson, selected_model, selected_state
+            event_data, timeline_value, view_type, geojson, selected_model, selected_state, selected_county
         )
     )
     return map_figure, {'flex': '1', 'minHeight': '0'}, None, {'display': 'none'}, panel_title
@@ -3291,6 +3335,34 @@ def handle_sort_click(sort_clicks, sort_state):
 
 
 @callback(
+    Output('selected-county-store', 'data', allow_duplicate=True),
+    Input('selected-state-store', 'data'),
+    prevent_initial_call=True,
+)
+def clear_county_selection_on_state_change(selected_state):
+    # A highlighted county's FIPS code is meaningless once the jurisdiction
+    # changes, so drop the selection rather than risk it pointing at an
+    # unrelated county in the newly selected state.
+    return None
+
+
+@callback(
+    Output('selected-county-store', 'data'),
+    Input({'type': 'county-row', 'fips': ALL}, 'n_clicks'),
+    State('selected-county-store', 'data'),
+    prevent_initial_call=True,
+)
+def handle_county_row_click(n_clicks_list, selected_county):
+    trig = ctx.triggered_id
+    if isinstance(trig, dict) and trig.get('type') == 'county-row':
+        if not ctx.triggered[0]['value']:
+            return selected_county
+        clicked_fips = trig['fips']
+        return None if selected_county == clicked_fips else clicked_fips
+    return selected_county
+
+
+@callback(
     Output('spread-table', 'children'),
     Output('county-controls', 'style'),
     [
@@ -3300,6 +3372,7 @@ def handle_sort_click(sort_clicks, sort_state):
         Input('location-assets-store', 'data'),
         Input('county-search', 'value'),
         Input('county-table-sort', 'data'),
+        Input('selected-county-store', 'data'),
     ],
     State('selected-model-store', 'data'),
 )
@@ -3310,6 +3383,7 @@ def update_table(
     location_assets,
     search_text,
     sort_state,
+    selected_county,
     selected_model,
 ):
     sort_state = sort_state or {'col': 'infected', 'dir': 'desc'}
@@ -3352,6 +3426,7 @@ def update_table(
             geoid = geoid.zfill(5)
         records.append(
             {
+                'fips': geoid,
                 'name': id_to_name.get(geoid) or geoid,
                 'infected_num': float(county.get(inf_key, 0)),
                 'deceased_num': float(county.get(dec_key, 0)),
@@ -3431,7 +3506,17 @@ def update_table(
 
     body = html.Tbody(
         [
-            html.Tr([html.Td(r.name), html.Td(r.infected_disp, style={'textAlign': 'right'}), html.Td(r.deceased_disp, style={'textAlign': 'right'})])
+            html.Tr(
+                [
+                    html.Td(r.name),
+                    html.Td(r.infected_disp, style={'textAlign': 'right'}),
+                    html.Td(r.deceased_disp, style={'textAlign': 'right'}),
+                ],
+                id={'type': 'county-row', 'fips': r.fips},
+                n_clicks=0,
+                className='sim-layout__county-row-selected' if r.fips == selected_county else '',
+                style={'cursor': 'pointer'},
+            )
             for r in df.itertuples()
         ]
     )

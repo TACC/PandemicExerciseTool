@@ -149,6 +149,11 @@ body {
     table-layout: fixed;
 }
 
+.sim-layout__county-row-selected > td {
+    background-color: rgba(13, 110, 253, 0.15) !important;
+    font-weight: bold;
+}
+
 .sim-layout__middle-header {
     background-color: white;
     border-radius: 8px;

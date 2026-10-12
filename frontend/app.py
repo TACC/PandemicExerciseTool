@@ -57,6 +57,7 @@ app.layout = html.Div(
         dcc.Store(id='selected-model-store', data='seirs-deterministic'),
         dcc.Store(id='selected-state-store', data='Alabama'),
         dcc.Store(id='location-assets-store', data={}),
+        dcc.Store(id='selected-county-store', data=None),
         # Header
         html.Nav(
             [
