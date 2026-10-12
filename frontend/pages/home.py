@@ -3082,7 +3082,7 @@ def fetch_simulation_data(n_intervals, sim_state, event_data):
 
                 updated_event_data = event_data + [day_data]
                 logger.info(f'Added day {current_day} data, total days: {len(updated_event_data)}')
-                return updated_event_data, len(updated_event_data), len(updated_event_data) - 1
+                return updated_event_data, len(updated_event_data) - 1, len(updated_event_data) - 1
             elif response.status_code == 404 or 'not calculated' in response.text:
                 # Day not ready yet, don't increment but keep checking
                 logger.info(f'Day {current_day} not ready yet')
