@@ -18,14 +18,14 @@ MODEL_OPTIONS = [
         'description': 'SEIR with waning immunity; Poisson transitions; stochastic binomial travel.',
     },
     {
-        'label': 'SEATIRD Deterministic',
-        'value': 'seatird-deterministic',
+        'label': 'SEAITRD Deterministic',
+        'value': 'seaitrd-deterministic',
         'description': 'Adds treatable compartment; Euler updates (fractional flows); stochastic binomial travel.',
     },
     {
-        'label': 'SEATIRD Stochastic',
-        'value': 'seatird-stochastic',
-        'description': 'SEATIRD with exponential transitions (Gillespie, individual-level stochasticity); stochastic binomial travel.',
+        'label': 'SEAITRD Stochastic',
+        'value': 'seaitrd-stochastic',
+        'description': 'SEAITRD with exponential transitions (Gillespie, individual-level stochasticity); stochastic binomial travel.',
     },
     #    {
     #        'label': 'SEIHRD Stochastic',
@@ -36,7 +36,7 @@ MODEL_OPTIONS = [
 
 # Preset scenarios
 PRESET_SCENARIOS = {
-    'seatird': {
+    'seaitrd': {
         'slow_mild_2009': {
             'name': 'Slow Transmission, Mild Severity (2009 H1N1)',
             'disease_name': '2009 H1N1',

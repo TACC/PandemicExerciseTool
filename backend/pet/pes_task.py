@@ -89,8 +89,8 @@ def return_valid_input(input):
     for k, v in input_file["data"].items():
         input_file["data"][k] = v.replace("STATE", state)
 
-    if input['model_type'].startswith('seatird-'):
-        print('####### THIS IS SEATIRD MODEL TYPE')
+    if input['model_type'].startswith('seaitrd-'):
+        print('####### THIS IS SEAITRD MODEL TYPE')
         # map FLAT payload -> nested disease_model.parameters
         p = input_file["disease_model"]["parameters"]
         for key in ["R0", "beta_scale", "tau", "kappa", "gamma", "chi"]:

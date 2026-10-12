@@ -8,7 +8,7 @@ This is a Python Dash conversion of the React frontend for the Pandemic Exercise
 - **Parameter Configuration**: Set disease parameters, initial cases, and interventions
 - **Visualization**: 
   - Geographic map showing disease spread across Texas counties
-  - Epidemic curve with SEATIRD compartmental model
+  - Epidemic curve with SEAITRD compartmental model
   - County-by-county data table
 - **Toggle Views**: Switch between count and percentage displays
 - **User Guide**: Comprehensive instructions and model information
@@ -90,12 +90,12 @@ The frontend connects to the Django backend running on `localhost:8000` with the
 
 ## Model Information
 
-The application implements a SEATIRD compartmental epidemiological model:
+The application implements a SEAITRD compartmental epidemiological model:
 - **S**: Susceptible
 - **E**: Exposed
 - **A**: Asymptomatic
-- **T**: Treatable
 - **I**: Infected
+- **T**: Treatable
 - **R**: Recovered
 - **D**: Deceased
 

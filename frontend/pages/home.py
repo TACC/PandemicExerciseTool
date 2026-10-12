@@ -1442,7 +1442,7 @@ def create_scenario_display(disease_params, initial_cases):
 
     # Disease parameters section
     if disease_params:
-        if disease_params['model_type'].startswith('seatird-'):
+        if disease_params['model_type'].startswith('seaitrd-'):
             content.extend(
                 [
                     html.H6('Disease Parameters', className=title_class),
@@ -1691,7 +1691,7 @@ def update_disease_param_modal_body(selected_value, preset, is_open):
         ),
     ]
 
-    if scenario_prefix == 'seatird':
+    if scenario_prefix == 'seaitrd':
         modal_elems.extend(
             [
                 create_bold_label_subtitle_number_input(
@@ -3137,7 +3137,7 @@ def _build_chart_figure(event_data, timeline_value, selected_model):
             ('Recovered', recovered),
         ]
     else:
-        # SEATIRD
+        # SEAITRD
         series = [
             ('Susceptible', susceptible),
             ('Exposed', exposed),
@@ -3148,7 +3148,7 @@ def _build_chart_figure(event_data, timeline_value, selected_model):
             ('Deceased', deceased),
         ]
 
-    # Add traces for SEATIRD compartments
+    # Add traces for SEAITRD compartments
     COLOR_MAP = {
         'Susceptible': 'blue',
         'Exposed': 'orange',
