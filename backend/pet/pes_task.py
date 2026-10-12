@@ -7,6 +7,7 @@ import subprocess
 import glob
 import os
 import pymongo
+import redis
 import signal
 from ctypes import cdll
 from .texasMapping import texas_mapping
@@ -25,6 +26,21 @@ myclient = pymongo.MongoClient("mongodb://mongo-db:27017/")
 mydb = myclient["PES"]
 mycol = mydb["days"]
 #mycol.drop()
+
+# Shared pause/resume signaling, keyed by Celery task id. Django sets/clears
+# this key via the same Redis instance; run_pes polls it to freeze/thaw the
+# simulator subprocess in place instead of killing it.
+redis_client = redis.Redis.from_url(broker_url)
+PAUSE_KEY_PREFIX = 'pause:'
+MAX_PAUSE_SECONDS = 900  # auto-cancel a run left paused longer than this
+
+
+def pause_key(task_id):
+    return f'{PAUSE_KEY_PREFIX}{task_id}'
+
+
+def is_paused(task_id):
+    return bool(redis_client.get(pause_key(task_id)))
 
 
 def return_valid_input(input):
@@ -231,8 +247,9 @@ def try_load_json_when_ready(path, max_wait=5.0, poll=0.05):
     raise RuntimeError(f"Timed out waiting for valid JSON: {path}")
 
 
-@app.task
-def run_pes(input):
+@app.task(bind=True)
+def run_pes(self, input):
+    task_id = self.request.id
 
     # Temporary solution to get clean start per simulation
     # Clear previous run outputs
@@ -254,7 +271,7 @@ def run_pes(input):
     logging.info(json.dumps(input_file, indent=2))
 
     # Simulation subrocess start
-    subprocess.Popen(['python3',
+    proc = subprocess.Popen(['python3',
                       '/PES/src/simulator.py',
                       '--input',
                       '/PES/INPUT.json',
@@ -263,14 +280,42 @@ def run_pes(input):
                       '--loglevel',
                       'INFO'],
                       preexec_fn=on_parent_exit('SIGHUP'))
-    
+
     # Simulation control
-    max_wait_time = 600  # Maximum wait time in seconds (10 minutes)
+    max_wait_time = 600  # Maximum wait time in seconds (10 minutes), excludes paused time
     max_processed_files = 200
     start_time = time.time()
     processed_files = 0
+    paused_duration = 0.0
+    is_stopped = False
+    pause_started = None
+    cancelled_while_paused = False
 
-    while time.time() - start_time < max_wait_time:
+    while time.time() - start_time - paused_duration < max_wait_time:
+        if is_paused(task_id):
+            if not is_stopped:
+                logging.info(f'Pausing simulation (task {task_id})')
+                os.kill(proc.pid, signal.SIGSTOP)
+                is_stopped = True
+                pause_started = time.time()
+
+            if time.time() - pause_started > MAX_PAUSE_SECONDS:
+                logging.warning(
+                    f'Simulation (task {task_id}) paused longer than '
+                    f'{MAX_PAUSE_SECONDS}s; cancelling'
+                )
+                cancelled_while_paused = True
+                break
+
+            time.sleep(0.5)
+            continue
+        elif is_stopped:
+            logging.info(f'Resuming simulation (task {task_id})')
+            os.kill(proc.pid, signal.SIGCONT)
+            paused_duration += time.time() - pause_started
+            is_stopped = False
+            pause_started = None
+
         # Sorting seems necessary to prevent the variable backend output and frontend read in times
         files = sorted(glob.glob("/PES/OUTPUT/output_sim0/output_*.json"))
         time.sleep(0.05)
@@ -296,10 +341,16 @@ def run_pes(input):
         # Check if simulation is complete (usually runs for 30-90 days)
         if processed_files >= max_processed_files:
             break
-    
-    logging.info(f"Simulation completed. Processed {processed_files} files.")
 
-    # Clean up process if it is still running
+    # Clear the pause flag so it doesn't linger for a future task with a reused id
+    redis_client.delete(pause_key(task_id))
+
+    if cancelled_while_paused:
+        logging.info(f"Simulation (task {task_id}) cancelled after an extended pause.")
+    else:
+        logging.info(f"Simulation completed. Processed {processed_files} files.")
+
+    # Clean up process if it is still running (SIGKILL works even if it's currently stopped)
     try:
         pid = subprocess.check_output(['pgrep', '-f', 'python3 /PES/src/simulator.py'], text=True)
         os.kill(int(pid), signal.SIGKILL)
@@ -310,4 +361,6 @@ def run_pes(input):
     for f in glob.glob("/PES/OUTPUT/output_sim0/output_*.json"):
         os.remove(f)
 
+    if cancelled_while_paused:
+        return f'Simulation cancelled after an extended pause. Processed {processed_files} files.'
     return f'Simulation completed. Processed {processed_files} files.'

@@ -2763,11 +2763,13 @@ def reset_simulation(n_clicks, sim_state):
     if n_clicks:
         logger.info('Resetting simulation...')
 
-        if sim_state.get('isRunning'):
+        # Always kill the backend task if one exists, even if it's currently
+        # paused rather than running - a paused task still holds a worker
+        # slot and a frozen simulator subprocess until it's revoked.
+        task_id = sim_state.get('taskId')
+        if task_id:
             try:
-                task_id = sim_state.get('taskId')
-                if task_id:
-                    requests.get(f'{API_BASE_URL}/api/delete/{task_id}')
+                requests.get(f'{API_BASE_URL}/api/delete/{task_id}')
             except:
                 pass
 
@@ -2826,7 +2828,26 @@ def toggle_simulation(
         is_running = sim_state.get('isRunning', False)
 
         if not is_running:
-            # Start simulation - call Django backend exactly like React
+            existing_task_id = sim_state.get('taskId')
+
+            if existing_task_id:
+                # A paused simulation already exists on the backend - resume
+                # the frozen subprocess in place rather than starting a new one
+                try:
+                    logger.info(f'Resuming simulation (task {existing_task_id})...')
+                    resume_response = requests.get(
+                        f'{API_BASE_URL}/api/resume/{existing_task_id}'
+                    )
+                    logger.info(f'Resume response status: {resume_response.status_code}')
+
+                    new_state = {**sim_state, 'isRunning': True}
+                    return new_state, 'Pause', 'warning', False, False, False
+
+                except Exception as e:
+                    logger.error(f'Error resuming simulation: {e}')
+                    return sim_state, 'Play', dash.no_update, False, True, True
+
+            # Start a brand new simulation - call Django backend exactly like React
             try:
                 logger.info('Starting new simulation...')
                 logger.info(
@@ -2954,11 +2975,11 @@ def toggle_simulation(
                 logger.error(f'Error starting simulation: {e}')
                 return sim_state, 'Play', dash.no_update, False, True, True
         else:
-            # Pause simulation - stop the task
+            # Pause simulation - freeze the task in place so it can be resumed
             try:
                 task_id = sim_state.get('taskId')
                 if task_id:
-                    requests.get(f'{API_BASE_URL}/api/delete/{task_id}')
+                    requests.get(f'{API_BASE_URL}/api/pause/{task_id}')
             except:
                 pass
 
