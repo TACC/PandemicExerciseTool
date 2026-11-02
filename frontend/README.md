@@ -101,6 +101,18 @@ The application implements a SEAITRD compartmental epidemiological model:
 
 ## Development Notes
 
+### Python tests
+
+Run these commands from `frontend` with the development dependencies installed:
+
+```bash
+# Unit tests, including the app and incremental chart tests
+python -m pytest test -m "not integration"
+
+# API integration tests (requires backend on localhost:8000 and a running worker)
+python -m pytest test/test_app_integration.py
+```
+
 This Dash frontend maintains exact feature parity with the original React application, including:
 - Same parameter inputs and validation
 - Identical visualization layouts and interactions

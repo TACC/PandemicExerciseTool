@@ -21,6 +21,11 @@ indent-width = 4
 [tool.ruff.format]
 quote-style = "single"
 
+[tool.pytest.ini_options]
+markers = [
+    "integration: requires a running backend and simulation worker",
+]
+
 [dependency-groups]
 dev = [
     "pytest>=9.1.1",
