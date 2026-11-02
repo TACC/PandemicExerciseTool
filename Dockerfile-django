@@ -10,4 +10,5 @@ COPY ./backend/db.sqlite3 /django-app/
 COPY ./backend/manage.py /django-app/
 COPY ./backend/pet /django-app/pet
 
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# Upgrade existing databases before serving requests after a model change.
+CMD ["sh", "-c", "python manage.py migrate --noinput && exec python manage.py runserver 0.0.0.0:8000"]

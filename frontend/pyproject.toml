@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "dash==4.4.1",
+    "dash-ag-grid==35.2.0",
     "dash-bootstrap-components==2.0.4",
     "gunicorn==21.2.0",
     "pandas==2.1.4",
@@ -20,7 +21,13 @@ indent-width = 4
 [tool.ruff.format]
 quote-style = "single"
 
+[tool.pytest.ini_options]
+markers = [
+    "integration: requires a running backend and simulation worker",
+]
+
 [dependency-groups]
 dev = [
+    "pytest>=9.1.1",
     "ruff>=0.15.12",
 ]

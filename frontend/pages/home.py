@@ -5,15 +5,21 @@ import math
 import os
 
 import dash
-from dash import dcc, html, Input, Output, State, callback, ctx, ALL, register_page
+from dash import (
+    dcc, html, Input, Output, State, callback, ctx, ALL, register_page,
+    Patch, clientside_callback, ClientsideFunction,
+)
 import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.graph_objects as go
 import requests
+from county_data import county_metrics
+from county_grid import create_county_grid_panel, grid_columns, grid_rows, age_panel
 
 from constants import (
     MODEL_OPTIONS,
     PRESET_SCENARIOS,
+    SEIHRD_DEFAULTS,
     AGE_GROUPS,
     AGE_GROUP_MAPPING,
     VACCINE_MODELS,
@@ -193,7 +199,7 @@ def _compute_mapbox_viewport(geojson):
 
 
 def _log_scale(values, raw_max, label):
-    """Transform values to log1p scale and return (z, zmax, colorbar_kwargs) for Choroplethmapbox."""
+    """Transform values to log1p scale and return (z, zmax, colorbar_kwargs) for the choropleth map."""
     z = [math.log1p(v) for v in values]
     zmax = math.log1p(raw_max)
     tick_vals, tick_text = [0], ['0']
@@ -218,7 +224,7 @@ def _log_scale(values, raw_max, label):
 
 
 def _county_boundary_lines(geojson, selected_county):
-    """Return (lons, lats) tracing a county's boundary ring(s) for Scattermapbox,
+    """Return (lons, lats) tracing a county's boundary ring(s) for the selection outline,
     with None separators between disjoint rings (holes, multi-part polygons)."""
     lons, lats = [], []
     for feature in geojson['features']:
@@ -238,9 +244,9 @@ def _county_boundary_lines(geojson, selected_county):
 
 
 def _build_choropleth_figure(geojson, fips_list, z, zmax, colorbar_kwargs, customdata, uirevision=None, selected_county=None):
-    """Build a Choroplethmapbox figure."""
+    """Build a MapLibre choropleth with an optional selection outline."""
     center, zoom = _compute_mapbox_viewport(geojson)
-    fig = go.Figure(go.Choroplethmapbox(
+    fig = go.Figure(go.Choroplethmap(
         geojson=geojson,
         locations=fips_list,
         z=z,
@@ -260,16 +266,12 @@ def _build_choropleth_figure(geojson, fips_list, z, zmax, colorbar_kwargs, custo
         ),
     ))
 
-    # Highlight the selected county with a thick outline traced on top of the
-    # base trace. This has to be a Scattermapbox line rather than a second
-    # Choroplethmapbox: Choroplethmapbox ties marker.opacity to both fill AND
-    # line, so a transparent fill (to preserve the underlying data color)
-    # would also erase the border - there's no way to get an opaque border
-    # with a transparent fill from that trace type.
+    # Keep the selection outline in a separate Scattermap line trace so it
+    # stays opaque without covering the county's underlying data color.
     if selected_county and selected_county in fips_list:
         hl_lons, hl_lats = _county_boundary_lines(geojson, selected_county)
         if hl_lons:
-            fig.add_trace(go.Scattermapbox(
+            fig.add_trace(go.Scattermap(
                 lon=hl_lons,
                 lat=hl_lats,
                 mode='lines',
@@ -279,7 +281,7 @@ def _build_choropleth_figure(geojson, fips_list, z, zmax, colorbar_kwargs, custo
             ))
 
     fig.update_layout(
-        mapbox=dict(style='white-bg', center=center, zoom=zoom),
+        map=dict(style='white-bg', center=center, zoom=zoom),
         uirevision=uirevision,
         margin=dict(l=0, r=0, t=5, b=40),
         paper_bgcolor='white',
@@ -418,6 +420,7 @@ def create_bold_label_subtitle_number_input(label: str, subtitle: str, inputs: l
             value=spec['input_value'],
             step=spec['input_step'],
             min=spec['input_min'],
+            max=spec.get('input_max'),
             className='mb-2 dbc',
         )
         if spec['input_label'] is not None:
@@ -1173,6 +1176,9 @@ def create_home_layout():
     return html.Div(
         [
             dcc.Location(id='url', refresh=True),
+            # Mount chart callback stores with their page-specific inputs/outputs.
+            dcc.Store(id='chart-frame', data=None),
+            dcc.Store(id='chart-progress', data=None),
             # Main content row with fixed height
             html.Div(
                 [
@@ -1195,6 +1201,8 @@ def create_home_layout():
                     html.Div(
                         [
                             html.Div(id='epidemic-progress-title', className='sim-layout__panel-title'),
+                                    dcc.Store(id='map-metadata', data=None),
+                                    dcc.Store(id='map-frame', data=None),
                             dbc.Card(
                                 [
                                     html.Div(
@@ -1232,50 +1240,7 @@ def create_home_layout():
                         ],
                         className='sim-layout__col--middle',
                     ),
-                    # Right Panel - Table
-                    html.Div(
-                        [
-                            html.Div(
-                                [
-                                    html.H6('County Data', className='mb-2 county-table__title'),
-                                    html.Div(
-                                        [
-                                            dbc.Input(
-                                                id='county-search',
-                                                type='text',
-                                                placeholder='Search (county name or value)…',
-                                                debounce=True,
-                                                class_name='mb-2',
-                                            ),
-                                            dbc.RadioItems(
-                                                id='view-toggle',
-                                                options=[
-                                                    {'label': ' Percentage', 'value': 'percent'},
-                                                    {'label': ' Count', 'value': 'count'},
-                                                ],
-                                                value='count',
-                                                inline=True,
-                                                label_class_name='view-toggle__label',
-                                                class_name='mb-3 ps-2',
-                                            ),
-                                        ],
-                                        id='county-controls',
-                                        style={'display': 'none'},
-                                    ),
-                                    dcc.Store(
-                                        id='county-table-sort',
-                                        data={'col': 'infected', 'dir': 'desc'},
-                                    ),
-                                    html.Div(
-                                        id='spread-table',
-                                        className='sim-layout__table',
-                                    ),
-                                ],
-                                className='sim-layout__right',
-                            )
-                        ],
-                        className='sim-layout__col--right',
-                    ),
+                    create_county_grid_panel(),
                 ],
                 className='sim-layout__row',
             ),
@@ -1531,6 +1496,57 @@ def create_scenario_display(disease_params, initial_cases):
                     ),
                 ]
             )
+        if disease_params['model_type'].startswith('seihrd-'):
+            content.extend(
+                [
+                    html.H6('Disease Parameters', className=title_class),
+                    html.Hr(),
+                    html.P([
+                        html.Span('Scenario: ', className='fw-bold'),
+                        disease_params.get('scenario_name', 'Custom'),
+                    ]),
+                    html.P([
+                        html.Span('Reproduction Number: ', className='fw-bold'),
+                        disease_params.get('R0', 0),
+                    ]),
+                ]
+            )
+            scalar_fields = [
+                ('E_to_IPandIA_days', 'Latent Period'),
+                ('IP_to_IS_days', 'Presymptomatic Period'),
+                ('IS_to_H_days', 'Symptom Onset to Hospitalization'),
+                ('H_to_D_days', 'Hospital Admission to Death'),
+                ('IS_to_R_days', 'Symptom Onset to Recovery'),
+                ('IA_to_R_days', 'Asymptomatic Infection to Recovery'),
+                ('highrisk_hosp_multiplier', 'High-risk Hospitalization Multiplier'),
+                ('rel_inf_IP_to_IS', 'Relative Presymptomatic Infectiousness'),
+                ('rel_inf_IA_to_IS', 'Relative Asymptomatic Infectiousness'),
+            ]
+            for param, label in scalar_fields:
+                value = disease_params.get(param, SEIHRD_DEFAULTS[param])
+                suffix = ' days' if param.endswith('_days') else ''
+                content.append(html.P([
+                    html.Span(f'{label}: ', className='fw-bold'),
+                    f'{value}{suffix}',
+                ]))
+
+            age_fields = [
+                ('H_to_R_days', 'Hospital Admission to Recovery', ' days'),
+                ('prop_E_to_IA', 'Proportion of Infections That Are Asymptomatic (0–1)', ''),
+                ('prop_IS_to_H_lowrisk', 'Low-risk Hospitalization Proportion (0–1)', ''),
+                ('prop_H_to_D', 'Hospital Fatality Proportion (0–1)', ''),
+                ('sigma', 'Relative Susceptibility (ratio)', ''),
+            ]
+            for param, label, suffix in age_fields:
+                values = disease_params.get(param, SEIHRD_DEFAULTS[param])
+                content.extend([
+                    html.P(html.Span(f'{label}:', className='fw-bold')),
+                    html.Ul([
+                        html.Li(f'{age_group["label"]}: {values[i]}{suffix}')
+                        for i, age_group in enumerate(AGE_GROUPS)
+                    ], className='ms-3 mb-3'),
+                ])
+
         if disease_params['model_type'].startswith('seirs-'):
             content.extend(
                 [
@@ -1684,9 +1700,14 @@ def update_disease_param_modal_body(selected_value, preset, is_open):
                     id={'type': 'dp-dropdown', 'param': 'preset'},
                     options=[
                         {'label': scenario['name'], 'value': key}
-                        for key, scenario in PRESET_SCENARIOS[scenario_prefix].items()
+                        for key, scenario in PRESET_SCENARIOS.get(scenario_prefix, {}).items()
                     ],
-                    placeholder='Select a preset scenario...',
+                    placeholder=(
+                        'Select a preset scenario...'
+                        if PRESET_SCENARIOS.get(scenario_prefix)
+                        else 'No preset scenarios available'
+                    ),
+                    disabled=not bool(PRESET_SCENARIOS.get(scenario_prefix)),
                     className='mb-3',
                 ),
             ],
@@ -1723,10 +1744,17 @@ def update_disease_param_modal_body(selected_value, preset, is_open):
             inputs=[
                 {
                     'input_label': None,
-                    'input_id': {'type': 'dp-input', 'param': 'latent-period'},
-                    'input_value': preset.get('tau', preset.get('latent_period', 1.2)),
-                    'input_step': 0.1,
-                    'input_min': 0,
+                    'input_id': {
+                        'type': 'dp-input',
+                        'param': 'E_to_IPandIA_days' if scenario_prefix == 'seihrd' else 'latent-period',
+                    },
+                    'input_value': (
+                        preset.get('E_to_IPandIA_days', SEIHRD_DEFAULTS['E_to_IPandIA_days'])
+                        if scenario_prefix == 'seihrd'
+                        else preset.get('tau', preset.get('latent_period', 1.2))
+                    ),
+                    'input_step': 0.01 if scenario_prefix == 'seihrd' else 0.1,
+                    'input_min': 0.01 if scenario_prefix == 'seihrd' else 0,
                 }
             ],
         ),
@@ -1810,6 +1838,64 @@ def update_disease_param_modal_body(selected_value, preset, is_open):
                 ),
             ]
         )
+    elif scenario_prefix == 'seihrd':
+        scalar_fields = [
+            ('IP_to_IS_days', 'Presymptomatic period (days)',
+             'Average days from presymptomatic to symptomatic infection'),
+            ('IS_to_H_days', 'Symptom onset to hospitalization (days)',
+             'Average days from symptomatic infection to hospital admission'),
+            ('H_to_D_days', 'Hospital admission to death (days)',
+             'Average days from hospital admission to death'),
+            ('IS_to_R_days', 'Symptom onset to recovery (days)',
+             'Average days from symptomatic infection to recovery'),
+            ('IA_to_R_days', 'Asymptomatic infection to recovery (days)',
+             'Average days from asymptomatic infection to recovery'),
+            ('highrisk_hosp_multiplier', 'High-risk hospitalization multiplier',
+             'Hospitalization risk relative to low-risk individuals'),
+            ('rel_inf_IP_to_IS', 'Relative presymptomatic infectiousness',
+             'Infectiousness of presymptomatic individuals relative to symptomatic individuals'),
+            ('rel_inf_IA_to_IS', 'Relative asymptomatic infectiousness',
+             'Infectiousness of asymptomatic individuals relative to symptomatic individuals'),
+        ]
+        for param, label, subtitle in scalar_fields:
+            modal_elems.append(create_bold_label_subtitle_number_input(
+                label=label,
+                subtitle=f' - {subtitle}',
+                inputs=[{
+                    'input_label': None,
+                    'input_id': {'type': 'dp-input', 'param': param},
+                    'input_value': preset.get(param, SEIHRD_DEFAULTS[param]),
+                    'input_step': 0.01,
+                    'input_min': 0.01 if param.endswith('_days') else 0,
+                }],
+            ))
+
+        age_fields = [
+            ('H_to_R_days', 'Hospital admission to recovery (days)',
+             'Average days from hospital admission to recovery, by age'),
+            ('prop_E_to_IA', 'Proportion of infections that are asymptomatic',
+             'Fraction leaving the exposed compartment that become asymptomatic, by age (0–1)'),
+            ('prop_IS_to_H_lowrisk', 'Low-risk hospitalization proportion',
+             'Fraction of low-risk symptomatic individuals hospitalized, by age (0–1)'),
+            ('prop_H_to_D', 'Hospital fatality proportion',
+             'Fraction of hospitalized individuals who die, by age (0–1)'),
+            ('sigma', 'Relative susceptibility (ratio)',
+             'Susceptibility of each age group relative to a reference group'),
+        ]
+        for param, label, subtitle in age_fields:
+            modal_elems.append(create_bold_label_subtitle_number_input(
+                label=label,
+                subtitle=f' - {subtitle}',
+                inputs=[{
+                    'input_label': age_group['label'],
+                    'input_id': {'type': 'dp-input', 'param': f'{param}-{i}'},
+                    'input_value': preset.get(param, SEIHRD_DEFAULTS[param])[i],
+                    'input_step': 0.00001 if param.startswith('prop_') else 0.01,
+                    'input_min': 0.01 if param.endswith('_days') else 0,
+                    'input_max': 1 if param.startswith('prop_') else None,
+                } for i, age_group in enumerate(AGE_GROUPS)],
+            ))
+
     elif scenario_prefix == 'seirs':
         modal_elems.extend(
             [
@@ -2024,7 +2110,7 @@ def load_assets_for_selected_location(n_clicks, selected_state):
     try:
         names, mapping, geojson = _load_location_assets(selected_state)
         logger.info(f'Loaded assets for {selected_state}: {len(names)} regions')
-        return {'names': names, 'mapping': mapping, 'geojson': geojson}
+        return {'names': names, 'mapping': mapping, 'geojson': geojson, 'jurisdiction': selected_state}
 
     except Exception as e:
         logger.error(f'Failed to load assets for {selected_state}: {e}')
@@ -2521,6 +2607,19 @@ def save_disease_parameters(n_clicks, dp_input_values, initial_cases, selected_m
         'model_type': selected_model,
     }
 
+    if selected_model and selected_model.startswith('seihrd-'):
+        # Preserve valid zeros for proportions and relative infectiousness.
+        for param, default in SEIHRD_DEFAULTS.items():
+            if isinstance(default, list):
+                disease_params[param] = [
+                    p[f'{param}-{i}'] if p.get(f'{param}-{i}') is not None else value
+                    for i, value in enumerate(default)
+                ]
+            else:
+                disease_params[param] = p[param] if p.get(param) is not None else default
+        if p.get('reproduction-number') is not None:
+            disease_params['R0'] = p['reproduction-number']
+
     logger.info('saved disease parameters = ')
     logger.info(disease_params)
 
@@ -2913,6 +3012,13 @@ def toggle_simulation(
                     'immune_period': disease_params.get('immune_period', 0),
                 }
 
+                if payload['model_type'].startswith('seihrd-'):
+                    for param, default in SEIHRD_DEFAULTS.items():
+                        if param == 'sigma':
+                            continue  # Already serialized above for the backend's sigma field.
+                        value = disease_params.get(param, default)
+                        payload[param] = json.dumps(value) if isinstance(default, list) else value
+
                 # Add initial cases - use provided cases or default to Harris County
                 initial_infected = []
                 if initial_cases:
@@ -3043,6 +3149,7 @@ def toggle_simulation(
         Output('event-data', 'data'),
         Output('timeline-slider', 'max'),
         Output('timeline-slider', 'value'),
+        Output('county-age-history', 'data'),
     ],
     Input('simulation-interval', 'n_intervals'),
     [State('simulation-state', 'data'), State('event-data', 'data')],
@@ -3075,6 +3182,7 @@ def fetch_simulation_data(n_intervals, sim_state, event_data):
                     'totalRecoveredCount': 0,
                     'totalDeceased': 0,
                 }
+                age_data = {}
 
                 # Extract county data and calculate totals - Django API returns counties as object with FIPS as keys
                 total_S = total_E = total_A = total_T = total_I = total_R = total_D = 0
@@ -3094,40 +3202,9 @@ def fetch_simulation_data(n_intervals, sim_state, event_data):
                     # Process county-level data from PES format
                     if 'data' in api_data:
                         for county_data in api_data['data']:
-                            fips_id = county_data.get('fips_id', '')
-                            compartment_summary = county_data.get('compartment_summary', {})
-
-                            # Infectious should be all infectious compartments
-                            A = compartment_summary.get('A', 0) or 0
-                            I = compartment_summary.get('I', 0) or 0
-                            T = compartment_summary.get('T', 0) or 0
-                            infected = round(A + I + T, 2)
-
-                            attempt_d = compartment_summary.get('D', None)
-                            if attempt_d is None:
-                                deceased = round(compartment_summary.get('R', 0), 2)
-                            else:
-                                deceased = round(attempt_d, 2)
-
-                            # Calculate percentages
-                            county_population = (
-                                sum(compartment_summary.values()) if compartment_summary else 1
-                            )
-                            infected_percent = (
-                                (infected / county_population * 100) if county_population > 0 else 0
-                            )
-                            deceased_percent = (
-                                (deceased / county_population * 100) if county_population > 0 else 0
-                            )
-
-                            county_info = {
-                                'fips': fips_id,
-                                'infected': infected,
-                                'deceased': deceased,
-                                'infectedPercent': infected_percent,
-                                'deceasedPercent': deceased_percent,
-                            }
-                            day_data['counties'].append(county_info)
+                            county = county_metrics(county_data)
+                            age_data[county['fips']] = county.pop('ageGroups')
+                            day_data['counties'].append(county)
 
                 # Set calculated totals
                 day_data.update(
@@ -3142,25 +3219,38 @@ def fetch_simulation_data(n_intervals, sim_state, event_data):
                     }
                 )
 
-                updated_event_data = event_data + [day_data]
-                logger.info(f'Added day {current_day} data, total days: {len(updated_event_data)}')
-                return updated_event_data, len(updated_event_data) - 1, len(updated_event_data) - 1
+                # Append only the new day. Age history stays out of map/chart
+                # callback requests and is never sent back as polling State.
+                events_patch = Patch()
+                events_patch.append(day_data)
+                ages_patch = Patch()
+                ages_patch.append(age_data)
+                logger.info(f'Added day {current_day} data')
+                return events_patch, current_day, current_day, ages_patch
             elif response.status_code == 404 or 'not calculated' in response.text:
                 # Day not ready yet, don't increment but keep checking
                 logger.info(f'Day {current_day} not ready yet')
-                return (
-                    event_data,
-                    max(30, len(event_data)),
-                    len(event_data) - 1 if event_data else 0,
-                )
+                return (dash.no_update,) * 4
 
         except Exception as e:
             logger.error(f'API fetch failed: {e}')
 
-    return event_data, max(30, len(event_data)), len(event_data) - 1 if event_data else 0
+    return (dash.no_update,) * 4
 
 
 # Real data visualization callbacks
+
+
+def _chart_series(selected_model):
+    series = [('Susceptible', 'totalSusceptible'), ('Exposed', 'totalExposed')]
+    if (selected_model or '').lower().startswith('seir'):
+        return series + [('Infectious', 'totalInfectedCount'), ('Recovered', 'totalRecoveredCount')]
+    return series + [
+        ('Asymptomatic Infectious', 'totalAsymptomaticCount'),
+        ('Treatable Infectious', 'totalTreatableCount'),
+        ('Symptomatic Infectious', 'totalInfectedCount'),
+        ('Recovered', 'totalRecoveredCount'), ('Deceased', 'totalDeceased'),
+    ]
 
 
 def _build_chart_figure(event_data, timeline_value, selected_model):
@@ -3181,35 +3271,6 @@ def _build_chart_figure(event_data, timeline_value, selected_model):
         return fig
 
     days = [d['day'] for d in event_data]
-    susceptible = [d.get('totalSusceptible', 0) for d in event_data]
-    exposed = [d.get('totalExposed', 0) for d in event_data]
-    asymptomatic = [d.get('totalAsymptomaticCount', 0) for d in event_data]
-    treatable = [d.get('totalTreatableCount', 0) for d in event_data]
-    infected = [d.get('totalInfectedCount', 0) for d in event_data]
-    recovered = [d.get('totalRecoveredCount', 0) for d in event_data]
-    deceased = [d.get('totalDeceased', 0) for d in event_data]
-
-    model = (selected_model or '').lower()
-    if model.startswith('seir') or model.startswith('seirs'):
-        # SEIR
-        series = [
-            ('Susceptible', susceptible),
-            ('Exposed', exposed),
-            ('Infectious', infected),
-            ('Recovered', recovered),
-        ]
-    else:
-        # SEAITRD
-        series = [
-            ('Susceptible', susceptible),
-            ('Exposed', exposed),
-            ('Asymptomatic Infectious', asymptomatic),
-            ('Treatable Infectious', treatable),
-            ('Symptomatic Infectious', infected),
-            ('Recovered', recovered),
-            ('Deceased', deceased),
-        ]
-
     # Add traces for SEAITRD compartments
     COLOR_MAP = {
         'Susceptible': 'blue',
@@ -3222,21 +3283,22 @@ def _build_chart_figure(event_data, timeline_value, selected_model):
         'Deceased': 'black',
     }
     fig = go.Figure()
-    for name, y in series:
+    for name, field in _chart_series(selected_model):
         fig.add_trace(go.Scatter(
-            x=days, y=y, name=name,
+            x=days, y=[day.get(field, 0) for day in event_data], name=name,
             line=dict(color=COLOR_MAP.get(name)),
             yhoverformat=',.0f',
         ))
 
-    # Add vertical line for current day
-    if timeline_value is not None and timeline_value < len(days):
-        fig.add_vline(
-            x=timeline_value,
-            line_dash='dash',
-            line_color='gray',
-            annotation_text=f'Day {timeline_value}',
-        )
+    # Reserve one marker and annotation so timeline patches have stable targets.
+    marker_visible = timeline_value is not None and 0 <= timeline_value < len(days)
+    marker_day = days[timeline_value] if marker_visible else 0
+    fig.add_vline(
+        x=marker_day, line_dash='dash', line_color='gray',
+        annotation_text=f'Day {marker_day}',
+    )
+    fig.layout.shapes[0].visible = marker_visible
+    fig.layout.annotations[0].visible = marker_visible
 
     fig.update_layout(
         hovermode='x unified',
@@ -3250,284 +3312,196 @@ def _build_chart_figure(event_data, timeline_value, selected_model):
     Output('spread-map', 'style'),
     Output('map-empty', 'children'),
     Output('map-empty', 'style'),
-    Output('epidemic-progress-title', 'children'),
-    [
-        Input('event-data', 'data'),
-        Input('timeline-slider', 'value'),
-        Input('view-toggle', 'value'),
-        Input('location-assets-store', 'data'),
-        Input('selected-county-store', 'data'),
-    ],
-    State('selected-model-store', 'data'),
+    Output('map-metadata', 'data'),
+    Input('location-assets-store', 'data'),
     State('selected-state-store', 'data'),
 )
-def update_map(event_data, timeline_value, view_type, location_assets, selected_county, selected_model, selected_state):
-    geojson = location_assets.get('geojson') if location_assets else None
-
-    if event_data and timeline_value is not None and timeline_value < len(event_data):
-        day = event_data[timeline_value].get('day', timeline_value)
-        panel_title = f'Epidemic Simulation (Day {day})'
-    else:
-        panel_title = 'Epidemic Simulation'
-
-    if not geojson:
+def initialize_incremental_map(location_assets, selected_state):
+    """Send county polygons once per jurisdiction, never on timeline updates."""
+    geojson = (location_assets or {}).get('geojson')
+    if not geojson or not geojson.get('features'):
         empty = create_icon_empty_state(
             html.I(className='bi bi-map'),
             'No simulation results yet',
             'Configure your disease model and scenario in the panel, then press Play to see county-level spread.',
         )
-        return go.Figure(), {'display': 'none'}, empty, {'display': 'flex', 'flex': '1'}, panel_title
+        return go.Figure(), {'display': 'none'}, empty, {'display': 'flex', 'flex': '1'}, None
 
-    map_figure = (
-        _create_empty_state_map(
-            geojson, selected_state=selected_state, view_type=view_type, selected_county=selected_county
-        )
-        if not event_data or len(event_data) == 0
-        else _create_jurisdiction_choropleth(
-            event_data, timeline_value, view_type, geojson, selected_model, selected_state, selected_county
-        )
+    selected_state = location_assets.get('jurisdiction', selected_state)
+    figure = _create_empty_state_map(geojson, selected_state=selected_state)
+    # Reserve trace 1 for selection, so patches always target the same trace.
+    figure.add_trace(go.Scattermap(
+        lon=[], lat=[], mode='lines', line=dict(width=3, color='#000000'),
+        hoverinfo='skip', showlegend=False,
+    ))
+    metadata = {
+        'state': selected_state,
+        'fips': list(figure.data[0].locations),
+        'names': [row[0] for row in figure.data[0].customdata],
+        'maxPopulation': _max_county_pop.get(selected_state, 0) or 1,
+    }
+    return figure, {'flex': '1', 'minHeight': '0'}, None, {'display': 'none'}, metadata
+
+
+clientside_callback(
+    ClientsideFunction(namespace='incrementalMap', function_name='selectFrame'),
+    Output('map-frame', 'data'),
+    Input('event-data', 'data'),
+    Input('timeline-slider', 'value'),
+    Input('view-toggle', 'value'),
+    Input('selected-county-store', 'data'),
+    Input('map-metadata', 'data'),
+    Input('selected-state-store', 'data'),
+    State('location-assets-store', 'data'),
+)
+
+
+@callback(
+    Output('spread-map', 'figure', allow_duplicate=True),
+    Output('epidemic-progress-title', 'children'),
+    Input('map-frame', 'data'),
+    State('map-metadata', 'data'),
+    prevent_initial_call=True,
+)
+def update_map_incrementally(frame, metadata):
+    if not frame or not metadata or frame.get('state') != metadata.get('state'):
+        return dash.no_update, 'Epidemic Simulation'
+
+    raw_max = 100 if frame['view'] == 'percent' else metadata['maxPopulation']
+    label = 'Infectious (Percent)' if frame['view'] == 'percent' else 'Infectious (Count)'
+    z, zmax, colorbar = _log_scale(frame['values'], raw_max, label)
+    patch = Patch()
+    patch['data'][0]['z'] = z
+    patch['data'][0]['zmax'] = zmax
+    patch['data'][0]['colorbar'] = colorbar
+    patch['data'][0]['customdata'] = frame['customdata']
+    patch['data'][1]['lon'] = frame['highlight']['lon']
+    patch['data'][1]['lat'] = frame['highlight']['lat']
+    title = (
+        f'Epidemic Simulation (Day {frame["day"]})'
+        if frame.get('day') is not None else 'Epidemic Simulation'
     )
-    return map_figure, {'flex': '1', 'minHeight': '0'}, None, {'display': 'none'}, panel_title
+    return patch, title
 
 
+clientside_callback(
+    ClientsideFunction(namespace='epidemicCurve', function_name='selectFrame'),
+    Output('chart-frame', 'data'),
+    Input('event-data', 'data'),
+    Input('timeline-slider', 'value'),
+    Input('selected-model-store', 'data'),
+    State('chart-progress', 'data'),
+)
 @callback(
     Output('line-chart', 'figure'),
     Output('line-chart', 'style'),
     Output('chart-empty', 'children'),
     Output('chart-empty', 'style'),
-    [Input('event-data', 'data'), Input('timeline-slider', 'value')],
-    State('selected-model-store', 'data'),
+    Output('chart-progress', 'data'),
+    Input('chart-frame', 'data'),
 )
-def update_chart(event_data, timeline_value, selected_model):
-    if not event_data:
+def update_chart(frame):
+    if not frame or not frame['count']:
         empty = create_icon_empty_state(
             html.I(className='bi bi-graph-up'),
             'No simulation results yet',
             'The epidemic curve will render here once you run a simulation.',
         )
-        return go.Figure(), {'display': 'none'}, empty, {'display': 'flex', 'flex': '1'}
+        return go.Figure(), {'display': 'none'}, empty, {'display': 'flex', 'flex': '1'}, None
+
+    points = frame['points']
+    if frame['start'] == 0:
+        # Initialization, shortened history, or a model change needs fresh traces.
+        figure = _build_chart_figure(points, None, frame['model'])
+        figure.layout.shapes[0].update(
+            x0=frame['day'] or 0, x1=frame['day'] or 0, visible=frame['day'] is not None,
+        )
+        figure.layout.annotations[0].update(
+            x=frame['day'] or 0, text=f'Day {frame["day"]}', visible=frame['day'] is not None,
+        )
+    else:
+        figure = Patch()
+        if points:
+            days = [point['day'] for point in points]
+            for index, (_, field) in enumerate(_chart_series(frame['model'])):
+                figure['data'][index]['x'].extend(days)
+                figure['data'][index]['y'].extend([point.get(field, 0) for point in points])
+        figure['layout']['shapes'][0]['x0'] = frame['day'] or 0
+        figure['layout']['shapes'][0]['x1'] = frame['day'] or 0
+        figure['layout']['shapes'][0]['visible'] = frame['day'] is not None
+        figure['layout']['annotations'][0]['x'] = frame['day'] or 0
+        figure['layout']['annotations'][0]['text'] = f'Day {frame["day"]}'
+        figure['layout']['annotations'][0]['visible'] = frame['day'] is not None
     return (
-        _build_chart_figure(event_data, timeline_value, selected_model),
+        figure,
         {'flex': '1', 'minHeight': '0', 'height': '100%'},
         None,
         {'display': 'none'},
+        {'count': frame['count'], 'model': frame['model']},
     )
 
 
-@callback(
-    Output('county-table-sort', 'data', allow_duplicate=True),
-    Input({'type': 'sort-btn', 'col': ALL}, 'n_clicks'),
-    State('county-table-sort', 'data'),
-    prevent_initial_call=True,
+clientside_callback(
+    ClientsideFunction(namespace='countyData', function_name='selectDay'),
+    Output('county-table-day', 'data'),
+    Input('event-data', 'data'),
+    Input('timeline-slider', 'value'),
+    Input('location-assets-store', 'data'),
 )
-def handle_sort_click(sort_clicks, sort_state):
-    sort_state = sort_state or {'col': 'infected', 'dir': 'desc'}
-    trig = ctx.triggered_id
-    if isinstance(trig, dict) and trig.get('type') == 'sort-btn':
-        if not ctx.triggered[0]['value']:
-            return sort_state
-        col = trig['col']
-        if sort_state.get('col') == col:
-            sort_state['dir'] = 'asc' if sort_state['dir'] == 'desc' else 'desc'
-        else:
-            sort_state = {'col': col, 'dir': 'desc'}
-    return sort_state
+
+clientside_callback(
+    ClientsideFunction(namespace='countyData', function_name='selectedAge'),
+    Output('county-selected-age', 'data'),
+    Input('county-age-history', 'data'),
+    Input('timeline-slider', 'value'),
+    Input('selected-county-store', 'data'),
+)
 
 
 @callback(
-    Output('selected-county-store', 'data', allow_duplicate=True),
-    Input('selected-state-store', 'data'),
-    prevent_initial_call=True,
+    Output('county-grid', 'rowData'),
+    Output('county-grid', 'columnDefs'),
+    Output('county-controls', 'style'),
+    Input('county-table-day', 'data'),
+    Input('view-toggle', 'value'),
+    Input('selected-model-store', 'data'),
 )
-def clear_county_selection_on_state_change(selected_state):
-    # A highlighted county's FIPS code is meaningless once the jurisdiction
-    # changes, so drop the selection rather than risk it pointing at an
-    # unrelated county in the newly selected state.
-    return None
+def update_county_grid(day, view, model):
+    rows = grid_rows(day, view)
+    return rows, grid_columns(view, model), {'display': 'block' if rows else 'none'}
 
 
 @callback(
     Output('selected-county-store', 'data'),
-    Input({'type': 'county-row', 'fips': ALL}, 'n_clicks'),
+    Input('county-grid', 'selectedRows'),
+    Input('selected-state-store', 'data'),
     State('selected-county-store', 'data'),
     prevent_initial_call=True,
 )
-def handle_county_row_click(n_clicks_list, selected_county):
-    trig = ctx.triggered_id
-    if isinstance(trig, dict) and trig.get('type') == 'county-row':
-        if not ctx.triggered[0]['value']:
-            return selected_county
-        clicked_fips = trig['fips']
-        return None if selected_county == clicked_fips else clicked_fips
-    return selected_county
+def select_grid_county(selected_rows, state, current):
+    selected = None if ctx.triggered_id == 'selected-state-store' else (
+        selected_rows[0].get('fips') if selected_rows else None
+    )
+    return dash.no_update if selected == current else selected
 
 
 @callback(
-    Output('spread-table', 'children'),
-    Output('county-controls', 'style'),
-    [
-        Input('event-data', 'data'),
-        Input('timeline-slider', 'value'),
-        Input('view-toggle', 'value'),
-        Input('location-assets-store', 'data'),
-        Input('county-search', 'value'),
-        Input('county-table-sort', 'data'),
-        Input('selected-county-store', 'data'),
-    ],
-    State('selected-model-store', 'data'),
+    Output('county-grid', 'selectedRows'),
+    Input('selected-state-store', 'data'),
+    prevent_initial_call=True,
 )
-def update_table(
-    event_data,
-    timeline_value,
-    view_type,
-    location_assets,
-    search_text,
-    sort_state,
-    selected_county,
-    selected_model,
-):
-    sort_state = sort_state or {'col': 'infected', 'dir': 'desc'}
+def clear_grid_selection(state):
+    return []
 
-    model = (selected_model or '').lower()
-    right_col_label = (
-        'Recovered' if model.startswith('seir') or model.startswith('seirs') else 'Deceased'
-    )
 
-    _hidden = {'display': 'none'}
-    _visible = {'display': 'block'}
-
-    if not event_data or timeline_value is None or timeline_value >= len(event_data):
-        return create_icon_empty_state(
-            html.I(className='bi bi-table'),
-            subtitle='County statistics will appear here once a simulation is run.',
-        ), _hidden
-
-    current_data = event_data[timeline_value]
-    counties_data = current_data.get('counties', [])
-    if not counties_data:
-        return html.P('No county data available', className='param-display__empty-state'), _hidden
-
-    location_assets = location_assets or {}
-    mapping = location_assets.get('mapping', {})  # name -> geoid (string)
-
-    # Invert mapping once: geoid -> name
-    id_to_name = {str(geoid): name for name, geoid in mapping.items() if str(name).lower() != 'all'}
-
-    # Build DataFrame
-    inf_key = 'infectedPercent' if view_type == 'percent' else 'infected'
-    dec_key = 'deceasedPercent' if view_type == 'percent' else 'deceased'
-
-    records = []
-    for county in counties_data:
-        geoid = str(county.get('fips', '')).strip()
-        if not geoid:
-            continue
-        if len(geoid) == 4:  # leading zero lost for some states
-            geoid = geoid.zfill(5)
-        records.append(
-            {
-                'fips': geoid,
-                'name': id_to_name.get(geoid) or geoid,
-                'infected_num': float(county.get(inf_key, 0)),
-                'deceased_num': float(county.get(dec_key, 0)),
-            }
-        )
-
-    df = pd.DataFrame(records)
-
-    if df.empty:
-        return html.P('No county data available', className='param-display__empty-state'), _hidden
-
-    # --- format display columns
-    if view_type == 'percent':
-        df['infected_disp'] = df['infected_num'].map(lambda x: f'{x:.1f}%')
-        df['deceased_disp'] = df['deceased_num'].map(lambda x: f'{x:.1f}%')
-    else:
-        df['infected_disp'] = df['infected_num'].map(lambda x: f'{math.floor(x):,}')
-        df['deceased_disp'] = df['deceased_num'].map(lambda x: f'{math.floor(x):,}')
-    
-    # --- search
-    if search_text:
-        q = search_text.strip().lower()
-        mask = df.apply(
-            lambda r: q in f'{r["name"]} {r["infected_disp"]} {r["deceased_disp"]}'.lower(),
-            axis=1,
-        )
-        df = df[mask]
-
-    if df.empty:
-        return html.P('No county data available', className='param-display__empty-state'), _hidden
-
-    # --- sort
-    sort_col = {'name': 'name', 'infected': 'infected_num', 'deceased': 'deceased_num'}[
-        sort_state['col']
-    ]
-    df = df.sort_values(sort_col, ascending=(sort_state['dir'] == 'asc'))
-
-    # --- header with clickable sort buttons
-    def sort_icon(col, asc_when):
-        active = sort_state['col'] == col
-        is_asc = sort_state['dir'] == 'asc'
-        icon = 'bi bi-caret-up-fill' if (active and is_asc == asc_when) else 'bi bi-caret-down-fill'
-        return html.I(className=icon, style={} if active else {'visibility': 'hidden'})
-
-    header = html.Thead(
-        html.Tr(
-            [
-                html.Th(
-                    html.Button(
-                        ['Location ', sort_icon('name', True)],
-                        id={'type': 'sort-btn', 'col': 'name'},
-                        n_clicks=0,
-                        className='sim-layout__sort-btn',
-                    )
-                ),
-                html.Th(
-                    html.Button(
-                        ['Infectious ', sort_icon('infected', False)],
-                        id={'type': 'sort-btn', 'col': 'infected'},
-                        n_clicks=0,
-                        className='sim-layout__sort-btn',
-                        style={'textAlign': 'right'}
-                    )
-                ),
-                html.Th(
-                    html.Button(
-                        [f'{right_col_label} ', sort_icon('deceased', False)],
-                        id={'type': 'sort-btn', 'col': 'deceased'},
-                        n_clicks=0,
-                        className='sim-layout__sort-btn',
-                        style={'textAlign': 'right'}
-                    )
-                ),
-            ]
-        )
-    )
-
-    body = html.Tbody(
-        [
-            html.Tr(
-                [
-                    html.Td(r.name),
-                    html.Td(r.infected_disp, style={'textAlign': 'right'}),
-                    html.Td(r.deceased_disp, style={'textAlign': 'right'}),
-                ],
-                id={'type': 'county-row', 'fips': r.fips},
-                n_clicks=0,
-                className='sim-layout__county-row-selected' if r.fips == selected_county else '',
-                style={'cursor': 'pointer'},
-            )
-            for r in df.itertuples()
-        ]
-    )
-
-    table = dbc.Table(
-        [header, body],
-        bordered=True,
-        hover=True,
-        striped=True,
-        responsive=False,
-        className='w-100 sim-layout__county-table',
-    )
-
-    return table, _visible
+@callback(
+    Output('county-age-title', 'children'),
+    Output('county-age-body', 'children'),
+    Input('selected-county-store', 'data'),
+    Input('county-selected-age', 'data'),
+    Input('view-toggle', 'value'),
+    Input('selected-model-store', 'data'),
+    State('county-grid', 'selectedRows'),
+)
+def update_county_age_panel(selected, request, view, model, rows):
+    return age_panel(selected, request, view, model, rows)

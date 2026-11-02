@@ -27,12 +27,30 @@ MODEL_OPTIONS = [
         'value': 'seaitrd-stochastic',
         'description': 'SEAITRD with exponential transitions (Gillespie, individual-level stochasticity); stochastic binomial travel.',
     },
-    #    {
-    #        'label': 'SEIHRD Stochastic',
-    #        'value': 'seihrd-deterministic',
-    #        'description': 'Adds hospitalization and death; Poisson transitions; stochastic binomial travel.'
-    #    },
+    {
+        'label': 'SEIHRD Stochastic',
+        'value': 'seihrd-stochastic',
+        'description': 'Adds hospitalization and death; Poisson transitions; stochastic binomial travel.',
+    },
 ]
+
+# Defaults from PES's SEIHRD baseline scenarios, in AGE_GROUPS order.
+SEIHRD_DEFAULTS = {
+    'E_to_IPandIA_days': 0.7,
+    'IP_to_IS_days': 0.9,
+    'IS_to_H_days': 3.74,
+    'H_to_D_days': 5.9,
+    'H_to_R_days': [4.7, 4.8, 6.2, 6.8, 6.55],
+    'IS_to_R_days': 2.0,
+    'IA_to_R_days': 2.3,
+    'prop_E_to_IA': [0.25, 0.25, 0.3, 0.3, 0.3],
+    'highrisk_hosp_multiplier': 3.0,
+    'prop_IS_to_H_lowrisk': [0.0132, 0.0099, 0.0295, 0.0594, 0.0802],
+    'prop_H_to_D': [0.00697, 0.00274, 0.00561, 0.0106, 0.0909],
+    'rel_inf_IP_to_IS': 0.45,
+    'rel_inf_IA_to_IS': 0.97,
+    'sigma': [1.0] * 5,
+}
 
 # Preset scenarios
 PRESET_SCENARIOS = {

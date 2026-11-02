@@ -78,7 +78,7 @@ body {
 }
 
 .sim-layout__col--right {
-    flex: 0 0 400px;
+    flex: 0 0 425px;
     height: 100%;
 }
 
@@ -130,7 +130,7 @@ body {
     flex-direction: column;
 }
 
-.sim-layout__table > table {
+.sim-layout__table>table {
     flex: 1 1 auto;
 }
 
@@ -149,9 +149,77 @@ body {
     table-layout: fixed;
 }
 
-.sim-layout__county-row-selected > td {
+.sim-layout__county-row-selected>td {
     background-color: rgba(13, 110, 253, 0.15) !important;
     font-weight: bold;
+}
+
+.county-location {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.county-age-toggle,
+.county-name-button {
+    border: 0;
+    background: transparent;
+    color: inherit;
+}
+
+.county-age-toggle {
+    padding: 0.25rem;
+    flex-shrink: 0;
+}
+
+.county-name-button {
+    padding: 0;
+    text-align: left;
+    font: inherit;
+}
+
+.county-age-toggle:focus-visible,
+.county-name-button:focus-visible {
+    outline: 2px solid #0d6efd;
+    outline-offset: 2px;
+}
+
+.sim-layout__county-table>tbody>.county-age-detail>td {
+    padding: 0;
+    border: 0;
+}
+
+.county-age-content {
+    padding: 0.75rem;
+    background: #f8f9fa;
+}
+
+.county-age-table {
+    font-size: 0.8rem;
+}
+
+/* Only the Community grid scrolls; the age panel stays at the bottom. */
+.county-grid-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 0;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.sim-layout__right>.county-table__title,
+.sim-layout__right>#county-controls {
+    flex-shrink: 0;
+}
+
+.county-grid-details {
+    flex: 0 0 230px;
+    height: 230px;
+    margin-top: 1rem;
+    padding: 0.75rem;
+    background: white;
+    border: 1px solid var(--bs-gray-300);
+    border-radius: 6px;
 }
 
 .sim-layout__middle-header {
@@ -159,7 +227,7 @@ body {
     border-radius: 8px;
     padding: 15px;
     margin-bottom: 15px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .sim-layout__col--middle {
@@ -219,7 +287,7 @@ body {
     padding: 15px;
     background-color: white;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin-bottom: 15px;
 }
 
@@ -240,13 +308,13 @@ body {
 }
 
 .model-setup__header-btn {
-    flex: 1; 
-    text-align: right; 
+    flex: 1;
+    text-align: right;
     white-space: nowrap;
 }
 
 .model-setup__body {
-    background-color: var(--bs-gray-100);    
+    background-color: var(--bs-gray-100);
 }
 
 .model-setup__title {
@@ -444,7 +512,7 @@ body {
     max-width: 280px;
 }
 
-.icon-empty-state__circle + .icon-empty-state__subtitle {
+.icon-empty-state__circle+.icon-empty-state__subtitle {
     margin-top: 16px;
 }
 
@@ -485,7 +553,7 @@ body {
    Modal tables
    ============================================ */
 
-.modal .table > thead {
+.modal .table>thead {
     background-color: var(--bs-gray-100) !important;
     --bs-table-bg: var(--bs-gray-100);
     --bs-table-striped-bg: var(--bs-gray-100);
@@ -498,7 +566,7 @@ body {
 .dropdown-invalid .dash-dropdown,
 .dropdown-invalid .form-control {
     border-color: var(--bs-danger) !important;
-} 
+}
 
 .invalid-feedback {
     font-size: 0.875em;

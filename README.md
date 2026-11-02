@@ -46,6 +46,16 @@ or using the Makefile
 make start
 ```
 
+The Django backend applies pending database migrations before starting, including
+schema updates required by new disease models. Rebuild the backend image after
+pulling changes so it uses the latest startup command.
+
+If an older running container logs `table pet_pet has no column named ...`, apply
+the pending migrations without resetting the database:
+```bash
+docker compose exec django-backend python manage.py migrate --noinput
+```
+
 ### Access the Application
 - **Main Application**: http://localhost:8050
 - **Backend API**: http://localhost:8000

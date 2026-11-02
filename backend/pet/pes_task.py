@@ -137,6 +137,54 @@ def return_valid_input(input):
         input_file['travel_model']['parameters']['traveling_compartments'] = {'I': '1.0'}
         input_file['travel_model']['parameters']['transmitting_compartments'] = {'I': '1.0'}
 
+    elif input['model_type'].startswith('seihrd-'):
+        def _parse_list(val):
+            """Accept a JSON string, a comma string, or a list; return list of str."""
+            if val is None:
+                return []
+            if isinstance(val, list):
+                return [str(x) for x in val]
+            try:
+                return [str(x) for x in json.loads(val)]
+            except (json.JSONDecodeError, TypeError):
+                return [str(x) for x in val.split(",")]
+
+        p = {
+            "compartments": ["S", "E", "IA", "IP", "IS", "H", "R", "D"],
+            "R0":                    str(input["R0"]),
+            "E_to_IPandIA_days":     str(input["E_to_IPandIA_days"]),
+            "IP_to_IS_days":         str(input["IP_to_IS_days"]),
+            "IS_to_H_days":          str(input["IS_to_H_days"]),
+            "H_to_D_days":           str(input["H_to_D_days"]),
+            "H_to_R_days":           _parse_list(input.get("H_to_R_days")),
+            "IS_to_R_days":          str(input["IS_to_R_days"]),
+            "IA_to_R_days":          str(input["IA_to_R_days"]),
+            "prop_E_to_IA":          _parse_list(input.get("prop_E_to_IA")),
+            "highrisk_hosp_multiplier": str(input["highrisk_hosp_multiplier"]),
+            "prop_IS_to_H_lowrisk":  _parse_list(input.get("prop_IS_to_H_lowrisk")),
+            "prop_H_to_D":           _parse_list(input.get("prop_H_to_D")),
+            "rel_inf_IP_to_IS":      str(input["rel_inf_IP_to_IS"]),
+            "rel_inf_IA_to_IS":      str(input["rel_inf_IA_to_IS"]),
+        }
+
+        # reuse sigma as relative_susceptibility if provided
+        if input.get("sigma") is not None:
+            sigma = input["sigma"]
+            p["relative_susceptibility"] = [
+                str(x) for x in (sigma.split(",") if isinstance(sigma, str) else sigma)
+            ]
+
+        input_file['disease_model']['parameters'] = p
+
+        # IA and IP travel (pre-symptomatic/asymptomatic don't know they're sick);
+        # all three infectious compartments transmit
+        input_file['travel_model']['parameters']['traveling_compartments'] = {
+            'IA': '1.0', 'IP': '1.0'
+        }
+        input_file['travel_model']['parameters']['transmitting_compartments'] = {
+            'IA': '1.0', 'IP': '1.0', 'IS': '1.0'
+        }
+
     # rho into travel model
     if "rho" in input and input["rho"] is not None:
         input_file["travel_model"]["parameters"]["rho"] = str(input["rho"])

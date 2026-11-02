@@ -19,6 +19,21 @@ class PET(models.Model):
     infectious_period = models.FloatField()
     immune_period = models.FloatField()
 
+    # SEIHRD-specific parameters
+    E_to_IPandIA_days = models.FloatField(blank=True, null=True)
+    IP_to_IS_days = models.FloatField(blank=True, null=True)
+    IS_to_H_days = models.FloatField(blank=True, null=True)
+    H_to_D_days = models.FloatField(blank=True, null=True)
+    H_to_R_days = models.TextField(blank=True, null=True)       # JSON list, one per age group
+    IS_to_R_days = models.FloatField(blank=True, null=True)
+    IA_to_R_days = models.FloatField(blank=True, null=True)
+    prop_E_to_IA = models.TextField(blank=True, null=True)      # JSON list, one per age group
+    highrisk_hosp_multiplier = models.FloatField(blank=True, null=True)
+    prop_IS_to_H_lowrisk = models.TextField(blank=True, null=True)  # JSON list, one per age group
+    prop_H_to_D = models.TextField(blank=True, null=True)       # JSON list, one per age group
+    rel_inf_IP_to_IS = models.FloatField(blank=True, null=True)
+    rel_inf_IA_to_IS = models.FloatField(blank=True, null=True)
+
     initial_infected = models.TextField(null=True)
     npis = models.TextField(null=True)
 

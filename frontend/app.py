@@ -42,6 +42,7 @@ app.layout = html.Div(
             data={'isRunning': False, 'currentIndex': 0, 'taskId': None, 'id': None},
         ),
         dcc.Store(id='event-data', data=[]),
+        dcc.Store(id='county-age-history', data=[]),
         dcc.Store(id='view-type', data='count'),
         dcc.Store(id='disease-parameters', data={}),
         dcc.Store(id='initial-cases-data', data=[]),
