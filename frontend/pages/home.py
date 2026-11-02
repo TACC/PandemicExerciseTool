@@ -1180,6 +1180,9 @@ def create_home_layout():
     return html.Div(
         [
             dcc.Location(id='url', refresh=True),
+            # Mount chart callback stores with their page-specific inputs/outputs.
+            dcc.Store(id='chart-frame', data=None),
+            dcc.Store(id='chart-progress', data=None),
             # Main content row with fixed height
             html.Div(
                 [
@@ -1241,7 +1244,6 @@ def create_home_layout():
                         ],
                         className='sim-layout__col--middle',
                     ),
-                    # COMMUNITY COUNTY PANEL
                     create_county_grid_panel(),
                 ],
                 className='sim-layout__row',
@@ -3243,6 +3245,18 @@ def fetch_simulation_data(n_intervals, sim_state, event_data):
 # Real data visualization callbacks
 
 
+def _chart_series(selected_model):
+    series = [('Susceptible', 'totalSusceptible'), ('Exposed', 'totalExposed')]
+    if (selected_model or '').lower().startswith('seir'):
+        return series + [('Infectious', 'totalInfectedCount'), ('Recovered', 'totalRecoveredCount')]
+    return series + [
+        ('Asymptomatic Infectious', 'totalAsymptomaticCount'),
+        ('Treatable Infectious', 'totalTreatableCount'),
+        ('Symptomatic Infectious', 'totalInfectedCount'),
+        ('Recovered', 'totalRecoveredCount'), ('Deceased', 'totalDeceased'),
+    ]
+
+
 def _build_chart_figure(event_data, timeline_value, selected_model):
     shared_layout = dict(
         yaxis_title='Population Count',
@@ -3261,35 +3275,6 @@ def _build_chart_figure(event_data, timeline_value, selected_model):
         return fig
 
     days = [d['day'] for d in event_data]
-    susceptible = [d.get('totalSusceptible', 0) for d in event_data]
-    exposed = [d.get('totalExposed', 0) for d in event_data]
-    asymptomatic = [d.get('totalAsymptomaticCount', 0) for d in event_data]
-    treatable = [d.get('totalTreatableCount', 0) for d in event_data]
-    infected = [d.get('totalInfectedCount', 0) for d in event_data]
-    recovered = [d.get('totalRecoveredCount', 0) for d in event_data]
-    deceased = [d.get('totalDeceased', 0) for d in event_data]
-
-    model = (selected_model or '').lower()
-    if model.startswith('seir') or model.startswith('seirs'):
-        # SEIR
-        series = [
-            ('Susceptible', susceptible),
-            ('Exposed', exposed),
-            ('Infectious', infected),
-            ('Recovered', recovered),
-        ]
-    else:
-        # SEAITRD
-        series = [
-            ('Susceptible', susceptible),
-            ('Exposed', exposed),
-            ('Asymptomatic Infectious', asymptomatic),
-            ('Treatable Infectious', treatable),
-            ('Symptomatic Infectious', infected),
-            ('Recovered', recovered),
-            ('Deceased', deceased),
-        ]
-
     # Add traces for SEAITRD compartments
     COLOR_MAP = {
         'Susceptible': 'blue',
@@ -3302,21 +3287,22 @@ def _build_chart_figure(event_data, timeline_value, selected_model):
         'Deceased': 'black',
     }
     fig = go.Figure()
-    for name, y in series:
+    for name, field in _chart_series(selected_model):
         fig.add_trace(go.Scatter(
-            x=days, y=y, name=name,
+            x=days, y=[day.get(field, 0) for day in event_data], name=name,
             line=dict(color=COLOR_MAP.get(name)),
             yhoverformat=',.0f',
         ))
 
-    # Add vertical line for current day
-    if timeline_value is not None and timeline_value < len(days):
-        fig.add_vline(
-            x=timeline_value,
-            line_dash='dash',
-            line_color='gray',
-            annotation_text=f'Day {timeline_value}',
-        )
+    # Reserve one marker and annotation so timeline patches have stable targets.
+    marker_visible = timeline_value is not None and 0 <= timeline_value < len(days)
+    marker_day = days[timeline_value] if marker_visible else 0
+    fig.add_vline(
+        x=marker_day, line_dash='dash', line_color='gray',
+        annotation_text=f'Day {marker_day}',
+    )
+    fig.layout.shapes[0].visible = marker_visible
+    fig.layout.annotations[0].visible = marker_visible
 
     fig.update_layout(
         hovermode='x unified',
@@ -3404,34 +3390,63 @@ def update_map_incrementally(frame, metadata):
 # END INCREMENTAL MAP
 
 
+clientside_callback(
+    ClientsideFunction(namespace='epidemicCurve', function_name='selectFrame'),
+    Output('chart-frame', 'data'),
+    Input('event-data', 'data'),
+    Input('timeline-slider', 'value'),
+    Input('selected-model-store', 'data'),
+    State('chart-progress', 'data'),
+)
 @callback(
     Output('line-chart', 'figure'),
     Output('line-chart', 'style'),
     Output('chart-empty', 'children'),
     Output('chart-empty', 'style'),
-    [Input('event-data', 'data'), Input('timeline-slider', 'value')],
-    State('selected-model-store', 'data'),
+    Output('chart-progress', 'data'),
+    Input('chart-frame', 'data'),
 )
-def update_chart(event_data, timeline_value, selected_model):
-    if not event_data:
+def update_chart(frame):
+    if not frame or not frame['count']:
         empty = create_icon_empty_state(
             html.I(className='bi bi-graph-up'),
             'No simulation results yet',
             'The epidemic curve will render here once you run a simulation.',
         )
-        return go.Figure(), {'display': 'none'}, empty, {'display': 'flex', 'flex': '1'}
+        return go.Figure(), {'display': 'none'}, empty, {'display': 'flex', 'flex': '1'}, None
+
+    points = frame['points']
+    if frame['start'] == 0:
+        # Initialization, shortened history, or a model change needs fresh traces.
+        figure = _build_chart_figure(points, None, frame['model'])
+        figure.layout.shapes[0].update(
+            x0=frame['day'] or 0, x1=frame['day'] or 0, visible=frame['day'] is not None,
+        )
+        figure.layout.annotations[0].update(
+            x=frame['day'] or 0, text=f'Day {frame["day"]}', visible=frame['day'] is not None,
+        )
+    else:
+        figure = Patch()
+        if points:
+            days = [point['day'] for point in points]
+            for index, (_, field) in enumerate(_chart_series(frame['model'])):
+                figure['data'][index]['x'].extend(days)
+                figure['data'][index]['y'].extend([point.get(field, 0) for point in points])
+        figure['layout']['shapes'][0]['x0'] = frame['day'] or 0
+        figure['layout']['shapes'][0]['x1'] = frame['day'] or 0
+        figure['layout']['shapes'][0]['visible'] = frame['day'] is not None
+        figure['layout']['annotations'][0]['x'] = frame['day'] or 0
+        figure['layout']['annotations'][0]['text'] = f'Day {frame["day"]}'
+        figure['layout']['annotations'][0]['visible'] = frame['day'] is not None
     return (
-        _build_chart_figure(event_data, timeline_value, selected_model),
+        figure,
         {'flex': '1', 'minHeight': '0', 'height': '100%'},
         None,
         {'display': 'none'},
+        {'count': frame['count'], 'model': frame['model']},
     )
 
 
-# BEGIN COMMUNITY COUNTY CALLBACKS
-# Rollback: disable this block and the Community panel above, then uncomment
-# the legacy panel/callbacks. In county_data.js, disable the Community namespace
-# and uncomment the legacy namespace. The map implementation is independent.
 clientside_callback(
     ClientsideFunction(namespace='countyData', function_name='selectDay'),
     Output('county-table-day', 'data'),
@@ -3507,5 +3522,3 @@ def clear_grid_selection(state):
 )
 def update_county_age_panel(selected, request, view, model, rows):
     return age_panel(selected, request, view, model, rows)
-
-# END COMMUNITY COUNTY CALLBACKS
