@@ -199,7 +199,7 @@ def _compute_mapbox_viewport(geojson):
 
 
 def _log_scale(values, raw_max, label):
-    """Transform values to log1p scale and return (z, zmax, colorbar_kwargs) for Choroplethmapbox."""
+    """Transform values to log1p scale and return (z, zmax, colorbar_kwargs) for the choropleth map."""
     z = [math.log1p(v) for v in values]
     zmax = math.log1p(raw_max)
     tick_vals, tick_text = [0], ['0']
@@ -224,7 +224,7 @@ def _log_scale(values, raw_max, label):
 
 
 def _county_boundary_lines(geojson, selected_county):
-    """Return (lons, lats) tracing a county's boundary ring(s) for Scattermapbox,
+    """Return (lons, lats) tracing a county's boundary ring(s) for the selection outline,
     with None separators between disjoint rings (holes, multi-part polygons)."""
     lons, lats = [], []
     for feature in geojson['features']:
@@ -244,9 +244,9 @@ def _county_boundary_lines(geojson, selected_county):
 
 
 def _build_choropleth_figure(geojson, fips_list, z, zmax, colorbar_kwargs, customdata, uirevision=None, selected_county=None):
-    """Build a Choroplethmapbox figure."""
+    """Build a MapLibre choropleth with an optional selection outline."""
     center, zoom = _compute_mapbox_viewport(geojson)
-    fig = go.Figure(go.Choroplethmapbox(
+    fig = go.Figure(go.Choroplethmap(
         geojson=geojson,
         locations=fips_list,
         z=z,
@@ -266,16 +266,12 @@ def _build_choropleth_figure(geojson, fips_list, z, zmax, colorbar_kwargs, custo
         ),
     ))
 
-    # Highlight the selected county with a thick outline traced on top of the
-    # base trace. This has to be a Scattermapbox line rather than a second
-    # Choroplethmapbox: Choroplethmapbox ties marker.opacity to both fill AND
-    # line, so a transparent fill (to preserve the underlying data color)
-    # would also erase the border - there's no way to get an opaque border
-    # with a transparent fill from that trace type.
+    # Keep the selection outline in a separate Scattermap line trace so it
+    # stays opaque without covering the county's underlying data color.
     if selected_county and selected_county in fips_list:
         hl_lons, hl_lats = _county_boundary_lines(geojson, selected_county)
         if hl_lons:
-            fig.add_trace(go.Scattermapbox(
+            fig.add_trace(go.Scattermap(
                 lon=hl_lons,
                 lat=hl_lats,
                 mode='lines',
@@ -285,7 +281,7 @@ def _build_choropleth_figure(geojson, fips_list, z, zmax, colorbar_kwargs, custo
             ))
 
     fig.update_layout(
-        mapbox=dict(style='white-bg', center=center, zoom=zoom),
+        map=dict(style='white-bg', center=center, zoom=zoom),
         uirevision=uirevision,
         margin=dict(l=0, r=0, t=5, b=40),
         paper_bgcolor='white',
@@ -3334,7 +3330,7 @@ def initialize_incremental_map(location_assets, selected_state):
     selected_state = location_assets.get('jurisdiction', selected_state)
     figure = _create_empty_state_map(geojson, selected_state=selected_state)
     # Reserve trace 1 for selection, so patches always target the same trace.
-    figure.add_trace(go.Scattermapbox(
+    figure.add_trace(go.Scattermap(
         lon=[], lat=[], mode='lines', line=dict(width=3, color='#000000'),
         hoverinfo='skip', showlegend=False,
     ))
@@ -3386,8 +3382,6 @@ def update_map_incrementally(frame, metadata):
         if frame.get('day') is not None else 'Epidemic Simulation'
     )
     return patch, title
-
-# END INCREMENTAL MAP
 
 
 clientside_callback(
@@ -3475,17 +3469,6 @@ clientside_callback(
 def update_county_grid(day, view, model):
     rows = grid_rows(day, view)
     return rows, grid_columns(view, model), {'display': 'block' if rows else 'none'}
-
-
-# Optional cross-column search callback; restore with the county-search input.
-# @callback(
-#     Output('county-grid', 'dashGridOptions'),
-#     Input('county-search', 'value'),
-# )
-# def filter_county_grid(search):
-#     patch = Patch()
-#     patch['quickFilterText'] = search or ''
-#     return patch
 
 
 @callback(

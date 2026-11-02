@@ -10,6 +10,8 @@ from plotly.utils import PlotlyJSONEncoder
 import app  # noqa: F401
 from pages import home
 
+pytestmark = pytest.mark.filterwarnings('error::DeprecationWarning')
+
 
 def geometry():
     return {
@@ -82,6 +84,13 @@ def test_initial_map_has_fixed_locations_and_reserved_highlight(map_figure, map_
     assert map_figure.layout.uirevision == 'Texas'
     assert len(map_figure.data) == 2
     assert list(map_figure.data[1].lon) == []
+    assert [trace.type for trace in map_figure.data] == ['choroplethmap', 'scattermap']
+    layout = map_figure.to_plotly_json()['layout']
+    assert 'mapbox' not in layout
+    assert layout['map']['style'] == 'white-bg'
+    center, zoom = home._compute_mapbox_viewport(map_figure.data[0].geojson)
+    assert layout['map']['center'] == center
+    assert layout['map']['zoom'] == zoom
 
 
 @pytest.mark.parametrize('view', ['count', 'percent'])
@@ -142,6 +151,27 @@ def test_patch_payload_excludes_boundaries_and_viewport(map_metadata):
     assert 'geojson' not in payload
     assert 'mapbox' not in payload
     assert 'locations' not in payload
+    assert all(op['location'][0] == 'data' for op in patch.to_plotly_json()['operations'])
+
+
+def test_full_map_selection_uses_separate_line_without_changing_fill(geojson):
+    plain = home._create_empty_state_map(geojson, selected_state='Texas')
+    selected = home._create_empty_state_map(
+        geojson,
+        selected_state='Texas',
+        selected_county='48001',
+    )
+    assert selected.data[0].to_plotly_json() == plain.data[0].to_plotly_json()
+    outline = selected.data[1]
+    assert outline.type == 'scattermap'
+    assert outline.mode == 'lines'
+    assert outline.line.width == 3
+    assert outline.line.color == '#000000'
+    assert outline.hoverinfo == 'skip'
+    lon, lat = home._county_boundary_lines(geojson, '48001')
+    assert list(outline.lon) == lon
+    assert list(outline.lat) == lat
+    assert selected.layout == plain.layout
 
 
 def test_registered_callback_never_receives_history_or_full_figure(map_metadata):
